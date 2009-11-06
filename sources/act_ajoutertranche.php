@@ -30,7 +30,7 @@ if (isset($_POST["id_cours"])) {
     } 
     else {/* valide */
 	
-	$query = "INSERT INTO  tranche (`id_cours`, `id_enseignant`, `type`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`) 
+	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `type`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`) 
 	      VALUES ('".$id_cours."', '".$id_enseignant."', '".$type."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$type_conversion."', '".$remarque."')";
 
 	if (!mysql_query($query)) {
@@ -38,7 +38,7 @@ if (isset($_POST["id_cours"])) {
 	} else {
 	    $id_tranche = mysql_insert_id();
 
-	    $qtranche = "SELECT * FROM tranche WHERE `id_tranche` = ".$id_tranche;
+	    $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = ".$id_tranche;
 	 
 	    if (!($rtranche = mysql_query($qtranche))) {
 		errmsg_formtranche(mysql_error());

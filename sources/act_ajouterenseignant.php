@@ -22,7 +22,7 @@ if (isset($_POST["nom"])) {
     } 
     else {/* valide */
 	
-	$query = "INSERT INTO enseignant 
+	$query = "INSERT INTO pain_enseignant 
                   (`nom`, `prenom`, `statut`, `email`, `bureau`, `service`) 
 	          VALUES ('".$nom."', '".$prenom."', '".$statut."', 
                           '".$email."', '".$bureau."', '".$service."')";

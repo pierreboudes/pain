@@ -1,4 +1,5 @@
 <?php
+
 function postclean($s) {
     return trim(htmlspecialchars($_POST[$s], ENT_QUOTES));
 }
@@ -27,7 +28,7 @@ function ig_responsable($id)
 	echo "autre";
     }
     if ($id > 0) {
-	$qresponsable = "SELECT * FROM enseignant WHERE `id_enseignant` = $id";
+	$qresponsable = "SELECT * FROM pain_enseignant WHERE `id_enseignant` = $id";
 	$rresponsable = mysql_query($qresponsable) 
 	    or die("Échec de la requête sur la table enseignant");
 	$responsable = mysql_fetch_array($rresponsable);
@@ -40,7 +41,7 @@ function ig_formselectenseignants($id_enseignant)
 {
    echo '<option value="-1"><i>libre</i></option>'; 
    $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
-            FROM enseignant ORDER BY `nom`,`prenom` ASC";
+            FROM pain_enseignant ORDER BY `nom`,`prenom` ASC";
    $rens = mysql_query($qens) 
                   or die("Échec de la requête sur la table enseignant");
    while ($ens = mysql_fetch_array($rens)) {
@@ -57,9 +58,9 @@ function ig_formselectenseignants($id_enseignant)
 
 function list_formations()
 {
-    $qformation = "SELECT * FROM formation 
+    $qformation = "SELECT * FROM pain_formation 
                    WHERE `annee_universitaire` = 2009
-                   ORDER BY numero ASC";
+                   ORDER BY numero ASC";    
 
     $rformation = mysql_query($qformation) 
 	or die("Échec de la requête sur la table formation");
@@ -69,7 +70,7 @@ function list_formations()
 
 function list_cours($id)
 {
-      $qcours = "SELECT * FROM cours WHERE `id_formation` = $id
+      $qcours = "SELECT * FROM pain_cours WHERE `id_formation` = $id
                  ORDER BY semestre ASC";
 
     $rcours = mysql_query($qcours) or 
@@ -81,7 +82,7 @@ function list_cours($id)
 
 function selectionner_cours($id)
 {
-    $qcours = "SELECT * FROM cours WHERE `id_cours` = $id";
+    $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = $id";
     $cours = NULL;
     if ($rcours = mysql_query($qcours)) {
 	$cours = mysql_fetch_array($rcours);
@@ -93,7 +94,7 @@ function selectionner_cours($id)
 
 function supprimer_cours($id)
 {
-      $qcours = "DELETE FROM cours WHERE `id_cours` = $id
+      $qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id
                  LIMIT 1";
 
     $droits = 1; /* TODO: tester si l'utilisateur a ce droit */
@@ -101,7 +102,7 @@ function supprimer_cours($id)
     if ($droits) {	
         if (mysql_query($qcours)) {
 	    /* on efface les tranches associées */
-	    $qtranches = "DELETE FROM tranche WHERE `id_cours` = $id";	    
+	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";	    
 	    if (mysql_query($qtranches)) {
 		echo "OK";
 	    } else {
@@ -223,7 +224,7 @@ function ig_legendetranches($id) {
 }
 
 function tranchesdecours($id) {
-    $qtranches = "SELECT * FROM tranche WHERE `id_cours`=".$id." ORDER BY groupe ASC";
+    $qtranches = "SELECT * FROM pain_tranche WHERE `id_cours`=".$id." ORDER BY groupe ASC";
 
     $rtranches = mysql_query($qtranches) or 
 	die(mysql_error());
@@ -315,7 +316,7 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
 
 function supprimer_tranche($id)
 {
-      $qtranche = "DELETE FROM tranche WHERE `id_tranche` = $id
+      $qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
 
     $droits = 1; /* TODO: tester si l'utilisateur a ce droit */
@@ -362,7 +363,7 @@ function ig_enseignant($t) {
 }
 
 function ig_listenseignants() {
-    $q = "SELECT * from enseignant ORDER by nom,prenom ASC";
+    $q = "SELECT * from pain_enseignant ORDER by nom,prenom ASC";
     ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
     while ($t = mysql_fetch_array($r))
     {
