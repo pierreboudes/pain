@@ -1,0 +1,172 @@
+/* menu */
+#menu {
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 20px;
+}
+#menu li {
+    font-family:monospace;
+    display: inline;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    padding-right: 5pt;
+    padding-left: 5pt;
+    border: 3px solid #6495ed;
+    border-top: 0px;
+    background-color: #DFE6FF;
+}
+
+/* tables */
+
+table.formations {
+    border:3px solid #6495ed;
+    border-collapse:collapse; 
+    width:877px;
+    margin:auto;
+}
+
+th {
+    font-family:monospace;
+    border:1px dotted #6495ed;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left: 2px;
+    padding-right: 2px;    
+    background-color:#EFF6FF;
+}
+td {
+    font-family:sans-serif;
+    font-size:10pt;
+    border:1px solid #6495ed;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left: 2px;
+    padding-right: 2px; 
+    text-align:left;
+}
+
+tr.formation td {
+    padding-top: 10px;
+    background-color:#DFE6FF;
+}    
+
+tr.formcours {
+   display:none;
+}
+
+tr.formcours, tr.formcours > td {
+    padding: 0px;
+    text-align: left;
+}
+
+table.formcours {
+    width:874px;
+    border: 0px;
+    border-collapse:collapse;
+}
+
+table.enseignants {
+    border:3px solid #6495ed;
+    border-collapse:collapse; 
+    width: 877px;
+    margin:auto;
+}
+
+table.tranches {
+/*    width:874px; */
+    border:1px solid #6495ed;
+    border-bottom:2px solid #6495ed;
+    border-right:2px solid #6495ed;
+    border-collapse:collapse;
+}
+
+td.tranches {
+    text-align: left; 
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+table.tranches th, table.formcours td {
+    text-align: center;   
+}  
+ 
+.nom_cours, .responsable, .enseignant {
+    width: 100px; /* 200 */
+}
+
+td.responsable > input {
+    width: 90px;
+}
+
+td.enseignant > input {
+    width: 90px;
+}
+
+td.nom_cours > input {
+   width: 90px;  /* 180 */
+}
+
+.descriptif, .remarque {
+    width: 140px;
+}
+
+td.descriptif > textarea, td.remarque > textarea {
+    width: 130px;
+}
+
+.CM, .TD, .TP, .alt, .groupe, HTD {
+    width:45px; /* 180 */
+}
+
+td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input, td.groupe > input {
+    width:28px; /* 180 */
+}
+ .semestre {
+   width: 80px;  /* 180 */
+} 
+
+.credits {
+   width: 80px;  /* 180 */
+} 
+
+td.credits > input {
+   width: 50px;  /* 180 */
+}
+
+
+.action, .code_geisha {
+    width:70px;  /* 140 */
+}
+
+td.code_geisha > input, td.action > input {
+    width: 60px;
+}
+
+select, input {
+    width: 85%;
+}
+
+input.type_conversion, input.semestre {
+    width: 10px;
+    display: inline;
+}
+
+.semestre, .credits, .CM, .TD, .TP, .alt, .code_geisha, .action, .groupe, .HTD {
+    text-align: center;
+}
+
+td.id {
+ display:none; 
+}
+
+/* fusion manuelle des bords */
+table.formcours td.nom_cours {
+    border-left: 0px;
+}
+table.formcours td.action {
+    border-right: 0px;
+}
+
+table.formcours td {
+    border-bottom: 0px;
+}
