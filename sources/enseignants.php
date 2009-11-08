@@ -34,7 +34,6 @@
 <?php
 include("act_ajouterenseignant.php");
 include("inc_listenseignants.php");
-include("inc_formajouterenseignants.php");
 ?>
 
 </body>

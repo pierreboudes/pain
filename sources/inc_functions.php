@@ -251,8 +251,8 @@ function ig_tranche($t) {
     echo '<td class="action" id="tranche'.$id.'">';
     echo '<button type="button" class="action" onclick="supprimerTranche('.$id.')">';
     echo 'supprimer</button><br/>';
-    echo '<button type="button" class="action" onclick="editerTranche('.$id.')">';
-    echo 'modifier</button>';
+   /* echo '<button type="button" class="action" onclick="editerTranche('.$id.')">';
+    echo 'modifier</button>'; */
     echo '</td>';
     echo '</tr>';
     echo "\n";
@@ -333,7 +333,7 @@ function supprimer_tranche($id)
 }
 
 
-function ig_legendeenseignant($id) {
+function ig_legendeenseignant() {
     echo '<tr>';
     echo '<th class="prenom">Prénom</th>';
     echo '<th class="nom">Nom</th>';

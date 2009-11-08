@@ -38,7 +38,7 @@ if (isset($_POST["nom_cours"])) {
     */
     else {/* valide */
 	
-	$query = "INSERT INTO ".$tables_prefix."cours (`nom_cours`, `id_formation`, `semestre`, `credits`, `id_enseignant`, `cm`, `td`, `tp`, `alt`, `descriptif`, `code_geisha`) 
+	$query = "INSERT INTO pain_cours (`nom_cours`, `id_formation`, `semestre`, `credits`, `id_enseignant`, `cm`, `td`, `tp`, `alt`, `descriptif`, `code_geisha`) 
 	      VALUES ('".$nom_cours."', '".$id_formation."', '".$semestre."', '".$credits."', '".$responsable."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$descriptif."', '".$code_geisha."')";
 	
 	if (!mysql_query($query)) {
@@ -46,7 +46,7 @@ if (isset($_POST["nom_cours"])) {
 	} else {
 	    $id_cours = mysql_insert_id();
 
-	    $qcours = "SELECT * ".$tables_prefix."FROM cours WHERE `id_cours` = ".$id_cours;
+	    $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = ".$id_cours;
 	    
 	    $rcours = mysql_query($qcours) or 
 		die("Échec de la requête sur la table cours");
