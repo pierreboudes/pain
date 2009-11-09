@@ -1,9 +1,17 @@
 <?php
 
 function postclean($s) {
-    return trim(htmlspecialchars($_POST[$s], ENT_QUOTES));
+    if(get_magic_quotes_gpc()) {
+	return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
+    }
+    else {
+	return trim(htmlspecialchars(mysql_real_escape_string($_POST[$s]), ENT_QUOTES));
+    }
 }
 
+function postnumclean($s) {
+    return str_replace(',','.',str_replace(' ', '',postclean($s)));
+}
 
 function ig_typeconversion($type)
 {
@@ -164,7 +172,7 @@ function ig_cours($cours)
     echo '</td>';
     
     echo '<td class="action">';
-    echo '<button type="button" id="boutonsupprimercours'.$id.'" class="action" onclick="supprimerCours('.$id.')">suppr.</button><br/>';
+    echo '<button type="button" id="boutonsupprimercours'.$id.'" class="action" onclick="supprimerCours('.$id.')">supprimer</button><br/>';
     echo '<button type="button" id="boutonmodifiercours'.$id.'" class="action" onclick="modifierCours($(this),'.$id.')">modifier</button><br/>';
     echo '<button type="button" id="boutonservircours'.$id.'" class="action" onclick="tranchesCours('.$id.')">servir</button>';
     echo '</td>';
@@ -220,7 +228,10 @@ function ig_legendetranches($id) {
     echo '<th class="type_conversion">conversion</th>';
     echo '<th class="htd">htd</th>';
     echo '<th class="remarque">Remarque</th>';
-    echo '<th></th>';
+    echo '<th class="action">';
+    echo '<button class="action" button="button" onclick="masquerTranchesCours('.$id.')">';
+    echo 'masquer</button>';
+    echo '</th>';
 }
 
 function tranchesdecours($id) {
@@ -303,7 +314,9 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
     echo '</td>';
     echo '<td class="remarque">';
     echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
-    echo '<input type="hidden" name="id_tranche" value="'.$id_tranche.'"/>';
+    if ($id_tranche != NULL) {
+	echo '<input type="hidden" name="id_tranche" value="'.$id_tranche.'"/>';
+    }
     echo '<textarea name="remarque" rows="2" >';
     echo $remarque;
     echo '</textarea></td>';
@@ -354,7 +367,7 @@ function ig_enseignant($t) {
     echo '<td class="nom">'.$t["nom"].'</td>';
     echo '<td class="statut">'.$t["statut"].'</td>';
     echo '<td class="email">'.$t["email"].'</td>';
-    echo '<td class="tel">'.$t["tel"].'</td>';
+    echo '<td class="tel">'.$t["telephone"].'</td>';
     echo '<td class="bureau">'.$t["bureau"].'</td>';
     echo '<td class="service">'.$t["service"].'</td>';
     echo '<td class="action" id="enseignant'.$t["id_enseignant"].'"></td>';
@@ -378,7 +391,7 @@ function ig_formenseignant()
     echo '<td class="nom"><input type="text" name="nom" value="" /></td>';
     echo '<td class="statut"><input type="text" name="statut" value="" /></td>';
     echo '<td class="email"><input type="text" name="email" value="" /></td>';
-    echo '<td class="tel"><input type="text" name="tel" value="" /></td>';
+    echo '<td class="tel"><input type="text" name="telephone" value="" /></td>';
     echo '<td class="bureau"><input type="text" name="bureau" value="" /></td>';
     echo '<td class="service"><input type="text" name="service" value="192" /></td>';
     echo '<td>';

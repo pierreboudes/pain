@@ -12,13 +12,12 @@ function errmsg_formcours($s) {
 if (isset($_POST["nom_cours"])) {
     $nom_cours = postclean("nom_cours");
     $semestre = postclean("semestre");
-    $credits = postclean("credits");
+    $credits = postnumclean("credits");
     $responsable = postclean("responsable_cours");
-    /* convertir en id_enseignant en amont */
-    $cm = postclean("cm");
-    $td = postclean("td");
-    $tp = postclean("tp");
-    $alt = postclean("alt");
+    $cm = postnumclean("cm");
+    $td = postnumclean("td");
+    $tp = postnumclean("tp");
+    $alt = postnumclean("alt");
     $id_formation = postclean("id_formation");
     $descriptif = postclean("descriptif");
     $code_geisha = postclean("code_geisha");

@@ -16,6 +16,7 @@ function supprimerCours(id) {
 		}
 		else {
 		    $('#cours'+id).parent().remove();
+		    masquerTranchesCours(id);
 		}
 	    }, 'text');
     } else {
@@ -68,6 +69,7 @@ function afterModifierCours(responseText, statusText, id)  {
 
 
 function annulerModifierCours(id) {
+    $('#cours'+id).parent().css('background-color','');
     $('#formeditcours'+id).remove();
     $('#boutonmodifiercours'+id).attr('disabled','');
 }

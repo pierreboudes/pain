@@ -9,13 +9,13 @@ function errmsg_formtranche($s) {
 
 if (isset($_POST["id_cours"])) {
     $id_cours = postclean("id_cours");
-    $groupe = postclean("groupe");
+    $groupe = postnumclean("groupe");
     $id_enseignant = postclean("id_enseignant");
-    $cm = postclean("cm");
-    $td = postclean("td");
-    $tp = postclean("tp");
-    $alt = postclean("alt");
-    $htd = postclean("htd");    
+    $cm = postnumclean("cm");
+    $td = postnumclean("td");
+    $tp = postnumclean("tp");
+    $alt = postnumclean("alt");
+    $htd = postnumclean("htd");    
     $type_conversion = postclean("type_conversion");
     $remarque = postclean("remarque");
     /* calcul de l'équivalent TD si la conversion est automatique */

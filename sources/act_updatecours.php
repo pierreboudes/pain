@@ -15,12 +15,12 @@ if (isset($_POST["id_cours"])) {
     /* TODO : VERIFIER les droits sur cet id_cours */
     $nom_cours = postclean("nom_cours");
     $semestre = postclean("semestre");
-    $credits = postclean("credits");
+    $credits = postnumclean("credits");
     $responsable = postclean("responsable_cours");
-    $cm = postclean("cm");
-    $td = postclean("td");
-    $tp = postclean("tp");
-    $alt = postclean("alt");
+    $cm = postnumclean("cm");
+    $td = postnumclean("td");
+    $tp = postnumclean("tp");
+    $alt = postnumclean("alt");
     $id_formation = postclean("id_formation");
     $descriptif = postclean("descriptif");
     $code_geisha = postclean("code_geisha");

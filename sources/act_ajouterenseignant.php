@@ -13,8 +13,9 @@ if (isset($_POST["nom"])) {
     $prenom = postclean("prenom");
     $statut = postclean("statut");
     $email = postclean("email");
+    $telephone = postclean("telephone");
     $bureau = postclean("bureau");
-    $service = postclean("service");
+    $service = postnumclean("service");
 
     if (("" === $nom) || (0 == $service))
     {
@@ -23,9 +24,9 @@ if (isset($_POST["nom"])) {
     else {/* valide */
 	
 	$query = "INSERT INTO pain_enseignant 
-                  (`nom`, `prenom`, `statut`, `email`, `bureau`, `service`) 
+                  (`nom`, `prenom`, `statut`, `email`, `telephone`, `bureau`, `service`) 
 	          VALUES ('".$nom."', '".$prenom."', '".$statut."', 
-                          '".$email."', '".$bureau."', '".$service."')";
+                          '".$email."', '".$telephone."', '".$bureau."', '".$service."')";
 
 	if (!mysql_query($query)) {
 	    errmsg_formenseignant(mysql_error());

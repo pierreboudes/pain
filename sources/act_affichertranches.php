@@ -12,6 +12,7 @@ if (isset($_POST["id_cours"])) {
     ig_legendetranches($id);
     ig_listtranches(tranchesdecours($id));
     ig_formtranche($id);
-    echo '</table></form></td></tr>';
+    echo '</table></form></td>';
+    '</tr>';
 };
 ?>

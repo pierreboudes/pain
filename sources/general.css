@@ -76,14 +76,11 @@ table.tranches {
 /*    width:874px; */
     border:1px solid #6495ed;
     border-bottom:2px solid #6495ed;
-    border-right:2px solid #6495ed;
+    border-left:2px solid #6495ed;
+    border-right:0px;    
     border-collapse:collapse;
-}
-
-td.tranches {
-    text-align: left; 
-    padding-top: 0px;
-    padding-left: 0px;
+    margin-left: auto;
+    margin-right: -1px;
 }
 
 table.tranches th, table.formcours td {
@@ -170,3 +167,9 @@ table.formcours td.action {
 table.formcours td {
     border-bottom: 0px;
 }
+
+td.tranches {
+    padding-top: 0px;
+    padding-right: 0px;
+}
+
