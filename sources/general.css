@@ -18,11 +18,17 @@
 
 /* tables */
 
+body {
+/*    background-color: #ccccff; */
+}
+
 table.formations {
-    border:3px solid #6495ed;
+    border:2px solid #6495ed;
+    margin-top:-2px;
     border-collapse:collapse; 
     width:877px;
     margin:auto;
+    background-color: #ffffff;
 }
 
 th {
@@ -173,3 +179,29 @@ td.tranches {
     padding-right: 0px;
 }
 
+/* toutes les bascules */
+div.basculeOff, div.basculeOn {
+    float:left; margin-left: -132px; cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+div.basculeOff {
+        background-image: url(img/triangleLR.png);
+}
+
+div.basculeOff:hover {
+        background-image: url(img/triangleLRp.png);
+}
+
+div.basculeOn {
+        background-image: url(img/triangleTD.png);
+}
+
+div.basculeOn:hover {
+        background-image: url(img/triangleTDp.png);
+}
+
+td.intitule > div.basculeOff, td.intitule > div.basculeOn {
+    margin-left: -28px;
+}

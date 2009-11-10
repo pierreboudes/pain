@@ -1,8 +1,9 @@
 
 $(document).ready(function(){
-	/* un effet visuel pour signaler les actions disponibles */
+	/* un effet visuel pour signaler les actions disponibles (obsolete)*/
 	$("a.action").hover(function(){$(this).fadeOut(100);$(this).fadeIn(500);});
-	
+        /* sympa mais pose quelques soucis d'affichage ... */
+	$("tr.formation div.basculeOn").trigger("click");
 });
 
 
@@ -179,4 +180,31 @@ function editerTranche(id) {
     $('#tranche'+id).parent().css('background-color','yellow');
     alert('Indisponible');
     $('#tranche'+id).parent().css('background-color','');
+}
+
+function basculerCours(id) {
+    var bascule =  $('#basculecours'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOn')) {
+	tranchesCours(id);
+    } else {
+	masquerTranchesCours(id);
+    }
+}
+
+/* sympa mais quelques soucis d'affichage */
+function basculerFormation(id) {
+    var bascule =  $('#basculeformation'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tableformation'+id+' tr.legende').fadeOut("slow");
+	$('#tableformation'+id+' tr.formcours').fadeOut("slow");
+	$('#tableformation'+id+' tr.cours div.basculeOn').trigger("click");
+	$('#tableformation'+id+' tr.cours').fadeOut("slow");
+    } else {
+	$('#tableformation'+id+' tr.legende').fadeIn("slow");
+	$('#tableformation'+id+' tr.cours').fadeIn("slow");
+    }
 }

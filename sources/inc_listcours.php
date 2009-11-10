@@ -3,7 +3,6 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 /* Le grand tableau des formations */
-echo '<table class="formations">';
 
 $rformation = list_formations();
 
@@ -11,10 +10,16 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
 {
     $id_formation = $formation["id_formation"];
 
+echo '<table class="formations" id="tableformation'.$id_formation.'">';
+
     /* affichage de la formation */
     echo '<tr class="formation" id="formation'.$id_formation.'">';
 
     echo '<td class="intitule" colspan="11">';
+    echo '<div class="basculeOn"';
+    echo ' id="basculeformation'.$id_formation.'"'; 
+    echo ' onclick="basculerFormation('.$id_formation.')">';
+    echo '</div>';
     echo $formation["nom"]." ".$formation["annee_etude"]." ";
     echo $formation["parfum"].", ";
 
@@ -28,7 +33,7 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
     /* affichage des cours de la formation */
 
     /* légende */
-    echo '<tr><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th><th class="action"><button type="button" class="action" onclick="popFormCours($(this),'.$id_formation.');">nouveau</button></th></tr>'."\n";
+    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th><th class="action"><button type="button" class="action" onclick="popFormCours($(this),'.$id_formation.');">nouveau</button></th></tr>'."\n";
 
     /* formulaire d'ajout d'un cours dans la formation */
     echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";
@@ -47,9 +52,9 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
 	ig_cours($cours);
 	echo '</tr>'."\n";
     }
+echo '</table>'."\n";
 
 } /* fin while formation */
-echo '</table>'."\n";
 
 ?>
 

@@ -136,6 +136,10 @@ function ig_cours($cours)
     echo '</td>';
     
     echo '<td class="semestre">';
+    echo '<div class="basculeOff"';
+    echo ' id="basculecours'.$id.'"'; 
+    echo ' onclick="basculerCours('.$id.')">';
+    echo '</div>';
     echo $cours["semestre"];
     echo '</td>';
     
@@ -174,7 +178,6 @@ function ig_cours($cours)
     echo '<td class="action">';
     echo '<button type="button" id="boutonsupprimercours'.$id.'" class="action" onclick="supprimerCours('.$id.')">supprimer</button><br/>';
     echo '<button type="button" id="boutonmodifiercours'.$id.'" class="action" onclick="modifierCours($(this),'.$id.')">modifier</button><br/>';
-    echo '<button type="button" id="boutonservircours'.$id.'" class="action" onclick="tranchesCours('.$id.')">servir</button>';
     echo '</td>';
 }
 
@@ -229,8 +232,6 @@ function ig_legendetranches($id) {
     echo '<th class="htd">htd</th>';
     echo '<th class="remarque">Remarque</th>';
     echo '<th class="action">';
-    echo '<button class="action" button="button" onclick="masquerTranchesCours('.$id.')">';
-    echo 'masquer</button>';
     echo '</th>';
 }
 
