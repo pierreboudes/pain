@@ -11,7 +11,9 @@
 <link rel='stylesheet' media='projection, screen, tv' href='affichage.css' type='text/css' />
 <link rel="stylesheet" href="impression.css" type="text/css" media="print" />
 -->
+<!-- FIREBUG DU PAUVRE !
 <script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+-->
 <script type='text/javascript' src='jquery.js'></script>
 <script type='text/javascript' src='jquery.form.js'></script>
 <script type='text/javascript' src='pain.js'></script>
