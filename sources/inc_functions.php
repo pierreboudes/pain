@@ -514,7 +514,7 @@ function htdcours($id) {
 }
 
 function ig_htd($totaux) {
-echo $totaux["servi"].'H servies, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées.</span>'."\n";
+echo $totaux["servi"].'H servies, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées.'."\n";
 }
 
 ?>
