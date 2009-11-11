@@ -37,7 +37,7 @@ if (isset($_GET["hauteur"])) {
 if($largeur >0):
 $im = imagecreatetruecolor($largeur,$hauteur);
 $fondcolor = imagecolorallocate($im, 255, 255, 255);
-imageantialias($im, true);
+/* ne tourne pas au lipn imageantialias($im, true); */
 imagefilledrectangle($im, 0, 0, $largeur, $hauteur, $fondcolor);
 $white = imagecolorallocate($im,255,255,255);
 $rayurecolor = imagecolorallocate($im, 230, 230, 230);
@@ -63,7 +63,7 @@ else:
 /* largeur nulle, on renvoie un image transparente 1x1 */
 $im = imagecreatetruecolor(1,1);
 $fondcolor = imagecolorallocatealpha($im, 255, 255, 255,255);
-imageantialias($im, false);
+/* ne tourne pas au LIPN imageantialias($im, false); */
 imagefilledrectangle($im, 0, 0, 1, 1, $fondcolor);
 endif;
 imagepng($im);
