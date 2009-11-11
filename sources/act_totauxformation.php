@@ -9,8 +9,5 @@ if (isset($_POST["id_formation"])) {
 } 
 
 $r=htdformation($id);
-$servi = $r["servi"];
-$libre = $r["libre"];
-$annule = $r["annule"];
 ?>
-<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?=$servi?>H servies, <?=$libre?>H Ã  pourvoir et <?=$annule?>H annulÃ©es."/>
+<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php ig_htd($r); ?>"/>

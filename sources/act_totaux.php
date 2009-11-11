@@ -12,6 +12,5 @@ $r=htdtotaux($annee);
 $servi = $r["servi"];
 $libre = $r["libre"];
 $annule = $r["annule"];
+ig_totaux($r);
 ?>
-
-<?=$servi?>H servies, <?=$libre?>H à pourvoir et <?=$annule?>H annulées.
