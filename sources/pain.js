@@ -1,3 +1,18 @@
+/* -*- coding: utf-8 -*-*/
+
+/* prototypes nécessaires (jslint.com) ?? */
+function beforeModifierCours(formData, jqForm, options, id){}
+function afterModifierCours(responseText, statusText, id){}
+function beforeAjouterCours(data, form, opt, id){}
+function afterAjouterCours(responseText, statusText, id){}
+function beforeAjouterTranche(formData, jqForm, options, id){}
+function afterAjouterTranche(responseText, statusText, id){}
+function masquerTranchesCours(id){}
+function htdCours(id){}
+function htdFormation(id){}
+function coursDeLaTranche(id_tranche){}
+function totauxCoursChanged(id_cours){}
+
 
 $(document).ready(function(){
 	/* un effet visuel pour signaler les actions disponibles (obsolete)*/
@@ -16,8 +31,9 @@ function supprimerCours(id) {
 		    $('#cours'+id).parent().css('background-color','');
 		}
 		else {
-		    $('#cours'+id).parent().remove();
 		    masquerTranchesCours(id);
+		    totauxCoursChanged(id);
+		    $('#cours'+id).parent().remove();
 		}
 	    }, 'text');
     } else {
@@ -84,11 +100,11 @@ function popFormCours(element, id) {
     var options = {
     target: '#tformation' + id,
     beforeSubmit: function (data, form, opt) {
-  	         beforeAjouterCours(data, form, opt, id);
-             },
+	    beforeAjouterCours(data, form, opt, id);
+	},
     success: function (resp, stat) {
-                 afterAjouterCours(resp, stat, id);
-             },
+	    afterAjouterCours(resp, stat, id);
+	},
     clearForm: false,
     resetForm: true,
     url: "act_ajoutercours.php",
@@ -121,11 +137,12 @@ function tranchesCours(id) {
     var options = {
     target: '#ttranche' + id,
     beforeSubmit: function (data, form, opt) {
-  	         beforeAjouterTranche(data, form, opt, id);
-             },
+	    beforeAjouterTranche(data, form, opt, id);
+	},
     success: function (resp, stat) {
-                 afterAjouterTranche(resp, stat, id);
-             },
+	    afterAjouterTranche(resp, stat, id);
+        totauxCoursChanged(id);
+	},
     clearForm: false,
     resetForm: true,
     url: "act_ajoutertranche.php",
@@ -137,9 +154,8 @@ function tranchesCours(id) {
 	    $('#cours'+id).parent().after(resultat);
 	    
             /* armer les callback du traitement du formulaire */
-	    $('#formtranche'+id).ajaxForm(options);	    
-	}
-	, 'text');
+	    $('#formtranche'+id).ajaxForm(options);
+	}, 'text');
 }
 
 function masquerTranchesCours(id) {
@@ -156,8 +172,8 @@ function beforeAjouterTranche(formData, jqForm, options, id) {
 function afterAjouterTranche(responseText, statusText, id)  {
     $('#formtranche' + id + ' table.tranches tr:last').after(responseText);
     $('#ttranche'+id).remove();
+    /* les totaux sont mis à jour dans la callback anonyme qui appelle cette fonction */
 }
-
 
 function supprimerTranche(id) {    
     $('#tranche'+id).parent().css('background-color','yellow');
@@ -168,7 +184,10 @@ function supprimerTranche(id) {
 		    $('#tranche'+id).parent().css('background-color','');
 		}
 		else {
+		    var id_cours = coursDeLaTranche(id);
+alert('coursDeLaTranche('+id+') = '+ id_cours);
 		    $('#tranche'+id).parent().remove();
+		    totauxCoursChanged(id_cours);
 		}
 	    }, 'text');
     } else {
@@ -176,10 +195,14 @@ function supprimerTranche(id) {
     } 
 }
 
+/* TODO */
 function editerTranche(id) {
     $('#tranche'+id).parent().css('background-color','yellow');
     alert('Indisponible');
     $('#tranche'+id).parent().css('background-color','');
+/* ne pas oublier :
+   totauxCoursChanged(coursDeLaTranche(id));
+*/
 }
 
 function basculerCours(id) {
@@ -188,6 +211,7 @@ function basculerCours(id) {
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
 	tranchesCours(id);
+	htdCours(id);
     } else {
 	masquerTranchesCours(id);
     }
@@ -203,8 +227,100 @@ function basculerFormation(id) {
 	$('#tableformation'+id+' tr.formcours').fadeOut("slow");
 	$('#tableformation'+id+' tr.cours div.basculeOn').trigger("click");
 	$('#tableformation'+id+' tr.cours').fadeOut("slow");
+	$('#tableformation'+id+' tr.imgcours').fadeOut("slow");	
     } else {
 	$('#tableformation'+id+' tr.legende').fadeIn("slow");
 	$('#tableformation'+id+' tr.cours').fadeIn("slow");
+	$('#tableformation'+id+' tr.imgcours').fadeIn("slow");
+	htdFormation(id);
     }
 }
+
+function trim(str) 
+{ 
+    return str.replace(/^\s+/g,'').replace(/\s+$/g,'');
+}
+
+/* Calculer les couts */
+function htdCours(id) {
+    jQuery.post("act_totauxcours.php", {id_cours: id}, function (data) {
+        // DEBUG alert('htdCours('+id+') : data = '+data);
+	    if (data.length > 10) {
+		data = trim(data);
+		$('#imgcours'+id).html(data);
+	    } else {
+		$('#imgcours'+id).html('');
+	    }
+	}, 'html');
+}
+
+
+function htdFormation(id) {
+    jQuery.post("act_totauxformation.php", {id_formation: id}, function (data) {
+	    if (data.length > 10) {
+        // DEBUG       alert('htdFormation('+id+') : data = '+data);
+		data = trim(data);
+		$('#imgformation'+id).html(data);
+		var totaux = $('#imgformation'+id+' img').attr('title');
+		$('#formation'+id+' td.intitule span.totaux').text(totaux);
+	    } else {
+		$('#imgformation'+id).html('');
+	    }
+	}, 'html');
+}
+
+
+function htdTotaux() {
+    jQuery.post("act_totaux.php", {annee_universitaire: "2009"}, function (data) {
+	    if (data.length > 10) {
+		data = trim(data);
+		$('#entete td span.totaux').text(data);		
+	    } else {
+		$('#imgformation'+id).html('');
+	    }
+	}, 'text');
+}
+
+
+function coursDeLaTranche(id_tranche) {
+    var s;
+    var id_cours;
+     s = $('#tranche'+id_tranche).parents('form').attr('id');
+    /* s = 'formtranche'+id */
+    id_cours = parseInt(s.replace('formtranche',''));
+    return id_cours;
+}
+
+function formationDuCours(id_cours) {
+    var s;    
+    var id_formation;
+    s = $('#cours'+id_cours).parent().prevAll('tr.formation').attr('id');
+    /* s = 'formation' + id */
+    id_formation  = parseInt(s.replace('formation',''));
+    return id_formation;
+}
+
+function totauxCoursChanged(id_cours) {
+    var id_formation = 0;
+    id_formation = formationDuCours(id_cours);
+    htdCours(id_cours);
+    htdFormation(id_formation);
+    /* dans l'ideal on trouve aussi l'annee universitaire... */
+    htdTotaux();
+}
+
+
+/* 
+a tester pour l'animation des tableaux
+
+voir : http://old.nabble.com/Animating-table-rows-td20491521s27240.html
+
+$("tr").click(function() {
+  var tr = $(this);
+  tr.children("td").each(function() {
+    $(this).wrapInner("<div></div>").children("div").slideUp(function() {
+      tr.hide();
+    });
+  });
+});
+*/

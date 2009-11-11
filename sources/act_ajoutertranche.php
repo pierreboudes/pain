@@ -1,5 +1,4 @@
-<?php
-
+<?php /* -*- coding: utf-8 -*-*/
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
@@ -18,15 +17,15 @@ if (isset($_POST["id_cours"])) {
     $htd = postnumclean("htd");    
     $type_conversion = postclean("type_conversion");
     $remarque = postclean("remarque");
-    /* calcul de l'équivalent TD si la conversion est automatique */
+    /* calcul de l'Ã©quivalent TD si la conversion est automatique */
     if (0 == $type_conversion) {
 	$htd = 1.5 * $cm + $td + $tp + $alt;
     }
 
-    /* test la validité du formulaire */
+    /* test la validitÃ© du formulaire */
     if (0 == $htd)
     {
-	errmsg_formtranche("nombre d'heures égal à zéro");
+	errmsg_formtranche("nombre d'heures Ã©gal Ã  zÃ©ro");
     } 
     else {/* valide */
 	

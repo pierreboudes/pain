@@ -1,4 +1,6 @@
 <?php
+/* -*- coding: utf-8 -*-*/
+
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 

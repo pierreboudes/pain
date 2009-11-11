@@ -11,7 +11,7 @@
     padding-bottom: 2px;
     padding-right: 5pt;
     padding-left: 5pt;
-    border: 3px solid #6495ed;
+    border: 3px solid #3771c8; /* #6495ed */
     border-top: 0px;
     background-color: #DFE6FF;
 }
@@ -23,7 +23,7 @@ body {
 }
 
 table.formations {
-    border:2px solid #6495ed;
+    border:2px solid  #3771c8;
     margin-top:-2px;
     border-collapse:collapse; 
     width:877px;
@@ -159,13 +159,14 @@ input.type_conversion, input.semestre {
 }
 
 td.id {
- display:none; 
+ display:none;
 }
 
 /* fusion manuelle des bords */
 table.formcours td.nom_cours {
     border-left: 0px;
 }
+
 table.formcours td.action {
     border-right: 0px;
 }
@@ -179,29 +180,80 @@ td.tranches {
     padding-right: 0px;
 }
 
-/* toutes les bascules */
+/******* toutes les bascules *******/
+
 div.basculeOff, div.basculeOn {
-    float:left; margin-left: -132px; cursor: pointer;
+    float:left; 
+    margin-left: -132px; 
+    cursor: pointer;
     width: 20px;
     height: 20px;
 }
 
 div.basculeOff {
-        background-image: url(img/triangleLR.png);
+    background-image: url(img/triangleLR.png);
 }
 
 div.basculeOff:hover {
-        background-image: url(img/triangleLRp.png);
+    background-image: url(img/triangleLRp.png);
 }
 
 div.basculeOn {
-        background-image: url(img/triangleTD.png);
+    background-image: url(img/triangleTD.png);
 }
 
 div.basculeOn:hover {
-        background-image: url(img/triangleTDp.png);
+    background-image: url(img/triangleTDp.png);
 }
 
 td.intitule > div.basculeOff, td.intitule > div.basculeOn {
     margin-left: -28px;
+}
+
+
+/******** barres de cours *********/
+
+
+tr.imgcours, td.imgcours, div.imgcours {
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+    margin-top: -1px;
+    height: 0px;
+}
+
+div.imgcours {    
+    float: left;
+    background-repeat: no-repeat;    
+}
+
+div.imgcours img.imgbarre {     
+    opacity: 0.7; 
+    position: absolute;
+}
+
+tr.imgformation, td.imgformation, div.imgformation {
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+    margin-top: -1px;
+    height: 0px;
+}
+
+div.imgformation {    
+    float: left;
+    background-repeat: no-repeat;    
+}
+
+div.imgformation img.imgbarre {     
+    opacity: 0.9;
+    position: absolute;
+}
+
+span.totaux {
+    float: right;
+}
+
+tr.entete {
+    font-weight: bolder;
 }
