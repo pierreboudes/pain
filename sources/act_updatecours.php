@@ -10,7 +10,6 @@ function errmsg_formcours($s) {
 
 if (isset($_POST["id_cours"])) {
     $id_cours = postclean("id_cours");
-    /* TODO : VERIFIER les droits sur cet id_cours */
     $nom_cours = postclean("nom_cours");
     $semestre = postclean("semestre");
     $credits = postnumclean("credits");
@@ -36,6 +35,10 @@ if (isset($_POST["id_cours"])) {
 	errmsg_formcours("Credits invalide");
     }
     */
+    /* Droits d'edition du cours */
+    else if (!peuteditercours($id_cours)) { 
+	errmsg_formcours("Vous ne pouvez pas modifier ce cours.");
+    }
     else {/* valide */
 	
 	$query = "UPDATE pain_cours SET `nom_cours`='".$nom_cours."', `id_formation`='".$id_formation."', `semestre`='".$semestre."', `credits`='".$credits."', `id_enseignant`='".$responsable."', `cm`= '".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `descriptif`='".$descriptif."', `code_geisha`='".$code_geisha."' WHERE `id_cours`=".$id_cours;
@@ -49,10 +52,10 @@ if (isset($_POST["id_cours"])) {
 		die("Échec de la requête sur la table cours");
 
 	    $cours = mysql_fetch_array($rcours);
-	    ig_cours($cours);
+	    ig_cours($cours,"new");
 	}
     }
 } else {
-    errmsg_formcours("Donner un nom au cours !");
+    errmsg_formcours("erreur interne");
 }
 ?>

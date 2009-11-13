@@ -1,4 +1,8 @@
 <?php /* -*- coding: utf-8 -*- */
+
+require_once("inc_actions.php");
+require_once("inc_droits.php");
+
 function postclean($s) {
     if(get_magic_quotes_gpc()) {
 	return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
@@ -101,12 +105,12 @@ function selectionner_cours($id)
 
 function supprimer_cours($id)
 {
-      $qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id
-                 LIMIT 1";
+    if (peuteditercours($id)) {
+	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id
+                   LIMIT 1";
 
-    $droits = 1; /* TODO: tester si l'utilisateur a ce droit */
     
-    if ($droits) {	
+
         if (mysql_query($qcours)) {
 	    /* on efface les tranches associées */
 	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";	    
@@ -124,21 +128,16 @@ function supprimer_cours($id)
 }
 
 
-function ig_cours($cours)
+function ig_cours($cours,$tag="")
 {
     $id = $cours["id_cours"];
-
-    echo '<td class="id" id="cours'.$id.'"></td>';
     
     echo '<td class="nom_cours">';
     echo $cours["nom_cours"];
     echo '</td>';
     
     echo '<td class="semestre">';
-    echo '<div class="basculeOff"';
-    echo ' id="basculecours'.$id.'"'; 
-    echo ' onclick="basculerCours('.$id.')">';
-    echo '</div>';
+    action_basculercours($id);
     echo $cours["semestre"];
     echo '</td>';
     
@@ -173,10 +172,11 @@ function ig_cours($cours)
     echo '<td class="code_geisha">';
     echo $cours["code_geisha"];
     echo '</td>';
-    
-    echo '<td class="action">';
-    echo '<button type="button" id="boutonsupprimercours'.$id.'" class="action" onclick="supprimerCours('.$id.')">supprimer</button><br/>';
-    echo '<button type="button" id="boutonmodifiercours'.$id.'" class="action" onclick="modifierCours($(this),'.$id.')">modifier</button><br/>';
+   
+    echo '<td class="action" id="cours'.$tag.$id.'">';
+    action_supprimercours($id);
+    echo '<br/>';
+    action_modifiercours($id);
     echo '</td>';
 }
 
@@ -212,10 +212,10 @@ echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
     if ($id) {/* modification de cours */
 	echo '<td class="action" id="formmodifcours'.$id.'">';
         echo '<input type="submit" value="OK"/><br/>';
-	echo '<button type="button" onclick="annulerModifierCours('.$id.')">Annuler</button>';	
+	action_annulermodifiercours($id);
     } else {
 	echo '<td class="action"><input type="submit" value="OK"/><br/>';
-	echo '<button type="button" onclick="annulerAjouterCours('.$id_formation.')">Annuler</button>';
+	action_annulerajoutercours($id_formation);
     }
     echo '</td></tr></table>'."\n";    
 }
@@ -243,7 +243,20 @@ function tranchesdecours($id) {
     return $rtranches;
 }
 
-function ig_tranche($t) {
+function selectionner_tranche($id)
+{
+    $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = $id";
+    $tranche = NULL;
+    if ($rtranche = mysql_query($qtranche)) {
+	$tranche = mysql_fetch_array($rtranche);
+    } else {
+	echo "Échec de la requête sur la table tranche.";
+    }
+    return $tranche;
+}
+
+
+function ig_tranche($t,$tag="") {
     $id = $t["id_tranche"];
     echo '<tr class="tranche">';
     echo '<td class="groupe">'.$t["groupe"].'</td>';
@@ -259,11 +272,10 @@ function ig_tranche($t) {
     echo '</td>';
     echo '<td class="HTD">'.$t["htd"].'</td>';
     echo '<td class="remarque">'.$t["remarque"].'</td>';
-    echo '<td class="action" id="tranche'.$id.'">';
-    echo '<button type="button" class="action" onclick="supprimerTranche('.$id.')">';
-    echo 'supprimer</button><br/>';
-   /* echo '<button type="button" class="action" onclick="editerTranche('.$id.')">';
-    echo 'modifier</button>'; */
+    echo '<td class="action" id="tranche'.$tag.$id.'">';
+    action_supprimertranche($id);
+    echo '<br/>';
+    action_modifiertranche($id);
     echo '</td>';
     echo '</tr>';
     echo "\n";
@@ -321,7 +333,7 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
     echo $remarque;
     echo '</textarea></td>';
     echo '<td class="action">';
-    echo '<input type="submit" value="OK"/>';
+    action_envoyertrancheducours($id_cours, $id_tranche);
     echo '</td>';
     echo '</tr>';
 }
@@ -329,13 +341,12 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
 
 function supprimer_tranche($id)
 {
-      $qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
+    if (peuteditertranche($id)) {
+	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
-
-    $droits = 1; /* TODO: tester si l'utilisateur a ce droit */
-    
-    if ($droits) {	
-        if (mysql_query($qtranche)) {
+	
+	
+	if (mysql_query($qtranche)) {
 	    echo "OK";
 	} else {
 	    echo "Échec de la requête sur la table cours.";

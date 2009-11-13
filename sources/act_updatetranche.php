@@ -1,13 +1,15 @@
-<?php /* -*- coding: utf-8 -*-*/
+<?php  /* -*- coding: utf-8 -*-*/
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
+
 function errmsg_formtranche($s) {
-    echo '<tr><td>ERREUR</td><td colspan="9">'.$s.'</td></tr>';
+    echo '<td>ERREUR</td><td colspan="9">'.$s.'</td>';
 }
 
-if (isset($_POST["id_cours"])) {
-    $id_cours = postclean("id_cours");
+
+if (isset($_POST["id_tranche"])) {
+    $id_tranche = postclean("id_tranche");
     $groupe = postnumclean("groupe");
     $id_enseignant = postclean("id_enseignant");
     $cm = postnumclean("cm");
@@ -32,25 +34,22 @@ if (isset($_POST["id_cours"])) {
     }
     else {/* valide */
 	
-	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`) 
-	      VALUES ('".$id_cours."', '".$id_enseignant."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$type_conversion."', '".$remarque."')";
+	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `type_conversion`='".$type_conversion."', `remarque`='".$remarque."' WHERE `id_tranche`=".$id_tranche;
 
 	if (!mysql_query($query)) {
 	    errmsg_formtranche(mysql_error());
 	} else {
-	    $id_tranche = mysql_insert_id();
-
 	    $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = ".$id_tranche;
 	 
 	    if (!($rtranche = mysql_query($qtranche))) {
 		errmsg_formtranche(mysql_error());
-	    } else {   
+	    } else {
 		$tranche = mysql_fetch_array($rtranche);
-		ig_tranche($tranche);
+		ig_tranche($tranche, "new");
 	    }
 	}
     }
 } else {
-    errmsg_formtranche("Donner un nom au nouveau cours !");
+    errmsg_formtranche("erreur interne");
 }
 ?>

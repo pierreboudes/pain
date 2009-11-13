@@ -30,10 +30,7 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
     echo '</div></td></tr>';
     echo '<tr class="formation" id="formation'.$id_formation.'">';
     echo '<td class="intitule" colspan="11">';
-    echo '<div class="basculeOn"';
-    echo ' id="basculeformation'.$id_formation.'"'; 
-    echo ' onclick="basculerFormation('.$id_formation.')">';
-    echo '</div>';
+    action_basculerformation($id_formation);
     echo $formation["nom"]." ".$formation["annee_etude"]." ";
     echo $formation["parfum"]." ";
 
@@ -50,7 +47,9 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
     /* affichage des cours de la formation */
 
     /* légende */
-    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th><th class="action"><button type="button" class="action" onclick="popFormCours($(this),'.$id_formation.');">nouveau</button></th></tr>'."\n";
+    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th><th class="action">';
+    action_nouveaucours($id_formation);
+    echo '</th></tr>'."\n";
 
     /* formulaire d'ajout d'un cours dans la formation */
     echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";

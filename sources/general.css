@@ -16,17 +16,28 @@
     background-color: #DFE6FF;
 }
 
-/* tables */
+
+div.infobox {
+    text-align: justify;
+    width: 600px;
+    padding: 10px;
+    margin: 10px;
+    border:1px dashed #6495ed;
+}
 
 body {
 /*    background-color: #ccccff; */
 }
 
+/* tables */
+table {
+    border: 0px;
+}
+
 table.formations {
-    border:2px solid  #3771c8;
+    border:2px solid #3771c8;
     margin-top:-2px;
     border-collapse:collapse; 
-    width:877px;
     margin:auto;
     background-color: #ffffff;
 }
@@ -40,6 +51,7 @@ th {
     padding-right: 2px;    
     background-color:#EFF6FF;
 }
+
 td {
     font-family:sans-serif;
     font-size:10pt;
@@ -66,7 +78,6 @@ tr.formcours, tr.formcours > td {
 }
 
 table.formcours {
-    width:874px;
     border: 0px;
     border-collapse:collapse;
 }
@@ -74,7 +85,6 @@ table.formcours {
 table.enseignants {
     border:3px solid #6495ed;
     border-collapse:collapse; 
-    width: 877px;
     margin:auto;
 }
 
@@ -89,10 +99,49 @@ table.tranches {
     margin-right: -1px;
 }
 
+table.tabletrancheform {
+    border:0px;    
+    border-collapse:collapse;
+    margin: 0px;
+    margin-top: 0px;
+    margin-bottom: -1px;
+    margin-right: -1px;
+    padding: 0px;
+}
+
+tr.trtrancheform, tr.trtrancheform > td {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+tr.formtranche {
+    padding: 0px;
+    margin:  0px;
+}
+
+tr.formtranche td {
+    border:  1px solid #6495ed;
+    text-align: center;
+}
+
 table.tranches th, table.formcours td {
-    text-align: center;   
+    text-align: center;
 }  
- 
+
+/* DIMENSIONS */
+table.enseignants {
+    width:877px;
+}
+
+table.formations {
+    width:877px;
+}
+
+table.formcours {
+    width:874px;
+}
+
 .nom_cours, .responsable, .enseignant {
     width: 100px; /* 200 */
 }
@@ -109,6 +158,14 @@ td.nom_cours > input {
    width: 90px;  /* 180 */
 }
 
+td.type_conversion {
+    width: 100px;
+}
+
+td.type_conversion > input {
+    width: 90px;
+}
+
 .descriptif, .remarque {
     width: 140px;
 }
@@ -117,8 +174,12 @@ td.descriptif > textarea, td.remarque > textarea {
     width: 130px;
 }
 
-.CM, .TD, .TP, .alt, .groupe, HTD {
-    width:45px; /* 180 */
+.groupe, .CM, .TD, .TP, .alt, .groupe, .HTD {
+    width:60px; /* 180 */
+}
+
+td.groupe > input {
+    width: 50px;
 }
 
 td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input, td.groupe > input {

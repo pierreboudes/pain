@@ -1,7 +1,7 @@
 /* -*- coding: utf-8 -*-*/
 
 /* prototypes nécessaires (jslint.com) ?? */
-function beforeModifierCours(formData, jqForm, options, id){}
+function beforeModifierCrours(formData, jqForm, options, id){}
 function afterModifierCours(responseText, statusText, id){}
 function beforeAjouterCours(data, form, opt, id){}
 function afterAjouterCours(responseText, statusText, id){}
@@ -33,7 +33,9 @@ function supprimerCours(id) {
 		else {
 		    masquerTranchesCours(id);
 		    totauxCoursChanged(id);
-		    $('#cours'+id).parent().remove();
+		    $('#cours'+id).parent('tr.cours').remove();
+		    $('#imgcours'+id).parent().parent('tr.imgcours').remove();
+
 		}
 	    }, 'text');
     } else {
@@ -41,20 +43,33 @@ function supprimerCours(id) {
     }  
 }
 
+function existsjQuery(jQ) {
+    if ( undefined == jQ.length ) {
+	return false; // safari ?
+    }
+    else if (0 == jQ.length) {
+	return false; // firefox
+    }
+    return true;
+}
+
 function modifierCours(element,id) {
     element.attr('disabled','disabled');
     $('#cours'+id).parent().css('background-color','yellow');
+    if (!existsjQuery($('#tcours'+id))) {
+	$('#cours' + id).parent().after('<tr class="cours" id="tcours'+id+'" style="display:none;"><td colspan="11">invisible</td></tr>');
+    }
     jQuery.post("act_editercours.php", {id_cours: id}, function (data) {
 	    if (20 > data.length) {
 		alert(data);
 		$('#cours'+id).parent().css('background-color','');
 	    }
 	    else {
-		$('#cours'+id).parent().after(data);
+		$('#tcours'+id).before(data);
 		$('#formeditcours'+id).show();
 		/* pour le traitement du formulaire */
 		var options = {
-		target: '#tcours' + id,
+		target: '#tcours' + id, /* trop dynamique pour safari ? */
 		beforeSubmit: function (d, f, opt) {
 			beforeModifierCours(d, f, opt, id);
 		    },
@@ -62,31 +77,43 @@ function modifierCours(element,id) {
 			afterModifierCours(resp, stat, id);
 		    },
 		clearForm: false,
-		resetForm: true,
+		resetForm: false,
 		url: "act_updatecours.php",
 		timeout:   3000
 		};
 		
 		/* armer les callback du traitement du formulaire */
-		$("#feditcours"+id).ajaxForm(options); 
+		$('#feditcours'+id).ajaxForm(options); 
 	    }
 	}, 'text');
-}
+    }
 
-function beforeModifierCours(formData, jqForm, options, id) {
-    $('#cours' + id).parent().after('<tr class="cours" id="tcours'+id+'></tr>');
-    $('#cours' + id).parent().remove();
+function beforeModifierCours(formData, jqForm, options, id) { 
+//    $('#tcours'+id).show();
     return true;
 }
 
-function afterModifierCours(responseText, statusText, id)  { 
-    $('#formeditcours'+id).remove();
-    $('#tcours'+id).removeAttr('id');
+function afterModifierCours(responseText, statusText, id)  {
+    if ( existsjQuery($('#coursnew'+id)) )  { 
+        /* on a bien la nouvelle ligne pour ce cours */
+        /* effacer le formulaire d'edition */
+	$('#formeditcours'+id).remove();
+	/* nettoyer la nouvelle ligne */
+	/* effacer l'ancienne ligne  */
+	$('#cours'+id).parent().remove();
+	$('#tcours'+id).removeAttr('id');
+	$('#coursnew'+id).attr('id','cours'+id);
+	$('#cours'+id).parent().show();	
+    } else {
+    /* Sinon on laisse l'ancienne ligne, le formulaire et la cible en place */
+	alert(responseText.replace(/<[^>]+>/ig,"").replace("ERREUR","Erreur : "));
+    }
 } 
 
 
 function annulerModifierCours(id) {
     $('#cours'+id).parent().css('background-color','');
+    $('#tcours'+id).remove();
     $('#formeditcours'+id).remove();
     $('#boutonmodifiercours'+id).attr('disabled','');
 }
@@ -95,7 +122,9 @@ function annulerModifierCours(id) {
 function popFormCours(element, id) {    
     /* afficher le formulaire */
     $('#formcours' + id).show();
-
+    if (!existsjQuery($('#tformation'+id))) {
+	    $('#formcours'+id).after('<tr class="cours" id="tformation'+id+'"  style="display: none;"><td colspan="11"></td></tr>');
+    }
     /* pour le traitement du formulaire */
     var options = {
     target: '#tformation' + id,
@@ -106,7 +135,7 @@ function popFormCours(element, id) {
 	    afterAjouterCours(resp, stat, id);
 	},
     clearForm: false,
-    resetForm: true,
+    resetForm: false,
     url: "act_ajoutercours.php",
     timeout:   3000
     };
@@ -116,12 +145,20 @@ function popFormCours(element, id) {
 }
 
 function beforeAjouterCours(formData, jqForm, options, id) {  
-    $('#formcours'+id).after('<tr class="cours" id="tformation'+id+'"><td colspan="11" style="display: none;"></td></tr>');
     return true;
 }
 
 function afterAjouterCours(responseText, statusText, id)  {
-    $('#tformation' + id).removeAttr('id');
+    if (existsjQuery($('#tformation'+id+' > td.action')) ) {
+	/* le cours a ete crée */
+	$('#tformation' + id).show();
+	$('#tformation' + id).removeAttr('id');
+	if (!existsjQuery($('#tformation'+id))) {
+	    $('#formcours'+id).after('<tr class="cours" id="tformation'+id+'"  style="display: none;"><td colspan="11"></td></tr>');
+	}
+    } else {
+	alert(responseText.replace(/<[^>]+>/ig,"").replace("ERREUR","Erreur : "));
+    }
 } 
 
 
@@ -135,13 +172,12 @@ function tranchesCours(id) {
 
     /* preparer les options pour le formulaire de creation de tranches */
     var options = {
-    target: '#ttranche' + id,
+    target: null,
     beforeSubmit: function (data, form, opt) {
 	    beforeAjouterTranche(data, form, opt, id);
 	},
     success: function (resp, stat) {
-	    afterAjouterTranche(resp, stat, id);
-        totauxCoursChanged(id);
+	    afterAjouterTranche(resp, stat, id);	    
 	},
     clearForm: false,
     resetForm: true,
@@ -165,14 +201,16 @@ function masquerTranchesCours(id) {
 
 
 function beforeAjouterTranche(formData, jqForm, options, id) {
-    $('#formtranche'+id).after('<div class="tranche" id="ttranche'+id+'" style="display: block;">nothing</div>');
     return true;
 }
 
 function afterAjouterTranche(responseText, statusText, id)  {
-    $('#formtranche' + id + ' table.tranches tr:last').after(responseText);
-    $('#ttranche'+id).remove();
-    /* les totaux sont mis à jour dans la callback anonyme qui appelle cette fonction */
+    if (responseText.length > 40) {
+	$('#tranchesducours' + id + ' table.tranches > tbody > tr:last').before(responseText);
+	totauxCoursChanged(id);
+    } else {
+	alert(responseText.replace(/<[^>]+>/ig,"").replace("ERREUR","Erreur : "));
+    }
 }
 
 function supprimerTranche(id) {    
@@ -185,7 +223,6 @@ function supprimerTranche(id) {
 		}
 		else {
 		    var id_cours = coursDeLaTranche(id);
-alert('coursDeLaTranche('+id+') = '+ id_cours);
 		    $('#tranche'+id).parent().remove();
 		    totauxCoursChanged(id_cours);
 		}
@@ -195,15 +232,68 @@ alert('coursDeLaTranche('+id+') = '+ id_cours);
     } 
 }
 
-/* TODO */
-function editerTranche(id) {
-    $('#tranche'+id).parent().css('background-color','yellow');
-    alert('Indisponible');
-    $('#tranche'+id).parent().css('background-color','');
-/* ne pas oublier :
-   totauxCoursChanged(coursDeLaTranche(id));
-*/
+function modifierTranche(element,id) {
+    element.attr('disabled','disabled');
+    $('#tranche'+id).parent().css('background-color','yellow');   
+    jQuery.post("act_editertranche.php", {id_tranche: id}, function (data) {
+	    if (20 > data.length) {
+		alert(data);
+		$('#tranche'+id).parent().css('background-color','');
+	    }
+	    else {
+		$('#tranche'+id).parent().after(data);
+		$('#formedittranche'+id).show();
+		/* pour le traitement du formulaire */
+		var options = {
+		target: null, /* trop dynamique pour safari ? */
+		beforeSubmit: function (d, f, opt) {
+			beforeModifierTranche(d, f, opt, id);
+		    },
+		success: function (resp, stat) {
+			afterModifierTranche(resp, stat, id);
+		    },
+		clearForm: false,
+		resetForm: false,
+		url: "act_updatetranche.php",
+		timeout:   3000
+		};
+		
+		/* armer les callback du traitement du formulaire */
+		$('#fedittranche'+id).ajaxForm(options); 
+	    }
+	}, 'text');
+    }
+
+function beforeModifierTranche(formData, jqForm, options, id) { 
+    return true;
 }
+
+function afterModifierTranche(responseText, statusText, id)  {
+    if ( responseText.length > 40 )  {
+	$('#tranche'+id).parent().after(responseText);	
+        /* on a bien la nouvelle ligne pour ce cours */
+	/* effacer l'ancienne ligne  */
+	$('#tranche'+id).parent().remove();
+        /* effacer le formulaire d'edition */
+	$('#formedittranche'+id).remove();
+	/* nettoyer la nouvelle ligne */
+	$('#tranchenew'+id).attr('id','tranche'+id);
+	 totauxCoursChanged(coursDeLaTranche(id));
+    } else {
+    /* Sinon on laisse l'ancienne ligne, le formulaire et la cible en place */
+	alert(responseText.replace(/<[^>]+>/ig,"").replace("ERREUR","Erreur : "));
+    }
+} 
+
+
+function annulerModifierTranche(id) {
+    $('#tranche'+id).parent().css('background-color','');
+    $('#ttranche'+id).remove();
+    $('#formedittranche'+id).remove();
+    $('#boutonmodifiertranche'+id).attr('disabled','');
+}
+/******************/
+
 
 function basculerCours(id) {
     var bascule =  $('#basculecours'+id);
@@ -254,7 +344,6 @@ function htdCours(id) {
 	}, 'html');
 }
 
-
 function htdFormation(id) {
     jQuery.post("act_totauxformation.php", {id_formation: id}, function (data) {
 	    if (data.length > 10) {
@@ -285,9 +374,9 @@ function htdTotaux() {
 function coursDeLaTranche(id_tranche) {
     var s;
     var id_cours;
-     s = $('#tranche'+id_tranche).parents('form').attr('id');
+     s = $('#tranche'+id_tranche).parents('tr.trtranches').attr('id');
     /* s = 'formtranche'+id */
-    id_cours = parseInt(s.replace('formtranche',''));
+    id_cours = parseInt(s.replace('tranchesducours',''));
     return id_cours;
 }
 

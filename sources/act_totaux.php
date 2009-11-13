@@ -9,8 +9,5 @@ if (isset($_POST["annee_universitaire"])) {
 } 
 
 $r=htdtotaux($annee);
-$servi = $r["servi"];
-$libre = $r["libre"];
-$annule = $r["annule"];
-ig_totaux($r);
+ig_htd($r);
 ?>

@@ -34,6 +34,10 @@ if (isset($_POST["nom_cours"])) {
 	errmsg_formcours("Credits invalide");
     }
     */
+   /* Droits d'edition de cours dans la formation */
+    else if (!peuteditercoursdelaformation($id_formation)) { 
+	errmsg_formcours("Vous ne pouvez pas ajouter de cours dans cette formation.");
+    }
     else {/* valide */
 	
 	$query = "INSERT INTO pain_cours (`nom_cours`, `id_formation`, `semestre`, `credits`, `id_enseignant`, `cm`, `td`, `tp`, `alt`, `descriptif`, `code_geisha`) 

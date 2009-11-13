@@ -33,6 +33,7 @@
 </ul>
 
 <?php
+include("inc_infobox.php");
 include("inc_listcours.php");
 ?>
 </body>
