@@ -53,11 +53,11 @@ function existsjQuery(jQ) {
     return true;
 }
 
-function modifierCours(element,id) {
-    element.attr('disabled','disabled');
-    $('#cours'+id).parent().css('background-color','yellow');
+function modifierCours(id) {
+    $('#boutonmodifiercours'+id).attr('disabled','disabled');
+    $('#cours'+id).parent().css('background-color','yellow');   
     if (!existsjQuery($('#tcours'+id))) {
-	$('#cours' + id).parent().after('<tr class="cours" id="tcours'+id+'" style="display:none;"><td colspan="11">invisible</td></tr>');
+	$('#cours' + id).parent().after('<tr class="cours" ondblclick="modifierCours('+id+')" id="tcours'+id+'" style="display:none;"><td colspan="11">invisible</td></tr>');
     }
     jQuery.post("act_editercours.php", {id_cours: id}, function (data) {
 	    if (20 > data.length) {
@@ -67,6 +67,7 @@ function modifierCours(element,id) {
 	    else {
 		$('#tcours'+id).before(data);
 		$('#formeditcours'+id).show();
+		$('#cours'+id).parent().hide();
 		/* pour le traitement du formulaire */
 		var options = {
 		target: '#tcours' + id, /* trop dynamique pour safari ? */
@@ -113,6 +114,7 @@ function afterModifierCours(responseText, statusText, id)  {
 
 function annulerModifierCours(id) {
     $('#cours'+id).parent().css('background-color','');
+    $('#cours'+id).parent().show();
     $('#tcours'+id).remove();
     $('#formeditcours'+id).remove();
     $('#boutonmodifiercours'+id).attr('disabled','');
@@ -141,7 +143,8 @@ function popFormCours(element, id) {
     };
 
     /* armer les callback du traitement du formulaire */
-    $("#fformation"+id).ajaxForm(options); 
+    $("#fformation"+id).ajaxForm(options);
+    return false;
 }
 
 function beforeAjouterCours(formData, jqForm, options, id) {  
@@ -164,6 +167,7 @@ function afterAjouterCours(responseText, statusText, id)  {
 
 function annulerAjouterCours(id) {
     $('#formcours' + id).hide();
+    return false;
 }
 
 function tranchesCours(id) {
@@ -192,10 +196,12 @@ function tranchesCours(id) {
             /* armer les callback du traitement du formulaire */
 	    $('#formtranche'+id).ajaxForm(options);
 	}, 'text');
+    return false;
 }
 
 function masquerTranchesCours(id) {
     $('#tranchesducours'+id).remove();
+    return false;
 }
 
 
@@ -232,8 +238,8 @@ function supprimerTranche(id) {
     } 
 }
 
-function modifierTranche(element,id) {
-    element.attr('disabled','disabled');
+function modifierTranche(id) {
+    $('#boutonmodifiertranche'+id).attr('disabled','disabled');
     $('#tranche'+id).parent().css('background-color','yellow');   
     jQuery.post("act_editertranche.php", {id_tranche: id}, function (data) {
 	    if (20 > data.length) {
@@ -243,6 +249,7 @@ function modifierTranche(element,id) {
 	    else {
 		$('#tranche'+id).parent().after(data);
 		$('#formedittranche'+id).show();
+		$('#tranche'+id).parent().hide();
 		/* pour le traitement du formulaire */
 		var options = {
 		target: null, /* trop dynamique pour safari ? */
@@ -262,7 +269,8 @@ function modifierTranche(element,id) {
 		$('#fedittranche'+id).ajaxForm(options); 
 	    }
 	}, 'text');
-    }
+    return false;
+}
 
 function beforeModifierTranche(formData, jqForm, options, id) { 
     return true;
@@ -288,6 +296,7 @@ function afterModifierTranche(responseText, statusText, id)  {
 
 function annulerModifierTranche(id) {
     $('#tranche'+id).parent().css('background-color','');
+    $('#tranche'+id).parent().show();
     $('#ttranche'+id).remove();
     $('#formedittranche'+id).remove();
     $('#boutonmodifiertranche'+id).attr('disabled','');
@@ -301,7 +310,6 @@ function basculerCours(id) {
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
 	tranchesCours(id);
-	htdCours(id);
     } else {
 	masquerTranchesCours(id);
     }
@@ -322,7 +330,6 @@ function basculerFormation(id) {
 	$('#tableformation'+id+' tr.legende').fadeIn("slow");
 	$('#tableformation'+id+' tr.cours').fadeIn("slow");
 	$('#tableformation'+id+' tr.imgcours').fadeIn("slow");
-	htdFormation(id);
     }
 }
 
@@ -398,6 +405,25 @@ function totauxCoursChanged(id_cours) {
     htdTotaux();
 }
 
+
+
+function histoDesFormations() {
+    var bascule = $('#globalHistoDesFormations');
+    bascule.toggleClass('globalHistoOff');
+    bascule.toggleClass('globalHistoOn');
+    if (bascule.hasClass('globalHistoOn')) {
+	$('div.imgformation').show();
+	$('table.formations').each(function (i) {
+		var tag = this.id;
+		if (tag != undefined) {
+		    var id = tag.replace('tableformation','');
+		    htdFormation(id);
+		}
+	    });
+    } else {
+	$('div.imgformation').hide();
+    }
+}
 
 /* 
 a tester pour l'animation des tableaux

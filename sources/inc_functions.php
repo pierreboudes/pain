@@ -207,7 +207,7 @@ function ig_formcours($id_formation, $id_cours="", $nom_cours="", $semestre=0, $
     echo '<td class="descriptif">';
     echo '<input type="hidden" name="id_formation" value="'.$id_formation.'"/>';
 echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
-    echo '<textarea name="descriptif" rows="3" >'.$descriptif.'</textarea></td>';
+    echo '<textarea name="descriptif" rows="4" >'.$descriptif.'</textarea></td>';
     echo '<td class="code_geisha"><input type="text" name="code_geisha" value="'.$code_geisha.'" /></td>';
     if ($id) {/* modification de cours */
 	echo '<td class="action" id="formmodifcours'.$id.'">';
@@ -220,15 +220,24 @@ echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
     echo '</td></tr></table>'."\n";    
 }
 
+function ig_legendecours($id_formation) {
+    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th>';
+    echo '<th class="action">';
+    action_nouveaucours($id_formation);
+    echo '</th></tr>'."\n";
+
+}
+
+
 function ig_legendetranches($id) {
     echo '<th class="groupe">Groupe</th>';
     echo '<th class="enseignant">Enseignant</th>';
-    echo '<th class="cm">CM</th>';
-    echo '<th class="td">TD</th>';
-    echo '<th class="tp">TP</th>';
+    echo '<th class="CM">CM</th>';
+    echo '<th class="TD">TD</th>';
+    echo '<th class="TP">TP</th>';
     echo '<th class="alt">alt.</th>';
     echo '<th class="type_conversion">conversion</th>';
-    echo '<th class="htd">htd</th>';
+    echo '<th class="HTD">htd</th>';
     echo '<th class="remarque">Remarque</th>';
     echo '<th class="action">';
     echo '</th>';
@@ -258,7 +267,9 @@ function selectionner_tranche($id)
 
 function ig_tranche($t,$tag="") {
     $id = $t["id_tranche"];
-    echo '<tr class="tranche">';
+    echo '<tr class="tranche"';
+    action_dblcmodifiertranche($id);
+    echo '>';
     echo '<td class="groupe">'.$t["groupe"].'</td>';
     echo '<td class="enseignant">';
     echo ig_responsable($t["id_enseignant"]);
@@ -334,6 +345,10 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
     echo '</textarea></td>';
     echo '<td class="action">';
     action_envoyertrancheducours($id_cours, $id_tranche);
+    if ($id_tranche != NULL) {
+	action_annulermodifiertranche($id_tranche);
+    }
+    echo '<br/>';
     echo '</td>';
     echo '</tr>';
 }

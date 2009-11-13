@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.46+devel r21714"
+   sodipodi:docname="histogramme.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/Users/boudes/Documents/dessin.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2840">
+      <stop
+         style="stop-color:#3771c8;stop-opacity:1;"
+         offset="0"
+         id="stop2842" />
+      <stop
+         style="stop-color:#3771c8;stop-opacity:0;"
+         offset="1"
+         id="stop2844" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3610">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3612" />
+      <stop
+         id="stop3618"
+         offset="1"
+         style="stop-color:#000000;stop-opacity:0.49803922;" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0.24705882;"
+         offset="1"
+         id="stop3620" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3614" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3598">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3600" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3602" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3590">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3592" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3594" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2840"
+       id="linearGradient2846"
+       x1="0"
+       y1="20.365982"
+       x2="0"
+       y2="-0.042761348"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="15.494862"
+     inkscape:cx="8.7845116"
+     inkscape:cy="1025.0927"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="752"
+     inkscape:window-x="-4"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-to-guides="false"
+     inkscape:snap-grids="false">
+    <sodipodi:guide
+       orientation="0,1"
+       position="-9.391635,1031.9962"
+       id="guide2834" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="20.047529,1047.8897"
+       id="guide2838" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="0,1047.7091"
+       id="guide3643" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="1.986692,1066.4924"
+       id="guide3684" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:0;stroke:#3771c8;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3750"
+       sodipodi:cx="10.648691"
+       sodipodi:cy="30.991333"
+       sodipodi:rx="10.584154"
+       sodipodi:ry="10.584154"
+       d="m 21.232845,30.991333 a 10.584154,10.584154 0 1 1 -21.16830795,0 10.584154,10.584154 0 1 1 21.16830795,0 z"
+       transform="translate(-0.90352533,-1.8715882)"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/touthisto1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:url(#linearGradient2846);stroke:#3771c8;stroke-width:1.93209743000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       d="m 26.601719,1.8265972 0,18.5393858 17.970945,-9.711107 -17.970945,-8.8282788 z"
+       id="path2816" />
+    <rect
+       style="fill:#3771c8;fill-opacity:1;stroke:#3771c8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2832"
+       width="20.408745"
+       height="20.769962"
+       x="-28.897339"
+       y="-0.40397969" />
+    <rect
+       style="fill:#3771c8;fill-opacity:1;stroke:#3771c8;stroke-width:1.18092334;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2854"
+       width="0.36090156"
+       height="12.100444"
+       x="3.3414125"
+       y="22.984961"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/touthisto1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#af1d1e;fill-opacity:1;stroke:#af1d1e;stroke-width:0.84533179000000003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3628"
+       width="6.2953525"
+       height="1.5995351"
+       x="5.7021337"
+       y="-26.222786"
+       transform="scale(1,-1)"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/touthisto1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#3a6923;fill-opacity:1;stroke:#3a6923;stroke-width:0.95801777000000021;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3699"
+       width="12.50396"
+       height="1.4868492"
+       x="5.7794676"
+       y="28.111155"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/touthisto1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#ff9000;fill-opacity:1;stroke:#ff9000;stroke-width:0.92803746;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3701"
+       width="7.8381228"
+       height="1.3799247"
+       x="5.7192783"
+       y="31.664627"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/touthisto1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>

@@ -6,6 +6,7 @@ require_once("inc_functions.php");
 /* Les totaux globalement */
 echo '<table class="formations">';
 echo '<tr class="entete" id="entete"><td>';
+action_histodesformations();
 $tot = htdtotaux("2009");
 echo "Ensemble des formations de l'année 2009. ";
 echo ' <span class="totaux">';
@@ -46,10 +47,8 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
 
     /* affichage des cours de la formation */
 
-    /* légende */
-    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th><th class="action">';
-    action_nouveaucours($id_formation);
-    echo '</th></tr>'."\n";
+    /* légende */    
+    ig_legendecours($id_formation);
 
     /* formulaire d'ajout d'un cours dans la formation */
     echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";
@@ -64,11 +63,14 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
 
     while ($cours = mysql_fetch_array($rcours)) /* pour chaque cours */
     {
+	$id_cours = $cours["id_cours"];
 	echo '<tr class="imgcours">';
 	echo '<td colspan="11" class="imgcours">';
-	echo '<div class="imgcours" id="imgcours'.$cours["id_cours"].'">';
+	echo '<div class="imgcours" id="imgcours'.$id_cours.'">';
 	echo '</div></td></tr>'."\n";
-	echo '<tr class="cours">';
+	echo '<tr class="cours"';
+        action_dblcmodifiercours($id_cours);
+	echo '>';
 	ig_cours($cours);
 	echo '</tr>'."\n";
     }

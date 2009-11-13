@@ -42,7 +42,7 @@ imagefilledrectangle($im, 0, 0, $largeur, $hauteur, $fondcolor);
 $white = imagecolorallocate($im,255,255,255);
 $rayurecolor = imagecolorallocate($im, 230, 230, 230);
 $servicolor = imagecolorallocate($im, 58, 105, 35);
-$librecolor = imagecolorallocate($im, 175, 29, 30); 
+$librecolor = imagecolorallocate($im, 175, 29, 30);
 $annulecolor = imagecolorallocate($im, 255, 144, 0); 
 $x0 = 0;
 $x1 = $servi;
