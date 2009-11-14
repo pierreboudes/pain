@@ -40,9 +40,9 @@ select, input {
 
 table.formations {
     border:2px solid #3771c8;
-    margin-top:-2px;
     border-collapse:collapse; 
     margin:auto;
+    margin-top:-2px;    
     background-color: #ffffff;
 }
 
@@ -100,7 +100,7 @@ table.tranches {
     border-right:0px;    
     border-collapse:collapse;
     margin-left: auto;
-    margin-right: -1px;
+   /* margin-right: -1px; */
 }
 
 table.tabletrancheform {
@@ -109,7 +109,7 @@ table.tabletrancheform {
     margin: 0px;
     margin-top: 0px;
     margin-bottom: -1px;
-    margin-right: -1px;
+/*    margin-right: -1px; */
     padding: 0px;
 }
 
@@ -240,9 +240,13 @@ input.type_conversion, input.semestre {
     text-align: center;
 }
 
-td.id {
- display:none;
+input, textarea {
+    color: darkblue;
 }
+
+/* td.id {
+ display:none;
+} */
 
 /* fusion manuelle des bords */
 table.formcours td.nom_cours {
@@ -289,19 +293,23 @@ div.basculeOn:hover {
 }
 
 td.intitule > div.basculeOff, td.intitule > div.basculeOn {
-    margin-left: -28px;
+    margin-left: -30px;
 }
 
 .micropalette {
     float: left;
-    margin: -30px;
-/*    z-index: 2; */
+    margin: -32px;
     width: 0px;
     height: 0px;
 }
 
+.basculeOff + .micropalette {
+    display:none;
+}
+
 .globalHistoOn, .globalHistoOff {
     position: relative;
+    cursor: pointer;
     top: 10px;
     width: 22px;
     height: 22px;
@@ -315,13 +323,20 @@ td.intitule > div.basculeOff, td.intitule > div.basculeOn {
     background-image: url(img/touthisto1.png);    
 }
 
-.histoOn, .histoOff {    
+.histoOn, .histoOff {
+    position: relative;
+    top: 60px;
+    left: 5px;
     width: 16px;
     height: 13px;
+    cursor: pointer;
+}
+
+.histoOn:hover, .histoOff {
     background-image: url(img/histo2.png);
 }
 
-.histoOn:hover, .histoOff:hover {
+.histoOn, .histoOff:hover {
     background-image: url(img/histo1.png);    
 }
 
@@ -350,7 +365,7 @@ tr.imgformation, td.imgformation, div.imgformation {
     padding: 0px;
     border: 0px;
     margin: 0px;
-    margin-top: -1px;
+    margin-top: -1px; 
     height: 0px;
 }
 
@@ -370,4 +385,9 @@ span.totaux {
 
 tr.entete {
     font-weight: bolder;
+}
+
+div.tip {
+    font-family:monospace;
+    width: 300px;
 }

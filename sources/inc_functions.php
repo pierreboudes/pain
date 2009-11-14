@@ -1,20 +1,9 @@
 <?php /* -*- coding: utf-8 -*- */
 
+require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
 
-function postclean($s) {
-    if(get_magic_quotes_gpc()) {
-	return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
-    }
-    else {
-	return trim(htmlspecialchars(mysql_real_escape_string($_POST[$s]), ENT_QUOTES));
-    }
-}
-
-function postnumclean($s) {
-    return str_replace(',','.',str_replace(' ', '',postclean($s)));
-}
 
 function ig_typeconversion($type)
 {
@@ -104,11 +93,10 @@ function selectionner_cours($id)
 }
 
 function supprimer_cours($id)
-{
+{    
     if (peuteditercours($id)) {
-	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id
-                   LIMIT 1";
-
+	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
+	pain_log("supprimer_cours($id)");
     
 
         if (mysql_query($qcours)) {
@@ -185,7 +173,7 @@ function ig_formcours($id_formation, $id_cours="", $nom_cours="", $semestre=0, $
     $id = $id_cours;    
     echo '<table class="formcours"><tr>';
     echo '<td class="nom_cours">';
-    echo '<input type="text" name="nom_cours" value="'.$nom_cours.' "/></td>';
+    echo '<input type="text" name="nom_cours" value="'.$nom_cours.'"/></td>';
     echo '<td class="semestre">';
     echo '<input value="1" '; 
     if (1 == $semestre) echo 'checked ';
@@ -359,7 +347,8 @@ function supprimer_tranche($id)
     if (peuteditertranche($id)) {
 	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
-	
+	pain_log("supprimer_tranche($id)");
+
 	
 	if (mysql_query($qtranche)) {
 	    echo "OK";

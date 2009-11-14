@@ -28,8 +28,9 @@ if (isset($_POST["nom"])) {
 	
 	$query = "INSERT INTO pain_enseignant 
                   (`nom`, `prenom`, `statut`, `email`, `telephone`, `bureau`, `service`) 
-	          VALUES ('".$nom."', '".$prenom."', '".$statut."', 
-                          '".$email."', '".$telephone."', '".$bureau."', '".$service."')";
+	          VALUES ('".$nom."', '".$prenom."', '".$statut."','".$email."', '".$telephone."', '".$bureau."', '".$service."')";
+
+	pain_log($query);
 
 	if (!mysql_query($query)) {
 	    errmsg_formenseignant(mysql_error());

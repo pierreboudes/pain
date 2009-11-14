@@ -32,6 +32,7 @@ while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
     echo '<tr class="formation" id="formation'.$id_formation.'">';
     echo '<td class="intitule" colspan="11">';
     action_basculerformation($id_formation);
+    action_histodescours($id_formation);
     echo $formation["nom"]." ".$formation["annee_etude"]." ";
     echo $formation["parfum"]." ";
 

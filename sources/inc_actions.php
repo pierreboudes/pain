@@ -10,10 +10,8 @@ function action_histodesformations() {
 }
 
 function action_histodescours($id_formation) {
- echo ' <div class="micropalette"><div class="histoOn" onclick="histoDesCours('.$id_formation.')"></div></div>';
+ echo ' <div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'.$id_formation.'" onclick="histoDesCours('.$id_formation.')"></div></div>';
 }
-
-
 
 function action_basculerformation($id_formation) {
     echo '<div class="basculeOn"';

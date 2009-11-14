@@ -42,6 +42,8 @@ if (isset($_POST["id_cours"])) {
     else {/* valide */
 	
 	$query = "UPDATE pain_cours SET `nom_cours`='".$nom_cours."', `id_formation`='".$id_formation."', `semestre`='".$semestre."', `credits`='".$credits."', `id_enseignant`='".$responsable."', `cm`= '".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `descriptif`='".$descriptif."', `code_geisha`='".$code_geisha."' WHERE `id_cours`=".$id_cours;
+
+	pain_log($query);
 	
 	if (!mysql_query($query)) {
 	    errmsg_formcours(mysql_error());

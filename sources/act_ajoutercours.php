@@ -40,9 +40,10 @@ if (isset($_POST["nom_cours"])) {
     }
     else {/* valide */
 	
-	$query = "INSERT INTO pain_cours (`nom_cours`, `id_formation`, `semestre`, `credits`, `id_enseignant`, `cm`, `td`, `tp`, `alt`, `descriptif`, `code_geisha`) 
-	      VALUES ('".$nom_cours."', '".$id_formation."', '".$semestre."', '".$credits."', '".$responsable."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$descriptif."', '".$code_geisha."')";
-	
+	$query = "INSERT INTO pain_cours (`nom_cours`, `id_formation`, `semestre`, `credits`, `id_enseignant`, `cm`, `td`, `tp`, `alt`, `descriptif`, `code_geisha`) VALUES ('".$nom_cours."', '".$id_formation."', '".$semestre."', '".$credits."', '".$responsable."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$descriptif."', '".$code_geisha."')";
+
+	pain_log($query);
+
 	if (!mysql_query($query)) {
 	    errmsg_formcours(mysql_error());
 	} else {

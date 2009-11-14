@@ -36,6 +36,8 @@ if (isset($_POST["id_tranche"])) {
 	
 	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `type_conversion`='".$type_conversion."', `remarque`='".$remarque."' WHERE `id_tranche`=".$id_tranche;
 
+	pain_log($query);
+
 	if (!mysql_query($query)) {
 	    errmsg_formtranche(mysql_error());
 	} else {

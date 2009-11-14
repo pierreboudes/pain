@@ -6,6 +6,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <link rel='stylesheet' media='all' href='general.css' type='text/css' />
+<!--
+<link href="bubbletip/bubbletip/bubbletip.css" rel="stylesheet" type="text/css" />
+-->
 
 <!--
 <link rel='stylesheet' media='projection, screen, tv' href='affichage.css' type='text/css' />
@@ -14,10 +17,15 @@
 <!-- FIREBUG DU PAUVRE !
 <script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
 -->
-
 <script type='text/javascript' src='jquery.js'></script>
 <script type='text/javascript' src='jquery.form.js'></script>
+<!--
+<script src="bubbletip/jQuery.bubbletip-1.0.1.js" type="text/javascript"></script>
+-->
 <script type='text/javascript' src='pain.js'></script>
+<!--
+<script type='text/javascript' src='bulleaide.js'></script>
+-->
 
 <meta name="description" content="Système de gestion des services du département d'informatique" />
 
@@ -28,13 +36,14 @@
 <li><a href="./">accueil</a></li>
 <li><a href="enseignants.php">enseignants</a> (temporaire)</li>
 <li><a >statistiques</a></li>
-<li><a >feuille de service</a></li>
+<li><a href="service.php">feuille de service</a></li>
 <li><a >annuaire d'une formation</a></li>
 </ul>
 
 <?php
 include("inc_infobox.php");
 include("inc_listcours.php");
+/* include("inc_aide.php"); */
 ?>
 </body>
 </html>

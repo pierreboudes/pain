@@ -32,9 +32,10 @@ if (isset($_POST["id_cours"])) {
     }
     else {/* valide */
 	
-	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`) 
-	      VALUES ('".$id_cours."', '".$id_enseignant."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$type_conversion."', '".$remarque."')";
+	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`)  VALUES ('".$id_cours."', '".$id_enseignant."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$type_conversion."', '".$remarque."')";
 
+	pain_log($query);
+	
 	if (!mysql_query($query)) {
 	    errmsg_formtranche(mysql_error());
 	} else {

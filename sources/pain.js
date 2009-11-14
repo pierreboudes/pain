@@ -40,7 +40,8 @@ function supprimerCours(id) {
 	    }, 'text');
     } else {
 	$('#cours'+id).parent().css('background-color','');
-    }  
+    }
+    return false;
 }
 
 function existsjQuery(jQ) {
@@ -87,7 +88,8 @@ function modifierCours(id) {
 		$('#feditcours'+id).ajaxForm(options); 
 	    }
 	}, 'text');
-    }
+    return false;
+}
 
 function beforeModifierCours(formData, jqForm, options, id) { 
 //    $('#tcours'+id).show();
@@ -118,6 +120,7 @@ function annulerModifierCours(id) {
     $('#tcours'+id).remove();
     $('#formeditcours'+id).remove();
     $('#boutonmodifiercours'+id).attr('disabled','');
+    return false;
 }
 
 
@@ -153,12 +156,17 @@ function beforeAjouterCours(formData, jqForm, options, id) {
 
 function afterAjouterCours(responseText, statusText, id)  {
     if (existsjQuery($('#tformation'+id+' > td.action')) ) {
-	/* le cours a ete crée */
+	/* le cours a ete crée, on note son id dans un coin et on le range */
+	var idcours = $('#tformation' + id).contents('td.action').attr('id').replace('cours','');
 	$('#tformation' + id).show();
 	$('#tformation' + id).removeAttr('id');
+       /* créer une cible fraîche pour plus tard */
 	if (!existsjQuery($('#tformation'+id))) {
 	    $('#formcours'+id).after('<tr class="cours" id="tformation'+id+'"  style="display: none;"><td colspan="11"></td></tr>');
 	}
+       /* On déplie la vue des tranches de ce nouveau cours pour que l'utilisateur pense à
+	* les renseigner */
+	basculerCours(idcours);
     } else {
 	alert(responseText.replace(/<[^>]+>/ig,"").replace("ERREUR","Erreur : "));
     }
@@ -195,6 +203,8 @@ function tranchesCours(id) {
 	    
             /* armer les callback du traitement du formulaire */
 	    $('#formtranche'+id).ajaxForm(options);
+	    /* activer quelques bulles d'aide */
+	    /* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
 	}, 'text');
     return false;
 }
@@ -236,6 +246,7 @@ function supprimerTranche(id) {
     } else {
 	$('#tranche'+id).parent().css('background-color','');
     } 
+    return false;
 }
 
 function modifierTranche(id) {
@@ -300,6 +311,7 @@ function annulerModifierTranche(id) {
     $('#ttranche'+id).remove();
     $('#formedittranche'+id).remove();
     $('#boutonmodifiertranche'+id).attr('disabled','');
+    return false;
 }
 /******************/
 
@@ -313,6 +325,7 @@ function basculerCours(id) {
     } else {
 	masquerTranchesCours(id);
     }
+    return false;
 }
 
 /* sympa mais quelques soucis d'affichage */
@@ -331,6 +344,7 @@ function basculerFormation(id) {
 	$('#tableformation'+id+' tr.cours').fadeIn("slow");
 	$('#tableformation'+id+' tr.imgcours').fadeIn("slow");
     }
+    return false;
 }
 
 function trim(str) 
@@ -349,6 +363,7 @@ function htdCours(id) {
 		$('#imgcours'+id).html('');
 	    }
 	}, 'html');
+    return false;
 }
 
 function htdFormation(id) {
@@ -363,6 +378,7 @@ function htdFormation(id) {
 		$('#imgformation'+id).html('');
 	    }
 	}, 'html');
+    return false;
 }
 
 
@@ -375,6 +391,7 @@ function htdTotaux() {
 		$('#imgformation'+id).html('');
 	    }
 	}, 'text');
+    return false;
 }
 
 
@@ -401,8 +418,10 @@ function totauxCoursChanged(id_cours) {
     id_formation = formationDuCours(id_cours);
     htdCours(id_cours);
     htdFormation(id_formation);
-    /* dans l'ideal on trouve aussi l'annee universitaire... */
+    /* dans l'ideal on trouve aussi l'annee universitaire pour la
+     * passer au php */
     htdTotaux();
+    return false;
 }
 
 
@@ -423,7 +442,30 @@ function histoDesFormations() {
     } else {
 	$('div.imgformation').hide();
     }
+    return false;
 }
+
+
+function histoDesCours(id) {
+    var bascule = $('#histoDesCoursFormation'+id);
+    bascule.toggleClass('histoOff');
+    bascule.toggleClass('histoOn');
+    if (bascule.hasClass('histoOn')) {
+	$('#tableformation'+id+' div.imgcours').show();
+	$('#tableformation'+id+' tr.cours td.action').each(function (i) {
+		var tag = this.id;
+		if (tag != undefined) {
+		    var id = tag.replace('cours','');
+		    htdCours(id);
+		}
+	    });
+    } else {
+	$('#tableformation'+id+' div.imgcours').hide();
+    }
+    return false;
+}
+
+
 
 /* 
 a tester pour l'animation des tableaux
