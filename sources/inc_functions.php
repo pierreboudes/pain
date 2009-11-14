@@ -448,9 +448,20 @@ function htdtotaux($annee = "2009") {
 	$annule = 0;
     } 
 
+    $qtp ='SELECT SUM(pain_tranche.tp) AS tp FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee;
+    $rtp = mysql_query($qtp) 
+	or die("erreur d'acces aux tables : $qtp erreur:".mysql_error());
+
+    $tp = mysql_fetch_assoc($rtp);
+    $tp = $tp["tp"];
+    if ($tp == "") {
+	$tp = 0;
+    } 
+
     return array("servi"=>$servi, 
 		 "libre"=>$libre, 
-		 "annule"=>$annule);
+		 "annule"=>$annule,
+		 "tp"=>$tp);
 }
 
 
@@ -486,9 +497,21 @@ function htdformation($id) {
 	$annule = 0;
     }
 
+
+ $qtp = 'SELECT SUM(pain_tranche.tp) AS tp FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id;
+    $rtp = mysql_query($qtp) 
+	or die("erreur d'acces a la table tranche : $qtp erreur:".mysql_error());
+
+    $tp = mysql_fetch_assoc($rtp);
+    $tp = $tp["tp"];
+    if ($tp == "") {
+	$tp = 0;
+    }
+
     return array("servi"=>$servi, 
 		 "libre"=>$libre, 
-		 "annule"=>$annule);
+		 "annule"=>$annule, 
+		 "tp"=>$tp);
 }
 
 
@@ -523,13 +546,24 @@ function htdcours($id) {
 	$annule = 0;
     }
 
+    $qtp = 'SELECT SUM(tp) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant = 1';
+    $rtp = mysql_query($qtp) 
+	or die("erreur d'acces a la table tranche : $qtp erreur:".mysql_error());
+    
+    $tp = mysql_fetch_assoc($rtp);
+    $tp = $tp["SUM(tp)"];
+    if ($tp == "") {
+	$tp = 0;
+    }
+
     return array("servi"=>$servi, 
 		 "libre"=>$libre, 
-		 "annule"=>$annule);
+		 "annule"=>$annule, 
+		 "tp"=>$tp);
 }
 
 function ig_htd($totaux) {
-echo $totaux["servi"].'H servies, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées.'."\n";
+echo $totaux["servi"].'H servies, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées (dont '.$totaux["tp"].'H TP)'."\n";
 }
 
 
