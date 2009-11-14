@@ -19,6 +19,9 @@ if (isset($_GET["annule"])) {
 }
 
 $largeur = $servi+$libre+$annule;
+
+if($largeur > 0):
+
 $echelle = round(880.0 / $largeur, 1); /* si PHP 5.3.0 ou plus paramètre supplémentaire :
 					PHP_ROUND_HALF_DOWN */
 
@@ -39,9 +42,6 @@ if (isset($_GET["hauteur"])) {
     $hauteur = $_GET["hauteur"];
 }
 
-
-
-if($largeur > 0):
 $im = imagecreatetruecolor($largeur,$hauteur);
 $fondcolor = imagecolorallocate($im, 255, 255, 255);
 /* ne tourne pas au lipn imageantialias($im, true); */
