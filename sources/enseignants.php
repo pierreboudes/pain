@@ -22,16 +22,8 @@
 
 <body> 
 
-<ul id="menu">
-<li><a href="./">accueil</a></li>
-<li><a href="enseignants.php">enseignants</a> (temporaire)</li>
-<li><a >statistiques</a></li>
-<li><a >feuille de service</a></li>
-<li><a >annuaire d'une formation</a></li>
-</ul>
-
-
 <?php
+include("menu.php");
 include("act_ajouterenseignant.php");
 include("inc_listenseignants.php");
 ?>

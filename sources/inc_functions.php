@@ -532,4 +532,124 @@ function ig_htd($totaux) {
 echo $totaux["servi"].'H servies, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées.'."\n";
 }
 
+
+function listeinterventions($id_enseignant) {
+    $query = "SELECT 
+pain_tranche.id_tranche,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum,
+pain_cours.semestre,
+pain_cours.nom_cours,
+pain_tranche.groupe,
+pain_tranche.cm,
+pain_tranche.td,
+pain_tranche.tp,
+pain_tranche.alt,
+pain_tranche.htd,
+pain_tranche.remarque
+FROM pain_tranche, pain_cours, pain_formation
+WHERE pain_tranche.id_enseignant =".$id_enseignant."
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
+AND pain_formation.annee_universitaire = '2009'
+ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
+
+
+/* avec une jointure
+SELECT *
+FROM pain_tranche, pain_cours
+WHERE pain_tranche.id_cours = pain_cours.id_cours
+AND pain_tranche.id_enseignant =10
+LIMIT 0 , 30
+*/
+
+/* jointure sur 3 tables ?
+SELECT *
+FROM pain_tranche, pain_cours, pain_formation
+WHERE pain_tranche.id_enseignant =10
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
+ORDER by pain_formation.numero ASC, pain_cours.semestre ASC
+*/
+
+/* avec des sous requêtes 
+SELECT *, (SELECT nom_cours FROM pain_cours where pain_cours.id_cours = pain_tranche.id_cours) AS nom_cours FROM pain_tranche WHERE id_enseignant = 10}
+*/
+
+    ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
+    return $result;
+}
+
+function ig_legendeintervention() {
+    echo '<th class="formation">formation</th>';
+    echo '<th class="nom_cours">intitulé</th>';
+    echo '<th class="semestre">semestre</th>';
+    echo '<th class="groupe">Groupe</th>';
+    echo '<th class="CM">CM</th>';
+    echo '<th class="TD">TD</th>';
+    echo '<th class="TP">TP</th>';
+    echo '<th class="alt">alt.</th>';
+/*     echo '<th class="type_conversion">conversion</th>'; */
+    echo '<th class="HTD">htd</th>';
+    echo '<th class="remarque">Remarque</th>';
+}
+
+function ig_intervention($i) {
+    $id = $i["id_tranche"];
+    echo '<td class="formation">';
+    echo $i["nom"]." ".$i["annee_etude"]." ";
+    echo $i["parfum"];
+    echo '</td>';
+    echo '<td class="nom_cours">';
+    echo $i["nom_cours"];
+    echo '</td>';    
+    echo '<td class="semestre">';
+    echo $i["semestre"];
+    echo '</td>';
+    echo '<td class="groupe">'.$i["groupe"].'</td>';
+/*    echo '<td class="enseignant">';
+    echo ig_responsable($i["pain_tranche.id_enseignant"]);
+    echo '</td>'; */
+    echo '<td class="CM">'.$i["cm"].'</td>';
+    echo '<td class="TD">'.$i["td"].'</td>';
+    echo '<td class="TP">'.$i["tp"].'</td>';
+    echo '<td class="alt">'.$i["alt"].'</td>';
+/*    echo '<td class="type_conversion">';
+    ig_typeconversion($i["pain_tranche.type_conversion"]);
+    echo '</td>'; */
+    echo '<td class="HTD">'.$i["htd"].'</td>';
+    echo '<td class="remarque">'.$i["remarque"].'</td>';
+}
+
+
+function ig_totauxinterventions($id_enseignant) {
+    $query = "SELECT 
+SUM(pain_tranche.cm) AS cm,
+SUM(pain_tranche.td) AS td,
+SUM(pain_tranche.tp) AS tp,
+SUM(pain_tranche.alt) AS alt,
+SUM(pain_tranche.htd) AS htd
+FROM pain_tranche, pain_cours, pain_formation
+WHERE pain_tranche.id_enseignant =".$id_enseignant."
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
+AND pain_formation.annee_universitaire = '2009'
+ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
+
+    ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
+
+    if ($totaux = mysql_fetch_array($result)) {
+	echo '<th style="text-align:right;" colspan= 4>';
+	echo 'totaux';
+	echo '</th>';
+	echo '<td class="CM">'.$totaux["cm"].'</td>';
+	echo '<td class="TD">'.$totaux["td"].'</td>';
+	echo '<td class="TP">'.$totaux["tp"].'</td>';
+	echo '<td class="alt">'.$totaux["alt"].'</td>';
+	echo '<td class="HTD">'.$totaux["htd"].'</td>';
+	echo '<th></th>';
+    }
+}
+
 ?>
