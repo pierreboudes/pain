@@ -158,6 +158,7 @@ function afterAjouterCours(responseText, statusText, id)  {
     if (existsjQuery($('#tformation'+id+' > td.action')) ) {
 	/* le cours a ete crée, on note son id dans un coin et on le range */
 	var idcours = $('#tformation' + id).contents('td.action').attr('id').replace('cours','');
+	$('#tformation' + id).attr('ondblclick','modifierCours('+idcours+')');
 	$('#tformation' + id).show();
 	$('#tformation' + id).removeAttr('id');
        /* créer une cible fraîche pour plus tard */

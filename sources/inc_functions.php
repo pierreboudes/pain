@@ -408,7 +408,7 @@ function ig_formenseignant()
     echo '<td class="email"><input type="text" name="email" value="" /></td>';
     echo '<td class="tel"><input type="text" name="telephone" value="" /></td>';
     echo '<td class="bureau"><input type="text" name="bureau" value="" /></td>';
-    echo '<td class="service"><input type="text" name="service" value="192" /></td>';
+    echo '<td class="service"><input type="text" name="service" value="1" /></td>';
     echo '<td>';
     echo '<input type="submit" value="Ajouter"/>';
     echo '</td>';
