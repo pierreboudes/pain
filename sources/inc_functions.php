@@ -457,7 +457,7 @@ function htdtotaux($annee = "2009") {
 	$libre = 0;
     } 
 
-    $qannule ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant <> 1)';
+    $qannule ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
 
@@ -506,7 +506,7 @@ function htdformation($id) {
 	$libre = 0;
     }
     
-    $qannule = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant <> 1)';
+    $qannule = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
 
