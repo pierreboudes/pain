@@ -34,17 +34,17 @@ function ig_typeconversion($type)
 	echo "manuel";
 	break;
     default:
-	echo "inconnu";
+	echo "inconnu"; /* jamais atteint */
     }
 }
 
 function ig_responsable($id)
 {
     if ($id < 0) {
-	echo "Libre";
+	echo "Libre"; /* jamais atteint */
     }
     if ($id == 0) {
-	echo "Autre";
+	echo "Autre"; /* jamais atteint */
     }
     if ($id > 0) {
 	$qresponsable = "SELECT * FROM pain_enseignant WHERE `id_enseignant` = $id";
