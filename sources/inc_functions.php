@@ -52,7 +52,7 @@ function ig_responsable($id)
 	    or die("Échec de la requête sur la table enseignant");
 	$responsable = mysql_fetch_array($rresponsable);
 	echo $responsable["prenom"]." ";
-	echo $responsable["nom"]." ";
+	echo $responsable["nom"];
     }
 }
 
@@ -70,7 +70,7 @@ function ig_formselectenseignants($id_enseignant)
        if ($ens["id_enseignant"] == $id_enseignant) echo 'selected ';
        echo  'value="'.$ens["id_enseignant"].'">';
        echo $ens["prenom"]." ";
-       echo $ens["nom"]." ";
+       echo $ens["nom"];
        echo '</option>';
    }
    echo '<option value="9"><i>autre</i></option>';
@@ -204,7 +204,6 @@ function ig_formcours($id_formation, $id_cours="", $nom_cours="", $semestre=0, $
     echo '<td class="credits"><input type="text" name="credits" value="'.$credits.'" /></td>';
     echo '<td class="responsable">';
     echo '<select name="responsable_cours" class="autocomplete">';
-    echo '<option value=""><i>responsable</i></option>';
     ig_formselectenseignants($id_enseignant);
     echo '</select>';
     echo '</td>';

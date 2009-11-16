@@ -8,7 +8,7 @@
 		// setup our defaults
 		var defaults = { 
 			  minChars: 0
-			, width: 310
+			, width: 310			  
 			, matchContains: true
 			, autoFill: false
 			, formatItem: function(row, i, max) {

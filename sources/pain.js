@@ -36,7 +36,7 @@ function totauxCoursChanged(id_cours){}
 $(document).ready(function(){
 	/* un effet visuel pour signaler les actions disponibles (obsolete)*/
 //	$("a.action").hover(function(){$(this).fadeOut(100);$(this).fadeIn(500);});
-	$('select.autocomplete').select_autocomplete();
+	$('select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
         /* sympa mais pose quelques soucis d'affichage ... */
 	$("tr.formation div.basculeOn").trigger("click");
 });
@@ -107,7 +107,7 @@ function modifierCours(id) {
 		/* armer les callback du traitement du formulaire */
 		$('#feditcours'+id).ajaxForm(options);
 		/* activer l'autocomplete du formulaire */
-		$('#feditcours'+id+' select.autocomplete').select_autocomplete();
+		$('#feditcours'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 	    }
 	}, 'text');
     return false;
@@ -227,7 +227,7 @@ function tranchesCours(id) {
             /* armer les callback du traitement du formulaire */
 	    $('#formtranche'+id).ajaxForm(options);
 	    /* activer l'autocomplete du formulaire */
-	    $('#formtranche'+id+' select.autocomplete').select_autocomplete();
+	    $('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 	    /* activer quelques bulles d'aide */
 	    /* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
 	}, 'text');
@@ -304,7 +304,7 @@ function modifierTranche(id) {
 		/* armer les callback du traitement du formulaire */
 		$('#fedittranche'+id).ajaxForm(options); 
 		/* activer l'autocomplete du formulaire */
-		$('#fedittranche'+id+' select.autocomplete').select_autocomplete();
+		$('#fedittranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 	    }
 	}, 'text');
     return false;
