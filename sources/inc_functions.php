@@ -437,7 +437,7 @@ function ig_formenseignant()
 
 
 function htdtotaux($annee = "2009") {    
-    $qservi ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 9 AND pain_cours.id_enseignant <> 1';
+    $qservi ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant > 9 OR pain_trance.id_enseignant = 0) AND pain_cours.id_enseignant <> 1';
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
 
@@ -486,7 +486,7 @@ function htdtotaux($annee = "2009") {
 
 function htdformation($id) {
 
-    $qservi = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant > 9 AND pain_cours.id_enseignant <> 1';
+    $qservi = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND (pain_tranche.id_enseignant > 9 OR pain_tranche.id_enseignant = 0) AND pain_cours.id_enseignant <> 1';
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
 
@@ -534,8 +534,17 @@ function htdformation($id) {
 }
 
 
+function responsableducours($id) {
+    $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id.'';
+    $rresponsable = mysql_query($qresponsable)
+	or die("erreur d'acces a la table cours : $qresponsable erreur:".mysql_error());
+    $responsable = mysql_fetch_assoc($rresponsable);
+    return $responsable["id_enseignant"];    
+}
+
 function htdcours($id) {
-    $qservi = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant > 9';
+
+    $qservi = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND (id_enseignant > 9 OR id_enseignant = 0)';
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces a la table tranche : $qservi erreur:".mysql_error());
 
@@ -573,6 +582,10 @@ function htdcours($id) {
     $tp = $tp["SUM(tp)"];
     if ($tp == "") {
 	$tp = 0;
+    }
+    if (responsableducours($id) == 1) {/* cours annulé */
+	$annule += $servi + $libre;
+	$servi = $libre = 0;
     }
 
     return array("servi"=>$servi, 
