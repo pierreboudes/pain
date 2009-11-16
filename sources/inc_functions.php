@@ -1,4 +1,23 @@
 <?php /* -*- coding: utf-8 -*- */
+/* Pain - outil de gestion des services d'enseignement        
+ *
+ * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ *
+ * This file is part of Pain.
+ *
+ * Pain is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pain is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 require_once("utils.php");
 require_once("inc_actions.php");
@@ -418,7 +437,7 @@ function ig_formenseignant()
 
 
 function htdtotaux($annee = "2009") {    
-    $qservi ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 9';
+    $qservi ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 9 AND pain_cours.id_enseignant <> 1';
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
 
@@ -427,7 +446,7 @@ function htdtotaux($annee = "2009") {
     if ($servi == "") {
 	$servi = 0;
     } 
-    $qlibre ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = -1';
+    $qlibre ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = -1 AND pain_cours.id_enseignant <> 1';
 
     $rlibre = mysql_query($qlibre) 
 	or die("erreur d'acces aux tables : $qlibre erreur:".mysql_error());
@@ -438,7 +457,7 @@ function htdtotaux($annee = "2009") {
 	$libre = 0;
     } 
 
-    $qannule ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 1';
+    $qannule ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant <> 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
 
@@ -467,7 +486,7 @@ function htdtotaux($annee = "2009") {
 
 function htdformation($id) {
 
-    $qservi = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant > 9';
+    $qservi = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant > 9 AND pain_cours.id_enseignant <> 1';
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
 
@@ -477,7 +496,7 @@ function htdformation($id) {
 	$servi = 0;
     } 
     
-    $qlibre = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant = -1';
+    $qlibre = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant = -1 AND pain_cours.id_enseignant <> 1';
     $rlibre = mysql_query($qlibre) 
 	or die("erreur d'acces a la table tranche : $qlibre erreur:".mysql_error());
     
@@ -487,7 +506,7 @@ function htdformation($id) {
 	$libre = 0;
     }
     
-    $qannule = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant = 1';
+    $qannule = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant <> 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
 
@@ -583,7 +602,9 @@ pain_tranche.alt,
 pain_tranche.htd,
 pain_tranche.remarque
 FROM pain_tranche, pain_cours, pain_formation
-WHERE pain_tranche.id_enseignant =".$id_enseignant."
+WHERE ".(($id_enseignant == 1)?
+	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
+	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.annee_universitaire = '2009'
@@ -665,7 +686,9 @@ SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd
 FROM pain_tranche, pain_cours, pain_formation
-WHERE pain_tranche.id_enseignant =".$id_enseignant."
+WHERE ".(($id_enseignant == 1)?
+	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
+	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.annee_universitaire = '2009'
