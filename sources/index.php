@@ -62,10 +62,12 @@
 <body> 
 
 <?php
+require_once('utils.php');
 include("menu.php");
 include("inc_infobox.php");
 include("inc_listcours.php");
 /* include("inc_aide.php"); */
+ig_statsmysql();
 ?>
 </body>
 </html>

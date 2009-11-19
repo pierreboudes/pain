@@ -19,13 +19,24 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function microsecoffset() {
+    static $us = 0;
+    if (!$us) $us = microtime(true);
+    return (microtime(true) - $us);
+}
+
+microsecoffset(); /* armee */
+
 function postclean($s) {
-    if(get_magic_quotes_gpc()) {
-	return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
+    if (isset($_POST[$s])) {
+	if(get_magic_quotes_gpc()) {
+	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
+	}
+	else {
+	    return trim(htmlspecialchars(mysql_real_escape_string($_POST[$s]), ENT_QUOTES));
+	}
     }
-    else {
-	return trim(htmlspecialchars(mysql_real_escape_string($_POST[$s]), ENT_QUOTES));
-    }
+    else return NULL;
 }
 
 function postnumclean($s) {
@@ -64,4 +75,15 @@ function pain_log($message, $logname='pain') {
 		@rename($logfile,$logfile.'.1');
 	}
 }
+
+function ig_statsmysql() {
+    echo '<div><pre>';
+    $status = implode("\n",explode('  ', mysql_stat()));
+    echo "MYSQL\n";
+    echo $status;
+    $us = round(microsecoffset() * 1000);
+    echo "\nPage servie en : ".$us."ms ";
+    echo '</pre></div>';
+}
+
 ?>

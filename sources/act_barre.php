@@ -48,7 +48,6 @@ if($largeur > 0): /****** faire une vraie barre ******/
 
 $echelle = round(830.0 / $largeur, 1); /* si PHP 5.3.0 ou plus paramètre supplémentaire :
 					PHP_ROUND_HALF_DOWN */
-
 if ($echelle > 1) {
   $echelle = 1;
 }

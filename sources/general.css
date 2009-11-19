@@ -40,14 +40,6 @@ select, input {
     width: 85%;
 }
 
-table.formations {
-    border:2px solid #3771c8;
-    border-collapse:collapse; 
-    margin:auto;
-    margin-top:-2px;    
-    background-color: #ffffff;
-}
-
 th {
     font-family:monospace;
     border:1px dotted #6495ed;
@@ -67,6 +59,32 @@ td {
     padding-left: 2px;
     padding-right: 2px; 
     text-align:left;
+}
+
+table.formations {
+    border:2px solid #3771c8;
+    border-collapse:collapse; 
+    margin:auto;
+    margin-top:-2px;    
+    background-color: #ffffff;
+}
+
+table.stat {
+    border: 2px solid #3771c8;
+    border-collapse: collapse; 
+    margin: auto;
+    margin-top: 10px;
+    background-color: #ffffff;
+}
+
+table.stat th {
+    font-family: monospace;    
+    text-align:right;
+}
+
+table.stat td {
+    font-family: monospace;    
+    text-align:right;
 }
 
 tr.formation td {

@@ -44,9 +44,12 @@
 <body> 
 
 <?php
+require_once('utils.php');
 include("menu.php");
 include("act_ajouterenseignant.php");
 include("inc_listenseignants.php");
+include("inc_statsenseignants.php");
+ig_statsmysql();
 ?>
 
 </body>

@@ -25,7 +25,9 @@ $id = 2;
 
 if (isset($_POST["annee_universitaire"])) {
     $annee = postclean("annee_universitaire");
-} 
+} else {
+    $annee = "2009";
+}
 
 $r=htdtotaux($annee);
 ig_htd($r);

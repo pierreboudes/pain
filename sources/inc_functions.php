@@ -58,22 +58,25 @@ function ig_responsable($id)
 
 function ig_formselectenseignants($id_enseignant)
 {
-   echo '<option value="3"><i>libre</i></option>';
-   echo '<option value="2"><i>mutualisé</i></option>';
-   echo '<option value="1"><i>annulé</i></option>';
-   $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
-            FROM pain_enseignant WHERE `id_enseignant` > 9 ORDER BY `nom`,`prenom` ASC";
-   $rens = mysql_query($qens) 
-                  or die("Échec de la requête sur la table enseignant");
-   while ($ens = mysql_fetch_array($rens)) {
-       echo '<option ';
-       if ($ens["id_enseignant"] == $id_enseignant) echo 'selected ';
-       echo  'value="'.$ens["id_enseignant"].'">';
-       echo $ens["prenom"]." ";
-       echo $ens["nom"];
-       echo '</option>';
-   }
-   echo '<option value="9"><i>autre</i></option>';
+    static $rens = 0;
+    echo '<option value="3"><i>libre</i></option>';
+    echo '<option value="2"><i>mutualisé</i></option>';
+    echo '<option value="1"><i>annulé</i></option>';
+    if (!$rens) {
+	$qens = "SELECT `id_enseignant`, `prenom`, `nom` 
+                 FROM pain_enseignant WHERE `id_enseignant` > 9 ORDER BY `nom`,`prenom` ASC";
+	$rens = mysql_query($qens) 
+	    or die("Échec de la requête sur la table enseignant");
+    }
+    while ($ens = mysql_fetch_array($rens)) {
+	echo '<option ';
+	if ($ens["id_enseignant"] == $id_enseignant) echo 'selected ';
+	echo  'value="'.$ens["id_enseignant"].'">';
+	echo $ens["prenom"]." ";
+	echo $ens["nom"];
+	echo '</option>';
+    }
+    echo '<option value="9"><i>autre</i></option>';
 }
 
 
@@ -756,6 +759,20 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 	echo '<td class="HTD">'.$totaux["htd"].'</td>';
 	echo '<th></th>';
     }
+}
+
+
+function stats($valeur,$ou) {
+ $qstat = 'SELECT '.$valeur.' FROM '.$ou;
+    $rstat = mysql_query($qstat) 
+	or die("erreur d'acces a la table : $qstat erreur:".mysql_error());
+    
+    $stat = mysql_fetch_assoc($rstat);
+    $stat = $stat["$valeur"];
+    if ($stat == "") {
+	$stat = 0;
+    }
+    return $stat;
 }
 
 ?>
