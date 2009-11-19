@@ -508,3 +508,26 @@ $("tr").click(function() {
   });
 });
 */
+
+function logoutcomplete(request, status) {
+    // window.location.reload();
+    alert("logoutcomplete");
+}
+
+function logouterror(request, status) {
+    alert("logouterror");
+    window.location.replace("http://perdu.com");
+}
+
+function mylogout() {
+    var options = {
+    type: "GET",
+    cache: false,
+    url: "logout.php",
+    username: "fakelogin",
+    password: "fakepass",
+    complete: logoutcomplete,
+    error: logouterror
+    };
+    $.ajax(options);
+}

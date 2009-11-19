@@ -58,16 +58,13 @@ function ig_responsable($id)
 
 function ig_formselectenseignants($id_enseignant)
 {
-    static $rens = 0;
     echo '<option value="3"><i>libre</i></option>';
     echo '<option value="2"><i>mutualisé</i></option>';
     echo '<option value="1"><i>annulé</i></option>';
-    if (!$rens) {
 	$qens = "SELECT `id_enseignant`, `prenom`, `nom` 
                  FROM pain_enseignant WHERE `id_enseignant` > 9 ORDER BY `nom`,`prenom` ASC";
 	$rens = mysql_query($qens) 
 	    or die("Échec de la requête sur la table enseignant");
-    }
     while ($ens = mysql_fetch_array($rens)) {
 	echo '<option ';
 	if ($ens["id_enseignant"] == $id_enseignant) echo 'selected ';
