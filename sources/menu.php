@@ -26,6 +26,6 @@
 <li><a >statistiques</a></li>
      <li><a href="service.php">feuille de service</a>(temporaire)</li>
 <li><a >annuaire d'une formation</a></li>
-<li><a href="javascript:mylogout();">logout</a></li>
+<!-- <li><a href="javascript:mylogout();">logout</a></li> -->
 
 </ul>
