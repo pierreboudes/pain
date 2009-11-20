@@ -631,7 +631,7 @@ function htdcours($id) {
 }
 
 function ig_htd($totaux) {
-    $total = totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
+    $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
     echo $totaux["servi"].'H servies, ';
     echo $totaux["mutualise"].'H mutualisées, ';
     echo $totaux["libre"].'H à pourvoir, ';
