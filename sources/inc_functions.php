@@ -58,9 +58,9 @@ function ig_responsable($id)
 
 function ig_formselectenseignants($id_enseignant)
 {
-    echo '<option value="3"><i>libre</i></option>';
-    echo '<option value="2"><i>mutualisé</i></option>';
-    echo '<option value="1"><i>annulé</i></option>';
+    echo '<option value="3" '.(($id_enseignant==3)?'selected':'').'><i>libre</i></option>';
+    echo '<option value="2" '.(($id_enseignant==2)?'selected':'').'><i>mutualisé</i></option>';
+    echo '<option value="1" '.(($id_enseignant==1)?'selected':'').'><i>annulé</i></option>';
 	$qens = "SELECT `id_enseignant`, `prenom`, `nom` 
                  FROM pain_enseignant WHERE `id_enseignant` > 9 ORDER BY `nom`,`prenom` ASC";
 	$rens = mysql_query($qens) 
@@ -73,7 +73,7 @@ function ig_formselectenseignants($id_enseignant)
 	echo $ens["nom"];
 	echo '</option>';
     }
-    echo '<option value="9"><i>autre</i></option>';
+    echo '<option value="9" '.(($id_enseignant==9)?'selected':'').'><i>autre</i></option>';
 }
 
 
@@ -631,7 +631,8 @@ function htdcours($id) {
 }
 
 function ig_htd($totaux) {
-echo $totaux["servi"].'H servies, '.$totaux["mutualise"].'H mutualisées, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées ('.$totaux["tp"].'H TP)'."\n";
+    $total = totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"]:
+	echo $totaux["servi"].'H servies, '.$totaux["mutualise"].'H mutualisées, '.$totaux["libre"].'H à pourvoir, '.$totaux["annule"].'H annulées ('.$total.'H dont'.$totaux["tp"].'H TP)'."\n";
 }
 
 
