@@ -39,6 +39,19 @@ function postclean($s) {
     else return NULL;
 }
 
+function getclean($s) {
+    if (isset($_GET[$s])) {
+	if(get_magic_quotes_gpc()) {
+	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_GET[$s]))), ENT_QUOTES));
+	}
+	else {
+	    return trim(htmlspecialchars(mysql_real_escape_string($_GET[$s]), ENT_QUOTES));
+	}
+    }
+    else return NULL;
+}
+
+
 function postnumclean($s) {
     return str_replace(',','.',str_replace(' ', '',postclean($s)));
 }

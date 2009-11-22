@@ -23,6 +23,9 @@ require_once("inc_functions.php");
 
 $id_enseignant = "";
 
+if (isset($_GET['id_enseignant'])) {
+    $id_enseignant = getclean('id_enseignant');
+}
 
 if (isset($_POST['id_enseignant'])) {
     $id_enseignant = postclean('id_enseignant');

@@ -778,4 +778,18 @@ function stats($valeur,$ou) {
     return $stat;
 }
 
+function update_servicesreels() {
+    $qupdate = "UPDATE `pain_enseignant` SET service_reel = (SELECT SUM(pain_tranche.htd) FROM pain_tranche,pain_cours WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1) WHERE 1";
+    mysql_query($qupdate) 
+	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
+}
+
+function liste_enseignantscategorie($categorie) {
+    $q = "SELECT * from pain_enseignant 
+WHERE id_enseignant > 9 AND categorie = $categorie 
+ORDER by nom,prenom ASC";
+    ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
+    return $r;
+}
+
 ?>
