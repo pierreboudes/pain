@@ -28,7 +28,7 @@
 \begin{itemize}
 \item cours : description du cours du point de vue étudiant (comme dans la maquette et le contrôle des connaissance). Formation, année, semestre et parfum (mention, spécialité, etc.). Volume horaire du cours magistral, TD, TP, soutien (ou prérentrée), contrôle et/ou encadrement  (comme s'il n'y avait qu'un seul groupe et sans appliquer de calcul d'un équivalent TD). Petit texte pour précisions éventuelles. Pour plus tard : code geisha. Nombre de crédits. Responsable.
 \begin{verbatim}
-CREATE TABLE `cours` (
+CREATE TABLE `pain_cours` (
   `id_cours` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `id_formation` mediumint(8) unsigned NOT NULL,
   `semestre` tinyint(3) unsigned NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE `cours` (
 \end{verbatim}
 \item enseignants. Statut, s'il ne s'agit pas de vacations, volume équivalent TD du service de base (les décharges, CRCT et autres sont à compter comme des tranches de cours, donc le service de base est normalement de 192H pour les tous les titulaires et ATER temps plein). 
 \begin{verbatim}
-CREATE TABLE `enseignant` (
+CREATE TABLE `pain_enseignant` (
   `id_enseignant` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `prenom` varchar(40) COLLATE utf8_swedish_ci NOT NULL,
   `nom` varchar(40) COLLATE utf8_swedish_ci NOT NULL,
@@ -59,13 +59,12 @@ CREATE TABLE `enseignant` (
   `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_enseignant`)
 ) DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
-
 \end{verbatim}
 
 
 \item tranches (ou interventions). Portion de cours attribué à un enseignant ou à atrribuer (prétranche), éventuellement annotée par un identificateur de groupe. Volume horaire devant les étudiants pour chaque type d'intervention (CM, TD, TP, soutien, contrôle, encadrement)  et volume en équivalent TD avec remarque éventuelle sur la méthode de conversion si ce volume est entré manuellement. On peut entrer plusieurs tranches pour un même enseignant et un même cours (si ça fait sens). Voir s'il faut fusionner automatiquement les tranches relâchées (redevenues prétranches). 
 \begin{verbatim}
-CREATE TABLE `tranche` (
+CREATE TABLE `pain_tranche` (
   `id_tranche` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `id_cours` smallint(5) unsigned NOT NULL,
   `id_enseignant` mediumint(5) DEFAULT '-1',
@@ -90,7 +89,7 @@ Tables complémentaires :
 \item formations par années et parfums (chaînes de caractère). Pour aider à la création des cours (normaliser les intitulés des formations et parfums). Numéro d'ordre pour l'affichage. Responsable de cette année pour ce parfum.
 
 \begin{verbatim}
-CREATE TABLE `formation` (
+CREATE TABLE `pain_formation` (
   `id_formation` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `numero` smallint(5) unsigned NOT NULL,
   `nom` varchar(40) COLLATE utf8_swedish_ci NOT NULL,
