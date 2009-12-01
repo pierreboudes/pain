@@ -69,6 +69,13 @@ table.formations {
     background-color: #ffffff;
 }
 
+table.super {
+    border:2px solid #3771c8;
+    border-collapse:collapse; 
+    margin:auto;
+    background-color: #ffffff;
+}
+
 table.stat {
     border: 2px solid #3771c8;
     border-collapse: collapse; 
@@ -91,6 +98,21 @@ tr.formation td {
     padding-top: 10px;
     background-color:#DFE6FF;
 }    
+
+tr.super {
+    padding-top: 10px;
+    font-weight: bolder;    
+    background-color:#3771c8;
+    color: white;
+}
+
+tr.entete {
+    font-weight: bolder;
+}
+
+tr.sousformations > td {
+    padding: 0px;
+}
 
 tr.formcours {
    display:none;
@@ -154,6 +176,11 @@ table.tranches th, table.formcours td {
 }  
 
 /* DIMENSIONS */
+
+table.super {
+    width:879px;
+}
+
 table.enseignants {
     width:877px;
 }
@@ -401,10 +428,7 @@ div.imgformation img.imgbarre {
 
 span.totaux {
     float: right;
-}
-
-tr.entete {
-    font-weight: bolder;
+    width: 50%;
 }
 
 div.tip {

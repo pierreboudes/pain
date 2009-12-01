@@ -46,12 +46,16 @@ $largeur = $servi+$libre+$annule+$mutualise;
 
 if($largeur > 0): /****** faire une vraie barre ******/
 
-$echelle = round(830.0 / $largeur, 1); /* si PHP 5.3.0 ou plus paramètre supplémentaire :
-					PHP_ROUND_HALF_DOWN */
+$echelle = round(2 * 830.0 / $largeur, 1) / 2; 
+/* si PHP 5.3.0 ou plus paramètre supplémentaire :
+ * PHP_ROUND_HALF_DOWN */
 if ($echelle > 1) {
   $echelle = 1;
 }
 
+if (($echelle * $largeur > 875) && ($echelle > 0.05)) {
+    $echelle -= .05;
+}
 
 $servi *= $echelle;
 $libre *= $echelle;

@@ -26,7 +26,7 @@ $(document).ready(function(){
 //	$("a.action").hover(function(){$(this).fadeOut(100);$(this).fadeIn(500);});
 	$('select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
         /* sympa mais pose quelques soucis d'affichage ... */
-	$("tr.formation div.basculeOn").trigger("click");
+	toutBasculer();
 });
 
 
@@ -386,6 +386,25 @@ function basculerFormation(id) {
     return false;
 }
 
+
+function basculerSuperFormation(id) {
+    var bascule =  $('#basculesuper'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
+    } else {
+	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
+    }
+    return false;
+}
+
+
+function toutBasculer() {
+    $("tr.super div.basculeOn").trigger("click");
+}
+
 function trim(str) 
 { 
     return str.replace(/^\s+/g,'').replace(/\s+$/g,'');
@@ -420,6 +439,20 @@ function htdFormation(id) {
     return false;
 }
 
+function htdSuperFormation(id) {
+    jQuery.post("act_totauxsuper.php", {id_sformation: id}, function (data) {
+	    if (data.length > 10) {
+        // DEBUG       alert('htdFormation('+id+') : data = '+data);
+		data = trim(data);
+		$('#imgsformation'+id).html(data);
+		var totaux = $('#imgsformation'+id+' img').attr('title');
+		$('#sformation'+id+' td.intitule span.totaux').text(totaux);
+	    } else {
+		$('#imgsformation'+id).html('');
+	    }
+	}, 'html');
+    return false;
+}
 
 function htdTotaux() {
     jQuery.post("act_totaux.php", {annee_universitaire: "2009"}, function (data) {
@@ -452,18 +485,27 @@ function formationDuCours(id_cours) {
     return id_formation;
 }
 
+function superDeLaFormation(id_formation) {
+    var s;
+    var id_sformation;
+    s = $('#tableformation'+id_formation).parents('table.super').attr('id');
+    /* s = 'tablesuper'+id */
+    id_sformation = parseInt(s.replace('tablesuper',''));
+    return id_sformation;
+}
+
 function totauxCoursChanged(id_cours) {
     var id_formation = 0;
     id_formation = formationDuCours(id_cours);
+    id_sformation = superDeLaFormation(id_formation);
     htdCours(id_cours);
     htdFormation(id_formation);
+    htdSuperFormation(id_sformation);
     /* dans l'ideal on trouve aussi l'annee universitaire pour la
      * passer au php */
     htdTotaux();
     return false;
 }
-
-
 
 function histoDesFormations() {
     var bascule = $('#globalHistoDesFormations');
@@ -476,6 +518,13 @@ function histoDesFormations() {
 		if (tag != undefined) {
 		    var id = tag.replace('tableformation','');
 		    htdFormation(id);
+		}
+	    });
+	$('table.super').each(function (i) {
+		var tag = this.id;
+		if (tag != undefined) {
+		    var id = tag.replace('tablesuper','');
+		    htdSuperFormation(id);
 		}
 	    });
     } else {

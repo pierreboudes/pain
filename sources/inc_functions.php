@@ -77,10 +77,23 @@ function ig_formselectenseignants($id_enseignant)
 }
 
 
-function list_formations()
+function list_superformations($annee = "2009")
+{
+    $qsformation = "SELECT * FROM pain_sformation 
+                   WHERE `annee_universitaire` = ".$annee."
+                   ORDER BY numero ASC";    
+
+    $rsformation = mysql_query($qsformation) 
+	or die("Échec de la requête sur la table formation");
+
+    return $rsformation;
+}
+
+function list_formations($id_sformation, $annee = "2009")
 {
     $qformation = "SELECT * FROM pain_formation 
-                   WHERE `annee_universitaire` = 2009
+                   WHERE `annee_universitaire` = ".$annee."
+                   AND `id_sformation` = ".$id_sformation."
                    ORDER BY numero ASC";    
 
     $rformation = mysql_query($qformation) 
@@ -92,7 +105,7 @@ function list_formations()
 function list_cours($id)
 {
       $qcours = "SELECT * FROM pain_cours WHERE `id_formation` = $id
-                 ORDER BY semestre ASC";
+                 ORDER BY semestre, nom_cours ASC";
 
     $rcours = mysql_query($qcours) or 
 	die("Échec de la requête sur la table cours");
@@ -557,6 +570,64 @@ function htdformation($id) {
 		 "tp"=>$tp);
 }
 
+function htdsuper($id) {
+
+    $qservi = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
+    $rservi = mysql_query($qservi) 
+	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
+
+    $servi = mysql_fetch_assoc($rservi);
+    $servi = $servi["SUM(htd)"];
+    if ($servi == "") {
+	$servi = 0;
+    } 
+
+   $qmutualise = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
+    $rmutualise = mysql_query($qmutualise) 
+	or die("erreur d'acces aux tables : $qmutualise erreur:".mysql_error());
+
+    $mutualise = mysql_fetch_assoc($rmutualise);
+    $mutualise = $mutualise["SUM(htd)"];
+    if ($mutualise == "") {
+	$mutualise = 0;
+    } 
+    
+    $qlibre = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
+    $rlibre = mysql_query($qlibre) 
+	or die("erreur d'acces a la table tranche : $qlibre erreur:".mysql_error());
+    
+    $libre = mysql_fetch_assoc($rlibre);
+    $libre = $libre["SUM(htd)"];
+    if ($libre == "") {
+	$libre = 0;
+    }
+    
+    $qannule = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
+    $rannule = mysql_query($qannule) 
+	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+
+    $annule = mysql_fetch_assoc($rannule);
+    $annule = $annule["SUM(htd)"];
+    if ($annule == "") {
+	$annule = 0;
+    }
+
+ $qtp = 'SELECT SUM(pain_tranche.tp) AS tp FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id;
+    $rtp = mysql_query($qtp) 
+	or die("erreur d'acces a la table tranche : $qtp erreur:".mysql_error());
+
+    $tp = mysql_fetch_assoc($rtp);
+    $tp = $tp["tp"];
+    if ($tp == "") {
+	$tp = 0;
+    }
+
+    return array("servi"=>$servi, 
+		 "libre"=>$libre, 
+		 "mutualise"=>$mutualise,
+		 "annule"=>$annule, 
+		 "tp"=>$tp);
+}
 
 function responsableducours($id) {
     $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id;
@@ -632,12 +703,12 @@ function htdcours($id) {
 
 function ig_htd($totaux) {
     $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
-    echo $totaux["servi"].'H servies, ';
-    echo $totaux["mutualise"].'H mutualisées, ';
-    echo $totaux["libre"].'H à pourvoir, ';
-    echo $totaux["annule"].'H annulées (';
-    echo $total.'H dont ';
-    echo $totaux["tp"].'H TP)'."\n";
+    echo $total.'H ';
+    echo '(dont '.$totaux["tp"].'H&nbsp;TP) = ';
+    echo $totaux["servi"].'H&nbsp;servies +&nbsp;';
+    echo $totaux["mutualise"].'H&nbsp;mutualisées +&nbsp;';
+    echo $totaux["libre"].'H&nbsp;à pourvoir +&nbsp;';
+    echo $totaux["annule"].'H&nbsp;annulées';
 }
 
 

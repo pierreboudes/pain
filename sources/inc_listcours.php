@@ -23,7 +23,7 @@ require_once("inc_functions.php");
 
 
 /* Les totaux globalement */
-echo '<table class="formations">';
+echo '<table class="super">';
 echo '<tr class="entete" id="entete"><td>';
 action_histodesformations();
 $tot = htdtotaux("2009");
@@ -35,69 +35,101 @@ echo '</td></tr></table>';
 
 /* Le grand tableau des formations */
 
-$rformation = list_formations();
+$rsformation = list_superformations("2009");
 
-while($formation = mysql_fetch_array($rformation)) /* pour chaque formation */
+while($sformation = mysql_fetch_array($rsformation)) 
+/* pour chaque super formation */
 {
-    $id_formation = $formation["id_formation"];
-    $totaux=htdformation($id_formation);
-    
-    echo '<table class="formations" id="tableformation'.$id_formation.'">';
-    /* affichage de la formation */
-    echo '<tr class="imgformation">';
-    echo '<td colspan="11" class="imgformation">';
-    echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
-    echo '</div></td></tr>';
-    echo '<tr class="formation" id="formation'.$id_formation.'">';
-    echo '<td class="intitule" colspan="11">';
-    action_basculerformation($id_formation);
-    action_histodescours($id_formation);
-    echo $formation["nom"]." ".$formation["annee_etude"]." ";
-    echo $formation["parfum"]." ";
+    $id_sformation = $sformation["id_sformation"];
+    $totaux=htdsuper($id_sformation);
 
-    /* affichage du responsable de la formation */
+    echo '<table class="super" id="tablesuper'.$id_sformation.'">';   
+    /* affichage de la super formation */
+
+    echo '<tr class="imgformation">';
+    echo '<td  class="imgformation">';
+    echo '<div class="imgformation" id="imgsformation'.$id_sformation.'">';
+    echo '</div></td></tr>';
+
+    echo '<tr class="super" id="sformation'.$id_sformation.'">';
+    echo '<td class="intitule">';
+    action_basculersuper($id_sformation);
+    // TODO action_histodescours($id_sformation);
+    echo $sformation["nom"]." &ndash; ";	
+    /* affichage du responsable de la super formation */
     echo "responsable : ";
-    ig_responsable($formation["id_enseignant"]);
+    ig_responsable($sformation["id_enseignant"]);
     echo ' <span class="totaux">';
     ig_htd($totaux);
     echo '</span>';
-    echo '</td>';
-
+    echo '</td>';	
     echo "</tr>\n";
+    echo '<tr class="sousformations"><td>';
+    /* liste des annee de formation */
+    $rformation = list_formations($id_sformation);
 
-    /* affichage des cours de la formation */
-
-    /* légende */    
-    ig_legendecours($id_formation);
-
-    /* formulaire d'ajout d'un cours dans la formation */
-    echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";
-    echo '<form method="post" id="fformation'.$id_formation.
-         '" class="formcours" name="cours" action="">';
-    ig_formcours($id_formation);
-    echo '</form>'."\n";
-    echo '</td></tr>'."\n";
-
-   
-    $rcours = list_cours($id_formation);
-
-    while ($cours = mysql_fetch_array($rcours)) /* pour chaque cours */
+    while($formation = mysql_fetch_array($rformation)) 
+    /* pour chaque annee de formation */
     {
-	$id_cours = $cours["id_cours"];
-	echo '<tr class="imgcours">';
-	echo '<td colspan="11" class="imgcours">';
-	echo '<div class="imgcours" id="imgcours'.$id_cours.'">';
-	echo '</div></td></tr>'."\n";
-	echo '<tr class="cours"';
-        action_dblcmodifiercours($id_cours);
-	echo '>';
-	ig_cours($cours);
-	echo '</tr>'."\n";
-    }
-echo '</table>'."\n";
+	$id_formation = $formation["id_formation"];
+	$totaux=htdformation($id_formation);
 
-} /* fin while formation */
+	echo '<table class="formations" id="tableformation'.$id_formation.'">'; 
+	/* affichage de la formation */
+	echo '<tr class="imgformation">';
+	echo '<td colspan="11" class="imgformation">';
+	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
+	echo '</div></td></tr>';
+	echo '<tr class="formation" id="formation'.$id_formation.'">';
+	echo '<td class="intitule" colspan="11">';
+	action_basculerformation($id_formation);
+	action_histodescours($id_formation);
+	echo $formation["nom"]." ".$formation["annee_etude"]." ";
+	echo $formation["parfum"]."  &ndash; ";
+	
+	/* affichage du responsable de la formation */
+	echo "responsable : ";
+	ig_responsable($formation["id_enseignant"]);
+	echo ' <span class="totaux">';
+	ig_htd($totaux);
+	echo '</span>';
+	echo '</td>';
+	
+	echo "</tr>\n";
 
+	/* affichage des cours de la formation */
+	
+	/* légende */    
+	ig_legendecours($id_formation);
+	
+	/* formulaire d'ajout d'un cours dans la formation */
+	echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";
+	echo '<form method="post" id="fformation'.$id_formation.
+	    '" class="formcours" name="cours" action="">';
+	ig_formcours($id_formation);
+	echo '</form>'."\n";
+	echo '</td></tr>'."\n";
+	
+	
+	$rcours = list_cours($id_formation);
+	
+	while ($cours = mysql_fetch_array($rcours)) /* pour chaque cours */
+	{
+	    $id_cours = $cours["id_cours"];
+	    echo '<tr class="imgcours">';
+	    echo '<td colspan="11" class="imgcours">';
+	    echo '<div class="imgcours" id="imgcours'.$id_cours.'">';
+	    echo '</div></td></tr>'."\n";
+	    echo '<tr class="cours"';
+	    action_dblcmodifiercours($id_cours);
+	    echo '>';
+	    ig_cours($cours);
+	    echo '</tr>'."\n";
+	}
+	echo '</table>'."\n"; 	
+    } /* fin while formation */
+    echo '</td></tr></table>';
+} /* fin while superformation */
 ?>
 
 <p>

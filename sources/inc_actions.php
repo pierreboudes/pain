@@ -32,6 +32,13 @@ function action_histodescours($id_formation) {
  echo ' <div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'.$id_formation.'" onclick="histoDesCours('.$id_formation.')"></div></div>';
 }
 
+function action_basculersuper($id_sformation) {
+    echo '<div class="basculeOn"';
+    echo ' id="basculesuper'.$id_sformation.'"'; 
+    echo ' onclick="basculerSuperFormation('.$id_sformation.')">';   
+    echo '</div>';
+}
+
 function action_basculerformation($id_formation) {
     echo '<div class="basculeOn"';
     echo ' id="basculeformation'.$id_formation.'"'; 
