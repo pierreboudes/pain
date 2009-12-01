@@ -45,6 +45,7 @@
 
 <?php
 require_once('utils.php');
+require_once('inc_droits.php');
 include("menu.php");
 echo "<h3>Totaux toutes les formations</h3>";
 echo "<p>";
@@ -52,7 +53,9 @@ include("act_totaux.php");
 echo "</p>";
 echo "<h3>Services actuels des différentes catégories d'intervenants</h3>";
 include("inc_statsenseignants.php");
-include("inc_statsservices.php");
+if (peutvoirstatsservices()) {
+    include("inc_statsservices.php");
+}
 ig_statsmysql();
 ?>
 

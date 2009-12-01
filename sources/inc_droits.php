@@ -35,6 +35,10 @@ function estdepartement() {
     return false;
 }
 
+function peutvoirstatsservices() {
+    return false;
+}
+
 function peuteditercours($id_cours) {
     return estdepartement();
 }
