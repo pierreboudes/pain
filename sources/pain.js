@@ -19,18 +19,6 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* prototypes nécessaires (jslint.com) ?? */
-function beforeModifierCrours(formData, jqForm, options, id){}
-function afterModifierCours(responseText, statusText, id){}
-function beforeAjouterCours(data, form, opt, id){}
-function afterAjouterCours(responseText, statusText, id){}
-function beforeAjouterTranche(formData, jqForm, options, id){}
-function afterAjouterTranche(responseText, statusText, id){}
-function masquerTranchesCours(id){}
-function htdCours(id){}
-function htdFormation(id){}
-function coursDeLaTranche(id_tranche){}
-function totauxCoursChanged(id_cours){}
 
 
 $(document).ready(function(){
@@ -76,7 +64,20 @@ function existsjQuery(jQ) {
 
 function modifierCours(id) {
     $('#boutonmodifiercours'+id).attr('disabled','disabled');
-    $('#cours'+id).parent().css('background-color','yellow');   
+    /*  $('#cours'+id).parent().css('background-color','yellow'); */
+    flobu = new flower_bubble ({
+	base_obj: $('#cours'+id).parent(),
+		block_mode: 'base_obj',
+		base_dir: 'img',
+		background: { css: 'white', opacity: 0.78 },
+		bubble: { image: 'bubble.png', width: 130, height: 98 },
+		flower: { image: 'flower.gif', width: 32, height: 32 }
+	}) ;
+    flobu.enable();
+    var bascule =  $('#basculecours'+id);
+    if (bascule.hasClass('basculeOn')) {
+	basculerCours(id);    
+    }	
     if (!existsjQuery($('#tcours'+id))) {
 	$('#cours' + id).parent().after('<tr class="cours" ondblclick="modifierCours('+id+')" id="tcours'+id+'" style="display:none;"><td colspan="11">invisible</td></tr>');
     }
@@ -88,8 +89,8 @@ function modifierCours(id) {
 	    else {
 		$('#tcours'+id).before(data);
 		$('#formeditcours'+id).show();
-		$('#cours'+id).parent().hide();
 		/* pour le traitement du formulaire */
+		
 		var options = {
 		target: '#tcours' + id, /* trop dynamique pour safari ? */
 		beforeSubmit: function (d, f, opt) {
@@ -108,7 +109,9 @@ function modifierCours(id) {
 		$('#feditcours'+id).ajaxForm(options);
 		/* activer l'autocomplete du formulaire */
 		$('#feditcours'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
+		$('#cours'+id).parent().hide();
 	    }
+	    flobu.disable();
 	}, 'text');
     return false;
 }
@@ -124,9 +127,10 @@ function afterModifierCours(responseText, statusText, id)  {
         /* effacer le formulaire d'edition */
 	$('#formeditcours'+id).remove();
 	/* nettoyer la nouvelle ligne */
-	/* effacer l'ancienne ligne  */
+        /* effacer l'ancienne ligne  */
 	$('#cours'+id).parent().remove();
 	$('#tcours'+id).removeAttr('id');
+        /* remplacer par la nouvelle ligne */
 	$('#coursnew'+id).attr('id','cours'+id);
 	$('#cours'+id).parent().show();	
     } else {
@@ -276,11 +280,18 @@ function supprimerTranche(id) {
 
 function modifierTranche(id) {
     $('#boutonmodifiertranche'+id).attr('disabled','disabled');
-    $('#tranche'+id).parent().css('background-color','yellow');   
+    flobu = new flower_bubble ({
+	base_obj: $('#tranche'+id).parent(),
+		block_mode: 'base_obj',
+		base_dir: 'img',
+		background: { css: 'white', opacity: 0.78 },
+		bubble: { image: 'bubble.png', width: 130, height: 98 },
+		flower: { image: 'flower.gif', width: 32, height: 32 }
+	});
+    flobu.enable();
     jQuery.post("act_editertranche.php", {id_tranche: id}, function (data) {
 	    if (20 > data.length) {
 		alert(data);
-		$('#tranche'+id).parent().css('background-color','');
 	    }
 	    else {
 		$('#tranche'+id).parent().after(data);
@@ -306,6 +317,7 @@ function modifierTranche(id) {
 		/* activer l'autocomplete du formulaire */
 		$('#fedittranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 	    }
+	    flobu.disable();
 	}, 'text');
     return false;
 }

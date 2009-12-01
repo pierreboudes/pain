@@ -46,6 +46,8 @@
 <script type='text/javascript' src='jquery.form.js'></script>
 <script type="text/javascript" src="jquery.autocomplete.js"></script>
 <script type="text/javascript" src="jquery.select-autocomplete.js"></script>
+<script type="text/javascript" src="jquery.flower_bubble.js"></script>
+
 <!--
 <script src="bubbletip/jQuery.bubbletip-1.0.1.js" type="text/javascript"></script>
 -->
