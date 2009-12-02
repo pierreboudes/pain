@@ -720,6 +720,7 @@ pain_formation.annee_etude,
 pain_formation.parfum,
 pain_cours.semestre,
 pain_cours.nom_cours,
+pain_cours.code_geisha,
 pain_tranche.groupe,
 pain_tranche.cm,
 pain_tranche.td,
@@ -765,6 +766,7 @@ SELECT *, (SELECT nom_cours FROM pain_cours where pain_cours.id_cours = pain_tra
 function ig_legendeintervention() {
     echo '<th class="formation">formation</th>';
     echo '<th class="nom_cours">intitulé</th>';
+    echo '<th class="code_geisha">code geisha</th>';
     echo '<th class="semestre">semestre</th>';
     echo '<th class="groupe">Groupe</th>';
     echo '<th class="CM">CM</th>';
@@ -784,6 +786,9 @@ function ig_intervention($i) {
     echo '</td>';
     echo '<td class="nom_cours">';
     echo $i["nom_cours"];
+    echo '</td>';
+    echo '<td class="code_geisha">';
+    echo $i["code_geisha"];
     echo '</td>';    
     echo '<td class="semestre">';
     echo $i["semestre"];
@@ -823,7 +828,7 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
     ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
 
     if ($totaux = mysql_fetch_array($result)) {
-	echo '<th style="text-align:right;" colspan= 4>';
+	echo '<th style="text-align:right;" colspan= 5>';
 	echo 'totaux';
 	echo '</th>';
 	echo '<td class="CM">'.$totaux["cm"].'</td>';
