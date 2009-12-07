@@ -24,6 +24,10 @@ require_once("inc_functions.php");
 
 /* Les totaux globalement */
 echo '<table class="super">';
+echo '<tr class="imgformation">';
+echo '<td  class="imgformation">';
+echo '<div class="imgformation" id="imgentete">';
+echo '</div></td></tr>';
 echo '<tr class="entete" id="entete"><td>';
 action_histodesformations();
 $tot = htdtotaux("2009");

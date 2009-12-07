@@ -34,12 +34,10 @@ if (isset($_POST["id_cours"])) {
     $tp = postnumclean("tp");
     $alt = postnumclean("alt");
     $htd = postnumclean("htd");    
-    $type_conversion = postclean("type_conversion");
     $remarque = postclean("remarque");
-    /* calcul de l'équivalent TD si la conversion est automatique */
-    if (0 == $type_conversion) {
-	$htd = 1.5 * $cm + $td + $tp + $alt;
-    }
+    /* calcul de l'équivalent TD */
+    
+    $htd = 1.5 * $cm + $td + $tp + $alt;
 
     /* test la validité du formulaire */
     if (0 == $htd)
@@ -51,7 +49,7 @@ if (isset($_POST["id_cours"])) {
     }
     else {/* valide */
 	
-	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `type_conversion`, `remarque`)  VALUES ('".$id_cours."', '".$id_enseignant."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$type_conversion."', '".$remarque."')";
+	$query = "INSERT INTO pain_tranche (`id_cours`, `id_enseignant`, `groupe`, `cm`, `td`, `tp`, `alt`, `htd`, `remarque`)  VALUES ('".$id_cours."', '".$id_enseignant."', '".$groupe."', '".$cm."', '".$td."', '".$tp."', '".$alt."', '".$htd."', '".$remarque."')";
 
 	pain_log($query);
 	

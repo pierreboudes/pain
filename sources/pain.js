@@ -458,11 +458,13 @@ function htdTotaux() {
     jQuery.post("act_totaux.php", {annee_universitaire: "2009"}, function (data) {
 	    if (data.length > 10) {
 		data = trim(data);
-		$('#entete td span.totaux').text(data);		
+		$('#imgentete').html(data);
+		var totaux = $('#imgentete img').attr('title');
+		$('#entete td span.totaux').text(totaux);		
 	    } else {
-		$('#imgformation'+id).html('');
+		$('#imgentete').html('');
 	    }
-	}, 'text');
+	}, 'html');
     return false;
 }
 
@@ -527,6 +529,7 @@ function histoDesFormations() {
 		    htdSuperFormation(id);
 		}
 	    });
+	htdTotaux();
     } else {
 	$('div.imgformation').hide();
     }

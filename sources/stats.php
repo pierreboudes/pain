@@ -45,13 +45,15 @@
 
 <?php
 require_once('utils.php');
+require_once("inc_connect.php");
 require_once('inc_droits.php');
+require_once('inc_functions.php');
 include("menu.php");
-echo "<h3>Totaux toutes les formations</h3>";
+echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
 echo "<p>";
-include("act_totaux.php");
+ig_htd(htdtotaux("2009"));
 echo "</p>";
-echo "<h3>Services actuels des différentes catégories d'intervenants</h3>";
+echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
 include("inc_statsenseignants.php");
 if (peutvoirstatsservices()) {
     include("inc_statsservices.php");

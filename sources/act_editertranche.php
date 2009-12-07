@@ -38,9 +38,7 @@ if (isset($_POST["id_tranche"])) {
 		 $c["alt"],
 		 $c["id_enseignant"],
 		 $c["groupe"],
-		 $c["type_conversion"],
-		 $c["remarque"],
-		 $c["htd"]);
+		 $c["remarque"]);
     echo '</table>';
     echo '</form>'."\n";
     echo '</td></tr>'."\n";	

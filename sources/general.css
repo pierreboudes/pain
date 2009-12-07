@@ -76,6 +76,14 @@ table.super {
     background-color: #ffffff;
 }
 
+
+table.interventions,  table.service {
+    border:2px solid #3771c8;
+    border-collapse:collapse; 
+    margin:auto;
+    background-color: #ffffff;
+}
+
 table.stat {
     border: 2px solid #3771c8;
     border-collapse: collapse; 

@@ -30,5 +30,12 @@ if (isset($_POST["annee_universitaire"])) {
 }
 
 $r=htdtotaux($annee);
-ig_htd($r);
+
+$servi = $r["servi"];
+$mutualise = $r["mutualise"];
+$libre = $r["libre"];
+$annule = $r["annule"];
+$tp = $r["tp"];
 ?>
+<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&mutualise=<?=$mutualise?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php ig_htd($r); ?>"/>
+

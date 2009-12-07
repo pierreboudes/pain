@@ -36,12 +36,9 @@ if (isset($_POST["id_tranche"])) {
     $tp = postnumclean("tp");
     $alt = postnumclean("alt");
     $htd = postnumclean("htd");    
-    $type_conversion = postclean("type_conversion");
     $remarque = postclean("remarque");
-    /* calcul de l'équivalent TD si la conversion est automatique */
-    if (0 == $type_conversion) {
-	$htd = 1.5 * $cm + $td + $tp + $alt;
-    }
+    /* calcul de l'équivalent TD */
+    $htd = 1.5 * $cm + $td + $tp + $alt;
 
     /* test la validité du formulaire */
     if (0 == $htd)
@@ -53,7 +50,7 @@ if (isset($_POST["id_tranche"])) {
     }
     else {/* valide */
 	
-	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `type_conversion`='".$type_conversion."', `remarque`='".$remarque."' WHERE `id_tranche`=".$id_tranche;
+	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `remarque`='".$remarque."' WHERE `id_tranche`=".$id_tranche;
 
 	pain_log($query);
 

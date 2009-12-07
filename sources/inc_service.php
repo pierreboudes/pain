@@ -40,8 +40,26 @@ echo '</form>'."\n";
 echo '</div></center>';
 
 if ($id_enseignant != "") {
+
+    $totaux = totauxinterventions($id_enseignant);
+
+    /* Feuille de service */
+    echo "<h2>Déclaration du service d'enseignement</h2>";
+
+    $services = listeservice($id_enseignant);
+    echo '<p><table class="service">';
+    ig_legendeservice();
+    while ($ligne = mysql_fetch_array($services)) {
+	ig_ligneservice($ligne);
+    }
+    ig_totauxservice($totaux);
+    echo '</table></p>';
+
+    /* Details (tranche par tranche) */
+    echo "<h2>Détail des interventions</h2>";
+
     $services = listeinterventions($id_enseignant);
-    echo '<table class="formations">';
+    echo '<p><table class="interventions noprint">';
     echo '<tr>';
     ig_legendeintervention();
     echo '</tr>';
@@ -51,8 +69,8 @@ if ($id_enseignant != "") {
 	echo '</tr>';
     }
     echo '<tr>';
-    ig_totauxinterventions($id_enseignant);
+    ig_totauxinterventions($totaux);
     echo '</tr>';
-    echo '</table>';
+    echo '</table></p>';
 }
 ?>

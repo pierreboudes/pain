@@ -256,7 +256,6 @@ function ig_legendetranches($id) {
     echo '<th class="TD">TD</th>';
     echo '<th class="TP">TP</th>';
     echo '<th class="alt">alt.</th>';
-    echo '<th class="type_conversion">conversion</th>';
     echo '<th class="HTD">htd</th>';
     echo '<th class="remarque">Remarque</th>';
     echo '<th class="action">';
@@ -298,9 +297,6 @@ function ig_tranche($t,$tag="") {
     echo '<td class="TD">'.$t["td"].'</td>';
     echo '<td class="TP">'.$t["tp"].'</td>';
     echo '<td class="alt">'.$t["alt"].'</td>';
-    echo '<td class="type_conversion">';
-    ig_typeconversion($t["type_conversion"]);
-    echo '</td>';
     echo '<td class="HTD">'.$t["htd"].'</td>';
     echo '<td class="remarque">'.$t["remarque"].'</td>';
     echo '<td class="action" id="tranche'.$tag.$id.'">';
@@ -321,7 +317,7 @@ function ig_listtranches($tranches) {
 }
 
 
-function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, $alt= 0, $id_enseignant = -1, $groupe = 0, $type_conversion = 0, $remarque = "", $htd = 0)
+function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, $alt= 0, $id_enseignant = -1, $groupe = 0, $remarque = "")
 {    
     echo '<tr class="formtranche">';
     echo '<td class="groupe">';
@@ -344,16 +340,7 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
     echo '<td class="alt">';
     echo '<input type="text" name="alt" value="'.$alt.'" />';
     echo '</td>';
-    echo '<td class="type_conversion">'; 
-    echo '<input value="0" '; 
-    if (0 == $type_conversion) echo 'checked ';
-    echo 'type="radio" class ="type_conversion" name="type_conversion" />auto<br/>';
-    echo '<input value="1" ';
-    if (1 == $type_conversion) echo 'checked ';
-    echo 'type="radio" class ="type_conversion" name="type_conversion"/>manuel</td>';
-    echo '</td>';
     echo '<td class="HTD">';
-    echo '<input type="text" name="htd" value="'.$htd.'" />';
     echo '</td>';
     echo '<td class="remarque">';
     echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
@@ -721,6 +708,7 @@ pain_formation.parfum,
 pain_cours.semestre,
 pain_cours.nom_cours,
 pain_cours.code_geisha,
+pain_cours.id_cours AS id_cours,
 pain_tranche.groupe,
 pain_tranche.cm,
 pain_tranche.td,
@@ -735,7 +723,7 @@ WHERE ".(($id_enseignant == 1)?
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.annee_universitaire = '2009'
-ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
+ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
 
 
 /* avec une jointure
@@ -759,7 +747,7 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC
 SELECT *, (SELECT nom_cours FROM pain_cours where pain_cours.id_cours = pain_tranche.id_cours) AS nom_cours FROM pain_tranche WHERE id_enseignant = 10}
 */
 
-    ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
+    ($result = mysql_query($query)) or die("Échec de la connexion à la base");
     return $result;
 }
 
@@ -773,7 +761,6 @@ function ig_legendeintervention() {
     echo '<th class="TD">TD</th>';
     echo '<th class="TP">TP</th>';
     echo '<th class="alt">alt.</th>';
-/*     echo '<th class="type_conversion">conversion</th>'; */
     echo '<th class="HTD">htd</th>';
     echo '<th class="remarque">Remarque</th>';
 }
@@ -801,15 +788,11 @@ function ig_intervention($i) {
     echo '<td class="TD">'.$i["td"].'</td>';
     echo '<td class="TP">'.$i["tp"].'</td>';
     echo '<td class="alt">'.$i["alt"].'</td>';
-/*    echo '<td class="type_conversion">';
-    ig_typeconversion($i["pain_tranche.type_conversion"]);
-    echo '</td>'; */
     echo '<td class="HTD">'.$i["htd"].'</td>';
     echo '<td class="remarque">'.$i["remarque"].'</td>';
 }
 
-
-function ig_totauxinterventions($id_enseignant) {
+function totauxinterventions($id_enseignant) {
     $query = "SELECT 
 SUM(pain_tranche.cm) AS cm,
 SUM(pain_tranche.td) AS td,
@@ -826,19 +809,120 @@ AND pain_formation.annee_universitaire = '2009'
 ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 
     ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
-
-    if ($totaux = mysql_fetch_array($result)) {
-	echo '<th style="text-align:right;" colspan= 5>';
-	echo 'totaux';
-	echo '</th>';
-	echo '<td class="CM">'.$totaux["cm"].'</td>';
-	echo '<td class="TD">'.$totaux["td"].'</td>';
-	echo '<td class="TP">'.$totaux["tp"].'</td>';
-	echo '<td class="alt">'.$totaux["alt"].'</td>';
-	echo '<td class="HTD">'.$totaux["htd"].'</td>';
-	echo '<th></th>';
-    }
+    $totaux = mysql_fetch_array($result);
+    return $totaux;
 }
+
+function ig_totauxinterventions($totaux) {
+    echo '<th style="text-align:right;" colspan= 5>';
+    echo 'totaux';
+    echo '</th>';
+    echo '<td class="CM">'.$totaux["cm"].'</td>';
+    echo '<td class="TD">'.$totaux["td"].'</td>';
+    echo '<td class="TP">'.$totaux["tp"].'</td>';
+    echo '<td class="alt">'.$totaux["alt"].'</td>';
+    echo '<td class="HTD">'.$totaux["htd"].'</td>';
+    echo '<th></th>';
+}
+
+
+
+function listeservice($id_enseignant) {
+    $query = "SELECT 
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum,
+pain_cours.semestre,
+pain_cours.nom_cours,
+pain_cours.code_geisha,
+pain_cours.id_cours AS id_cours,
+SUM(pain_tranche.cm) AS cm,
+SUM(pain_tranche.td) AS td,
+SUM(pain_tranche.tp) AS tp,
+SUM(pain_tranche.alt) AS alt
+FROM pain_tranche, pain_cours, pain_formation
+WHERE ".(($id_enseignant == 1)?
+	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
+	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
+AND pain_formation.annee_universitaire = '2009'
+GROUP BY pain_cours.id_cours
+ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC";
+
+   ($result = mysql_query($query)) or die("Échec de la connexion à la base= $query");
+    return $result;
+}
+
+
+function ig_legendeservice() {
+    echo '<tr class="ligne_service">';
+    echo '<th class="code_geisha">';
+    echo  "Code UE";
+    echo '</th>';
+    echo '<th class="nom_cours">';
+    echo "Libellé de l'UE";
+    echo '</th>';
+    echo '<th class="semestre">';
+    echo "Période";
+    echo '</th>';
+    echo '<th class="CM">CM</th>';
+    echo '<th class="TD">TD</th>';
+    echo '<th class="TP">TP</th>';
+    echo '<th class="regime">Régime</th>';
+    echo '</tr>';
+}
+function ig_ligneservice($ligne) {
+    echo '<tr class="ligne_service">';
+    echo '<td class="code_geisha">';
+    echo $ligne["code_geisha"];
+    echo '</td>';
+    echo '<td class="nom_cours">';
+    echo $ligne["nom_cours"];
+    echo '</td>';
+    echo '<td class="semestre">';
+    echo 'S'.$ligne["semestre"];
+    echo '</td>';
+    echo '<td class="CM">'.$ligne["cm"].'</td>';
+    echo '<td class="TD">'.($ligne["td"] + $ligne["alt"]).'</td>';
+    echo '<td class="TP">'.$ligne["tp"].'</td>';
+    echo '<td class="regime">FI</td>';
+    echo '</tr>';
+}
+
+function ig_totauxservice($totaux) {
+    echo '<tr class="ligne_service">';
+    echo '<td colspan=2></td>';
+    echo '<td>';
+    echo 'TOTAL';
+    echo '</td>';
+    echo '<td class="CM">'.$totaux["cm"].'</td>';
+    echo '<td class="TD">'.($totaux["td"] + $totaux["alt"]).'</td>';
+    echo '<td class="TP">'.$totaux["tp"].'</td>';
+    echo '<td class="regime"></td>';
+    echo '</tr>';
+}
+
+/* garbage...
+function ig_ligneservice($code_geisha, $nom_cours, $semestre,
+			 $cm, $td, $tp, $alt) {
+    echo '<tr class="ligne_service">';
+    echo '<td class="code_geisha">';
+    echo $code_geisha;
+    echo '</td>';
+    echo '<td class="nom_cours">';
+    echo $nom_cours;
+    echo '</td>';
+    echo '<td class="semestre">';
+    echo 'S'.$semestre;
+    echo '</td>';
+    echo '<td class="CM">'.$cm.'</td>';
+    echo '<td class="TD">'.($td + $alt).'</td>';
+    echo '<td class="TP">'.$tp.'</td>';
+    echo '<td class="regime">FI</td>';
+    echo '</tr>';
+}
+*/
 
 
 function stats($valeur,$ou) {
