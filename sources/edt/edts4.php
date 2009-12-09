@@ -1,4 +1,5 @@
-<?php require_once('authentication.php'); 
+<?php
+require_once('authentication.php'); 
 if (isset($_POST['login'])) {
    phpCAS::forceAuthentication();
 }
@@ -77,7 +78,8 @@ background: silver; padding: 2px; font-size: 14px; border:
 <p>
 <div id='login'>
   <form name="login" action="" method="post">
-  <input type="submit" name="login" value="login"/>
+  <input type="hidden" name="login" value="login"/>
+  <input type="submit" name="dologin" value="login"/>
   </form>
 </div>
 </p>
