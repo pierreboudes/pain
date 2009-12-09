@@ -21,9 +21,8 @@
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-
 function errmsg_formtranche($s) {
-    echo '<td>ERREUR</td><td colspan="9">'.$s.'</td>';
+    echo '<td>ERREUR</td><td colspan="8">'.$s.'</td>';
 }
 
 

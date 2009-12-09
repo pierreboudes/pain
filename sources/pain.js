@@ -30,11 +30,17 @@ $(document).ready(function(){
 });
 
 
+function contientERREUR(str) {
+    var patt=/ERREUR/g;
+    return patt.test(str);
+}
+
+
 function supprimerCours(id) {
     $('#cours'+id).parent().css('background-color','yellow');
     if (confirm('Voulez vous vraiment supprimer ce cours ?')) {
 	jQuery.post("act_supprimercours.php", {id_cours: id}, function (data) {
-		if (4 < data.length) {
+		if (contientERREUR(data)) {
 		    alert(data);
 		    $('#cours'+id).parent().css('background-color','');
 		}
@@ -82,7 +88,7 @@ function modifierCours(id) {
 	$('#cours' + id).parent().after('<tr class="cours" ondblclick="modifierCours('+id+')" id="tcours'+id+'" style="display:none;"><td colspan="11">invisible</td></tr>');
     }
     jQuery.post("act_editercours.php", {id_cours: id}, function (data) {
-	    if (20 > data.length) {
+	    if (contientERREUR(data)) {
 		alert(data);
 		$('#cours'+id).parent().css('background-color','');
 	    }
@@ -226,14 +232,18 @@ function tranchesCours(id) {
 
     /* demander les nouvelles tranches et les afficher lorsqu'elles sont dispo */
     jQuery.post("act_affichertranches.php", {id_cours: id}, function (resultat) {
-	    $('#cours'+id).parent().after(resultat);
+	    if(contientERREUR(resultat)) {
+		alert(resultat);
+	    } else {
+		$('#cours'+id).parent().after(resultat);
 	    
-            /* armer les callback du traitement du formulaire */
-	    $('#formtranche'+id).ajaxForm(options);
-	    /* activer l'autocomplete du formulaire */
-	    $('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
-	    /* activer quelques bulles d'aide */
-	    /* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
+		/* armer les callback du traitement du formulaire */
+		$('#formtranche'+id).ajaxForm(options);
+		/* activer l'autocomplete du formulaire */
+		$('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
+		/* activer quelques bulles d'aide */
+		/* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
+	    }
 	}, 'text');
     return false;
 }
@@ -250,7 +260,7 @@ function beforeAjouterTranche(formData, jqForm, options, id) {
 }
 
 function afterAjouterTranche(responseText, statusText, id)  {
-    if (responseText.length > 40) {
+    if (contientERREUR(responseText)) {
 	$('#tranchesducours' + id + ' table.tranches > tbody > tr:last').before(responseText);
 	totauxCoursChanged(id);
     } else {
@@ -262,7 +272,7 @@ function supprimerTranche(id) {
     $('#tranche'+id).parent().css('background-color','yellow');
     if (confirm('Voulez vous vraiment supprimer cette intervention ?')) {
 	jQuery.post("act_supprimertranche.php", {id_tranche: id}, function (data) {
-		if (4 < data.length) {
+		if (contientERREUR(data)) {
 		    alert(data);
 		    $('#tranche'+id).parent().css('background-color','');
 		}
@@ -290,7 +300,7 @@ function modifierTranche(id) {
 	});
     flobu.enable();
     jQuery.post("act_editertranche.php", {id_tranche: id}, function (data) {
-	    if (20 > data.length) {
+	    if (contientERREUR(data)) {
 		alert(data);
 	    }
 	    else {
@@ -327,7 +337,7 @@ function beforeModifierTranche(formData, jqForm, options, id) {
 }
 
 function afterModifierTranche(responseText, statusText, id)  {
-    if ( responseText.length > 40 )  {
+    if ( contientERREUR(responseText) )  {
 	$('#tranche'+id).parent().after(responseText);	
         /* on a bien la nouvelle ligne pour ce cours */
 	/* effacer l'ancienne ligne  */
@@ -352,7 +362,7 @@ function annulerModifierTranche(id) {
     $('#boutonmodifiertranche'+id).attr('disabled','');
     return false;
 }
-/******************/
+/*****  Les bascules *********/
 
 
 function basculerCours(id) {
@@ -402,7 +412,9 @@ function basculerSuperFormation(id) {
 
 
 function toutBasculer() {
+    jQuery.fx.off = true;
     $("tr.super div.basculeOn").trigger("click");
+    jQuery.fx.off = false;
 }
 
 function trim(str) 
@@ -414,7 +426,7 @@ function trim(str)
 function htdCours(id) {
     jQuery.post("act_totauxcours.php", {id_cours: id}, function (data) {
         // DEBUG alert('htdCours('+id+') : data = '+data);
-	    if (data.length > 10) {
+	    if (!contientERREUR(data)) {
 		data = trim(data);
 		$('#imgcours'+id).html(data);
 	    } else {
@@ -426,7 +438,7 @@ function htdCours(id) {
 
 function htdFormation(id) {
     jQuery.post("act_totauxformation.php", {id_formation: id}, function (data) {
-	    if (data.length > 10) {
+	    if (!contientERREUR()) {
         // DEBUG       alert('htdFormation('+id+') : data = '+data);
 		data = trim(data);
 		$('#imgformation'+id).html(data);
@@ -441,7 +453,7 @@ function htdFormation(id) {
 
 function htdSuperFormation(id) {
     jQuery.post("act_totauxsuper.php", {id_sformation: id}, function (data) {
-	    if (data.length > 10) {
+	    if (!contientERREUR(data)) {
         // DEBUG       alert('htdFormation('+id+') : data = '+data);
 		data = trim(data);
 		$('#imgsformation'+id).html(data);
@@ -456,7 +468,7 @@ function htdSuperFormation(id) {
 
 function htdTotaux() {
     jQuery.post("act_totaux.php", {annee_universitaire: "2009"}, function (data) {
-	    if (data.length > 10) {
+	    if (!contientERREUR(data)) {
 		data = trim(data);
 		$('#imgentete').html(data);
 		var totaux = $('#imgentete img').attr('title');

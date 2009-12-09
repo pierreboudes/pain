@@ -26,7 +26,7 @@ if (isset($_POST["id_tranche"])) {
     $id = postclean("id_tranche");
     $c = selectionner_tranche($id);
     echo '<tr class="trtrancheform" id="formedittranche'.$id.'">';    
-    echo '<td colspan="10">'."\n";
+    echo '<td colspan="9">'."\n";
     echo '<form method="post" id="fedittranche'.$id.
          '" class="formtranche" name="tranche" action="">';
     echo '<table class="tabletrancheform">';
