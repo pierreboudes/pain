@@ -1,5 +1,10 @@
 <?php
-$url = $_SERVER['HTTP_REFERER'];
 require_once('authentication.php'); 
-phpCAS::logoutWithRedirectService($url);
+if (isset($_SERVER['HTTP_REFERER'])) {
+  $url = $_SERVER['HTTP_REFERER'];
+  phpCAS::logoutWithRedirectService($url);
+} else {
+  phpCAS::logout();
+  echo 'Sayonara';
+}
 ?>
