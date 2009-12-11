@@ -21,11 +21,10 @@
 ?>
 <body> 
 <ul id="menu">
-<li><a href="./">accueil</a></li>
-<li><a href="enseignants.php">enseignants</a> (temp.)</li>
-     <li><a href="stats.php">statistiques</a>(temp.)</li>
-     <li><a href="service.php">feuille de service</a>(temp.)</li>
-<li><a >annuaire d'une formation</a></li>
-<!-- <li><a href="javascript:mylogout();">logout</a></li> -->
-
+      <li><a href="./">accueil</a></li>
+      <li><a href="enseignants.php">enseignants</a></li>
+      <li><a href="stats.php">statistiques</a></li>
+      <li><a href="service.php">feuille de service</a></li>
+      <li><a >annuaires</a></li>
+      <li><a href="logout.php">logout</a></li>
 </ul>

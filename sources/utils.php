@@ -98,5 +98,4 @@ function ig_statsmysql() {
     echo "\nPage servie en : ".$us."ms ";
     echo '</pre></div>';
 }
-
 ?>

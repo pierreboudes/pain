@@ -337,7 +337,7 @@ function beforeModifierTranche(formData, jqForm, options, id) {
 }
 
 function afterModifierTranche(responseText, statusText, id)  {
-    if ( contientERREUR(responseText) )  {
+    if ( !contientERREUR(responseText) )  {
 	$('#tranche'+id).parent().after(responseText);	
         /* on a bien la nouvelle ligne pour ce cours */
 	/* effacer l'ancienne ligne  */

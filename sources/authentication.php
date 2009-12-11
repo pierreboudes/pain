@@ -18,24 +18,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
-$user = authentication();
+require_once('CAS.php');
+// error_reporting(E_ALL & ~E_NOTICE);
+phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
+// phpCAS::setDebug();
+phpCAS::setNoCasServerValidation();
 
-require_once("inc_connect.php");
-require_once("inc_functions.php");
+require_once('inc_connect.php');
 
-$id = 0;
-
-if (isset($_POST["id_cours"])) {
-    $id = postclean("id_cours");
-} 
-
-$r = htdcours($id);
-$servi = $r["servi"];
-$mutualise = $r["mutualise"];
-$libre = $r["libre"];
-$annule = $r["annule"];
+function authentication() {
+    phpCAS::forceAuthentication();
+    $login = phpCAS::getUser();
+    $query = "SELECT id_enseignant, prenom, nom 
+              FROM pain_enseignant 
+              WHERE login LIKE '$login' LIMIT 1";
+    $result = mysql_query($query);
+    if ($user = mysql_fetch_array($result)) {
+	return $user;
+    } else {
+	die("Désolé $login votre login n'est pas enregistré dans la base du département");
+    };
+}
 ?>
-<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&mutualise=<?=$mutualise?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php
-ig_htd($r);
- ?>"/>

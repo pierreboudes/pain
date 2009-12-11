@@ -18,6 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once('authentication.php'); 
+$user = authentication();
 
 require_once("utils.php");
 require_once("inc_actions.php");

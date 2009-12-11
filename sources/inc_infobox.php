@@ -18,7 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-$toto = 0 + 0;
+require_once('authentication.php'); 
+$user = authentication();
 ?>
 <center>
 <div class="infobox">
