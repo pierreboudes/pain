@@ -60,6 +60,7 @@ while($sformation = mysql_fetch_array($rsformation))
 
     echo '<tr class="super" id="sformation'.$id_sformation.'">';
     echo '<td class="intitule">';
+    debug_show_id($id_sformation);
     action_basculersuper($id_sformation);
     // TODO action_histodescours($id_sformation);
     echo $sformation["nom"]." &ndash; ";	
@@ -89,6 +90,7 @@ while($sformation = mysql_fetch_array($rsformation))
 	echo '</div></td></tr>';
 	echo '<tr class="formation" id="formation'.$id_formation.'">';
 	echo '<td class="intitule" colspan="11">';
+	debug_show_id($id_formation);    
 	action_basculerformation($id_formation);
 	action_histodescours($id_formation);
 	echo $formation["nom"]." ".$formation["annee_etude"]." ";

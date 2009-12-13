@@ -27,6 +27,7 @@ $(document).ready(function(){
 	$('select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
         /* sympa mais pose quelques soucis d'affichage ... */
 	toutBasculer();
+//	$("table.super").draggable({ revert: true });
 });
 
 
@@ -260,7 +261,7 @@ function beforeAjouterTranche(formData, jqForm, options, id) {
 }
 
 function afterAjouterTranche(responseText, statusText, id)  {
-    if (contientERREUR(responseText)) {
+    if (!contientERREUR(responseText)) {
 	$('#tranchesducours' + id + ' table.tranches > tbody > tr:last').before(responseText);
 	totauxCoursChanged(id);
     } else {

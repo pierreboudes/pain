@@ -29,14 +29,14 @@ require_once('inc_connect.php');
 function authentication() {
     phpCAS::forceAuthentication();
     $login = phpCAS::getUser();
-    $query = "SELECT id_enseignant, prenom, nom 
+    $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
               FROM pain_enseignant 
               WHERE login LIKE '$login' LIMIT 1";
     $result = mysql_query($query);
     if ($user = mysql_fetch_array($result)) {
 	return $user;
     } else {
-	die("Désolé $login votre login n'est pas enregistré dans la base du département");
+	die("Désolé votre login ($login) n'est pas enregistré dans la base du département");
     };
 }
 ?>

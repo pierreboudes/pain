@@ -57,14 +57,15 @@ function postnumclean($s) {
 }
 
 function pain_log($message, $logname='pain') {
+    global $user;
         /* vu qu'on écrit un fichier on ne veut pas de process appelant qui boucle... */
 	static $compteur;
 	if ($compteur++ > 10) return;
 
-	$pid = '(pid '.@getmypid().')';
-
-	$message = date("M d H:i:s").' '.$_SERVER['REMOTE_ADDR'].' '.$pid.' '
-		.preg_replace("/\n*$/", "\n", $message);
+//	$pid = '(pid '.@getmypid().')';
+	$message = preg_replace("/\n+/", " ", $message);
+//	$message = preg_replace("/\n*$/", "\n", $message);
+	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. ' ';
         $logfile = dirname($_SERVER['SCRIPT_FILENAME'])."/painlogs/".$logname .'.log';
 /*	echo $logfile;
 		if (@is_readable($logfile)) echo "readable";
@@ -72,7 +73,7 @@ function pain_log($message, $logname='pain') {
 	if (@is_readable($logfile)
 	AND (!$s = @filesize($logfile) OR $s > 100*1024)) {
 		$rotate = true;
-		$message .= "[-- rotate --]\n";
+		$message .= "-- [ rotate ]\n";
 	} else $rotate = '';
 	$f = @fopen($logfile, "ab");
 	if ($f) {
@@ -86,6 +87,7 @@ function pain_log($message, $logname='pain') {
 		@rename($logfile.'.2',$logfile.'.3');
 		@rename($logfile.'.1',$logfile.'.2');
 		@rename($logfile,$logfile.'.1');
+		
 	}
 }
 

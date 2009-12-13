@@ -443,3 +443,31 @@ div.tip {
     font-family:monospace;
     width: 300px;
 }
+
+a.enseignant {
+    text-decoration: none;
+    color: inherit;    
+}
+
+a.enseignant:hover {
+    text-decoration: underline;
+}
+/*
+   A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+A:hover {text-decoration: underline; color: red;}
+   */
+
+/* DEBUG */
+.debug_id {
+    position: absolute;
+    margin-left: -2em;
+    z-index: 100;
+    width: 2em;
+    text-align: right;
+    color: red;
+    background-color: white;
+    font-weight: bolder;
+    opacity: 0.5;
+}

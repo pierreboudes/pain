@@ -54,7 +54,7 @@ function action_basculercours($id_cours) {
 }
 
 function action_supprimercours($id_cours) {
-    echo '<button type="button" id="boutonsupprimercours'.$id_cours.'" class="action" onclick="supprimerCours('.$id_cours.')"'.(peuteditercours($id_cours)?'':' disabled="disabled"').'>supprimer</button>';
+    echo '<button type="button" id="boutonsupprimercours'.$id_cours.'" class="action" onclick="supprimerCours('.$id_cours.')"'.(peutediterformationducours($id_cours)?'':' disabled="disabled"').'>supprimer</button>';
 }
 
 function action_modifiercours($id_cours) {

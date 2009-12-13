@@ -13,5 +13,6 @@ if ($id) {
 }
 $result = mysql_query($query) or die('ERREUR : '.mysql_error());
 $ligne = mysql_fetch_array($result);
-echo $ligne["edt_html"];
+$edt_html = preg_replace("/\n*$/", "\n", $ligne["edt_html"]);
+echo $edt_html;
 ?>

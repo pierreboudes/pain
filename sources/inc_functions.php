@@ -18,13 +18,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+$debug_show_id = false; /* afficher les id */
+function debug_show_id($s) {
+    global $debug_show_id;
+    if ($debug_show_id) {
+	echo '<div class="debug_id">'.$s.'</div>';
+    }
+}
+
 require_once('authentication.php'); 
 $user = authentication();
-
 require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
-
 
 function ig_typeconversion($type)
 {
@@ -53,8 +59,11 @@ function ig_responsable($id)
 	$rresponsable = mysql_query($qresponsable) 
 	    or die("Échec de la requête sur la table enseignant");
 	$responsable = mysql_fetch_array($rresponsable);
+	debug_show_id($id);    
+	echo '<a class="enseignant" href="service.php?id_enseignant='.$id.'">';
 	echo $responsable["prenom"]." ";
 	echo $responsable["nom"];
+	echo '</a>';
     }
 }
 
@@ -132,21 +141,26 @@ function supprimer_cours($id)
 {    
     if (peuteditercours($id)) {
 	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
-	pain_log("supprimer_cours($id)");
+	pain_log("-- supprimer_cours($id)");
 
         if (mysql_query($qcours)) {
 	    /* on efface les tranches associées */
-	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";	    
+	    pain_log("$qcours");
+
+	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";
+	    
 	    if (mysql_query($qtranches)) {
 		echo "OK";
+		pain_log("$qtranches");
+
 	    } else {
-		echo "Échec de la requête sur la table tranches.";
+		echo "ERREUR Échec de la requête sur la table tranches.";
 	    }
 	} else {
-	    echo "Échec de la requête sur la table cours.";
+	    echo "ERREUR Échec de la requête sur la table cours.";
 	}
     } else {
-	echo "Droits insuffisants.";
+	echo "ERREUR Droits insuffisants.";
     }
 }
 
@@ -156,6 +170,7 @@ function ig_cours($cours,$tag="")
     $id = $cours["id_cours"];
     
     echo '<td class="nom_cours">';
+    debug_show_id($id);
     echo $cours["nom_cours"];
     echo '</td>';
     
@@ -291,7 +306,10 @@ function ig_tranche($t,$tag="") {
     echo '<tr class="tranche"';
     action_dblcmodifiertranche($id);
     echo '>';
-    echo '<td class="groupe">'.$t["groupe"].'</td>';
+    echo '<td class="groupe">';
+    debug_show_id($id);    
+    echo  $t["groupe"];    
+    echo '</td>';
     echo '<td class="enseignant">';
     echo ig_responsable($t["id_enseignant"]);
     echo '</td>';
@@ -368,10 +386,9 @@ function supprimer_tranche($id)
     if (peuteditertranche($id)) {
 	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
-	pain_log("supprimer_tranche($id)");
-
 	
 	if (mysql_query($qtranche)) {
+	    pain_log("$qtranche -- supprimer_tranche($id)");
 	    echo "OK";
 	} else {
 	    echo "Échec de la requête sur la table cours.";
@@ -399,7 +416,10 @@ function ig_legendeenseignant() {
 function ig_enseignant($t) {
     $id = $t["id_enseignant"];
     echo '<tr class="enseignant">';
-    echo '<td class="prenom">'.$t["prenom"].'</td>';
+    echo '<td class="prenom">';
+    debug_show_id($id);
+    echo $t["prenom"];
+    echo '</td>';
     echo '<td class="nom">'.$t["nom"].'</td>';
     echo '<td class="statut">'.$t["statut"].'</td>';
     echo '<td class="email">'.$t["email"].'</td>';
@@ -770,6 +790,7 @@ function ig_legendeintervention() {
 function ig_intervention($i) {
     $id = $i["id_tranche"];
     echo '<td class="formation">';
+    debug_show_id($id);
     echo $i["nom"]." ".$i["annee_etude"]." ";
     echo $i["parfum"];
     echo '</td>';

@@ -23,7 +23,7 @@ $user = authentication();
 ?>
 <center>
 <div class="infobox">
-Bonjour <?=$_SERVER['PHP_AUTH_USER']?>.
+<p>Bonjour <?php echo $user["prenom"]." ".$user["nom"]; ?></p>
 <p>      
       En cas de problème d'affichage à l'édition :<b> recharger la page.</b></p>
       <p>Jusqu'à janvier 2010 au moins, il faut également <b>tenir 
