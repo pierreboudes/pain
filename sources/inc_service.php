@@ -28,10 +28,10 @@ $id_enseignant = "";
 
 if (isset($_GET['id_enseignant'])) {
     $id_enseignant = getclean('id_enseignant');
-}
-
-if (isset($_POST['id_enseignant'])) {
+} else if (isset($_POST['id_enseignant'])) {
     $id_enseignant = postclean('id_enseignant');
+} else {
+    $id_enseignant = $user["id_enseignant"];
 }
 echo '<center><div class="infobox" style="width:200px;">';
 echo '<form method="post" id="choixenseignant" class="formcours" name="enseignant" action="#">';
@@ -44,25 +44,40 @@ echo '</div></center>';
 
 if ($id_enseignant != "") {
 
+    /* annuaire */
+    echo "<h2>Informations d'annuaire</h2>";
+
+    echo '<table class="enseignants">';
+    ig_legendeenseignant();
+    $q = "SELECT * from pain_enseignant 
+          WHERE id_enseignant = $id_enseignant";
+    ($r = mysql_query($q)) 
+    or die("Échec de la connexion à la base enseignant");
+    if ($t = mysql_fetch_array($r)) {
+	ig_enseignant($t);
+    }
+echo '</table>';
+
+
     $totaux = totauxinterventions($id_enseignant);
 
     /* Feuille de service */
     echo "<h2>Déclaration du service d'enseignement</h2>";
 
     $services = listeservice($id_enseignant);
-    echo '<p><table class="service">';
+    echo '<table class="service">';
     ig_legendeservice();
     while ($ligne = mysql_fetch_array($services)) {
 	ig_ligneservice($ligne);
     }
     ig_totauxservice($totaux);
-    echo '</table></p>';
+    echo '</table>';
 
     /* Details (tranche par tranche) */
     echo "<h2>Détail des interventions</h2>";
 
     $services = listeinterventions($id_enseignant);
-    echo '<p><table class="interventions noprint">';
+    echo '<table class="interventions noprint">';
     echo '<tr>';
     ig_legendeintervention();
     echo '</tr>';
@@ -74,6 +89,6 @@ if ($id_enseignant != "") {
     echo '<tr>';
     ig_totauxinterventions($totaux);
     echo '</tr>';
-    echo '</table></p>';
+    echo '</table>';
 }
 ?>

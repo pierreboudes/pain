@@ -459,6 +459,22 @@ A:active {text-decoration: none}
 A:hover {text-decoration: underline; color: red;}
    */
 
+
+/* COLORS */
+.servi {
+    background-color: rgb(58, 105, 35); /* vert */
+}
+.libre {
+    background-color: rgb(175, 29, 30); /* rouge */
+}
+.annule {
+    background-color: rgb(255, 144, 0); /* orange */
+}
+.mutualise {
+    background-color: rgb(100, 149, 237); /* bleu clair */
+}
+
+
 /* DEBUG */
 .debug_id {
     position: absolute;

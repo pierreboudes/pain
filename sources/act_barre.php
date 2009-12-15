@@ -75,7 +75,6 @@ $fondcolor = imagecolorallocate($im, 255, 255, 255);
 /* ne tourne pas au lipn imageantialias($im, true); */
 imagefilledrectangle($im, 0, 0, $largeur, $hauteur, $fondcolor);
 $white = imagecolorallocate($im,255,255,255);
-$rayurecolor = imagecolorallocate($im, 230, 230, 230);
 $servicolor = imagecolorallocate($im, 58, 105, 35); /* vert */
 $librecolor = imagecolorallocate($im, 175, 29, 30); /* rouge */
 $annulecolor = imagecolorallocate($im, 255, 144, 0); /* orange */

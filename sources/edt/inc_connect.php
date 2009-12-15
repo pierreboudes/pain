@@ -1,4 +1,4 @@
-<?php /* -*- coding: utf-8 -*-*/
+<?php
 /* Pain - outil de gestion des services d'enseignement        
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
@@ -18,12 +18,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
-$user = authentication();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("affichage des services (temporaire)");
-include("menu.php");
-include("inc_service.php");
-piedpage();
-?>
 
+/* inclusion du fichier realisant la connexion avec les donnees sensibles en dur : */
+require_once("../../secret/pconnect.php"); 
+/* ce fichier contient quelque chose comme :
+<?php
+@mysql_pconnect("localhost", "utilisateur", "mot de passe") or die("Échec de la connexion au serveur de la base de données.");
+@mysql_selectdb("pain") or die("Échec de sélection de la base de données.");
+?>
+*/
+mysql_query("SET NAMES 'utf8'");
+?>

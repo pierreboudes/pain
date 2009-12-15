@@ -42,8 +42,8 @@ if (isset($_POST["nom"])) {
     {
 	errmsg_formenseignant("incomplet");
     } 
-  /* Droits d'edition de cours dans la formation */
-    else if (!peutediterenseignant()) { 
+    /* Droits d'edition de cours dans la formation */
+    else if (!peutproposerenseignant()) { 
 	errmsg_formenseignant("Vous ne pouvez pas ajouter d'enseignants.");
     }
     else {/* valide */

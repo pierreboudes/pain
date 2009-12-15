@@ -19,7 +19,6 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 ?>
-<body> 
 <ul id="menu">
       <li><a href="./">accueil</a></li>
       <li><a href="enseignants.php">enseignants</a></li>

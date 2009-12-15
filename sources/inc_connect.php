@@ -28,4 +28,39 @@ require_once("../secret/pconnect.php");
 ?>
 */
 mysql_query("SET NAMES 'utf8'");
+
+require_once('utils.php');
+
+function bkp_base() {
+    $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
+    $s = @stat($dir.'/bkp/void_bkp.txt');
+    if  (time() > ($s[9] + 604800)) /* weekly */
+    {
+	@touch($dir.'/bkp/void_bkp.txt');
+	pain_log("-- backup base start");
+	shell_exec("$dir/../secret/painbkp.sh $dir");
+	pain_log("-- backup base end");
+    }
+}
+/* le script painbkp.sh contient :
+mkdir -p ${1}/bkp/;
+cd ${1}/bkp/;
+touch tata;
+if [ -f "pain.2.sql.gz" ]; 
+then rm pain.2.sql.gz; 
+echo "rm  2"; 
+fi
+if [ -f "pain.1.sql.gz" ];
+then mv pain.1.sql.gz pain.2.sql.gz;
+echo "rotate 1->2";
+fi
+if [ -f "pain.sql.gz" ]; 
+then mv pain.sql.gz pain.1.sql.gz; 
+echo "rotate 0->1";
+fi
+mysqldump -p'PASS' -u'USER' BASE pain_cours pain_enseignant pain_tranche pain_formation pain_sformation pain_edt | gzip - > pain.sql.gz;
+echo "backuped";
+*/
+/* BACKUP */
+bkp_base();
 ?>

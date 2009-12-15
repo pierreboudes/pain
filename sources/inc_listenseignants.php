@@ -29,5 +29,5 @@ echo '<table class="enseignants">';
 ig_legendeenseignant();
 ig_listenseignants();
 ig_formenseignant();
-echo '</table></form></td></tr>';
+echo '</table></form>';
 ?>

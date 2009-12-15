@@ -69,22 +69,20 @@ function ig_responsable($id)
 
 function ig_formselectenseignants($id_enseignant)
 {
-    echo '<option value="3" '.(($id_enseignant==3)?'selected':'').'><i>libre</i></option>';
-    echo '<option value="2" '.(($id_enseignant==2)?'selected':'').'><i>mutualisé</i></option>';
-    echo '<option value="1" '.(($id_enseignant==1)?'selected':'').'><i>annulé</i></option>';
-	$qens = "SELECT `id_enseignant`, `prenom`, `nom` 
-                 FROM pain_enseignant WHERE `id_enseignant` > 9 ORDER BY `nom`,`prenom` ASC";
-	$rens = mysql_query($qens) 
-	    or die("Échec de la requête sur la table enseignant");
+    $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
+             FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
+    $rens = mysql_query($qens) 
+	  or die("Échec de la requête sur la table enseignant");
     while ($ens = mysql_fetch_array($rens)) {
 	echo '<option ';
-	if ($ens["id_enseignant"] == $id_enseignant) echo 'selected ';
+	if ($ens["id_enseignant"] == $id_enseignant) {
+	    echo 'selected="selected" ';
+	}
 	echo  'value="'.$ens["id_enseignant"].'">';
 	echo $ens["prenom"]." ";
 	echo $ens["nom"];
 	echo '</option>';
     }
-    echo '<option value="9" '.(($id_enseignant==9)?'selected':'').'><i>autre</i></option>';
 }
 
 
@@ -244,7 +242,7 @@ function ig_formcours($id_formation, $id_cours="", $nom_cours="", $semestre=0, $
     echo '<td class="descriptif">';
     echo '<input type="hidden" name="id_formation" value="'.$id_formation.'"/>';
 echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
-    echo '<textarea name="descriptif" rows="4" >'.$descriptif.'</textarea></td>';
+    echo '<textarea name="descriptif" rows="4" cols="10">'.$descriptif.'</textarea></td>';
     echo '<td class="code_geisha"><input type="text" name="code_geisha" value="'.$code_geisha.'" /></td>';
     if ($id) {/* modification de cours */
 	echo '<td class="action" id="formmodifcours'.$id.'">';
@@ -367,7 +365,7 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
     if ($id_tranche != NULL) {
 	echo '<input type="hidden" name="id_tranche" value="'.$id_tranche.'"/>';
     }
-    echo '<textarea name="remarque" rows="2" >';
+    echo '<textarea name="remarque" rows="2" cols="10">';
     echo $remarque;
     echo '</textarea></td>';
     echo '<td class="action">';
@@ -432,7 +430,7 @@ function ig_enseignant($t) {
 }
 
 function ig_listenseignants() {
-    $q = "SELECT * from pain_enseignant WHERE id_enseignant > 9 ORDER by nom,prenom ASC";
+    $q = "SELECT * from pain_enseignant WHERE id_enseignant > 9 ORDER by categorie ASC, nom,prenom ASC";
     ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
     while ($t = mysql_fetch_array($r))
     {
@@ -747,28 +745,6 @@ AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.annee_universitaire = '2009'
 ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
 
-
-/* avec une jointure
-SELECT *
-FROM pain_tranche, pain_cours
-WHERE pain_tranche.id_cours = pain_cours.id_cours
-AND pain_tranche.id_enseignant =10
-LIMIT 0 , 30
-*/
-
-/* jointure sur 3 tables ?
-SELECT *
-FROM pain_tranche, pain_cours, pain_formation
-WHERE pain_tranche.id_enseignant =10
-AND pain_tranche.id_cours = pain_cours.id_cours
-AND pain_cours.id_formation = pain_formation.id_formation
-ORDER by pain_formation.numero ASC, pain_cours.semestre ASC
-*/
-
-/* avec des sous requêtes 
-SELECT *, (SELECT nom_cours FROM pain_cours where pain_cours.id_cours = pain_tranche.id_cours) AS nom_cours FROM pain_tranche WHERE id_enseignant = 10}
-*/
-
     ($result = mysql_query($query)) or die("Échec de la connexion à la base");
     return $result;
 }
@@ -837,7 +813,7 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 }
 
 function ig_totauxinterventions($totaux) {
-    echo '<th style="text-align:right;" colspan= 5>';
+    echo '<th style="text-align:right;" colspan="5">';
     echo 'totaux';
     echo '</th>';
     echo '<td class="CM">'.$totaux["cm"].'</td>';
@@ -915,7 +891,7 @@ function ig_ligneservice($ligne) {
 
 function ig_totauxservice($totaux) {
     echo '<tr class="ligne_service">';
-    echo '<td colspan=2></td>';
+    echo '<td colspan="2"></td>';
     echo '<td>';
     echo 'TOTAL';
     echo '</td>';
@@ -925,28 +901,6 @@ function ig_totauxservice($totaux) {
     echo '<td class="regime"></td>';
     echo '</tr>';
 }
-
-/* garbage...
-function ig_ligneservice($code_geisha, $nom_cours, $semestre,
-			 $cm, $td, $tp, $alt) {
-    echo '<tr class="ligne_service">';
-    echo '<td class="code_geisha">';
-    echo $code_geisha;
-    echo '</td>';
-    echo '<td class="nom_cours">';
-    echo $nom_cours;
-    echo '</td>';
-    echo '<td class="semestre">';
-    echo 'S'.$semestre;
-    echo '</td>';
-    echo '<td class="CM">'.$cm.'</td>';
-    echo '<td class="TD">'.($td + $alt).'</td>';
-    echo '<td class="TP">'.$tp.'</td>';
-    echo '<td class="regime">FI</td>';
-    echo '</tr>';
-}
-*/
-
 
 function stats($valeur,$ou) {
  $qstat = 'SELECT '.$valeur.' FROM '.$ou;
@@ -963,7 +917,7 @@ function stats($valeur,$ou) {
 
 function update_servicesreels() {
     $qupdate = "UPDATE `pain_enseignant` SET service_reel = (SELECT SUM(pain_tranche.htd) FROM pain_tranche,pain_cours WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1) WHERE 1";
-    mysql_query($qupdate) 
+    mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
 }
 

@@ -36,7 +36,7 @@ function authentication() {
     if ($user = mysql_fetch_array($result)) {
 	return $user;
     } else {
-	die("Désolé votre login ($login) n'est pas enregistré dans la base du département");
+	die("Désolé votre login ($login) n'est pas enregistré dans la base du département. (<a href='logout.php'>logout</a>)");
     };
 }
 ?>
