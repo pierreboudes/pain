@@ -24,7 +24,7 @@ function entete($titre, $js = NULL) {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
 
 <head>
-<title>Pain -- ".$titre."</title>
+<title>Pain -- $titre</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <link rel="stylesheet" type="text/css" href="autocomplete.css"/>
