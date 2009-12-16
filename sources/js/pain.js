@@ -403,6 +403,7 @@ function basculerSuperFormation(id) {
 
 function toutBasculer() {
     jQuery.fx.off = true;
+    $("tr.super div.basculeOff").trigger("click");
     $("tr.super div.basculeOn").trigger("click");
     jQuery.fx.off = false;
 }
