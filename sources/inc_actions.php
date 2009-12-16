@@ -33,7 +33,7 @@ function action_histodescours($id_formation) {
 }
 
 function action_basculersuper($id_sformation) {
-    echo '<div class="basculeOn"';
+    echo '<div class="basculeOff"';
     echo ' id="basculesuper'.$id_sformation.'"'; 
     echo ' onclick="basculerSuperFormation('.$id_sformation.')">';   
     echo '</div>';

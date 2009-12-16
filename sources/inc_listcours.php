@@ -72,7 +72,7 @@ while($sformation = mysql_fetch_array($rsformation))
     echo '</span>';
     echo '</td>';	
     echo "</tr>\n";
-    echo '<tr class="sousformations"><td>';
+    echo '<tr class="sousformations" style="display: none;"><td>';
     /* liste des annee de formation */
     $rformation = list_formations($id_sformation);
 
