@@ -24,15 +24,19 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-$id_enseignant = "";
+/* par defaut on sert la feuille de l'utilisateur */
+$id_enseignant = $user["id_enseignant"]; 
 
+/* mais si on a un identifiant dans l'url on utilise plutot celui-ci */
 if (isset($_GET['id_enseignant'])) {
     $id_enseignant = getclean('id_enseignant');
-} else if (isset($_POST['id_enseignant'])) {
-    $id_enseignant = postclean('id_enseignant');
-} else {
-    $id_enseignant = $user["id_enseignant"];
 }
+
+/* et si l'identifiant provient du formulaire, c'est plutot celui-la */
+if (isset($_POST['id_enseignant'])) {
+    $id_enseignant = postclean('id_enseignant');
+}
+
 echo '<center><div class="infobox" style="width:200px;">';
 echo '<form method="post" id="choixenseignant" class="formcours" name="enseignant" action="#">';
 echo '<select name="id_enseignant" style="display:inline; width:150px;">';
