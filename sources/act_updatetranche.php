@@ -52,21 +52,17 @@ if (isset($_POST["id_tranche"])) {
     }
     else {/* valide */
 	
-	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `remarque`='".$remarque."' WHERE `id_tranche`=".$id_tranche;
+	$query = "UPDATE pain_tranche SET `id_enseignant`='".$id_enseignant."', `groupe`='".$groupe."', `cm`='".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `htd`= '".$htd."', `remarque`='".$remarque."', modification = NOW() WHERE `id_tranche`=".$id_tranche;
 
 	pain_log($query);
+	$trancheold = selectionner_tranche($id_tranche);
 
 	if (!mysql_query($query)) {
 	    errmsg_formtranche(mysql_error());
 	} else {
-	    $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = ".$id_tranche;
-	 
-	    if (!($rtranche = mysql_query($qtranche))) {
-		errmsg_formtranche(mysql_error());
-	    } else {
-		$tranche = mysql_fetch_array($rtranche);
-		ig_tranche($tranche, "new");
-	    }
+	    $tranchenew = selectionner_tranche($id_tranche);
+	    historique_par_cmp(2, $trancheold, $tranchenew);	    
+	    ig_tranche($tranchenew, "new");
 	}
     }
 } else {

@@ -18,6 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once('authentication.php'); 
+authrequired();
 
 function action_nouveaucours($id_formation) {
     echo '<button type="button" id="buttonnouveaucours'.$id_formation.'" class="action" onclick="popFormCours($(this),'.$id_formation.');"'.(peuteditercoursdelaformation($id_formation)?'':' disabled="disabled"').'>nouveau</button>';
@@ -29,7 +31,7 @@ function action_histodesformations() {
 }
 
 function action_histodescours($id_formation) {
- echo ' <div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'.$id_formation.'" onclick="histoDesCours('.$id_formation.')"></div></div>';
+ echo ' <div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'.$id_formation.'" onclick="histoDesCours('.$id_formation.')"></div><div class="logOff" id="logsFormation'.$id_formation.'" onclick="logsFormation('.$id_formation.')"></div></div>';
 }
 
 function action_basculersuper($id_sformation) {

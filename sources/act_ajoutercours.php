@@ -77,6 +77,7 @@ if (isset($_POST["nom_cours"])) {
 		die("Échec de la requête sur la table cours");
 
 	    $cours = mysql_fetch_array($rcours);
+	    historique_par_ajout(1, $cours);
 	    ig_cours($cours);
 	}
     }

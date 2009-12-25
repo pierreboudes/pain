@@ -19,10 +19,11 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-$user = authentication();
+authrequired();
 
 require_once("inc_connect.php");
 require_once("inc_functions.php");
+require_once("inc_statsfunc.php");
 
 /* par defaut on sert la feuille de l'utilisateur */
 $id_enseignant = $user["id_enseignant"]; 
@@ -57,17 +58,17 @@ if ($id_enseignant != "") {
           WHERE id_enseignant = $id_enseignant";
     ($r = mysql_query($q)) 
     or die("Échec de la connexion à la base enseignant");
-    if ($t = mysql_fetch_array($r)) {
-	ig_enseignant($t);
+    if ($ens = mysql_fetch_array($r)) {
+	ig_enseignant($ens);
     }
-echo '</table>';
-
+    echo '</table>';
 
     $totaux = totauxinterventions($id_enseignant);
 
     /* Feuille de service */
     echo "<h2>Déclaration du service d'enseignement</h2>";
 
+ 
     $services = listeservice($id_enseignant);
     echo '<table class="service">';
     ig_legendeservice();
@@ -76,6 +77,7 @@ echo '</table>';
     }
     ig_totauxservice($totaux);
     echo '</table>';
+   
 
     /* Details (tranche par tranche) */
     echo "<h2>Détail des interventions</h2>";
@@ -95,4 +97,9 @@ echo '</table>';
     echo '</tr>';
     echo '</table>';
 }
+
+    echo '<div class="vignette">';
+    ig_statsenseignant($ens);
+    echo '</div>';
+
 ?>

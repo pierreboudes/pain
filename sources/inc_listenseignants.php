@@ -19,7 +19,7 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-$user = authentication();
+authrequired();
 
 require_once("inc_connect.php");
 require_once("inc_functions.php");

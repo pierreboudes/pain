@@ -21,9 +21,10 @@
 ?>
 <ul id="menu">
       <li><a href="./">accueil</a></li>
+      <li><a href="service.php">service</a></li>
+      <li><a href="stats.php">stats</a></li>
       <li><a href="enseignants.php">enseignants</a></li>
-      <li><a href="stats.php">statistiques</a></li>
-      <li><a href="service.php">feuille de service</a></li>
       <li><a >annuaires</a></li>
       <li><a href="logout.php">logout</a></li>
 </ul>
+

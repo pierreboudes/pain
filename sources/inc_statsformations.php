@@ -19,27 +19,9 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-$user = authentication();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("statistiques");
-require_once('utils.php');
+authrequired();
+
 require_once("inc_connect.php");
-require_once('inc_droits.php');
-require_once('inc_functions.php');
-require_once('inc_statsfunc.php');
-include("menu.php");
-echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
-echo "<p>";
-ig_htd(htdtotaux("2009"));
-echo "</p>";
-echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
-include("inc_statscategories.php");
-if (peutvoirstatsservices()) {
-    include("inc_statsservices.php");
-}
-echo "<h2>Graphiques par formation</h2>";
-include("inc_statsformations.php");
-echo "<h2>Graphiques par enseignant</h2>";
-include("inc_statsenseignants.php");
-piedpage();
+require_once("inc_functions.php");
+require_once("inc_statsfunc.php");
 ?>

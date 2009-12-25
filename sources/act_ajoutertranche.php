@@ -67,6 +67,7 @@ if (isset($_POST["id_cours"])) {
 		errmsg_formtranche(mysql_error());
 	    } else {   
 		$tranche = mysql_fetch_array($rtranche);
+		historique_par_ajout(2, $tranche);
 		ig_tranche($tranche);
 	    }
 	}

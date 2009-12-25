@@ -20,6 +20,8 @@
  */
 
 /* gestion des droits (temporaire) */
+require_once('authentication.php'); 
+authrequired();
 
 function peutvoirstatsservices() {
     global $user;

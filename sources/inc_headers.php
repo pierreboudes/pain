@@ -18,6 +18,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once('authentication.php'); 
+authrequired();
+
 function entete($titre, $js = NULL) {
     echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -29,6 +32,7 @@ function entete($titre, $js = NULL) {
 
 <link rel="stylesheet" type="text/css" href="autocomplete.css"/>
 <link rel='stylesheet' media='all' href='general.css' type='text/css' />
+<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
 
 <script type='text/javascript' src='js/jquery.js'></script>
 <script type='text/javascript' src='js/jquery.form.js'></script>
@@ -38,6 +42,8 @@ function entete($titre, $js = NULL) {
 <script type="text/javascript" src="js/ui.core.js"></script>
 <script type="text/javascript" src="js/ui.draggable.js"></script>
 <script type="text/javascript" src="js/ui.droppable.js"></script>
+<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.resizable.js"></script>
+<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.dialog.js"></script>
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;
     if ($js != NULL) {
@@ -55,6 +61,7 @@ EOD;
 <link href="bubbletip/bubbletip/bubbletip.css" rel="stylesheet" type="text/css" />
 <script src="bubbletip/jQuery.bubbletip-1.0.1.js" type="text/javascript"></script>
 -->
+<script type="text/javascript" src="js/jquery.highlight-3.js"></script>
 */
     echo <<<EOD
 <meta name="description" content="Système de gestion des services du département d'informatique" />

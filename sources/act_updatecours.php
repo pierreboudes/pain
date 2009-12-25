@@ -63,20 +63,17 @@ if (isset($_POST["id_cours"])) {
     }
     else {/* valide */
 	
-	$query = "UPDATE pain_cours SET `nom_cours`='".$nom_cours."', `id_formation`='".$id_formation."', `semestre`='".$semestre."', `credits`='".$credits."', `id_enseignant`='".$responsable."', `cm`= '".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `descriptif`='".$descriptif."', `code_geisha`='".$code_geisha."' WHERE `id_cours`=".$id_cours;
+	$query = "UPDATE pain_cours SET `nom_cours`='".$nom_cours."', `id_formation`='".$id_formation."', `semestre`='".$semestre."', `credits`='".$credits."', `id_enseignant`='".$responsable."', `cm`= '".$cm."', `td`='".$td."', `tp`='".$tp."', `alt`='".$alt."', `descriptif`='".$descriptif."', `code_geisha`='".$code_geisha."', modification = NOW() WHERE `id_cours`=".$id_cours;
 
 	pain_log($query);
-	
-	if (!mysql_query($query)) {
-	    errmsg_formcours(mysql_error());
-	} else {
-	    $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = ".$id_cours;
-	    
-	    $rcours = mysql_query($qcours) or 
-		die("Échec de la requête sur la table cours");
+	$coursold = selectionner_cours($id_cours);	
 
-	    $cours = mysql_fetch_array($rcours);
-	    ig_cours($cours,"new");
+	if (!mysql_query($query)) {
+	    errmsg_formcours($query." ".mysql_error());
+	} else {
+	    $coursnew = selectionner_cours($id_cours);
+	    historique_par_cmp(1, $coursold, $coursnew);
+	    ig_cours($coursnew,"new");
 	}
     }
 } else {

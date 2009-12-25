@@ -2,15 +2,18 @@
 #menu {
     text-align: center;
     margin: 0px;
-    padding: 0Px;
+    padding: 0px;
     margin-top: -5px;
     margin-bottom: 20px;
+    list-style: none;
+    min-width: 800px;
 }
 #menu li {
-    font-family:monospace;
+    font-family: monospace;
     display: inline;
+//    float:left;
     padding-top: 10px;
-    padding-bottom: 2px;
+    padding-bottom: 4px;
     padding-right: 5pt;
     padding-left: 5pt;
     border: 3px solid #3771c8; /* #6495ed */
@@ -18,6 +21,32 @@
     background-color: #DFE6FF;
 }
 
+li#menu-chercher {
+    padding-left: 2px;
+    padding-right: 2px;
+    width: 120px;
+}
+
+#search-highlight {
+    width: 80px;
+    display: inline;    
+}
+#search-highlight input {
+    width: auto;
+    display: inline;
+}
+
+#resultat-recherche {
+    width: 100%;
+    text-align: center;
+    font-family: monospace;
+    position: absolute;
+    top: 30px;
+}
+
+span.highlight {
+    background-color: yellow;
+}
 
 div.infobox {
     text-align: justify;
@@ -395,6 +424,31 @@ td.intitule > div.basculeOff, td.intitule > div.basculeOn {
     background-image: url(img/histo1.png);    
 }
 
+
+
+.logOn, .logOff {
+    position: relative;
+    top: 65px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.logOff:hover, .logOn {
+    background-image: url(img/log2.png);
+}
+
+.logOff, .logOn:hover {
+    background-image: url(img/log1.png);
+}
+
+.logsformationtmp {
+    position: absolute;
+//    width: 600px;
+//    background-color: white;
+}
+
 /******** barres de cours *********/
 
 
@@ -474,6 +528,205 @@ A:hover {text-decoration: underline; color: red;}
     background-color: rgb(100, 149, 237); /* bleu clair */
 }
 
+.clear {
+    clear: both;
+}
+
+/* STATS */
+.statens {
+    border: 2px solid #3771c8;
+    float: left;
+    //clear: both;
+    padding: 2px;
+    margin: 2px;
+}
+div.lstatens1, div.rstatens1 {
+    float: left;
+    min-width: 10px;
+/*    width:140px; */
+}
+
+.statens .legende {
+    font-size: 9px;
+    font-family:monospace;
+    float: left;
+}
+
+.statens .barre {
+    background-color: rgb(58, 105, 35); /* servi */
+    height: 10px;
+    width: 0px;
+    float: left;
+}
+
+.statens .barrecont {
+    min-height: 10px;
+}
+
+.statens .barrecont {
+    clear: both;
+}
+
+.statens1 .barrecont {
+    border:1px solid gray;
+}
+
+.statens1 .an {
+    background-color: rgb(255, 0, 144);
+}
+
+.statens1 .formation {
+    background-color: rgb(255, 144, 0);
+}
+
+.lstatens1 .barre {
+    float: right;
+}
+
+.rstatens1 .legende {
+    float: right;
+}
+
+.rstatens1 .barre {
+    float: left;
+}
+
+.lstatens1 .barrecont {
+    border-left: none;
+}
+
+.rstatens1 .barrecont {
+    border-right: none;
+}
+
+/* .statens2 .barrecont {
+    border: 1px solid gray;
+    border-right: 0px;
+} */
+
+
+.statens2 .legende {
+        border-right: 2px solid gray;    
+}
+
+.statens2 .barrecont .legende {
+    float: left;
+    border-bottom: 2px solid gray;
+}
+
+.statens2 .barrecont + .barrecont .legende {
+    border-bottom: 0px;
+}
+
+.statens2 {
+    padding-top: 5px;
+}
+
+.statens .td {
+        opacity: .80; 
+}
+.statens .tp {
+        opacity: .60; 
+}
+.statens .alt {
+        opacity: .40; 
+}
+
+.statens .ccm {
+    background-color: transparent;
+    border-right: 1px solid rgb(58, 105, 35);
+}
+
+.lstatens1 .ccm {
+    border-right: 0px;
+    border-left: 1px solid rgb(58, 105, 35);
+}
+
+.vignette {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+}
+.vignette .statens {
+    background-color: white;
+}
+/* LOGS */
+
+.historique {
+    font-size: 10pt;
+    font-family: monospace;
+}
+
+.historique div.timestamp {
+    float: left;
+    padding-right: 0.5em;
+    color: white;
+    background-color: black;
+    font-weight: bolder;
+    height: 100%;
+}
+.historique div.nav {
+    float: left;    
+    clear: both;
+    width: 50px;    
+    text-align: right;
+    margin-right: 2px;
+    border: 0px;
+    padding-right: 0.25em;
+}
+.historique div.nav a {
+    text-decoration: none;
+}
+
+.historique div.nav img {
+    border: none;
+    vertical-align: middle;
+    margin-bottom: 2px;
+   /* margin-top: 3px; */
+}
+
+div.diff div {
+    float: left;
+    padding: 0 0.25em;
+}
+
+div.diff {
+    float: left;
+    outline: 1px dashed rgb(100, 149, 237);
+    padding: 0pt;
+}
+
+div.message .nom {
+    background-color: rgb(150, 199, 255);
+    float: left;
+    padding: 0 0.25em;
+}
+
+div.diff div {
+  //  overflow: hidden;
+      max-width: 252px;
+//    max-height: 48pt;
+}
+
+
+div.diff .champ {
+    clear: both;
+    overflow: hidden;
+    width: 120px;
+    text-align: right;
+    //background-color: rgb(150, 199, 255);
+}
+div.diff .champ:after {
+    content: ":";
+}
+
+.message div.before {
+    background-color: rgb(255, 129, 130); /* rouge */
+    text-decoration: line-through;
+}
+.message div.after {
+    background-color:  rgb(158, 205, 135); /* vert */
+}
 
 /* DEBUG */
 .debug_id {
@@ -487,3 +740,4 @@ A:hover {text-decoration: underline; color: red;}
     font-weight: bolder;
     opacity: 0.5;
 }
+

@@ -19,7 +19,7 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-$user = authentication();
+authrequired();
 
 require_once("inc_connect.php");
 require_once("inc_functions.php");
@@ -93,8 +93,9 @@ while($sformation = mysql_fetch_array($rsformation))
 	debug_show_id($id_formation);    
 	action_basculerformation($id_formation);
 	action_histodescours($id_formation);
+	echo '<span class="nomformation" id="nomformation'.$id_formation.'">';
 	echo $formation["nom"]." ".$formation["annee_etude"]." ";
-	echo $formation["parfum"]."  &ndash; ";
+	echo $formation["parfum"]."</span>  &ndash; ";
 	
 	/* affichage du responsable de la formation */
 	echo "responsable : ";

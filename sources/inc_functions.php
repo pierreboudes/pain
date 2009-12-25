@@ -27,7 +27,7 @@ function debug_show_id($s) {
 }
 
 require_once('authentication.php'); 
-$user = authentication();
+authrequired();
 require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
@@ -128,9 +128,9 @@ function selectionner_cours($id)
     $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = $id";
     $cours = NULL;
     if ($rcours = mysql_query($qcours)) {
-	$cours = mysql_fetch_array($rcours);
+	$cours = mysql_fetch_assoc($rcours);
     } else {
-	echo "Échec de la requête sur la table cours.";
+	echo "Échec de la requête sur la table cours. $qcours ".mysql_error();
     }
     return $cours;
 }
@@ -138,12 +138,15 @@ function selectionner_cours($id)
 function supprimer_cours($id)
 {    
     if (peuteditercours($id)) {
+	$cours = selectionner_cours($id);
+
 	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
 	pain_log("-- supprimer_cours($id)");
 
         if (mysql_query($qcours)) {
 	    /* on efface les tranches associées */
 	    pain_log("$qcours");
+	    historique_par_suppression(1, $cours);
 
 	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";
 	    
@@ -291,9 +294,9 @@ function selectionner_tranche($id)
     $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = $id";
     $tranche = NULL;
     if ($rtranche = mysql_query($qtranche)) {
-	$tranche = mysql_fetch_array($rtranche);
+	$tranche = mysql_fetch_assoc($rtranche);
     } else {
-	echo "Échec de la requête sur la table tranche.";
+	echo "Échec de la requête sur la table tranche. $qtranche ".mysql_error();
     }
     return $tranche;
 }
@@ -382,10 +385,12 @@ function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, 
 function supprimer_tranche($id)
 {
     if (peuteditertranche($id)) {
+	$tranche = selectionner_tranche($id);
 	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
 	
 	if (mysql_query($qtranche)) {
+	    historique_par_suppression(2, $tranche);
 	    pain_log("$qtranche -- supprimer_tranche($id)");
 	    echo "OK";
 	} else {
@@ -395,6 +400,18 @@ function supprimer_tranche($id)
 	echo "Droits insuffisants.";
     }
 }
+
+function formation_du_cours($id)
+{
+    $q = "SELECT id_formation FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
+    if ($r = mysql_query($q)) {
+	$f = mysql_fetch_assoc($r);
+    } else {
+	echo "Échec de la requête sur la table cours. $q ".mysql_error();
+    }
+    return $f["id_formation"];
+}
+
 
 
 function ig_legendeenseignant() {
@@ -902,20 +919,8 @@ function ig_totauxservice($totaux) {
     echo '</tr>';
 }
 
-function stats($valeur,$ou) {
- $qstat = 'SELECT '.$valeur.' FROM '.$ou;
-    $rstat = mysql_query($qstat) 
-	or die("erreur d'acces a la table : $qstat erreur:".mysql_error());
-    
-    $stat = mysql_fetch_assoc($rstat);
-    $stat = $stat["$valeur"];
-    if ($stat == "") {
-	$stat = 0;
-    }
-    return $stat;
-}
-
 function update_servicesreels() {
+/* ne pas loguer */
     $qupdate = "UPDATE `pain_enseignant` SET service_reel = (SELECT SUM(pain_tranche.htd) FROM pain_tranche,pain_cours WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1) WHERE 1";
     mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
@@ -929,4 +934,140 @@ ORDER by nom,prenom ASC";
     return $r;
 }
 
+
+function historique_par_cmp($type, $before, $after) {
+    global $user;
+    $id = 0;
+    $id_formation = 0;
+    $id_cours = 0;
+    $modifie = false;
+    $timestamp = $after["modification"];
+    $s .= '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
+    $s .= '<div class="diff">';
+    if ((1 == $type) 
+	&& ($before["id_cours"] == $after["id_cours"])) {
+	$id_cours = $id = $before["id_cours"];
+	$id_formation = $after["id_formation"];
+    } else if ((2 == $type) 
+               && ($before["id_tranche"] == $after["id_tranche"])) {
+	$id = $before["id_tranche"];
+	$id_cours = $before["id_cours"];
+	$id_formation = formation_du_cours($after["id_cours"]);
+    } else {
+	$s .= ' BUG ';	
+    }
+    foreach($before as $key => $value) { /* calcul du diff */
+	if (0 != strcmp($key, "modification")) {
+	    if (0 != strcmp($value, $after[$key])) {
+		$modifie = true;
+		$s .= '<div class="champ">';
+		$s .= $key;
+		$s .= '</div>';
+		$s .= '<div class="before">';
+		$s .= $value;
+		$s .= '</div>';
+		$s .= '<div class="after">';
+		$s .= $after[$key];
+		$s .= '</div>';
+	    }
+	}
+    }
+    $s .= '</div>';
+    if (!$modifie) return; /* pas de modification on ne log pas */
+    $q = "INSERT INTO pain_hist 
+          (type, id, id_formation, id_cours, message, timestamp) 
+          VALUES ('".$type."', '".$id."', '".$id_formation."',
+                  '".$id_cours."', '".$s."', '".$timestamp."')";
+    mysql_query($q) or die("$q ".mysql_error());
+    pain_log($q);
+}
+
+function historique_par_ajout($type, $new) {
+    global $user;
+    $id = 0;
+    $id_formation = 0;
+    $id_cours = 0;
+    $timestamp = $new["modification"];
+    $s .= '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
+    $s .= '<div class="diff">';
+    if (1 == $type) {
+	$id_cours = $id = $new["id_cours"];
+	$id_formation = $new["id_formation"];
+    } else if (2 == $type) {
+	$id = $new["id_tranche"];
+	$id_cours = $new["id_cours"];
+	$id_formation = formation_du_cours($new["id_cours"]);
+    } else {
+	$s .= ' BUG ';	
+    }
+    $s .= "création";
+    $s .= '</div>';    
+    $q = "INSERT INTO pain_hist 
+          (type, id, id_formation, id_cours, message, timestamp) 
+          VALUES ('".$type."', '".$id."', '".$id_formation."', 
+                  '".$id_cours."', '".$s."', '".$timestamp."')";
+    mysql_query($q) or die("$q ".mysql_error());
+    pain_log($q);
+}
+
+function historique_par_suppression($type, $old) {
+    global $user;
+    $id = 0;
+    $id_formation = 0;
+    $id_cours = 0;
+    $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
+    $s .= '<div class="diff">';
+    if (1 == $type) {
+	$id_cours = $id = $old["id_cours"];
+	$id_formation = $old["id_formation"];
+    } else if (2 == $type) {
+	$id = $old["id_tranche"];
+	$id_cours = $old["id_cours"];
+	$id_formation = formation_du_cours($old["id_cours"]);
+    } else {
+	$s .= "BUG ";
+    }
+    $s .= "suppression";
+    $s .= '</div>';
+    $q = "INSERT INTO pain_hist (type, id, id_formation, id_cours, message) 
+          VALUES ('".$type."', '".$id."', '".$id_formation."', '".$id_cours."',
+                  '".$s."')";
+    mysql_query($q) or die("$q ".mysql_error());
+    pain_log($q);
+}
+
+function historique_de_formation($id) {
+    $q = "SELECT * from pain_hist 
+          WHERE id_formation = $id
+          ORDER BY timestamp DESC";
+    $r = mysql_query($q) 
+	or die("historique_de_formation($id), $q ".mysql_error());
+    return $r;
+}
+
+function ig_historique($h) {
+    echo '<div class="nav">';
+    switch ($h["type"]) {
+    case 1:
+	echo '<a href="#cours'.$h["id"].'">';
+	echo '<img src="img/cours.png" />';
+	echo '</a>';
+	break;
+    case 2:
+	echo '<a href="#tranche'.$h["id"].'">';
+	echo '<img src="img/tranche.png" />';
+	echo '</a>';
+	break;
+    default: 
+	echo 'BUG';
+    }
+    echo '<span class="id">'.$h["id"].'</span>';
+    echo '</div>';
+    echo '<div class="timestamp">';
+    echo $h["timestamp"];
+    echo '</div>';
+    echo '<div class="message">';
+    echo $h["message"];
+    echo '</div>';
+}
 ?>

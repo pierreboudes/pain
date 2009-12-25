@@ -19,7 +19,7 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-$user = authentication();
+authrequired();
 ?>
 <center>
 <div class="infobox">

@@ -1,4 +1,4 @@
-<?php /* -*- coding: utf-8 -*-*/
+<?php  /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
@@ -20,26 +20,24 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("statistiques");
-require_once('utils.php');
+
 require_once("inc_connect.php");
-require_once('inc_droits.php');
-require_once('inc_functions.php');
-require_once('inc_statsfunc.php');
-include("menu.php");
-echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
-echo "<p>";
-ig_htd(htdtotaux("2009"));
-echo "</p>";
-echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
-include("inc_statscategories.php");
-if (peutvoirstatsservices()) {
-    include("inc_statsservices.php");
+require_once("inc_functions.php");
+
+if (isset($_POST["id_formation"])) {
+    $id = postclean("id_formation");
+} else if (isset($_GET["id_formation"])) {
+    $id = getclean("id_formation");
 }
-echo "<h2>Graphiques par formation</h2>";
-include("inc_statsformations.php");
-echo "<h2>Graphiques par enseignant</h2>";
-include("inc_statsenseignants.php");
-piedpage();
+
+
+$liste = historique_de_formation($id);
+
+while ($h = mysql_fetch_assoc($liste)) {
+    echo '<div class="historique">';
+    ig_historique($h);
+    echo '<div class="clear"></div>';
+    echo '</div>';
+}
+echo '</ul>';
 ?>

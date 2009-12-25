@@ -19,7 +19,6 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 function contientERREUR(str) {
     var patt=/ERREUR/g;
     return patt.test(str);
@@ -475,7 +474,7 @@ function htdTotaux() {
 function coursDeLaTranche(id_tranche) {
     var s;
     var id_cours;
-     s = $('#tranche'+id_tranche).parents('tr.trtranches').attr('id');
+    s = $('#tranche'+id_tranche).parents('tr.trtranches').attr('id');
     /* s = 'formtranche'+id */
     id_cours = parseInt(s.replace('tranchesducours',''));
     return id_cours;
@@ -497,6 +496,19 @@ function superDeLaFormation(id_formation) {
     /* s = 'tablesuper'+id */
     id_sformation = parseInt(s.replace('tablesuper',''));
     return id_sformation;
+}
+
+
+function montrerFormation(id_formation) {
+    var id_sformation = superDeLaFormation(id_formation);
+    var basculeS =  $('#basculesuper'+id_sformation);
+    var basculeF =  $('#basculeformation'+id_formation);
+    if (basculeS.hasClass('basculeOff')) {
+	basculerSuperFormation(id_sformation);
+    }
+    if (basculeF.hasClass('basculeOff')) {
+	basculerFormation(id_formation);
+    }
 }
 
 function totauxCoursChanged(id_cours) {
@@ -559,7 +571,34 @@ function histoDesCours(id) {
     return false;
 }
 
-
+function logsFormation(id) {
+    var bascule = $('#logsFormation'+id);
+    bascule.toggleClass('logOff');
+    bascule.toggleClass('logOn');
+    if (bascule.hasClass('logOn')) {
+	var titre = 'Logs '+$('#nomformation'+id).text();
+	jQuery.post("act_historique.php", {id_formation: id}, function (data) {
+	    if (!contientERREUR(data)) {
+		$('#formation'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
+		$('#logF'+id).dialog({autopen: true, 
+			    draggable: true, 
+			    resizable: true, 
+			    width: 700,
+			    height: 300,
+			    close: function (event,ui) {logsFormation(id);},
+			    title: titre
+			    });
+	    } else {
+		alert(data);
+	    }
+	    return false;
+	}, 'html');
+    }  else {
+	$('#logF'+id).dialog('destroy');
+	$('#logF'+id).remove();	
+    }
+    return false;
+}
 
 /* 
 a tester pour l'animation des tableaux

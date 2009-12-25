@@ -39,4 +39,11 @@ function authentication() {
 	die("Désolé votre login ($login) n'est pas enregistré dans la base du département. (<a href='logout.php'>logout</a>)");
     };
 }
+
+function authrequired() {
+    if (!(phpCAS::isAuthenticated())) {
+	header("Location: http://perdu.com");
+	die('Die in terror, picnic boy');
+    }
+}
 ?>
