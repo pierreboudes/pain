@@ -47,7 +47,7 @@ if (isset($_POST["id_tranche"])) {
     {
 	errmsg_formtranche("nombre d'heures égal à zéro");
     } 
-    else if (!peuteditertrancheducours($id_tranche)) {
+    else if (!peuteditertranche($id_tranche)) {
 	errmsg_formtranche("Droits insuffisants");
     }
     else {/* valide */

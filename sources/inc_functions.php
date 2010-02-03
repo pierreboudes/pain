@@ -988,7 +988,7 @@ function historique_par_ajout($type, $new) {
     $id_formation = 0;
     $id_cours = 0;
     $timestamp = $new["modification"];
-    $s .= '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
+    $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
     $s .= '<div class="diff">';
     if (1 == $type) {
 	$id_cours = $id = $new["id_cours"];
