@@ -65,7 +65,7 @@ function pain_log($message, $logname='pain') {
 //	$pid = '(pid '.@getmypid().')';
 	$message = preg_replace("/\n+/", " ", $message);
 //	$message = preg_replace("/\n*$/", "\n", $message);
-	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. ' ';
+	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. '\n';
         $logfile = dirname($_SERVER['SCRIPT_FILENAME'])."/painlogs/".$logname .'.log';
 /*	echo $logfile;
 		if (@is_readable($logfile)) echo "readable";
