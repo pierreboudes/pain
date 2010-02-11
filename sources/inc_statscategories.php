@@ -26,15 +26,15 @@ require_once("inc_functions.php");
 
 
 echo '<table class="stat">';
-echo '<tr><th>Catégorie</th><th>nombre de personnes</th><th>statutaire</th><th>réel</th></tr>';
+echo '<tr><th>Catégorie</th><th>nombre de personnes</th><th colspan="2">services statutaires</th><th colspan="2">services réels</th></tr>';
 
-echo '<tr><th>Ensemble du département</th>';
+echo '<th>Ensemble du département</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 2 OR categorie = 3");
-echo '<td>'.$stat.'</td>';
+echo '<th>'.$stat.'</th>';
 $stat = round(stats("SUM(service)","pain_enseignant WHERE categorie = 2 OR categorie = 3"));
-echo '<td>'.$stat.'HTD</td>'; 
+echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant,pain_tranche,pain_cours WHERE (pain_enseignant.categorie = 2 OR pain_enseignant.categorie = 3) AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
 
@@ -42,18 +42,18 @@ echo '<tr><th>Titulaires du département</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 2");
 echo '<td>'.$stat.'</td>';
 $stat = round(stats("SUM(service)","pain_enseignant WHERE categorie = 2"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 2 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 
 echo '<tr><th>Non titulaires du département</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 3");
 echo '<td>'.$stat.'</td>';
 $stat = round(stats("SUM(service)","pain_enseignant WHERE categorie = 3"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 3 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 
 
@@ -61,59 +61,59 @@ $autre = round(stats("SUM(pain_tranche.htd)","pain_tranche, pain_cours WHERE pai
 
 echo '<tr><th>Intervenants hors département</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie > 3");
-echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+echo '<th>'.$stat.'</th>';
+echo '<td rowspan="7" colspan="2"></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie > 3 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1")) + $autre;
-echo '<td>'.$stat.'HTD</td>';
+echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
 echo '<tr><th>autres enseignants de Galilée</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 4");
 echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+//echo '<td></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 4 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 
 
 echo '<tr><th>enseignants de Paris 13 hors Galilée</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 6");
 echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+//echo '<td></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 6 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 
 
-echo '<tr><th>autres intervenants</th>';
+echo '<tr><th>autres (vacataires, industriels etc.)</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 5");
 echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+//echo '<td></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 5 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 
 echo '<tr><th>inconnus</th>';
 echo '<td></td>';
-echo '<td></td>';
-echo '<td>'.$autre.'HTD</td>';
+//echo '<td></td>';
+echo '<td>'.$autre.'HTD</td><td>'.enpostes($autre).' postes</td>'; 
 echo '</tr>';
 
 echo '<tr><th>Total</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie > 1");
-echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+echo '<th>'.$stat.'</th>';
+//echo '<td></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie > 1 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1")) + $autre;
-echo '<td>'.$stat.'HTD</td>';
+echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
 
 echo '<tr><th>En attente de catégorie</th>';
 $stat = stats("COUNT(*)","pain_enseignant WHERE categorie = 0");
 echo '<td>'.$stat.'</td>';
-echo '<td></td>';
+//echo '<td></td>';
 $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours WHERE pain_enseignant.categorie = 0 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1"));
-echo '<td>'.$stat.'HTD</td>';
+echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 echo '</table>';
 ?>

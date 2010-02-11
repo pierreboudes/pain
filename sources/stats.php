@@ -30,15 +30,21 @@ require_once('inc_statsfunc.php');
 include("menu.php");
 echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
 echo "<p>";
-ig_htd(htdtotaux("2009"));
+$totaux = htdtotaux("2009");
+ig_htd($totaux);
+echo "</p><p>";
+ig_totauxenpostes($totaux);
 echo "</p>";
+echo "Compter les TP comme du TD coûte : ".enpostes($totaux["tp"]/3)." postes.";
 echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
 include("inc_statscategories.php");
+echo "<h2>Services réels par catégorie d'enseignant et par formation (en postes)</h2>";
+include("inc_statscategoriesformations.php");
+//echo "<h2>Graphiques par formation</h2>";
+//include("inc_statsformations.php");
 if (peutvoirstatsservices()) {
     include("inc_statsservices.php");
 }
-echo "<h2>Graphiques par formation</h2>";
-include("inc_statsformations.php");
 echo "<h2>Graphiques par enseignant</h2>";
 include("inc_statsenseignants.php");
 piedpage();

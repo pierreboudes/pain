@@ -735,6 +735,20 @@ function ig_htd($totaux) {
     echo $totaux["annule"].'H&nbsp;annulées';
 }
 
+function enpostes($htd) {
+    return round($htd / 192.0, 2);
+}
+
+function ig_totauxenpostes($totaux) {
+    $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
+    echo enpostes($total).' postes ';
+    echo '(dont '.enpostes($totaux["tp"]).'TP) = ';
+    echo enpostes($totaux["servi"]).'P&nbsp;servies +&nbsp;';
+    echo enpostes($totaux["mutualise"]).'P&nbsp;mutualisées +&nbsp;';
+    echo enpostes($totaux["libre"]).'P&nbsp;à pourvoir +&nbsp;';
+    echo enpostes($totaux["annule"]).'P&nbsp;annulées';
+}
+
 
 function listeinterventions($id_enseignant) {
     $query = "SELECT 
