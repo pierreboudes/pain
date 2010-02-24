@@ -18,13 +18,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once('authentication.php'); 
+$user = authentication();
+require_once("inc_headers.php"); /* pour en-tete et pied de page */
+entete("Annuaire des formations");
+include("menu.php");
+include("inc_annuaire.php");
+piedpage();
 ?>
-<ul id="menu">
-      <li><a href="./">accueil</a></li>
-      <li><a href="service.php">service</a></li>
-      <li><a href="stats.php">stats</a></li>
-      <li><a href="enseignants.php">enseignants</a></li>
-      <li><a href="annuaire.php">annuaire</a></li>
-      <li><a href="logout.php">logout</a></li>
-</ul>
 

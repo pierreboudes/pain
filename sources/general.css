@@ -113,7 +113,7 @@ table.interventions,  table.service {
     background-color: #ffffff;
 }
 
-table.stat {
+table.stat,table.annuaire {
     border: 2px solid #3771c8;
     border-collapse: collapse; 
     margin: auto;
@@ -233,6 +233,16 @@ table.formcours {
 .nom_cours, .responsable, .enseignant {
     width: 100px; /* 200 */
 }
+
+.email {
+    width: 300px;
+}
+
+.tel, .bureau {
+    width: 80px;
+}
+
+
 
 td.responsable > input {
     width: 90px;
