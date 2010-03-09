@@ -22,7 +22,13 @@ require_once('inc_connect.php');
 require_once('authentication.php');
 header('Location: ./'); 
 setcookie("briocheAnonyme", "anonymous", time()+3600);
-$user =  authentication();
+$user =  array("id_enseignant"=> -1,
+		     "prenom" => "",
+		     "nom" => "Anonyme",
+		     "login" => "anonymous",
+		     "su" => 0,
+		     "stat" => 0
+	    );
 pain_log('-- authentification anonyme, IP:'.ip_client());
 
 ?>
