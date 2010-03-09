@@ -28,6 +28,7 @@ function peutvoirstatsservices() {
     return ($user["stats"] == 1) or ($user["su"] == 1);
 }
 
+
 function peuteditercours($id_cours) {
     global $user;
     if ($user["su"]) return true;
@@ -39,7 +40,7 @@ function peuteditercours($id_cours) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peuteditercours($idcours)");
+    $res = mysql_query($query) or die("ERREUR peuteditercours($id_cours)");
     $r = mysql_fetch_array($res);
     if ($user["id_enseignant"] == $r["respcours"]) return true;
     if ($user["id_enseignant"] == $r["respannee"]) return true;
@@ -81,7 +82,7 @@ function peuteditertranche($id_tranche) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peuteditertranche($idcours)");
+    $res = mysql_query($query) or die("ERREUR peuteditertranche($id_tranche)");
     $r = mysql_fetch_array($res);
     if ($user["id_enseignant"] == $r["enseignant"]) return true;
     if ($user["id_enseignant"] == $r["respcours"]) return true;

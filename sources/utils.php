@@ -51,6 +51,16 @@ function getclean($s) {
     else return NULL;
 }
 
+function ip_client() {
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+    $IP = $_SERVER['HTTP_X_FORWARDED_FOR']; 
+    elseif(isset($_SERVER['HTTP_CLIENT_IP']))   
+    $IP = $_SERVER['HTTP_CLIENT_IP'];   
+    else
+    $IP = $_SERVER['REMOTE_ADDR'];  
+    return $IP;
+}
+
 
 function postnumclean($s) {
     return str_replace(',','.',str_replace(' ', '',postclean($s)));
@@ -65,7 +75,7 @@ function pain_log($message, $logname='pain') {
 //	$pid = '(pid '.@getmypid().')';
 	$message = preg_replace("/\n+/", " ", $message);
 //	$message = preg_replace("/\n*$/", "\n", $message);
-	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. '\n';
+	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. "\n";
         $logfile = dirname($_SERVER['SCRIPT_FILENAME'])."/painlogs/".$logname .'.log';
 /*	echo $logfile;
 		if (@is_readable($logfile)) echo "readable";

@@ -79,8 +79,8 @@ function ig_formselectenseignants($id_enseignant)
 	    echo 'selected="selected" ';
 	}
 	echo  'value="'.$ens["id_enseignant"].'">';
-	echo $ens["prenom"]." ";
-	echo $ens["nom"];
+	echo $ens["nom"]." ";
+	echo $ens["prenom"];
 	echo '</option>';
     }
 }

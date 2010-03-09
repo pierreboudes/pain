@@ -229,7 +229,7 @@ function tranchesCours(id) {
 		/* armer les callback du traitement du formulaire */
 		$('#formtranche'+id).ajaxForm(options);
 		/* activer l'autocomplete du formulaire */
-		$('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
+		$('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true, mustMatch: true});
 		/* activer quelques bulles d'aide */
 		/* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
 	    }

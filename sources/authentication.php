@@ -27,8 +27,17 @@ phpCAS::setNoCasServerValidation();
 require_once('inc_connect.php');
 
 function authentication() {
+    if (isset($_COOKIE['briocheAnonyme'])) {
+	return array("id_enseignant"=> -1,
+		     "prenom" => "",
+		     "nom" => "Anonyme",
+		     "login" => "anonymous",
+		     "su" => 0,
+		     "stat" => 0
+	    );
+    }
     phpCAS::forceAuthentication();
-    $login = phpCAS::getUser();
+    $login = phpCAS::getUser();    
     $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
               FROM pain_enseignant 
               WHERE login LIKE '$login' LIMIT 1";
@@ -36,14 +45,24 @@ function authentication() {
     if ($user = mysql_fetch_array($result)) {
 	return $user;
     } else {
-	die("Désolé votre login ($login) n'est pas enregistré dans la base du département. (<a href='logout.php'>logout</a>)");
+	die("D&ecute;sol&ecute; votre login ($login) n'est pas enregistr&ecute; dans la base du d&ecute;partement. (<a href='logout.php'>logout</a>)");
     };
 }
 
 function authrequired() {
+    if (isset($_COOKIE['briocheAnonyme'])) return;
     if (!(phpCAS::isAuthenticated())) {
 	header("Location: http://perdu.com");
 	die('Die in terror, picnic boy');
     }
+}
+
+function pain_logout() {
+   if (isset($_COOKIE['briocheAnonyme'])) {
+       setcookie("briocheAnonyme", "", time()-3600);
+       echo 'Sayonara';
+   } else {
+       phpCAS::logout();
+   }
 }
 ?>

@@ -47,8 +47,8 @@ if (isset($_POST["id_cours"])) {
     {
 	errmsg_formtranche("nombre d'heures égal à zéro");
     } 
-    else if (!peuteditertrancheducours($id)) {
-	errmsg_formtranche("Droits insuffisants");
+    else if (!peuteditertrancheducours($id_cours)) {
+	errmsg_formtranche("Droits insuffisants sur le cours $id_cours");
     }
     else {/* valide */
 	
@@ -73,6 +73,6 @@ if (isset($_POST["id_cours"])) {
 	}
     }
 } else {
-    errmsg_formtranche("Donner un nom au nouveau cours !");
+    errmsg_formtranche("Intervention en dehors des cours !");
 }
 ?>

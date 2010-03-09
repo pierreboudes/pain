@@ -38,32 +38,9 @@ if (isset($_POST['login'])) {
 <script type="text/javascript" src="../js/ui.core.js"></script>
 <script type="text/javascript" src="../js/ui.draggable.js"></script>
 <script type="text/javascript" src="../js/ui.droppable.js"></script>
-<style type="text/css">
-body {font-size: 14px;}
-.jour, #histo, #enregistrer {width:802px}
-.jour {clear: both; border: 1px solid white; padding: 0px;
-height: 102px;; background: black;}
-.creneau {float: left; width: 120px; height: 100px; background: gray;
-color: white; padding: 1px;}
-.nomjour {float: left; width: 60px; padding-right: 10px; padding-top: 1px; background:
-black; color: white; text-align: right;}
-.midi, .soir {background: silver;}
-.cours {color: black; align: center; width: 116px; height: 23px;
-background: silver; padding: 2px; font-size: 14px; border:
-1px solid silver; margin-left: -1px;  margin-bottom: -1px;}
-.CM {height: 75px;}
-.TD {height: 16px;}
-.TP {height: 11px;}
-.POO {background: #00D8D9;}
-.AA {background: #FDFDAD;}
-.SR {background: #FFABD4;}
-.GL {background: #ABD6FE;}
-.maths {background: #FFD5AB;}
-.anglais {background: #CEF7D1;}  
-.sport {background: #D4FED7;}
-.annuler {background-image: url(annuler.png);}
-  </style>
- 
+<link rel='stylesheet' media='all' href='edt.css' type='text/css' />
+<link rel='stylesheet' media='print' href='edt_print.css' type='text/css' />
+
 <script type="text/javascript" src="edt.js">
 </script>
 
