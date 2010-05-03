@@ -19,6 +19,7 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 function contientERREUR(str) {
     var patt=/ERREUR/g;
     return patt.test(str);
@@ -60,15 +61,6 @@ function existsjQuery(jQ) {
 function modifierCours(id) {
     $('#boutonmodifiercours'+id).attr('disabled','disabled');
     /*  $('#cours'+id).parent().css('background-color','yellow'); */
-    flobu = new flower_bubble ({
-	base_obj: $('#cours'+id).parent(),
-		block_mode: 'base_obj',
-		base_dir: 'img',
-		background: { css: 'white', opacity: 0.78 },
-		bubble: { image: 'bubble.png', width: 130, height: 98 },
-		flower: { image: 'flower.gif', width: 32, height: 32 }
-	}) ;
-    flobu.enable();
     var bascule =  $('#basculecours'+id);
     if (bascule.hasClass('basculeOn')) {
 	basculerCours(id);    
@@ -102,11 +94,8 @@ function modifierCours(id) {
 		
 		/* armer les callback du traitement du formulaire */
 		$('#feditcours'+id).ajaxForm(options);
-		/* activer l'autocomplete du formulaire */
-		$('#feditcours'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 		$('#cours'+id).parent().hide();
 	    }
-	    flobu.disable();
 	}, 'text');
     return false;
 }
@@ -228,8 +217,6 @@ function tranchesCours(id) {
 	    
 		/* armer les callback du traitement du formulaire */
 		$('#formtranche'+id).ajaxForm(options);
-		/* activer l'autocomplete du formulaire */
-		$('#formtranche'+id+' select.autocomplete').select_autocomplete({autoFill: true, mustMatch: true});
 		/* activer quelques bulles d'aide */
 		/* bullesaide_tranches(id); bof pas ici, ca va créer des détritus plein la page à la longue */
 	    }
@@ -279,15 +266,6 @@ function supprimerTranche(id) {
 
 function modifierTranche(id) {
     $('#boutonmodifiertranche'+id).attr('disabled','disabled');
-    flobu = new flower_bubble ({
-	base_obj: $('#tranche'+id).parent(),
-		block_mode: 'base_obj',
-		base_dir: 'img',
-		background: { css: 'white', opacity: 0.78 },
-		bubble: { image: 'bubble.png', width: 130, height: 98 },
-		flower: { image: 'flower.gif', width: 32, height: 32 }
-	});
-    flobu.enable();
     jQuery.post("act_editertranche.php", {id_tranche: id}, function (data) {
 	    if (contientERREUR(data)) {
 		alert(data);
@@ -313,10 +291,7 @@ function modifierTranche(id) {
 		
 		/* armer les callback du traitement du formulaire */
 		$('#fedittranche'+id).ajaxForm(options); 
-		/* activer l'autocomplete du formulaire */
-		$('#fedittranche'+id+' select.autocomplete').select_autocomplete({autoFill: true,mustMatch: true});
 	    }
-	    flobu.disable();
 	}, 'text');
     return false;
 }
@@ -367,23 +342,6 @@ function basculerCours(id) {
 }
 
 /* sympa mais quelques soucis d'affichage */
-function basculerFormation(id) {
-    var bascule =  $('#basculeformation'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tableformation'+id+' tr.legende').fadeOut("slow");
-	$('#tableformation'+id+' tr.formcours').fadeOut("slow");
-	$('#tableformation'+id+' tr.cours div.basculeOn').trigger("click");
-	$('#tableformation'+id+' tr.cours').fadeOut("slow");
-	$('#tableformation'+id+' tr.imgcours').fadeOut("slow");	
-    } else {
-	$('#tableformation'+id+' tr.legende').fadeIn("slow");
-	$('#tableformation'+id+' tr.cours').fadeIn("slow");
-	$('#tableformation'+id+' tr.imgcours').fadeIn("slow");
-    }
-    return false;
-}
 
 
 function basculerSuperFormation(id) {
@@ -492,7 +450,7 @@ function formationDuCours(id_cours) {
 function superDeLaFormation(id_formation) {
     var s;
     var id_sformation;
-    s = $('#tableformation'+id_formation).parents('table.super').attr('id');
+    s = $('#tableformation_'+id_formation).parents('table.super').attr('id');
     /* s = 'tablesuper'+id */
     id_sformation = parseInt(s.replace('tablesuper',''));
     return id_sformation;
@@ -533,7 +491,7 @@ function histoDesFormations() {
 	$('table.formations').each(function (i) {
 		var tag = this.id;
 		if (tag != undefined) {
-		    var id = tag.replace('tableformation','');
+		    var id = tag.replace('tableformation_','');
 		    htdFormation(id);
 		}
 	    });
@@ -557,8 +515,8 @@ function histoDesCours(id) {
     bascule.toggleClass('histoOff');
     bascule.toggleClass('histoOn');
     if (bascule.hasClass('histoOn')) {
-	$('#tableformation'+id+' div.imgcours').show();
-	$('#tableformation'+id+' tr.cours td.action').each(function (i) {
+	$('#tableformation_'+id+' div.imgcours').show();
+	$('#tableformation_'+id+' tr.cours td.action').each(function (i) {
 		var tag = this.id;
 		if (tag != undefined) {
 		    var id = tag.replace('cours','');
@@ -566,7 +524,7 @@ function histoDesCours(id) {
 		}
 	    });
     } else {
-	$('#tableformation'+id+' div.imgcours').hide();
+	$('#tableformation_'+id+' div.imgcours').hide();
     }
     return false;
 }

@@ -1,3 +1,8 @@
+body {
+font-family:"Arial","Helvetica","Verdana","sans-serif";
+font-size:10pt;
+}
+
 /* menu */
 #menu {
     text-align: center;
@@ -53,6 +58,7 @@ div.infobox {
     width: 600px;
     padding: 10px;
     margin: 10px;
+    font-size: 14px;
     border:1px dashed #6495ed;
 }
 
@@ -260,17 +266,20 @@ td.nom_cours > input {
     width: 140px;
 }
 
-td.descriptif > textarea {
+/* td.descriptif > textarea {
     width: 120px;
 }
+*/
 
-.groupe, .CM, .TD, .TP, .alt, .groupe, .HTD {
+.groupe, .cm, .td, .tp, .alt, .groupe, .htd {
     width:60px; /* 180 */
 }
 
+/*
 td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input {
     width:28px; /* 180 */
 }
+*/
 
  .semestre {
    width: 80px;  /* 180 */
@@ -280,57 +289,73 @@ td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input {
    width: 80px;  /* 180 */
 } 
 
+/*
 td.credits > input {
    width: 50px;  /* 180 */
 }
+*/
 
 
 .code_geisha {
     width:70px;
 }
 
+/*
 td.code_geisha > input {
     width: 60px;
 }
-
+*/
 .action {
    width: 70px;
 }
 
+.laction {
+    width: 0px;
+    padding-left: 0px;
+    padding-right: 0px; 
+}
+
+.modification {
+    display: none;
+}
 
 /* dimensions pour les tranches */
 .remarque {
     width: 140px;
 }
 
+/*
 td.remarque > textarea {
     width: 120px;
 }
+*/
 
 .type_conversion {
     width: 100px;
 }
 
+/*
 td.type_conversion > input {
     width: 90px;
 }
+*/
 
+/*
 td.groupe > input {
-    width: 30px;
+    width:28px;
 }
+*/
 
-td.groupe > input {
-    width:28px; /* 180 */
-}
-
+/*
 input.type_conversion, input.semestre {
     width: 10px;
     display: inline;
 }
+*/
 
 /**** FIN DIMENSIONS ****/
 
-.semestre, .credits, .CM, .TD, .TP, .alt, .code_geisha, .action, .groupe, .HTD {
+.semestre, .credits, .cm, .td, .tp, .alt, .code_geisha, .action, .groupe, .htd {
     text-align: center;
 }
 
@@ -386,7 +411,7 @@ div.basculeOn:hover {
     background-image: url(img/triangleTDp.png);
 }
 
-td.intitule > div.basculeOff, td.intitule > div.basculeOn {
+td.laction > div.basculeOff, td.laction > div.basculeOn {
     margin-left: -30px;
 }
 
@@ -751,3 +776,77 @@ div.diff .champ:after {
     opacity: 0.5;
 }
 
+/* ok de ligne */
+
+div.ok {
+  float:right;
+  position: relative;
+  z-index: 100;
+  margin-left: -14px;
+  margin-right: -5px;
+  width: 12px;
+  height: 12px;
+  background-image: url(img/ok.png);
+  cursor: pointer;
+}
+
+div.okl {
+  float:right;
+//  position: relative;
+//  z-index: 100;
+  margin-right: -25px;
+  width: 12px;
+  height: 12px;
+  background-image: url(img/ok.png);
+  cursor: pointer;
+}
+
+
+/* a fusionner avec la section sur les cellules TODO */
+
+textarea {
+    width: 95%;    
+    margin-right: 4px;
+    height: 90%;
+    border: none;
+}
+input {
+    width: 95%;
+}
+
+.hiddenvalue {
+    display: none;
+}
+
+td.edit, td.edit textarea {
+    background-color: #effff6;
+}
+
+ul.menu {
+    background-color: #FFFFFF;
+    list-style: none;
+    margin: 0px;
+    padding: 2px;
+    border:1px solid #FBCB09;
+    color:#1C94C4;
+}
+
+ul.menu:hover {
+    background-color: #fdf5ce;
+}
+
+ul.menu li {
+  cursor: pointer;
+  margin: 0px;
+  padding: 0px;
+}
+
+ul.menu li.inv {
+    font-weight: normal;
+    font-style: italic;
+}
+
+ul.menu li:hover {
+//    background-color: #EFE6FF;
+    color: #FBCB09;
+}

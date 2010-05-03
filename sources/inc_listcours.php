@@ -54,15 +54,17 @@ while($sformation = mysql_fetch_array($rsformation))
     /* affichage de la super formation */
 
     echo '<tr class="imgformation">';
-    echo '<td  class="imgformation">';
+    echo '<td  class="imgformation" colspan="2">';
     echo '<div class="imgformation" id="imgsformation'.$id_sformation.'">';
     echo '</div></td></tr>';
 
     echo '<tr class="super" id="sformation'.$id_sformation.'">';
-    echo '<td class="intitule">';
+    echo '<td class="laction">';
     debug_show_id($id_sformation);
     action_basculersuper($id_sformation);
     // TODO action_histodescours($id_sformation);
+    echo '</td>';
+    echo '<td class="intitule">';
     echo $sformation["nom"]." &ndash; ";	
     /* affichage du responsable de la super formation */
     echo "responsable : ";
@@ -72,7 +74,7 @@ while($sformation = mysql_fetch_array($rsformation))
     echo '</span>';
     echo '</td>';	
     echo "</tr>\n";
-    echo '<tr class="sousformations" style="display: none;"><td>';
+    echo '<tr class="sousformations" style="display: none;"><td colspan="2">';
     /* liste des annee de formation */
     $rformation = list_formations($id_sformation);
 
@@ -82,17 +84,19 @@ while($sformation = mysql_fetch_array($rsformation))
 	$id_formation = $formation["id_formation"];
 	$totaux=htdformation($id_formation);
 
-	echo '<table class="formations" id="tableformation'.$id_formation.'">'; 
+	echo '<table class="formations" id="tableformation_'.$id_formation.'">'; 
 	/* affichage de la formation */
 	echo '<tr class="imgformation">';
-	echo '<td colspan="11" class="imgformation">';
+	echo '<td colspan="12" class="imgformation">';
 	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
 	echo '</div></td></tr>';
 	echo '<tr class="formation" id="formation'.$id_formation.'">';
-	echo '<td class="intitule" colspan="11">';
+	echo '<td class="laction">';
 	debug_show_id($id_formation);    
 	action_basculerformation($id_formation);
 	action_histodescours($id_formation);
+	echo '</td>';
+	echo '<td class="intitule" colspan="11">';
 	echo '<span class="nomformation" id="nomformation'.$id_formation.'">';
 	echo $formation["nom"]." ".$formation["annee_etude"]." ";
 	echo $formation["parfum"]."</span>  &ndash; ";
@@ -106,44 +110,8 @@ while($sformation = mysql_fetch_array($rsformation))
 	echo '</td>';
 	
 	echo "</tr>\n";
-
-	/* affichage des cours de la formation */
-	
-	/* légende */    
-	ig_legendecours($id_formation);
-	
-	/* formulaire d'ajout d'un cours dans la formation */
-	echo '<tr class="formcours" id="formcours'.$id_formation.'"><td colspan="11">'."\n";
-	echo '<form method="post" id="fformation'.$id_formation.
-	    '" class="formcours" name="cours" action="">';
-	ig_formcours($id_formation);
-	echo '</form>'."\n";
-	echo '</td></tr>'."\n";
-	
-	
-	$rcours = list_cours($id_formation);
-	
-	while ($cours = mysql_fetch_array($rcours)) /* pour chaque cours */
-	{
-	    $id_cours = $cours["id_cours"];
-	    echo '<tr class="imgcours">';
-	    echo '<td colspan="11" class="imgcours">';
-	    echo '<div class="imgcours" id="imgcours'.$id_cours.'">';
-	    echo '</div></td></tr>'."\n";
-	    echo '<tr class="cours"';
-	    action_dblcmodifiercours($id_cours);
-	    echo '>';
-	    ig_cours($cours);
-	    echo '</tr>'."\n";
-	}
 	echo '</table>'."\n"; 	
     } /* fin while formation */
     echo '</td></tr></table>';
 } /* fin while superformation */
 ?>
-
-<p>
-<a href="http://validator.w3.org/check?uri=referer"><img
-    src="http://www.w3.org/Icons/valid-xhtml10-blue"
-    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    </p>

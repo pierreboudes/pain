@@ -29,21 +29,13 @@ function entete($titre, $js = NULL) {
 <head>
 <title>Pain -- $titre</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-<link rel="stylesheet" type="text/css" href="autocomplete.css"/>
-<link rel='stylesheet' media='all' href='general.css' type='text/css' />
-<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
-
-<script type='text/javascript' src='js/jquery.js'></script>
-<script type='text/javascript' src='js/jquery.form.js'></script>
-<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="js/jquery.select-autocomplete.js"></script>
-<script type="text/javascript" src="js/jquery.flower_bubble.js"></script>
-<script type="text/javascript" src="js/ui.core.js"></script>
-<script type="text/javascript" src="js/ui.draggable.js"></script>
-<script type="text/javascript" src="js/ui.droppable.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.resizable.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.dialog.js"></script>
+<link rel='stylesheet' media='all' href='css/general.css' type='text/css' />
+<link type="text/css" href="css/custom-theme/jquery-ui-1.8.1.custom.css"
+rel="stylesheet" />
+<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.1.custom.min.js"></script>
+<script type="text/javascript" src="js/dyntab.js"></script>
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;
     if ($js != NULL) {

@@ -42,8 +42,8 @@ function action_basculersuper($id_sformation) {
 }
 
 function action_basculerformation($id_formation) {
-    echo '<div class="basculeOn"';
-    echo ' id="basculeformation'.$id_formation.'"'; 
+    echo '<div class="basculeOff"';
+    echo ' id="basculeformation_'.$id_formation.'"'; 
     echo ' onclick="basculerFormation('.$id_formation.')">';   
     echo '</div>';
 }

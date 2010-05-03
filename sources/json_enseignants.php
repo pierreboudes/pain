@@ -20,20 +20,20 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("gestion des enseignements et des services", "pain_index.js");
-require_once('utils.php');
-include("menu.php");
-include("inc_infobox.php");
-include("inc_listcours.php");
-include("skel_index.html");
-/* include("inc_aide.php"); */
-?>
-<p>
-<a href="http://validator.w3.org/check?uri=referer"><img
-    src="http://www.w3.org/Icons/valid-xhtml10-blue"
-    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    </p>
-<?php
-piedpage();
+
+require_once("inc_connect.php");
+require_once("inc_functions.php");
+
+if (isset($_GET["term"])) {
+    $qens = "SELECT `id_enseignant` AS `id`,
+                    CONCAT(`prenom`, ' ',`nom`) AS `label`
+             FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
+    $rens = mysql_query($qens) 
+	  or die("Échec de la requête sur la table enseignant");
+    $arr = array();
+    while ($ens = mysql_fetch_object($rens)) {
+	$arr[] = $ens;
+    }
+    print json_encode($arr);
+}
 ?>
