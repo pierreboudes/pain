@@ -25,7 +25,6 @@ require_once("inc_connect.php");
 require_once("utils.php");
 // require_once("inc_functions.php");
 
-/* TODO: version generique type: id: id_parent: */
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
@@ -67,7 +66,9 @@ if (isset($_GET["id_parent"])) {
     print json_encode($arr);
 } else if (isset($_GET["id"])) {
     $id = getclean("id");
-    $qcours = "SELECT pain_$type.*, 
+    $qcours = "SELECT \"$type\" AS type,
+                      $id AS id,
+                      pain_$type.*,
                       pain_enseignant.prenom,
                       pain_enseignant.nom
              FROM pain_$type, pain_enseignant 

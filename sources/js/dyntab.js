@@ -1,3 +1,14 @@
+
+/*
+$(document).ready(function(){
+	var s = "1 2,3";
+	var reg=new RegExp(",", "g");
+	var ns = s.replace(" ","").replace(reg,".");
+	alert(s+' : '+ns);}
+    );
+*/
+
+/* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
 /*
 bd : ligne_bd, tableau associatif (objet js) colonne => val.
 html : ligne de tableau contenant des cellules (td)
@@ -12,9 +23,20 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 2) cellule: timestamp
 */
 
-//$(document).ready(function(){alert('toto');});
-
-/* --------------- les fonctions de ligne/cellule -------------------*/
+$(document).ready(function () {$("#skelcours th:first + th").bind("click",
+     function () {
+	var legende = $("#skelcours");
+	var list = legende.find('th');
+	var n = list.length;
+	var i;
+	var s = "liste: ";
+	for (i = 0; i < n; i++) {
+	    var blob = list.eq(i);
+            s = s + blob.attr("class") + ": " + blob.css('display') + '\n'; 
+	}
+	alert(s);
+    }
+	    )});
 
 /* constructeur de cellule */
 function cell() {
@@ -23,7 +45,7 @@ function cell() {
 
     /* passer la cellule en mode edition */
     this.edit = function (c) {
-	c.wrapInner('<textarea />');
+	c.wrapInner("<textarea />");
 	c.addClass("edit");
     }
 
@@ -31,7 +53,7 @@ function cell() {
     this.getval = function (c, o) {
 	var s;
 	if (c.hasClass("edit")) {
-	    s = c.find('textarea').text();
+	    s = c.find('textarea').val();
 	} else {
 	    s = c.text();
 	}
@@ -49,6 +71,26 @@ function cell() {
 	}
     }
 }
+
+function numcell() {
+    this.edit = function(c) {
+	var s = c.text();
+	c.html('<input type="text" value="'+s+'"/>');
+	c.addClass('edit');
+    }
+    this.getval = function (c, o) {
+	var s;
+	if (c.hasClass("edit")) {
+	    s = c.find('input').val();
+	} else {
+	    s = c.text();
+	}
+	
+	o[this.name] = s.replace(" ","").replace(",",".");
+    }
+}
+
+numcell.prototype = new cell();
 
 /* constructeur de cellule non modifiable */
 function immutcell () {
@@ -105,8 +147,6 @@ function enseignant () {
     }
 }
 enseignant.prototype = new cell();
-
-
 
 
 /* objet ligne de tableau */
@@ -169,16 +209,16 @@ function ligne() {
     this.id_enseignant = new cell();
     this.id_enseignant.name = "id_enseignant";
     /* cm */
-    this.cm = new cell();
+    this.cm = new numcell();
     this.cm.name = "cm";
     /* td */
-    this.td = new cell();
+    this.td = new numcell();
     this.td.name = "td";
     /* tp */
-    this.tp = new cell();
+    this.tp = new numcell();
     this.tp.name = "tp";
     /* alt */
-    this.alt = new cell();
+    this.alt = new numcell();
     this.alt.name = "alt";
     /* descriptif */
     this.descriptif = new cell(); /* faire une big cell et une small cell */
@@ -198,6 +238,9 @@ function ligne() {
     /* id_cours */
     this.id_cours = new cell();    
     this.id_cours.name = "id_cours";
+    /* groupe */
+    this.groupe = new numcell();
+    this.groupe.name = "groupe";
     /* type_conversion */
     this.type_conversion = new cell();    
     this.type_conversion.name = "type_conversion";
@@ -205,7 +248,7 @@ function ligne() {
     this.remarque = new cell();    
     this.remarque.name = "remarque";
     /* htd */
-    this.htd = new cell();
+    this.htd = new numcell();
     this.htd.name = "htd";
     /* descriptif */
     this.descriptif = new cell();
@@ -214,10 +257,10 @@ function ligne() {
      */
     // TODO
 }
+/*--------  FIN OBJET LIGNE --------------*/
 
 
-/* gestion des evenements */
-
+/* BLOC ---- BASCULES --------------*/
 /* Les bascules */
 function basculerFormation(id) {
     var bascule =  $('#basculeformation_'+id);
@@ -235,16 +278,78 @@ function basculerFormation(id) {
     return false;
 }
 
+function basculerCours(e) {
+    var id = e.data.id;
+    var sid = idString({id: id, type: "cours"});
+    var bascule =  $('#basculecours'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOn')) {
+	$('#'+sid).after('<tr id="tranchesducours'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tablecours_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+	appendList("tranche","cours",id);
+    } else {
+	$('#tranchesducours'+id).remove();
+    }
+    return false;
+}
+
+/* sympa mais quelques soucis d'affichage */
+
+function basculerSuperFormation(id) {
+    var bascule =  $('#basculesuper'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
+    } else {
+	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
+    }
+    return false;
+}
+
+
+/* Ajout d'un reload */
+function addReload(td) {
+    var sid = td.parent('tr').attr('id');
+    // alert(sid);
+    var oid = parseIdString(sid);
+    var cancell = jQuery('<button class="reloadl">annuler les modifications</button>');
+    cancell.button({
+	text: false,
+		icons: {
+	    primary: "ui-icon-arrowrefresh-1-w"
+		    }
+	});
+    cancell.bind("click",oid,refreshLine);
+    td.append(cancell);
+}
+
+function removeReload(td) {
+    td.find('button.reloadl').remove();
+}
 
 /* Ajout du bouton d'edition */
 function addOk(jqcell) {
     var ligne = jqcell.parent('tr');
+    var td = ligne.find('td:last');
+    removeReload(td);
     if (ligne.hasClass('edit')) {
 	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
 	ligne.find('div.ok').remove();
-	ligne.find('td:last div.okl').remove();
-	ligne.find('td:last').append('<div class="okl"/>');
-	ligne.find('div.okl').click(sendModifiedLine);
+	td.find('button.okl').remove();
+	td.find('button.cancell').remove();	
+	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
+	okl.button({
+			text: false,
+			icons: {
+				primary: "ui-icon-check"
+			}
+	});
+	okl.bind("click",sendModifiedLine);
+	td.append(okl);
+	addReload(td);
+//	ligne.find('div.okl').click(sendModifiedLine);
     } else {
 	/* c'est la premiere cellule en cours d'edition dans la ligne. 
 	   En cas de confirmation on peut envoyer toute la ligne */
@@ -317,9 +422,15 @@ function getjsondb(url,data,callback) {
 }
 
 
-/* Menu contextuel du choix des champs */
+/*BLOC-------- MENU CONTEXTUEL DU CHOIX DES CHAMPS ---------*/
+/*
+setmenufields: positionne et arme le bouton de menu contextuel
+openmenufields: construit et deroule le menu contextuel
+closemenufields: detruit le menu (dont le contenu est dynamique)
+togglecolumn: masque ou affiche une colonne puis detruit le menu.
+ */
 function setMenuFields(tr) {
-    var th = tr.find('th:first');
+    var th = tr.find('th:last');
     th.prepend('<button>champs...</button>');
     var button = th.find('button').button({
 			text: false,
@@ -329,11 +440,12 @@ function setMenuFields(tr) {
 	});
     button.one("click", {th: th, button: button},
 	       openMenuFields);
+    return false;
 }
 
 function openMenuFields(e) {
     var th = e.data.th;
-    var list = th.nextAll('th');
+    var list = th.prevAll('th');
     var type = th.parent().parent().parent().attr('class');
     var button = e.data.button;
     var menu = jQuery('<ul class="menu"></ul>');
@@ -357,12 +469,13 @@ function openMenuFields(e) {
 	blob.one('click',
 		 {type: type, visible: visible, 
 			 css: classname, 
-			 button: button, menu: menu},
+			 button: button, menu: menu, th: th},
 		 toggleColumn);
 	menu.append(blob);
     }
-    button.after(menu);
+    $('body').append(menu);
 //    th.find('select').selectmenu();
+    return false;
 }
 
 
@@ -372,28 +485,32 @@ function closeMenuFields(e) {
             e.data.button.removeClass('active');
         });
 */
+    e.data.menu.fadeOut('slow');
     e.data.menu.remove();
     e.data.button.one('click', {button: e.data.button, th: e.data.th}, openMenuFields);
+    return false;
 }
 
 function toggleColumn(e) {
 //    alert('visible = '+e.data.visible+', classname = '+e.data.css+', type = '+e.data.type);
+    closeMenuFields(e);
     if (e.data.visible) {
 	$('th.'+e.data.css+', td.'+e.data.css).fadeOut('slow');
     } else {
 	$('th.'+e.data.css+', td.'+e.data.css).fadeIn('slow');
     }
-    closeMenuFields(e);
     return false;
 }
+/* ---------- FIN MENU CONTEXTUEL DES CHAMPS ---------*/
 
 
 
-/* Remplissage des tableaux par les donnees du serveur */
+/* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
 function  appendList(type,type_parent,id_parent) {
     var body = $('#table'+type_parent+'_'+id_parent+' tbody');
-    var legende = $("#skel"+type).clone(true);
+    var legende = $("#skel"+type);
     var list = legende.find('th');
+    legende = legende.clone(true);
     legende.removeAttr('id');
     body.append(legende);
     setMenuFields(legende);
@@ -411,9 +528,11 @@ function appendItem(type,body,o,list) {
     var i = 0;
     var id = idString({id: o["id_"+type], type: type});
     var line = jQuery('<tr id="'+id+'" class="'+type+'"></tr>');
+    body.append(line);
     for (i = 0; i < n; i++) {
 	var name = list.eq(i).attr("class");
 	var cell = jQuery('<td class="'+name+'"></td>');
+	if (L[name] == null) alert('undefined in line: '+name);
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
 	cell.dblclick(edit);
@@ -422,10 +541,67 @@ function appendItem(type,body,o,list) {
 	    cell.fadeOut('fast');
 	}
     }
-    body.append(line);
+    if (type == "cours") {
+	line.find('td:first')
+	    .prepend('<div class="basculeOff" id="basculecours'+o["id_cours"]+'" />')
+	    .bind('click',{id: o["id_cours"]},basculerCours);
+    }
 }
+/* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
 
+/* BLOC ----- ENVOI DE MODIFS AU SERVEUR --------*/
+/* soumettre les modifications d'une ligne */
+function sendModifiedLine() {
+    var ligne = $(this).parent().parent('tr');
+    var parent = ligne.parent().parent('table');
+    var donnees = new Object();
+    var tid = parseIdString(ligne.attr('id'));
+    donnees['type'] = tid['type'];
+    donnees['id'] = tid['id'];
+    tid =  parseIdString(parent.attr('id'));
+    donnees['id_parent'] = tid['id'];
+    ligne.find('td.modification').each(function (i,e) {
+	    L.modification.getval($(this),donnees);
+	});
+
+    ligne.find('td.edit').each(
+	function () {
+	    $(this).removeClass('edit');
+	    var name = $(this).attr('class');
+	    $(this).addClass('edit');
+	    L[name].getval($(this),donnees);
+	});
+
+    getjson("json_modifier.php",donnees, replaceLine);
+}
+function replaceLine(tabo) {
+    var o = tabo[0];
+    var id = idString(o);
+    var ligne = $('#'+id);
+    ligne.attr('class', o.type);
+    ligne.find('td').not('td.action').each(
+	function () {
+	    var td = $(this);
+	    td.removeClass('edit');
+	    td.removeClass('mutable');
+//	    alert(td.attr('class'));
+	    L[td.attr('class')].setval(td, o);
+//	    if ("editable" in o) {
+		td.addClass('mutable');
+//	    }
+	});
+    ligne.find('td:last button.okl').remove();
+    removeReload(ligne.find('td:last'));
+}
+/*------- FIN ENVOI DE MODIFS AU SERVEUR --------*/
+
+/*  */
+
+function refreshLine(o) {
+    var oid = o.data;
+    getjson("json_get.php",oid, replaceLine);
+}
 
 $(document).ready(function () {
 	L = new ligne(); // var globale

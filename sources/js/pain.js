@@ -329,35 +329,6 @@ function annulerModifierTranche(id) {
 /*****  Les bascules *********/
 
 
-function basculerCours(id) {
-    var bascule =  $('#basculecours'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOn')) {
-	tranchesCours(id);
-    } else {
-	masquerTranchesCours(id);
-    }
-    return false;
-}
-
-/* sympa mais quelques soucis d'affichage */
-
-
-function basculerSuperFormation(id) {
-    var bascule =  $('#basculesuper'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
-    } else {
-	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
-    }
-    return false;
-}
-
-
 function toutBasculer() {
     jQuery.fx.off = true;
     $("tr.super div.basculeOff").trigger("click");

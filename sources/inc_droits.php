@@ -23,6 +23,20 @@
 require_once('authentication.php'); 
 authrequired();
 
+
+function peutediter($type, $id, $id_parent) {
+    if ($id != NULL) {
+	if ($type == "cours") return peuteditercours($id);
+	if ($type == "tranche") return peuteditertranche($id);
+	if ($type == "enseignant") return peutediterenseignant($id);
+    }
+    if ($id_parent != NULL) {
+	
+    }
+    return false;
+}
+
+
 function peutvoirstatsservices() {
     global $user;
     return ($user["stats"] == 1) or ($user["su"] == 1);

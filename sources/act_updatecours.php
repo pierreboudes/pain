@@ -47,8 +47,8 @@ if (isset($_POST["id_cours"])) {
     if ("" === trim($nom_cours) )
     {
 	errmsg_formcours("Nom invalide");
-    } 
-    else if ((1 !=  $semestre) and (2 !=  $semestre) )
+    }
+    else if ( (1 !=  $semestre) and (2 !=  $semestre) )
     { 
 	errmsg_formcours("semestre invalide");
     }
