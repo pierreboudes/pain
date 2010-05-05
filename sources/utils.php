@@ -110,4 +110,16 @@ function ig_statsmysql() {
     echo "\nPage servie en : ".$us."ms ";
     echo '</pre></div>';
 }
+
+
+Class Error {
+    public $error = "Erreur";
+}
+
+function errmsg($s) {
+    $err = new Error;
+    $err->error = "Erreur: ".$s;
+    print json_encode($err);
+    die();
+}
 ?>

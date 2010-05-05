@@ -1,3 +1,23 @@
+/* -*- coding: utf-8 -*-*/
+/* Pain - outil de gestion des services d'enseignement        
+ *
+ * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ *
+ * This file is part of Pain.
+ *
+ * Pain is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pain is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /*
 $(document).ready(function(){
@@ -197,13 +217,13 @@ function ligne() {
     /* pain_cours 
      */
     /* semestre */
-    this.semestre = new cell();
+    this.semestre = new numcell();
     this.semestre.name = "semestre";
     /* nom_cours */
     this.nom_cours = new cell();
     this.nom_cours.name = "nom_cours";
     /* credits */
-    this.credits = new cell();
+    this.credits = new numcell();
     this.credits.name = "credits";
     /* id_enseignant */
     this.id_enseignant = new cell();
@@ -259,106 +279,7 @@ function ligne() {
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
-
-/* BLOC ---- BASCULES --------------*/
-/* Les bascules */
-function basculerFormation(id) {
-    var bascule =  $('#basculeformation_'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tableformation_'+id+' tr.legende').remove();
-	$('#tableformation_'+id+' tr.cours div.basculeOn').trigger("click");
-	$('#tableformation_'+id+' tr.cours').remove();
-	$('#tableformation_'+id+' tr.imgcours').remove();	
-    } else {
-	appendList("cours","formation",id);
-	$('#tableformation_'+id+' tr.legende').fadeIn("slow");
-    }
-    return false;
-}
-
-function basculerCours(e) {
-    var id = e.data.id;
-    var sid = idString({id: id, type: "cours"});
-    var bascule =  $('#basculecours'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="tranchesducours'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tablecours_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
-	appendList("tranche","cours",id);
-    } else {
-	$('#tranchesducours'+id).remove();
-    }
-    return false;
-}
-
-/* sympa mais quelques soucis d'affichage */
-
-function basculerSuperFormation(id) {
-    var bascule =  $('#basculesuper'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
-    } else {
-	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
-    }
-    return false;
-}
-
-
-/* Ajout d'un reload */
-function addReload(td) {
-    var sid = td.parent('tr').attr('id');
-    // alert(sid);
-    var oid = parseIdString(sid);
-    var cancell = jQuery('<button class="reloadl">annuler les modifications</button>');
-    cancell.button({
-	text: false,
-		icons: {
-	    primary: "ui-icon-arrowrefresh-1-w"
-		    }
-	});
-    cancell.bind("click",oid,refreshLine);
-    td.append(cancell);
-}
-
-function removeReload(td) {
-    td.find('button.reloadl').remove();
-}
-
-/* Ajout du bouton d'edition */
-function addOk(jqcell) {
-    var ligne = jqcell.parent('tr');
-    var td = ligne.find('td:last');
-    removeReload(td);
-    if (ligne.hasClass('edit')) {
-	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
-	ligne.find('div.ok').remove();
-	td.find('button.okl').remove();
-	td.find('button.cancell').remove();	
-	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
-	okl.button({
-			text: false,
-			icons: {
-				primary: "ui-icon-check"
-			}
-	});
-	okl.bind("click",sendModifiedLine);
-	td.append(okl);
-	addReload(td);
-//	ligne.find('div.okl').click(sendModifiedLine);
-    } else {
-	/* c'est la premiere cellule en cours d'edition dans la ligne. 
-	   En cas de confirmation on peut envoyer toute la ligne */
-	ligne.addClass('edit');
-	jqcell.append('<div class="ok"/>');
-	jqcell.find('div.ok').click(sendModifiedLine);
-    }
-}
-
+/* BLOC ----- UTILITAIRES ----- */
 function edit() {
     if ($(this).hasClass("mutable")) {
 	$(this).removeClass("mutable");
@@ -406,7 +327,6 @@ function getjsondb(url,data,callback) {
     $.ajax({ type: "GET",
 	     url: url,
 	     data:  data,
-//	     datatype: 'json',
 	     error: function () {alert('erreur ajax !');},
 	     success: function(data) {
 		alert("RECEIVED: " + data); 
@@ -420,18 +340,149 @@ function getjsondb(url,data,callback) {
 	    }
 	});
 }
+/* ----- FIN UTILITAIRES ----- */
 
 
-/*BLOC-------- MENU CONTEXTUEL DU CHOIX DES CHAMPS ---------*/
-/*
-setmenufields: positionne et arme le bouton de menu contextuel
-openmenufields: construit et deroule le menu contextuel
-closemenufields: detruit le menu (dont le contenu est dynamique)
-togglecolumn: masque ou affiche une colonne puis detruit le menu.
- */
-function setMenuFields(tr) {
+/* BLOC ---- BOUTONS ET ACTIONNEURS --------------*/
+
+/* bloc --- Les bascules --- */
+function basculerFormation(id) {
+    var bascule =  $('#basculeformation_'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tableformation_'+id+' tr.legende').remove();
+	$('#tableformation_'+id+' tr.cours div.basculeOn').trigger("click");
+	$('#tableformation_'+id+' tr.cours').remove();
+	$('#tableformation_'+id+' tr.imgcours').remove();	
+    } else {
+	appendList("cours","formation",id);
+	$('#tableformation_'+id+' tr.legende').fadeIn("slow");
+    }
+    return false;
+}
+
+function basculerCours(e) {
+    var id = e.data.id;
+    var sid = idString({id: id, type: "cours"});
+    var bascule =  $('#basculecours'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOn')) {
+	$('#'+sid).after('<tr id="tranchesducours'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tablecours_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+	appendList("tranche","cours",id);
+    } else {
+	$('#tranchesducours'+id).remove();
+    }
+    return false;
+}
+
+function basculerSuperFormation(id) {
+    var bascule =  $('#basculesuper'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
+    } else {
+	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
+    }
+    return false;
+}
+/* bloc --- fin des bascules --- */
+
+/* bloc --- Boutons ---*/
+/* ajout de ligne */
+function addAdd(td) {
+    var sid = td.parent('tr').attr('id');
+    // alert(sid);
+    var oid = parseIdString(sid);
+    var addl = jQuery('<button class="addl">ajouter '+oid.type+'</button>');
+    addl.button({
+	text: false,
+		icons: {
+	    primary: "ui-icon-plus"
+		    }
+	});
+    addl.bind("click",oid,newLine);
+    td.append(addl);
+}
+function removeAdd(td) {
+    td.find('button.addl').remove();
+}
+
+/* effacement de ligne */
+function addRm(td) {
+    var tr = td.parent('tr');
+    var oid = parseIdString(tr.attr('id'));
+    var rml = jQuery('<button class="rml">effacer la ligne</button>');
+    var removel = jQuery('<div class="removel"/>');
+
+	rml.button({
+			text: false,
+			icons: {
+				primary: "ui-icon-trash"
+			}
+	});
+	rml.bind("click",oid,removeLine);
+	td.append(removel.append(rml));
+}
+function removeRm(td) {
+    td.find('div.remol').remove();
+}
+
+/* reload de ligne */
+function addReload(td) {
+    var sid = td.parent('tr').attr('id');
+    // alert(sid);
+    var oid = parseIdString(sid);
+    var cancell = jQuery('<button class="reloadl">annuler les modifications</button>');
+    cancell.button({
+	text: false,
+		icons: {
+//	    primary: "ui-icon-arrowrefresh-1-w"
+	    primary: "ui-icon-cancel"
+		    }
+	});
+    cancell.bind("click",oid,refreshLine);
+    td.append(cancell);
+}
+function removeReload(td) {
+    td.find('button.reloadl').remove();
+}
+
+/* bouton d'envoie */
+function addOk(jqcell) {
+    var ligne = jqcell.parent('tr');
+    var td = ligne.find('td:last');
+    removeReload(td);
+    if (ligne.hasClass('edit')) {
+	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
+	ligne.find('div.ok').remove();
+	td.find('button.okl').remove();
+	td.find('button.cancell').remove();	
+	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
+	okl.button({
+			text: false,
+			icons: {
+				primary: "ui-icon-check"
+			}
+	});
+	okl.bind("click",sendModifiedLine);
+	td.append(okl);
+	addReload(td); // <-- ajout du reload
+    } else {
+	/* c'est la premiere cellule en cours d'edition dans la ligne. 
+	   En cas de confirmation on peut envoyer toute la ligne */
+	ligne.addClass('edit');
+	jqcell.append('<div class="ok"/>');
+	jqcell.find('div.ok').click(sendModifiedLine);
+    }
+}
+
+function addMenuFields(tr) {
     var th = tr.find('th:last');
-    th.prepend('<button>champs...</button>');
+    th.prepend('<button class="menufields">champs...</button>');
     var button = th.find('button').button({
 			text: false,
 			icons: {
@@ -442,7 +493,20 @@ function setMenuFields(tr) {
 	       openMenuFields);
     return false;
 }
+function removeMenuFields(td) {
+    td.find('button.menufields').remove();
+}
 
+/* ------- FIN BOUTONS ET ACTIONNEURS --------------*/
+
+
+/*BLOC-------- MENU CONTEXTUEL DU CHOIX DES CHAMPS ---------*/
+/*
+addmenufields: positionne et arme le bouton de menu contextuel (bloc precedent)
+openmenufields: construit et deroule le menu contextuel
+closemenufields: detruit le menu (dont le contenu est dynamique)
+togglecolumn: masque ou affiche une colonne puis detruit le menu.
+ */
 function openMenuFields(e) {
     var th = e.data.th;
     var list = th.prevAll('th');
@@ -471,7 +535,7 @@ function openMenuFields(e) {
 			 css: classname, 
 			 button: button, menu: menu, th: th},
 		 toggleColumn);
-	menu.append(blob);
+	menu.prepend(blob);
     }
     $('body').append(menu);
 //    th.find('select').selectmenu();
@@ -513,22 +577,24 @@ function  appendList(type,type_parent,id_parent) {
     legende = legende.clone(true);
     legende.removeAttr('id');
     body.append(legende);
-    setMenuFields(legende);
+    addMenuFields(legende);
+    addAdd(legende.find('th:last'));
     getjson("json_get.php",{id_parent: id_parent, type: type}, function (o) {
 	    var n = o.length;
 	    var i = 0;
-	    for (i = 0; i < n; i++) {
-		appendItem(type,body,o[i],list);
+	    for (i = n - 1; i >= 0; i--) {
+		appendItem(type,legende,o[i],list);
 	    }
 	});
 }
 
-function appendItem(type,body,o,list) {
+
+function appendItem(type,prev,o,list) {
     var n = list.length;
     var i = 0;
     var id = idString({id: o["id_"+type], type: type});
     var line = jQuery('<tr id="'+id+'" class="'+type+'"></tr>');
-    body.append(line);
+    prev.after(line);
     for (i = 0; i < n; i++) {
 	var name = list.eq(i).attr("class");
 	var cell = jQuery('<td class="'+name+'"></td>');
@@ -546,11 +612,49 @@ function appendItem(type,body,o,list) {
 	    .prepend('<div class="basculeOff" id="basculecours'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
     }
+    addRm(line.find('td:last')); 
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
-
 /* BLOC ----- ENVOI DE MODIFS AU SERVEUR --------*/
+function findIdParent(tr,type) {
+    var table = tr.parent().parent();
+    var sid = table.attr("id");
+    var oid = parseIdString(sid);
+    return oid.id;
+}
+
+/* ajouter une nouvelle ligne */
+function newLine() {
+    var tr = $(this).parent().parent('tr');
+    var type = tr.attr('class');
+    var list = tr.find('th');
+    var n = list.length;
+    var i = 0;
+    var id_parent = findIdParent(tr,type);
+    getjson("json_new.php", {type: type, id_parent: id_parent}, function (tabo) {
+	    appendItem(type,tr,tabo[i],list);
+	});
+       
+}
+
+/* supprimer une ligne */
+function removeLine(o) {
+    var oid = o.data;
+    var sid = idString(oid);
+    var tr = $("#"+sid);
+    tr.find('div.basculeOn').trigger('click');
+
+    tr.effect('highlight',{},800,function () {
+	    if (confirm("Voulez vous vraiment effacer cette ligne ("+oid.type+") et les données associées ?\n Attention : cette opération est définitive.")) {
+		getjson("json_rm.php", oid, function() {
+			tr.fadeOut('slow');
+			tr.remove();
+		    });
+	    }
+	});
+}
+
 /* soumettre les modifications d'une ligne */
 function sendModifiedLine() {
     var ligne = $(this).parent().parent('tr');
@@ -573,7 +677,7 @@ function sendModifiedLine() {
 	    L[name].getval($(this),donnees);
 	});
 
-    getjson("json_modifier.php",donnees, replaceLine);
+    getjson("json_modify.php",donnees, replaceLine);
 }
 function replaceLine(tabo) {
     var o = tabo[0];
@@ -604,5 +708,8 @@ function refreshLine(o) {
 }
 
 $(document).ready(function () {
-	L = new ligne(); // var globale
+	L = new ligne(); // <-- var globale
+	/* masqer certaines colonnes */
+	$('th.code_geisha, th.alt').fadeOut('fast');
+	$('#skel').fadeOut('fast');
     });

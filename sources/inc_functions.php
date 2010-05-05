@@ -135,6 +135,7 @@ function selectionner_cours($id)
     return $cours;
 }
 
+/* a conserver */
 function supprimer_cours($id)
 {    
     if (peuteditercours($id)) {
@@ -151,17 +152,16 @@ function supprimer_cours($id)
 	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";
 	    
 	    if (mysql_query($qtranches)) {
-		echo "OK";
+		echo '{"ok": "ok"}';
 		pain_log("$qtranches");
-
 	    } else {
-		echo "ERREUR Échec de la requête sur la table tranches.";
+		errmsg("échec de la requête sur la table tranches.");
 	    }
 	} else {
-	    echo "ERREUR Échec de la requête sur la table cours.";
+	    errmsg("échec de la requête sur la table cours.");
 	}
     } else {
-	echo "ERREUR Droits insuffisants.";
+	errmsg("droits insuffisants.");
     }
 }
 
@@ -392,14 +392,24 @@ function supprimer_tranche($id)
 	if (mysql_query($qtranche)) {
 	    historique_par_suppression(2, $tranche);
 	    pain_log("$qtranche -- supprimer_tranche($id)");
-	    echo "OK";
+	    echo '{"ok": "ok"}';
 	} else {
-	    echo "Échec de la requête sur la table cours.";
+	    errmsg("échec de la requête sur la table cours.");
 	}
     } else {
-	echo "Droits insuffisants.";
+	errmsg("droits insuffisants.");
     }
 }
+
+
+function supprimer_enseignant($id) {
+    errmsg("fonction non disponible.");
+}
+
+function supprimer_choix($id) {
+    errmsg("fonction non disponible.");
+}
+
 
 function formation_du_cours($id)
 {

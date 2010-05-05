@@ -49,6 +49,7 @@ li#menu-chercher {
     top: 30px;
 }
 
+
 span.highlight {
     background-color: yellow;
 }
@@ -389,7 +390,6 @@ td.tranches {
 
 div.basculeOff, div.basculeOn {
     float:left; 
-    margin-left: -132px; 
     cursor: pointer;
     width: 20px;
     height: 20px;
@@ -849,4 +849,12 @@ ul.menu li.inv {
 ul.menu li:hover {
 //    background-color: #EFE6FF;
     color: #FBCB09;
+}
+
+td.action > div.removel {
+    float:right; 
+    margin-right: -39px;
+    cursor: pointer;
+    width: 29px;
+    height: 28px;
 }

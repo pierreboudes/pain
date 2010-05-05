@@ -90,7 +90,7 @@ while($sformation = mysql_fetch_array($rsformation))
 	echo '<td colspan="12" class="imgformation">';
 	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
 	echo '</div></td></tr>';
-	echo '<tr class="formation" id="formation'.$id_formation.'">';
+	echo '<tr class="formation" id="formation_'.$id_formation.'">';
 	echo '<td class="laction">';
 	debug_show_id($id_formation);    
 	action_basculerformation($id_formation);

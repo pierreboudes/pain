@@ -41,11 +41,10 @@ if (isset($_GET["type"])) {
 	$par = "cours";
 	$order = "ORDER by modification ASC";
     } else {
-	die('{"error": "type indefini"}');
+	errmsg("erreur de script (type inconnu)");
     }
 } else {
-    $type = "cours";
-    $par = "formation";
+    errmsg("erreur de script (type non renseigné)");
 }
 
 if (isset($_GET["id_parent"])) {

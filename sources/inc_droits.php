@@ -31,7 +31,9 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "enseignant") return peutediterenseignant($id);
     }
     if ($id_parent != NULL) {
-	
+	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
+	if ($type == "tranche") return peuteditertrancheducours($id_parent);
+	if ($type == "enseignant") return peutproposerenseignant();
     }
     return false;
 }
@@ -56,7 +58,8 @@ function peuteditercours($id_cours) {
                   pain_formation.id_sformation";
     $res = mysql_query($query) or die("ERREUR peuteditercours($id_cours)");
     $r = mysql_fetch_array($res);
-    if ($user["id_enseignant"] == $r["respcours"]) return true;
+/* le responsable du cours ne peut plus !    
+    if ($user["id_enseignant"] == $r["respcours"]) return true; */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
