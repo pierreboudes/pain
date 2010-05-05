@@ -481,7 +481,7 @@ function addOk(jqcell) {
 }
 
 function addMenuFields(tr) {
-    var th = tr.find('th:last');
+    var th = tr.find('th.action');
     th.prepend('<button class="menufields">champs...</button>');
     var button = th.find('button').button({
 			text: false,
@@ -578,7 +578,7 @@ function  appendList(type,type_parent,id_parent) {
     legende.removeAttr('id');
     body.append(legende);
     addMenuFields(legende);
-    addAdd(legende.find('th:last'));
+    addAdd(legende.find('th.action'));
     getjson("json_get.php",{id_parent: id_parent, type: type}, function (o) {
 	    var n = o.length;
 	    var i = 0;
@@ -611,6 +611,7 @@ function appendItem(type,prev,o,list) {
 	line.find('td:first')
 	    .prepend('<div class="basculeOff" id="basculecours'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="12"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     addRm(line.find('td:last')); 
 }

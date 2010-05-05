@@ -487,10 +487,10 @@ function histoDesCours(id) {
     bascule.toggleClass('histoOn');
     if (bascule.hasClass('histoOn')) {
 	$('#tableformation_'+id+' div.imgcours').show();
-	$('#tableformation_'+id+' tr.cours td.action').each(function (i) {
+	$('#tableformation_'+id+' tr.cours').each(function (i) {
 		var tag = this.id;
 		if (tag != undefined) {
-		    var id = tag.replace('cours','');
+		    var id = tag.replace('cours_','');
 		    htdCours(id);
 		}
 	    });
