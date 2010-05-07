@@ -23,12 +23,16 @@ authrequired();
 
 function ig_formselectformation($id_formation, $annee = "2009")
 {
-    $q = "SELECT `id_formation`, `nom`, `parfum`, `annee_etude` 
-          FROM pain_formation 
-          WHERE `annee_universitaire` = ".$annee."
-          ORDER BY `numero` ASC";
+    $q = "SELECT id_formation, 
+                 pain_formation.nom AS nom, 
+                 pain_formation.parfum AS parfum, 
+                 pain_formation.annee_etude AS annee_etude 
+          FROM pain_formation, pain_sformation          
+          WHERE pain_formation.id_sformation = pain_sformation.id_sformation
+          AND pain_sformation.annee_universitaire = $annee
+          ORDER BY pain_formation.numero ASC";
     $r = mysql_query($q) 
-	  or die("Échec de la requête sur la table formation");
+	or die("</select></form>Échec de la requête sur la table formation: ".mysql_error());
     while ($form = mysql_fetch_array($r)) {
 	echo '<option ';
 	if ($form["id_formation"] == $id_formation) {

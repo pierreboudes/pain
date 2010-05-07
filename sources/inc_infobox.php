@@ -26,6 +26,8 @@ authrequired();
 <p>Bonjour <?php echo $user["prenom"]." ".$user["nom"]; ?></p>
 <p>      
  En cas de problème d'affichage : recharger la page.</b></p>
+
+<p><b>Attention, des travaux sont en cours pour le passage à une nouvelle version de pain</b> (<a href="../campagne/">campagne</a>), certaines données, notamment les statistiques, peuvent devenir erronées dans la version que vous visitez actuellement.</p>
 <p><b>Attention, le <a href="http://www-lipn.univ-paris13.fr/~boudes/wikka/wikka.php?wakka=NoticeServices2009">wiki</a> fermera avant juillet 2010.</b> Les informations sur les services du wiki ne doivent plus être considérées comme étant à jour.</p>
 <p>La  <a href="https://www-lipn.univ-paris13.fr/projects/licences/wiki/AccueilPain" title="Accueil pain">page web de pain</a> contient des informations complémentaires. Un système de tickets, pour signaler des bugs ou demander des améliorations, y est disponible (vérifier que le bug n'est pas déjà signalé dans un ticket avant de créer un nouveau ticket).</p>
 </div>

@@ -101,8 +101,7 @@ function list_superformations($annee = "2009")
 function list_formations($id_sformation, $annee = "2009")
 {
     $qformation = "SELECT * FROM pain_formation 
-                   WHERE `annee_universitaire` = ".$annee."
-                   AND `id_sformation` = ".$id_sformation."
+                   WHERE `id_sformation` = ".$id_sformation."
                    ORDER BY numero ASC";    
 
     $rformation = mysql_query($qformation) 
@@ -484,7 +483,7 @@ function ig_formenseignant()
 
 
 function htdtotaux($annee = "2009") {    
-    $qservi ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
+    $qservi ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
 
     $rservi = mysql_query($qservi) 
 	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
@@ -495,7 +494,7 @@ function htdtotaux($annee = "2009") {
 	$servi = 0;
     } 
 
-    $qmutualise ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
+    $qmutualise ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
 
     $rmutualise = mysql_query($qmutualise) 
 	or die("erreur d'acces aux tables : $qmutualise erreur:".mysql_error());
@@ -506,7 +505,7 @@ function htdtotaux($annee = "2009") {
 	$mutualise = 0;
     }
 
-    $qlibre ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
+    $qlibre ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
 
     $rlibre = mysql_query($qlibre) 
 	or die("erreur d'acces aux tables : $qlibre erreur:".mysql_error());
@@ -517,7 +516,7 @@ function htdtotaux($annee = "2009") {
 	$libre = 0;
     } 
 
-    $qannule ='SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
+    $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
 
@@ -527,7 +526,7 @@ function htdtotaux($annee = "2009") {
 	$annule = 0;
     } 
 
-    $qtp ='SELECT SUM(pain_tranche.tp) AS tp FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND annee_universitaire = '.$annee;
+    $qtp ='SELECT SUM(pain_tranche.tp) AS tp FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
     $rtp = mysql_query($qtp) 
 	or die("erreur d'acces aux tables : $qtp erreur:".mysql_error());
 
@@ -760,7 +759,7 @@ function ig_totauxenpostes($totaux) {
 }
 
 
-function listeinterventions($id_enseignant) {
+function listeinterventions($id_enseignant, $annee = "2009") {
     $query = "SELECT 
 pain_tranche.id_tranche,
 pain_formation.nom,
@@ -777,13 +776,14 @@ pain_tranche.tp,
 pain_tranche.alt,
 pain_tranche.htd,
 pain_tranche.remarque
-FROM pain_tranche, pain_cours, pain_formation
+FROM pain_tranche, pain_cours, pain_formation, pain_sformation
 WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
 	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
-AND pain_formation.annee_universitaire = '2009'
+AND pain_formation.id_sformation = pain_sformation.id_sformation
+AND pain_sformation.annee_universitaire = $annee
 ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
 
     ($result = mysql_query($query)) or die("Échec de la connexion à la base");
@@ -832,20 +832,20 @@ function ig_intervention($i) {
     echo '<td class="remarque">'.$i["remarque"].'</td>';
 }
 
-function totauxinterventions($id_enseignant) {
+function totauxinterventions($id_enseignant, $annee = "2009") {
     $query = "SELECT 
 SUM(pain_tranche.cm) AS cm,
 SUM(pain_tranche.td) AS td,
 SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd
-FROM pain_tranche, pain_cours, pain_formation
+FROM pain_tranche, pain_cours, pain_formation, pain_sformation
 WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
 	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
-AND pain_cours.id_formation = pain_formation.id_formation
-AND pain_formation.annee_universitaire = '2009'
+AND pain_formation.id_sformation = pain_sformation.id_sformation
+AND pain_sformation.annee_universitaire = $annee
 ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 
     ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
@@ -867,8 +867,8 @@ function ig_totauxinterventions($totaux) {
 
 
 
-function listeservice($id_enseignant) {
-    $query = "SELECT 
+function listeservice($id_enseignant, $annee ="2009") {
+$query = "SELECT 
 pain_formation.nom,
 pain_formation.annee_etude,
 pain_formation.parfum,
@@ -880,13 +880,13 @@ SUM(pain_tranche.cm) AS cm,
 SUM(pain_tranche.td) AS td,
 SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt
-FROM pain_tranche, pain_cours, pain_formation
+FROM pain_tranche, pain_cours, pain_formation, pain_sformation
 WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
 	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
-AND pain_cours.id_formation = pain_formation.id_formation
-AND pain_formation.annee_universitaire = '2009'
+AND pain_formation.id_sformation = pain_sformation.id_sformation
+AND pain_sformation.annee_universitaire = $annee
 GROUP BY pain_cours.id_cours
 ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC";
 
