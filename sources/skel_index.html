@@ -84,7 +84,7 @@
 	    <th class="alt">alt.</th>
 	    <th class="descriptif">remarque</th>
 	    <th class="code_geisha">code</th>
-	    <th class="action"></th>	    
+	    <th class="action"><div class="palette"></div></th>
 	  </tr>
 	 <!-- BLOC COURS -->	 
 	  <tr class="imgcours">
@@ -98,28 +98,40 @@
 	  </tr>
 	  <tr id="_tranchesducours_2" class="trtranches">
 	    <td class="tranches" colspan="12">
-	      <table class="tranches">
+	    <div style="float:left;">
+	      <table id="_tablechoix_2">
 		<tbody>
-		  <tr id="skeltranche" class="tranche"xs>
-		    <th class="laction"></th>
-		    <th class="enseignant">Enseignant</th>
-		    <th class="cm">CM</th>
-		    <th class="td">TD</th>
-		    <th class="tp">TP</th>
-		    <th class="alt">alt.</th>
-		    <th class="htd">htd</th>
-		    <th class="remarque">Remarque</th>
-		    <th class="groupe">Groupe</th>
-		    <th class="action"></th>
-		  </tr>
-		  <tr id="_tranche_3" class="tranche">
-		    <!-- rem: deplacement de l'id de td.action vers tr -->
-		    <td colspan="9"> (multiples td)</td>		    
-		  </tr>
+		  <tr id="skelchoix" class="choix">
+		  <th class="action"><div class="palette"></div></th>
+		  <th class="enseignant">Enseignant</th>
+		  <th class="choix">choix</th>
+		  <th class="htd">htd</th>
+		</tr>
 		</tbody>
 	      </table>
-	    </td>
-	  </tr>
+	    </div>
+	    <table class="tranches">
+	      <tbody>
+		<tr id="skeltranche" class="tranche">
+		  <th class="laction"></th>
+		  <th class="enseignant">Enseignant</th>
+		  <th class="cm">CM</th>
+		  <th class="td">TD</th>
+		  <th class="tp">TP</th>
+		  <th class="alt">alt.</th>
+		  <th class="htd">htd</th>
+		  <th class="remarque">Remarque</th>
+		  <th class="groupe">Groupe</th>
+		  <th class="action"><div class="palette"></div></th>
+		</tr>
+		<tr id="_tranche_3" class="tranche">
+		  <!-- rem: deplacement de l'id de td.action vers tr -->
+		  <td colspan="9"> (multiples td)</td>		    
+		</tr>
+	      </tbody>
+	    </table>
+	  </td>
+	</tr>
 	  <!-- FIN BLOC COURS -->	 	    
 	</table>
       </td>

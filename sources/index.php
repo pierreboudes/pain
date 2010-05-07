@@ -26,6 +26,8 @@ require_once('utils.php');
 include("menu.php");
 include("inc_infobox.php");
 include("inc_listcours.php");
+$_GET["annee"] = "2010";
+include("inc_listcours.php");
 include("skel_index.html");
 /* include("inc_aide.php"); */
 ?>

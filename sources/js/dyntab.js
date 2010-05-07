@@ -248,6 +248,9 @@ function ligne() {
     this.code_geisha.name = "code_geisha";    
     /* action */
     this.action = new notcell();
+    this.action.setval = function(c,o) {
+	if (0 == c.find('div.palette').length) c.append('<div class="palette"/>');
+    }
     this.action.name = "action";
     /* action a gauche */
     this.laction = new notcell();
@@ -273,9 +276,10 @@ function ligne() {
     /* descriptif */
     this.descriptif = new cell();
     this.descriptif.name = "descriptif";
-    /* pain_resa
+    /* pain_choix
      */
-    // TODO
+    this.choix = new cell();
+    this.choix.name = "choix";
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -351,13 +355,17 @@ function basculerFormation(id) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOff')) {
-	$('#tableformation_'+id+' tr.legende').remove();
 	$('#tableformation_'+id+' tr.cours div.basculeOn').trigger("click");
 	$('#tableformation_'+id+' tr.cours').remove();
-	$('#tableformation_'+id+' tr.imgcours').remove();	
+	$('#tableformation_'+id+' tr.imgcours').remove();
+	var histo = $('#histoDesCoursFormation'+id);
+	if (histo.hasClass('histoOn')) {
+	    histo.toggleClass('histoOff');
+	    histo.toggleClass('histoOn');
+	}
     } else {
 	appendList("cours","formation",id);
-	$('#tableformation_'+id+' tr.legende').fadeIn("slow");
+	$('#tableformation_'+id+' tr.cours').fadeIn("slow");
     }
     return false;
 }
@@ -374,7 +382,17 @@ function basculerCours(e) {
     } else {
 	$('#tranchesducours'+id).remove();
     }
+    basculerChoix(e);
     return false;
+}
+
+function basculerChoix(e) {
+   var id = e.data.id;
+   $("#tablecours_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
+   appendList("choix","choix",id);
+//   $('div.choix').resizable();
+   /* positionner les actions */
+   return false;
 }
 
 function basculerSuperFormation(id) {
@@ -394,18 +412,16 @@ function basculerSuperFormation(id) {
 /* bloc --- Boutons ---*/
 /* ajout de ligne */
 function addAdd(td) {
-    var sid = td.parent('tr').attr('id');
-    // alert(sid);
-    var oid = parseIdString(sid);
-    var addl = jQuery('<button class="addl">ajouter '+oid.type+'</button>');
+    var type = td.parent('tr').attr('class');
+    var addl = jQuery('<button class="addl">ajouter '+type+'</button>');
     addl.button({
 	text: false,
 		icons: {
 	    primary: "ui-icon-plus"
 		    }
 	});
-    addl.bind("click",oid,newLine);
-    td.append(addl);
+    addl.bind("click",newLine);
+    td.find('div.palette').append(addl);
 }
 function removeAdd(td) {
     td.find('button.addl').remove();
@@ -425,6 +441,7 @@ function addRm(td) {
 			}
 	});
 	rml.bind("click",oid,removeLine);
+	removeRm(td);
 	td.append(removel.append(rml));
 }
 function removeRm(td) {
@@ -433,19 +450,19 @@ function removeRm(td) {
 
 /* reload de ligne */
 function addReload(td) {
-    var sid = td.parent('tr').attr('id');
+    var sid = td.parents('tr').attr('id');
     // alert(sid);
     var oid = parseIdString(sid);
-    var cancell = jQuery('<button class="reloadl">annuler les modifications</button>');
-    cancell.button({
+    var reloadl = jQuery('<button class="reloadl">annuler les modifications</button>');
+    reloadl.button({
 	text: false,
 		icons: {
 //	    primary: "ui-icon-arrowrefresh-1-w"
 	    primary: "ui-icon-cancel"
 		    }
 	});
-    cancell.bind("click",oid,refreshLine);
-    td.append(cancell);
+    reloadl.bind("click",oid,refreshLine);
+    td.find('div.palette').append(reloadl);
 }
 function removeReload(td) {
     td.find('button.reloadl').remove();
@@ -453,14 +470,13 @@ function removeReload(td) {
 
 /* bouton d'envoie */
 function addOk(jqcell) {
-    var ligne = jqcell.parent('tr');
-    var td = ligne.find('td:last');
+    var ligne = jqcell.parents('tr');
+    var td = ligne.find('td.action');
     removeReload(td);
     if (ligne.hasClass('edit')) {
 	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
 	ligne.find('div.ok').remove();
 	td.find('button.okl').remove();
-	td.find('button.cancell').remove();	
 	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
 	okl.button({
 			text: false,
@@ -469,7 +485,8 @@ function addOk(jqcell) {
 			}
 	});
 	okl.bind("click",sendModifiedLine);
-	td.append(okl);
+	td.find('div.palette').append(okl);
+	rmRm(td);
 	addReload(td); // <-- ajout du reload
     } else {
 	/* c'est la premiere cellule en cours d'edition dans la ligne. 
@@ -482,7 +499,7 @@ function addOk(jqcell) {
 
 function addMenuFields(tr) {
     var th = tr.find('th.action');
-    th.prepend('<button class="menufields">champs...</button>');
+    th.find('div.palette').prepend('<button class="menufields">champs...</button>');
     var button = th.find('button').button({
 			text: false,
 			icons: {
@@ -509,7 +526,7 @@ togglecolumn: masque ou affiche une colonne puis detruit le menu.
  */
 function openMenuFields(e) {
     var th = e.data.th;
-    var list = th.prevAll('th');
+    var list = th.siblings('th').not(th);
     var type = th.parent().parent().parent().attr('class');
     var button = e.data.button;
     var menu = jQuery('<ul class="menu"></ul>');
@@ -535,7 +552,7 @@ function openMenuFields(e) {
 			 css: classname, 
 			 button: button, menu: menu, th: th},
 		 toggleColumn);
-	menu.prepend(blob);
+	menu.append(blob);
     }
     $('body').append(menu);
 //    th.find('select').selectmenu();
@@ -608,12 +625,12 @@ function appendItem(type,prev,o,list) {
 	}
     }
     if (type == "cours") {
-	line.find('td:first')
+	line.find('td.laction')
 	    .prepend('<div class="basculeOff" id="basculecours'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="12"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
-    addRm(line.find('td:last')); 
+    addRm(line.find('td.action')); 
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
@@ -641,14 +658,16 @@ function newLine() {
 
 /* supprimer une ligne */
 function removeLine(o) {
-    var oid = o.data;
-    var sid = idString(oid);
-    var tr = $("#"+sid);
-    tr.find('div.basculeOn').trigger('click');
+    var oid = o.data;   
+    var tr = $("#"+idString(oid));
 
+    tr.find('div.basculeOn').trigger('click');
     tr.effect('highlight',{},800,function () {
 	    if (confirm("Voulez vous vraiment effacer cette ligne ("+oid.type+") et les données associées ?\n Attention : cette opération est définitive.")) {
 		getjson("json_rm.php", oid, function() {
+			if (oid.type == 'cours') {
+			    tr.prev('tr.imgcours').remove();
+			}
 			tr.fadeOut('slow');
 			tr.remove();
 		    });
@@ -696,8 +715,9 @@ function replaceLine(tabo) {
 		td.addClass('mutable');
 //	    }
 	});
-    ligne.find('td:last button.okl').remove();
-    removeReload(ligne.find('td:last'));
+    ligne.find('td.action button.okl').remove();
+    removeReload(ligne.find('td.action'));
+    addRm(ligne.find('td.action'));
 }
 /*------- FIN ENVOI DE MODIFS AU SERVEUR --------*/
 

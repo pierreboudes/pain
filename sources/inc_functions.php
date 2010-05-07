@@ -1074,12 +1074,12 @@ function ig_historique($h) {
     switch ($h["type"]) {
     case 1:
 	echo '<a href="#cours'.$h["id"].'">';
-	echo '<img src="img/cours.png" />';
+	echo '<img src="css/img/cours.png" />';
 	echo '</a>';
 	break;
     case 2:
 	echo '<a href="#tranche'.$h["id"].'">';
-	echo '<img src="img/tranche.png" />';
+	echo '<img src="css/img/tranche.png" />';
 	echo '</a>';
 	break;
     default: 

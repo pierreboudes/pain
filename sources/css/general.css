@@ -158,20 +158,6 @@ tr.sousformations > td {
     padding: 0px;
 }
 
-tr.formcours {
-   display:none;
-}
-
-tr.formcours, tr.formcours > td {
-    padding: 0px;
-    text-align: left;
-}
-
-table.formcours {
-    border: 0px;
-    border-collapse:collapse;
-}
-
 table.enseignants {
     border:3px solid #6495ed;
     border-collapse:collapse; 
@@ -179,43 +165,37 @@ table.enseignants {
 }
 
 table.tranches {
-/*    width:874px; */
     border:1px solid #6495ed;
     border-bottom:2px solid #6495ed;
-    border-left:2px solid #6495ed;
+    border-left:1px solid #6495ed;
     border-right:0px;    
     border-collapse:collapse;
     margin-left: auto;
-   /* margin-right: -1px; */
+    margin-top: -1px;
 }
 
-table.tabletrancheform {
-    border:0px;    
-    border-collapse:collapse;
-    margin: 0px;
-    margin-top: 0px;
-    margin-bottom: -1px;
-/*    margin-right: -1px; */
-    padding: 0px;
-}
-
-tr.trtrancheform, tr.trtrancheform > td {
-    border: 0px;
-    margin: 0px;
-    padding: 0px;
-}
-
-tr.formtranche {
-    padding: 0px;
-    margin:  0px;
-}
-
-tr.formtranche td {
-    border:  1px solid #6495ed;
+table.tranches th {
     text-align: center;
 }
+div.choix {
+    float: left;
+    margin: 0px;
+    margin-left: -1px;
+    padding: 0px;
+}
 
-table.tranches th, table.formcours td {
+table.choix {
+    border:1px solid #6495ed;
+    border-bottom:2px solid #6495ed;
+    border-right:1px solid #6495ed;
+    border-left:0px;    
+    border-collapse:collapse;
+    margin-right: auto;
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+table.choix th {
     text-align: center;
 }  
 
@@ -237,8 +217,12 @@ table.formcours {
     width:874px;
 }
 
-.nom_cours, .responsable, .enseignant {
-    width: 100px; /* 200 */
+.nom_cours {
+    min-width: 100px;
+}
+
+.enseignant {
+    min-width: 100px; /* 200 */
 }
 
 .email {
@@ -250,7 +234,7 @@ table.formcours {
 }
 
 
-
+/*
 td.responsable > input {
     width: 90px;
 }
@@ -258,13 +242,10 @@ td.responsable > input {
 td.enseignant > input {
     width: 90px;
 }
-
-td.nom_cours > input {
-   width: 90px;  /* 180 */
-}
+*/
 
 .descriptif {
-    width: 140px;
+    min-width: 140px;
 }
 
 /* td.descriptif > textarea {
@@ -272,8 +253,9 @@ td.nom_cours > input {
 }
 */
 
-.groupe, .cm, .td, .tp, .alt, .groupe, .htd {
-    width:60px; /* 180 */
+.cm, .td, .tp, .alt, .groupe, .htd {
+    min-width:30px;
+    max-width:60px;
 }
 
 /*
@@ -282,12 +264,12 @@ td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input {
 }
 */
 
- .semestre {
-   width: 80px;  /* 180 */
+.semestre {
+   max-width: 80px;
 } 
 
 .credits {
-   width: 80px;  /* 180 */
+   width: 80px;
 } 
 
 /*
@@ -307,7 +289,7 @@ td.code_geisha > input {
 }
 */
 .action {
-   width: 70px;
+   width: 70px; /* 56 */
 }
 
 .laction {
@@ -851,10 +833,30 @@ ul.menu li:hover {
     color: #FBCB09;
 }
 
+
+td.action {
+    max-width: 0px;
+}
+
+th.action > div.palette, td.action > div.palette {
+    float: right;
+    height: 24px; 
+    margin-right: -64px;
+}
+
 td.action > div.removel {
     float:right; 
     margin-right: -39px;
-    cursor: pointer;
     width: 29px;
-    height: 28px;
+    height: 24px;
+}
+
+tr.choix > td.action > div.removel {
+    float:left; 
+    margin-left: -39px;
+}
+
+
+th.action, td.action {
+    font-size: 12px;
 }

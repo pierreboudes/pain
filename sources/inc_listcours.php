@@ -24,7 +24,11 @@ authrequired();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-
+if (isset($_GET["annee"])) {
+    $annee = getclean("annee");
+} else {
+    $annee = "2009";
+}
 /* Les totaux globalement */
 echo '<table class="super">';
 echo '<tr class="imgformation">';
@@ -33,8 +37,8 @@ echo '<div class="imgformation" id="imgentete">';
 echo '</div></td></tr>';
 echo '<tr class="entete" id="entete"><td>';
 action_histodesformations();
-$tot = htdtotaux("2009");
-echo "Ensemble des formations de l'année 2009. ";
+$tot = htdtotaux($annee);
+echo "Ensemble des formations de l'année $annee. ";
 echo ' <span class="totaux">';
 ig_htd($tot);
 echo "</span>\n";
@@ -42,7 +46,7 @@ echo '</td></tr></table>';
 
 /* Le grand tableau des formations */
 
-$rsformation = list_superformations("2009");
+$rsformation = list_superformations($annee);
 
 while($sformation = mysql_fetch_array($rsformation)) 
 /* pour chaque super formation */

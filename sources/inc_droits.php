@@ -29,13 +29,23 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "cours") return peuteditercours($id);
 	if ($type == "tranche") return peuteditertranche($id);
 	if ($type == "enseignant") return peutediterenseignant($id);
+	if ($type == "choix") return peutediterchoix($id);
     }
     if ($id_parent != NULL) {
 	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
 	if ($type == "enseignant") return peutproposerenseignant();
+	if ($type == "choix") return peutchoisir();
     }
     return false;
+}
+
+function peutchoisir() {
+    return true;
+}
+
+function peutediterchoix() {
+    return true;
 }
 
 

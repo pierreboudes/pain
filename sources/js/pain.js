@@ -508,7 +508,7 @@ function logsFormation(id) {
 	var titre = 'Logs '+$('#nomformation'+id).text();
 	jQuery.post("act_historique.php", {id_formation: id}, function (data) {
 	    if (!contientERREUR(data)) {
-		$('#formation'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
+		$('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
 		$('#logF'+id).dialog({autopen: true, 
 			    draggable: true, 
 			    resizable: true, 
