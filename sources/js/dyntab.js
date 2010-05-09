@@ -433,19 +433,18 @@ function addRm(td) {
     var oid = parseIdString(tr.attr('id'));
     var rml = jQuery('<button class="rml">effacer la ligne</button>');
     var removel = jQuery('<div class="removel"/>');
-
-	rml.button({
-			text: false,
-			icons: {
-				primary: "ui-icon-trash"
-			}
+    rml.button({
+	text: false,
+		icons: {
+	    primary: "ui-icon-trash"
+		    }
 	});
-	rml.bind("click",oid,removeLine);
-	removeRm(td);
-	td.append(removel.append(rml));
+    rml.bind("click",oid,removeLine);
+    removeRm(td);
+    td.append(removel.append(rml));
 }
 function removeRm(td) {
-    td.find('div.remol').remove();
+    td.find('div.removel').remove();
 }
 
 /* reload de ligne */
@@ -470,13 +469,20 @@ function removeReload(td) {
 
 /* bouton d'envoie */
 function addOk(jqcell) {
-    var ligne = jqcell.parents('tr');
+    var ligne = jqcell.parent('tr');
     var td = ligne.find('td.action');
-    removeReload(td);
     if (ligne.hasClass('edit')) {
 	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
 	ligne.find('div.ok').remove();
-	td.find('button.okl').remove();
+    } else {
+	/* c'est la premiere cellule en cours d'edition dans la ligne. 
+	   En cas de confirmation on peut envoyer toute la ligne */
+	ligne.addClass('edit');
+	jqcell.append('<div class="ok"/>');
+	jqcell.find('div.ok').click(sendModifiedLine);
+	removeReload(td);
+	removeRm(td);
+	addReload(td); // <-- ajout du reload
 	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
 	okl.button({
 			text: false,
@@ -486,14 +492,6 @@ function addOk(jqcell) {
 	});
 	okl.bind("click",sendModifiedLine);
 	td.find('div.palette').append(okl);
-	rmRm(td);
-	addReload(td); // <-- ajout du reload
-    } else {
-	/* c'est la premiere cellule en cours d'edition dans la ligne. 
-	   En cas de confirmation on peut envoyer toute la ligne */
-	ligne.addClass('edit');
-	jqcell.append('<div class="ok"/>');
-	jqcell.find('div.ok').click(sendModifiedLine);
     }
 }
 
@@ -732,5 +730,5 @@ $(document).ready(function () {
 	L = new ligne(); // <-- var globale
 	/* masqer certaines colonnes */
 	$('th.code_geisha, th.alt').fadeOut('fast');
-	$('#skel').fadeOut('fast');
+//	$('#skel').fadeOut('fast');
     });

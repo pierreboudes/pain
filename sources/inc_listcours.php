@@ -38,7 +38,7 @@ echo '</div></td></tr>';
 echo '<tr class="entete" id="entete"><td>';
 action_histodesformations();
 $tot = htdtotaux($annee);
-echo "Ensemble des formations de l'année $annee. ";
+echo "Ensemble des formations de l'année $annee-".($annee+1).".";
 echo ' <span class="totaux">';
 ig_htd($tot);
 echo "</span>\n";

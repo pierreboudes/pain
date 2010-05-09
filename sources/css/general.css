@@ -288,9 +288,11 @@ td.code_geisha > input {
     width: 60px;
 }
 */
+/*
 .action {
-   width: 70px; /* 56 */
+   width: 70px;
 }
+*/
 
 .laction {
     width: 0px;
@@ -834,15 +836,30 @@ ul.menu li:hover {
 }
 
 
-td.action {
+td.action, th.action {
+    width: 0px;
     max-width: 0px;
+    padding: 0px;
+    margin: 0px;
+    background-color: none;
+    border-right: 0px;
+    border-left: 0px;
 }
 
 th.action > div.palette, td.action > div.palette {
     float: right;
-    height: 24px; 
+    height: 24px;
+    padding: 0px;
+    margin: 0px;
     margin-right: -64px;
 }
+
+tr.choix > th.action > div.palette, tr.choix > td.action > div.palette {
+    float: left;
+    height: 24px; 
+    margin-left: -64px;
+}
+
 
 td.action > div.removel {
     float:right; 
@@ -852,7 +869,7 @@ td.action > div.removel {
 }
 
 tr.choix > td.action > div.removel {
-    float:left; 
+    float: left; 
     margin-left: -39px;
 }
 
