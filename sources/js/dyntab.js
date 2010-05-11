@@ -350,6 +350,19 @@ function getjsondb(url,data,callback) {
 /* BLOC ---- BOUTONS ET ACTIONNEURS --------------*/
 
 /* bloc --- Les bascules --- */
+function basculerSuperFormation(id) {
+    var bascule =  $('#basculesuper'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOff')) {
+	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
+    } else {
+	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
+    }
+    return false;
+}
+
 function basculerFormation(id) {
     var bascule =  $('#basculeformation_'+id);
     bascule.toggleClass('basculeOff');
@@ -363,7 +376,9 @@ function basculerFormation(id) {
 	    histo.toggleClass('histoOff');
 	    histo.toggleClass('histoOn');
 	}
+	$('#trtableformation_'+id).remove();
     } else {
+	$('#formation_'+id).after('<tr class="sousformations" id="trtableformation_'+id+'"><td colspan="2"><table class="formations" id="tableformation_'+id+'"><tbody></tbody></table></td></tr>');
 	appendList("cours","formation",id);
 	$('#tableformation_'+id+' tr.cours').fadeIn("slow");
     }
@@ -393,19 +408,6 @@ function basculerChoix(e) {
 //   $('div.choix').resizable();
    /* positionner les actions */
    return false;
-}
-
-function basculerSuperFormation(id) {
-    var bascule =  $('#basculesuper'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
-    } else {
-	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
-    }
-    return false;
 }
 /* bloc --- fin des bascules --- */
 

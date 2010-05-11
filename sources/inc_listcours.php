@@ -78,7 +78,6 @@ while($sformation = mysql_fetch_array($rsformation))
     echo '</span>';
     echo '</td>';	
     echo "</tr>\n";
-    echo '<tr class="sousformations" style="display: none;"><td colspan="2">';
     /* liste des annee de formation */
     $rformation = list_formations($id_sformation);
 
@@ -87,11 +86,8 @@ while($sformation = mysql_fetch_array($rsformation))
     {
 	$id_formation = $formation["id_formation"];
 	$totaux=htdformation($id_formation);
-
-	echo '<table class="formations" id="tableformation_'.$id_formation.'">'; 
-	/* affichage de la formation */
 	echo '<tr class="imgformation">';
-	echo '<td colspan="12" class="imgformation">';
+	echo '<td colspan="2" class="imgformation">';
 	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
 	echo '</div></td></tr>';
 	echo '<tr class="formation" id="formation_'.$id_formation.'">';
@@ -100,7 +96,7 @@ while($sformation = mysql_fetch_array($rsformation))
 	action_basculerformation($id_formation);
 	action_histodescours($id_formation);
 	echo '</td>';
-	echo '<td class="intitule" colspan="11">';
+	echo '<td class="intitule">'; // colspan="11"
 	echo '<span class="nomformation" id="nomformation'.$id_formation.'">';
 	echo $formation["nom"]." ".$formation["annee_etude"]." ";
 	echo $formation["parfum"]."</span>  &ndash; ";
@@ -111,11 +107,13 @@ while($sformation = mysql_fetch_array($rsformation))
 	echo ' <span class="totaux">';
 	ig_htd($totaux);
 	echo '</span>';
-	echo '</td>';
-	
+	echo '</td>';	
 	echo "</tr>\n";
-	echo '</table>'."\n"; 	
+// 	echo '<tr class="sousformations" style="display: none;"><td colspan="2">';
+// 	echo '<table class="formations" id="tableformation_'.$id_formation.'">'; 
+// 	echo '</table>'."\n";
+// 	echo '</td></tr>';
     } /* fin while formation */
-    echo '</td></tr></table>';
+    echo '</table>';
 } /* fin while superformation */
 ?>

@@ -844,6 +844,7 @@ WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
 	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $annee
 ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
