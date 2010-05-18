@@ -111,7 +111,6 @@ function ig_statsmysql() {
     echo '</pre></div>';
 }
 
-
 Class Error {
     public $error = "Erreur";
 }

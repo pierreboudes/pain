@@ -21,7 +21,7 @@
 require_once('inc_connect.php');
 require_once('authentication.php');
 header('Location: ./'); 
-setcookie("briocheAnonyme", "anonymous", time()+3600);
+setcookie("painAnonyme", "anonymous", time()+3600);
 $user =  array("id_enseignant"=> -1,
 		     "prenom" => "",
 		     "nom" => "Anonyme",

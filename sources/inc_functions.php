@@ -67,8 +67,9 @@ function ig_responsable($id)
     }
 }
 
-function ig_formselectenseignants($id_enseignant)
+function ig_formselectenseignants($id_enseignant, $annee = NULL)
 {
+    if ($annee == NULL) $annee = annee_courante();
     $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
              FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
     $rens = mysql_query($qens) 
@@ -85,12 +86,12 @@ function ig_formselectenseignants($id_enseignant)
 }
 
 
-
-function list_superformations($annee = "2009")
+function list_superformations($annee = NULL)
 {
+    if ($annee == NULL) $annee = annee_courante();
     $qsformation = "SELECT * FROM pain_sformation 
                    WHERE `annee_universitaire` = ".$annee."
-                   ORDER BY numero ASC";    
+                   ORDER BY numero ASC";
 
     $rsformation = mysql_query($qsformation) 
 	or die("Échec de la requête sur la table formation");
@@ -98,8 +99,9 @@ function list_superformations($annee = "2009")
     return $rsformation;
 }
 
-function list_formations($id_sformation, $annee = "2009")
+function list_formations($id_sformation, $annee = NULL)
 {
+    if ($annee == NULL) $annee = annee_courante();
     $qformation = "SELECT * FROM pain_formation 
                    WHERE `id_sformation` = ".$id_sformation."
                    ORDER BY numero ASC";    
@@ -456,6 +458,7 @@ function ig_enseignant($t) {
 }
 
 function ig_listenseignants() {
+    /* pain_service modifier cette requete lorsqu'il faudra ne lister que les enseignants de l'annee */
     $q = "SELECT * from pain_enseignant WHERE id_enseignant > 9 ORDER by categorie ASC, nom,prenom ASC";
     ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
     while ($t = mysql_fetch_array($r))
@@ -482,7 +485,8 @@ function ig_formenseignant()
 }
 
 
-function htdtotaux($annee = "2009") {    
+function htdtotaux($annee = NULL) {    
+    if ($annee == NULL) $annee = annee_courante();
     $qservi ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
 
     $rservi = mysql_query($qservi) 
@@ -751,15 +755,16 @@ function enpostes($htd) {
 function ig_totauxenpostes($totaux) {
     $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
     echo enpostes($total).' postes ';
-    echo '(dont '.enpostes($totaux["tp"]).'TP) = ';
-    echo enpostes($totaux["servi"]).'P&nbsp;servies +&nbsp;';
-    echo enpostes($totaux["mutualise"]).'P&nbsp;mutualisées +&nbsp;';
-    echo enpostes($totaux["libre"]).'P&nbsp;à pourvoir +&nbsp;';
-    echo enpostes($totaux["annule"]).'P&nbsp;annulées';
+    echo '(dont '.enpostes($totaux["tp"]).'p&nbsp;TP) = ';
+    echo enpostes($totaux["servi"]).'p&nbsp;servies +&nbsp;';
+    echo enpostes($totaux["mutualise"]).'p&nbsp;mutualisées +&nbsp;';
+    echo enpostes($totaux["libre"]).'p&nbsp;à pourvoir +&nbsp;';
+    echo enpostes($totaux["annule"]).'p&nbsp;annulées';
 }
 
 
-function listeinterventions($id_enseignant, $annee = "2009") {
+function listeinterventions($id_enseignant, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT 
 pain_tranche.id_tranche,
 pain_formation.nom,
@@ -832,7 +837,8 @@ function ig_intervention($i) {
     echo '<td class="remarque">'.$i["remarque"].'</td>';
 }
 
-function totauxinterventions($id_enseignant, $annee = "2009") {
+function totauxinterventions($id_enseignant, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT 
 SUM(pain_tranche.cm) AS cm,
 SUM(pain_tranche.td) AS td,
@@ -868,7 +874,8 @@ function ig_totauxinterventions($totaux) {
 
 
 
-function listeservice($id_enseignant, $annee ="2009") {
+function listeservice($id_enseignant, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
 $query = "SELECT 
 pain_formation.nom,
 pain_formation.annee_etude,
@@ -886,6 +893,7 @@ WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
 	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
 AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $annee
 GROUP BY pain_cours.id_cours
@@ -944,17 +952,37 @@ function ig_totauxservice($totaux) {
     echo '</tr>';
 }
 
-function update_servicesreels() {
+function update_servicesreels($annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
-    $qupdate = "UPDATE `pain_enseignant` SET service_reel = (SELECT SUM(pain_tranche.htd) FROM pain_tranche,pain_cours WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1) WHERE 1";
+    $qupdate = "UPDATE pain_service
+                SET 
+                service_reel =
+                  (SELECT SUM(pain_tranche.htd) 
+                    FROM pain_tranche, pain_cours, pain_formation, pain_sformation 
+                    WHERE pain_tranche.id_enseignant = pain_service.id_enseignant 
+                    AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1 
+                    AND pain_formation.id_formation = pain_cours.id_formation
+                    AND pain_sformation.id_sformation = pain_formation.id_sformation 
+                    AND pain_sformation.annee_universitaire = ".$annee.")
+                WHERE annee_universitaire = ".$annee;
     mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
 }
 
-function liste_enseignantscategorie($categorie) {
-    $q = "SELECT * from pain_enseignant 
-WHERE id_enseignant > 9 AND categorie = $categorie 
-ORDER by nom,prenom ASC";
+function liste_enseignantscategorie($categorie, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
+    $q = "SELECT pain_enseignant.id_enseignant AS id_enseignant,
+                 nom,
+                 prenom,
+                 pain_service.service_annuel AS service,
+                 pain_service.service_reel AS service_reel 
+          FROM pain_enseignant, pain_service 
+          WHERE pain_service.categorie = $categorie 
+            AND pain_enseignant.id_enseignant > 9
+            AND pain_service.id_enseignant = pain_enseignant.id_enseignant
+            AND pain_service.annee_universitaire = $annee
+          ORDER by nom,prenom ASC";
     ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
     return $r;
 }

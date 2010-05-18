@@ -20,6 +20,7 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
+$annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("statistiques");
 require_once('utils.php');
@@ -28,9 +29,12 @@ require_once('inc_droits.php');
 require_once('inc_functions.php');
 require_once('inc_statsfunc.php');
 include("menu.php");
+/* mise a jour des services  (pain_service) */
+update_servicesreels();
+
 echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
 echo "<p>";
-$totaux = htdtotaux("2009");
+$totaux = htdtotaux($annee);
 ig_htd($totaux);
 echo "</p><p>";
 ig_totauxenpostes($totaux);
@@ -45,7 +49,10 @@ include("inc_statscategoriesformations.php");
 if (peutvoirstatsservices()) {
     include("inc_statsservices.php");
 }
+
+/*
 echo "<h2>Graphiques par enseignant</h2>";
 include("inc_statsenseignants.php");
+*/
 piedpage();
 ?>

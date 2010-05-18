@@ -24,11 +24,6 @@ authrequired();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-if (isset($_GET["annee"])) {
-    $annee = getclean("annee");
-} else {
-    $annee = "2009";
-}
 /* Les totaux globalement */
 echo '<table class="super">';
 echo '<tr class="imgformation">';
@@ -40,7 +35,8 @@ action_histodesformations();
 $tot = htdtotaux($annee);
 echo "Ensemble des formations de l'année $annee-".($annee+1).".";
 echo ' <span class="totaux">';
-ig_htd($tot);
+//ig_htd($tot);
+ig_totauxenpostes($tot);
 echo "</span>\n";
 echo '</td></tr></table>';
 
@@ -58,26 +54,29 @@ while($sformation = mysql_fetch_array($rsformation))
     /* affichage de la super formation */
 
     echo '<tr class="imgformation">';
-    echo '<td  class="imgformation" colspan="2">';
+    echo '<td  class="imgformation" colspan="4">';
     echo '<div class="imgformation" id="imgsformation'.$id_sformation.'">';
     echo '</div></td></tr>';
 
-    echo '<tr class="super" id="sformation'.$id_sformation.'">';
+    echo '<tr class="super" id="sformation_'.$id_sformation.'">';
     echo '<td class="laction">';
     debug_show_id($id_sformation);
     action_basculersuper($id_sformation);
     // TODO action_histodescours($id_sformation);
     echo '</td>';
     echo '<td class="intitule">';
-    echo $sformation["nom"]." &ndash; ";	
+    echo $sformation["nom"];	
     /* affichage du responsable de la super formation */
-    echo "responsable : ";
+    echo '</td>';	
+    echo ' <td class="enseignant">';
     ig_responsable($sformation["id_enseignant"]);
-    echo ' <span class="totaux">';
-    ig_htd($totaux);
-    echo '</span>';
+    echo '</td>';	
+    echo ' <td class="totaux">';
+//    ig_htd($totaux);
+    ig_totauxenpostes($totaux);
     echo '</td>';	
     echo "</tr>\n";
+    if (0):
     /* liste des annee de formation */
     $rformation = list_formations($id_sformation);
 
@@ -87,7 +86,7 @@ while($sformation = mysql_fetch_array($rsformation))
 	$id_formation = $formation["id_formation"];
 	$totaux=htdformation($id_formation);
 	echo '<tr class="imgformation">';
-	echo '<td colspan="2" class="imgformation">';
+	echo '<td colspan="4" class="imgformation">';
 	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
 	echo '</div></td></tr>';
 	echo '<tr class="formation" id="formation_'.$id_formation.'">';
@@ -96,17 +95,17 @@ while($sformation = mysql_fetch_array($rsformation))
 	action_basculerformation($id_formation);
 	action_histodescours($id_formation);
 	echo '</td>';
-	echo '<td class="intitule">'; // colspan="11"
+	echo '<td class="nom">'; // colspan="11"
 	echo '<span class="nomformation" id="nomformation'.$id_formation.'">';
 	echo $formation["nom"]." ".$formation["annee_etude"]." ";
-	echo $formation["parfum"]."</span>  &ndash; ";
-	
+	echo $formation["parfum"]."</span>";
+	echo '</td>';	
+	echo ' <td class="enseignant">';	
 	/* affichage du responsable de la formation */
-	echo "responsable : ";
 	ig_responsable($formation["id_enseignant"]);
-	echo ' <span class="totaux">';
-	ig_htd($totaux);
-	echo '</span>';
+	echo '</td><td class="totaux">';
+	ig_totauxenpostes($totaux);
+//	ig_htd($totaux);
 	echo '</td>';	
 	echo "</tr>\n";
 // 	echo '<tr class="sousformations" style="display: none;"><td colspan="2">';
@@ -114,6 +113,7 @@ while($sformation = mysql_fetch_array($rsformation))
 // 	echo '</table>'."\n";
 // 	echo '</td></tr>';
     } /* fin while formation */
+    endif;
     echo '</table>';
 } /* fin while superformation */
 ?>

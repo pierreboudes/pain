@@ -38,11 +38,7 @@ function statensform($ens, $form) {
     return $stat;
 }
 
-
-
-
-
-$query = "SELECT id_sformation, nom FROM pain_sformation WHERE annee_universitaire = 2009 ORDER BY numero";
+$query = "SELECT id_sformation, nom FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
 $res = mysql_query($query) or die("BD Impossible d'effectuer la requête: $query");
 $formation = mysql_fetch_assoc($res);
 

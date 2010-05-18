@@ -24,10 +24,9 @@ authrequired();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-update_servicesreels();
 /* permanents */
 echo "<h3>Dépassements de service des permanents</h3>";
-$r = liste_enseignantscategorie(2);
+$r = liste_enseignantscategorie(2); /* TODO pain_service : remonter a la requête, form annee, jointure */
 $negtot = $postot = 0;
 echo '<div style="align: center; margin-top: 10px;">';
 while ($e = mysql_fetch_assoc($r)) {

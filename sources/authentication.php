@@ -26,8 +26,31 @@ phpCAS::setNoCasServerValidation();
 
 require_once('inc_connect.php');
 
+function set_year($annee) {
+    setcookie("painAnnee", $annee, time()+3600);
+}
+
+function default_year() {
+    if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
+	return $_COOKIE["painAnnee"];
+    }
+    return date('Y', strtotime('-7 month'));
+}
+
+function annee_courante() {
+/* si on a reçu une annee dans le formulaire on utilise celle la */
+    if (isset($_POST['annee'])) {
+	$annee = postclean('annee');
+	set_year($annee);
+    } else { 
+/* par défaut on sert l'année courante */
+	$annee = default_year();
+    }
+    return $annee;
+}
+
 function authentication() {
-    if (isset($_COOKIE['briocheAnonyme'])) {
+    if (isset($_COOKIE['painAnonyme'])) {
 	return array("id_enseignant"=> -1,
 		     "prenom" => "",
 		     "nom" => "Anonyme",
@@ -50,7 +73,7 @@ function authentication() {
 }
 
 function authrequired() {
-    if (isset($_COOKIE['briocheAnonyme'])) return;
+    if (isset($_COOKIE['painAnonyme'])) return;
     if (!(phpCAS::isAuthenticated())) {
 	header("Location: http://perdu.com");
 	die('Die in terror, picnic boy');
@@ -58,8 +81,8 @@ function authrequired() {
 }
 
 function pain_logout() {
-   if (isset($_COOKIE['briocheAnonyme'])) {
-       setcookie("briocheAnonyme", "", time()-3600);
+   if (isset($_COOKIE['painAnonyme'])) {
+       setcookie("painAnonyme", "", time()-3600);
        echo 'Sayonara';
    } else {
        phpCAS::logout();

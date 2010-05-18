@@ -97,7 +97,7 @@ td {
     text-align:left;
 }
 
-table.formations {
+table.cours {
     border:2px solid #3771c8;
     border-collapse:collapse; 
     margin:auto;
@@ -213,10 +213,6 @@ table.formations {
     width:877px;
 }
 
-table.formcours {
-    width:874px;
-}
-
 .nom_cours {
     min-width: 100px;
 }
@@ -233,6 +229,23 @@ table.formcours {
     width: 80px;
 }
 
+tr.super > .intitule, tr.formation > .intitule {
+    width: 150px;
+    border-right: 0px;    
+    border-left: 0px;
+}
+
+tr.super > .enseignant, tr.formation > .enseignant {
+    width: 150px;
+    border-right: 0px;    
+    border-left: 0px;
+}
+
+tr.super > .totaux, tr.formation > .totaux {
+    min-width: 500px;
+    border-right: 0px;    
+    border-left: 0px;
+}
 
 /*
 td.responsable > input {
@@ -575,6 +588,7 @@ div.lstatens1, div.rstatens1 {
     background-color: rgb(58, 105, 35); /* servi */
     height: 10px;
     width: 0px;
+    min-width: 0px;
     float: left;
 }
 

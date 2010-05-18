@@ -28,7 +28,11 @@ require_once("utils.php");
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "cours") {
+    if ($readtype == "formation") {
+	$type = "formation";
+	$par = "sformation";
+	$order = "ORDER BY numero ASC";
+    } else if ($readtype == "cours") {
 	$type = "cours";
 	$par = "formation";
 	$order = "ORDER BY semestre, nom_cours ASC";
@@ -50,8 +54,8 @@ if (isset($_GET["type"])) {
 if (isset($_GET["id_parent"])) {
     $id_par = getclean("id_parent");
     $qcours = "SELECT pain_$type.*,  
-                      pain_enseignant.prenom,
-                      pain_enseignant.nom
+                      pain_enseignant.prenom AS prenom_enseignant,
+                      pain_enseignant.nom AS nom_enseignant
              FROM pain_$type, pain_enseignant 
              WHERE `id_$par` = $id_par
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant
@@ -68,8 +72,8 @@ if (isset($_GET["id_parent"])) {
     $qcours = "SELECT \"$type\" AS type,
                       $id AS id,
                       pain_$type.*,
-                      pain_enseignant.prenom,
-                      pain_enseignant.nom
+                      pain_enseignant.prenom AS prenom_enseignant,
+                      pain_enseignant.nom AS nom_enseignant
              FROM pain_$type, pain_enseignant 
              WHERE `id_$type` = $id
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant";

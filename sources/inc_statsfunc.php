@@ -34,15 +34,16 @@ function stats($valeur,$ou) {
     return $stat;
 }
 
-function statsenseignant1($id) {
+function statsenseignant1($id, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT  sum(htd) AS h,
                   sum(pain_tranche.cm) AS cm, 
                   sum(pain_tranche.td) AS td,
                   sum(pain_tranche.tp) AS tp, 
                   sum(pain_tranche.alt) AS alt,
                   annee_etude,
-                  id_sformation 
-          FROM pain_tranche, pain_cours, pain_formation ";
+                  pain_formation.id_sformation 
+          FROM pain_tranche, pain_cours, pain_formation, pain_sformation ";
     if ($id == 1) {
 	$q .= "WHERE pain_cours.id_cours = pain_tranche.id_cours 
                AND   (pain_tranche.id_enseignant = 1
@@ -52,7 +53,9 @@ function statsenseignant1($id) {
                 AND pain_cours.id_cours = pain_tranche.id_cours
 	        AND pain_cours.id_enseignant <> 1 ";
     }
-    $q .= "AND pain_formation.id_formation = pain_cours.id_formation 
+    $q .= "AND pain_formation.id_formation = pain_cours.id_formation
+           AND pain_sformation.id_sformation = pain_formation.id_sformation
+           AND pain_sformation.annee_universitaire = $annee
           GROUP BY pain_formation.id_formation";
     $r = mysql_query($q) or die("statsenseignant1($id) : $q". mysql_error());
     $a = array();
@@ -60,7 +63,7 @@ function statsenseignant1($id) {
 	$a[$i] = array("cm"=>0, "td"=>0, "tp"=>0, "alt"=>0);
     }
     while($l = mysql_fetch_array($r)) {
-	switch($l["id_sformation"]) {
+	switch($l["id_sformation"]) {/* DANGER id en dur */
 	case 1: 
 	    $i = $l["annee_etude"];
 	    break;
@@ -87,18 +90,22 @@ function statsenseignant1($id) {
     return $a;
 }
 
-function statsenseignantresp($id) {
+function statsenseignantresp($id, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT  1 as type,
                   annee_etude,
-                  id_sformation 
-          FROM pain_formation 
-          WHERE id_enseignant = $id
+                  pain_formation.id_sformation 
+          FROM pain_formation, pain_sformation
+          WHERE pain_formation.id_enseignant = $id
+          AND pain_formation.id_sformation = pain_sformation.id_sformation
+          AND pain_sformation.annee_universitaire = $annee
           UNION
           SELECT 2 as type,
                  annee_etude,
                  pain_sformation.id_sformation
           FROM pain_sformation, pain_formation
           WHERE pain_formation.id_sformation = pain_sformation.id_sformation
+          AND pain_sformation.annee_universitaire = $annee
           AND pain_sformation.id_enseignant = $id";
     $r = mysql_query($q) or die("statsenseignantresp($id) : $q". mysql_error());
     $c = array();
@@ -130,13 +137,14 @@ function statsenseignantresp($id) {
     return $c;
 }
 
-function statsenseignant_semestre($id) {
+function statsenseignant_semestre($id, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT sum(pain_tranche.cm) AS cm, 
                  sum(pain_tranche.td) AS td,
                  sum(pain_tranche.tp) AS tp, 
                  sum(pain_tranche.alt) AS alt,
                  semestre
-          FROM pain_tranche, pain_cours, pain_formation ";
+          FROM pain_tranche, pain_cours, pain_formation, pain_sformation ";
     if ($id == 1) {
 	$q .= "WHERE pain_cours.id_cours = pain_tranche.id_cours 
                AND   (pain_tranche.id_enseignant = 1
@@ -146,8 +154,10 @@ function statsenseignant_semestre($id) {
                 AND pain_cours.id_cours = pain_tranche.id_cours
 	        AND pain_cours.id_enseignant <> 1 ";
     }
-    $q .= " AND pain_formation.id_formation = pain_cours.id_formation 
-            AND pain_formation.id_sformation <> 10
+    $q .= " AND pain_formation.id_formation = pain_cours.id_formation
+            AND pain_sformation.id_sformation = pain_formation.id_sformation            
+            AND pain_formation.annee_etude <> 0
+            AND pain_sformation.annee_universitaire = $annee
             GROUP BY pain_cours.semestre 
             ORDER BY pain_cours.semestre ASC";
     $r = mysql_query($q) or die(" statsenseignant_semestre($id) $q");

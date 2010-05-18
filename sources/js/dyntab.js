@@ -127,6 +127,7 @@ function notcell () {
 }
 notcell.prototype = new immutcell();
 
+/* constructeur du composite enseignant */
 function enseignant () {
     this.name = "enseignant";
     this.mutable = true;
@@ -162,12 +163,29 @@ function enseignant () {
 	o["id_enseignant"] = ensid;
     }
     this.setval = function (c,o) {
-	c.html('<a class="enseignant" href="service.php?id_enseignant='+o["id_enseignant"]+'">'+o["prenom"]+" "+o["nom"]+'</a><span class="hiddenvalue">'+o["id_enseignant"]+'</span>');
+	c.html('<a class="enseignant" href="service.php?id_enseignant='+o["id_enseignant"]+'">'+o["prenom_enseignant"]+" "+o["nom_enseignant"]+'</a><span class="hiddenvalue">'+o["id_enseignant"]+'</span>');
 	c.find("a.enseignant").click(function(){window.open(this.href);return false;});
     }
 }
 enseignant.prototype = new cell();
+/* constructeur du composite intitule de formation */
+function intitule() {
+    this.setval = function (c,o) {
+	var s;
+	s = o["nom"]+' '+o['annee_etude'];
+	if (o["parfum"] != null) s = s+' '+o["parfum"];
+	c.text(s);
+    }
+}
+intitule.prototype = new immutcell();
 
+/* constructeur du composite totaux */
+function totaux() {
+    this.setval = function (c,o) {
+	c.text('TODO : getstats dynamique');
+    }
+}
+totaux.prototype = new immutcell();
 
 /* objet ligne de tableau */
 function ligne() {
@@ -280,6 +298,10 @@ function ligne() {
      */
     this.choix = new cell();
     this.choix.name = "choix";
+    /* pain_formation
+     */
+    this.intitule = new intitule();
+    this.totaux = new totaux();
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -307,6 +329,8 @@ function idString(o) {
     return o['type'] + '_' + o['id'];
 }
 
+
+/* Pour envoyer et recevoir au format json */
 function getjson(url,data,callback) {
     $.ajax({ type: "GET",
 	     url: url,
@@ -324,9 +348,7 @@ function getjson(url,data,callback) {
 	    }
 	});
 }
-
-
-/* ajax debug */
+/* la meme version debug */
 function getjsondb(url,data,callback) {
     $.ajax({ type: "GET",
 	     url: url,
@@ -355,32 +377,49 @@ function basculerSuperFormation(id) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper'+id+' tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow");
+	$('#tablesuper'+id+' > tbody > tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow").remove();
+	$('#tablesuper'+id+' tr.imgformation').fadeOut("slow").remove();
+	$('#tablesuper'+id+' tr.formation').fadeOut("slow").remove();
     } else {
-	$('#tablesuper'+id+' tr.sousformations').fadeIn("slow");
+//	appendList("formation",$('#testing tbody'),id);
+	appendList("formation",$('#tablesuper'+id+' > tbody'),id,
+		   function () {
+		       var legende = $('#legendeformation'+id);
+		       legende.remove();
+//	addMenuFields(legende);
+//	addAdd(legende.find('th.action'));
+//	$('#tablesuper'+id+' tr.imgformation').fadeIn("slow");
+//	$('#tablesuper'+id+' tr.formation').fadeIn("slow");
+		   });
     }
     return false;
 }
 
-function basculerFormation(id) {
+function basculerFormation(e) {
+    var id = e.data.id;
+    var sid = idString({id: id, type: "formation"});
     var bascule =  $('#basculeformation_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOff')) {
-	$('#tableformation_'+id+' tr.cours div.basculeOn').trigger("click");
-	$('#tableformation_'+id+' tr.cours').remove();
-	$('#tableformation_'+id+' tr.imgcours').remove();
+	$('#tablecours_'+id+' tr.cours div.basculeOn').trigger("click");
+	$('#tablecours_'+id+' tr.cours').remove();
+	$('#tablecours_'+id+' tr.imgcours').remove();
 	var histo = $('#histoDesCoursFormation'+id);
 	if (histo.hasClass('histoOn')) {
 	    histo.toggleClass('histoOff');
 	    histo.toggleClass('histoOn');
 	}
-	$('#trtableformation_'+id).remove();
+	$('#trtablecours_'+id).remove();
     } else {
-	$('#formation_'+id).after('<tr class="sousformations" id="trtableformation_'+id+'"><td colspan="2"><table class="formations" id="tableformation_'+id+'"><tbody></tbody></table></td></tr>');
-	appendList("cours","formation",id);
-	$('#tableformation_'+id+' tr.cours').fadeIn("slow");
+	$('#formation_'+id).after('<tr class="sousformations" id="trtablecours_'+id+'"><td colspan="4"><table class="cours" id="tablecours_'+id+'"><tbody></tbody></table></td></tr>');
+	appendList("cours",$('#tablecours_'+id+' > tbody'),id, function(){
+		var legende = $('#legendecours'+id);
+		addMenuFields(legende);
+		addAdd(legende.find('th.action'));
+		$('#tablecours_'+id+' tr.cours').fadeIn("slow");
+	    });
     }
     return false;
 }
@@ -388,14 +427,18 @@ function basculerFormation(id) {
 function basculerCours(e) {
     var id = e.data.id;
     var sid = idString({id: id, type: "cours"});
-    var bascule =  $('#basculecours'+id);
+    var bascule =  $('#basculecours_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="tranchesducours'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tablecours_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
-	appendList("tranche","cours",id);
+	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+	appendList("tranche",$('#tabletranches_'+id+' tbody'),id, function () {
+	var legende = $('#legendetranche'+id);
+	addMenuFields(legende);
+	addAdd(legende.find('th.action'));
+	    });
     } else {
-	$('#tranchesducours'+id).remove();
+	$('#trtabletranches'+id).remove();
     }
     basculerChoix(e);
     return false;
@@ -403,8 +446,11 @@ function basculerCours(e) {
 
 function basculerChoix(e) {
    var id = e.data.id;
-   $("#tablecours_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
-   appendList("choix","choix",id);
+   $("#tabletranches_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
+   appendList("choix",$('#tablechoix_'+id+' tbody'),id);
+   var legende = $('#legendechoix'+id);
+   addMenuFields(legende);
+   addAdd(legende.find('th.action'));
 //   $('div.choix').resizable();
    /* positionner les actions */
    return false;
@@ -587,21 +633,23 @@ function toggleColumn(e) {
 
 
 /* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
-function  appendList(type,type_parent,id_parent) {
-    var body = $('#table'+type_parent+'_'+id_parent+' tbody');
+function  appendList(type,body,id_parent, do_it_last) {
     var legende = $("#skel"+type);
     var list = legende.find('th');
+    /*  etait buggy !
     legende = legende.clone(true);
     legende.removeAttr('id');
     body.append(legende);
-    addMenuFields(legende);
-    addAdd(legende.find('th.action'));
+    */
+    legende.clone(true).attr('id','legende'+type+id_parent).appendTo(body);
+    legende = $('#legende'+type+id_parent);
     getjson("json_get.php",{id_parent: id_parent, type: type}, function (o) {
 	    var n = o.length;
 	    var i = 0;
 	    for (i = n - 1; i >= 0; i--) {
 		appendItem(type,legende,o[i],list);
 	    }
+	    do_it_last(); 
 	});
 }
 
@@ -626,11 +674,18 @@ function appendItem(type,prev,o,list) {
     }
     if (type == "cours") {
 	line.find('td.laction')
-	    .prepend('<div class="basculeOff" id="basculecours'+o["id_cours"]+'" />')
+	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="12"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
-    addRm(line.find('td.action')); 
+    if (type == "formation") {
+	line.find('td.laction')
+	    .prepend('<div class="basculeOff" id="basculeformation_'+o["id_formation"]+'" />')
+	    .bind('click',{id: o["id_formation"]},basculerFormation);
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="12"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
+    } else {
+	addRm(line.find('td.action')); 
+    }
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 

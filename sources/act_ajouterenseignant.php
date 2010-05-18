@@ -47,17 +47,22 @@ if (isset($_POST["nom"])) {
 	errmsg_formenseignant("Vous ne pouvez pas ajouter d'enseignants.");
     }
     else {/* valide */
+	$categorie = 0; // TODO dans le nouveau formulaire
 	
 	$query = "INSERT INTO pain_enseignant 
-                  (`nom`, `prenom`, `statut`, `email`, `telephone`, `bureau`, `service`) 
-	          VALUES ('".$nom."', '".$prenom."', '".$statut."','".$email."', '".$telephone."', '".$bureau."', '".$service."')";
-
+                  (`nom`, `prenom`, `statut`, `categorie`, `email`, `telephone`, `bureau`, `service`) 
+	          VALUES ('".$nom."', '".$prenom."', '".$statut."', '".$categorie."', '".$email."', '".$telephone."', '".$bureau."', '".$service."')";
 	pain_log($query);
 
 	if (!mysql_query($query)) {
 	    errmsg_formenseignant(mysql_error());
 	} else {
 	    $id_enseignant = mysql_insert_id();
+	    $query = "INSERT INTO pain_service (`id_enseignant`,`annee_universitaire`, `categorie`,`service_annuel`)
+                      VALUES ('".$id_enseignant."','".annee_courante()."','".$categorie."','".$service."')";
+	    if (!mysql_query($query)) {
+		errmsg_formenseignant(mysql_error());
+	    }
 	}
     }
 }

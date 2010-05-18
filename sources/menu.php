@@ -26,5 +26,19 @@
       <li><a href="enseignants.php">enseignants</a></li>
       <li><a href="annuaire.php">annuaire</a></li>
       <li><a href="logout.php">logout</a></li>
+      <li>
+<?php
+echo '<form method="post" id="choixannee" class="formcours" name="annee" action="#" style="display:inline;">';
+echo '<select name="annee" style="display:inline; width:100px;">';
+$anneecivile = date('Y', time());
+for ($i = 2009; $i <= $anneecivile ; $i++) {
+    echo '<option value="'.$i.'"';
+    if ($i == $annee) echo  'selected="selected"';
+    echo '>'.$i.'-'.($i+1).'</option>';
+}
+echo '</select>';
+echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
+echo '</form>'."\n";
+?>
+</li> 
 </ul>
-
