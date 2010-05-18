@@ -451,7 +451,7 @@ function basculerCours(e) {
 function basculerChoix(e) {
    var id = e.data.id;
    $("#tabletranches_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
-   appendList("choix",$('#tablechoix_'+id+' tbody'),id);
+   appendList("choix",$('#tablechoix_'+id+' tbody'),id, function(){});
    var legende = $('#legendechoix'+id);
    addMenuFields(legende);
    addAdd(legende.find('th.action'));
@@ -464,7 +464,7 @@ function basculerChoix(e) {
 /* bloc --- Boutons ---*/
 /* ajout de ligne */
 function addAdd(td) {
-    var type = td.parent('tr').attr('class');
+    var type = td.closest('tr').attr('class');
     var addl = jQuery('<button class="addl">ajouter '+type+'</button>');
     addl.button({
 	text: false,
@@ -501,7 +501,7 @@ function removeRm(td) {
 
 /* reload de ligne */
 function addReload(td) {
-    var sid = td.parents('tr').attr('id');
+    var sid = td.closest('tr').attr('id');
     // alert(sid);
     var oid = parseIdString(sid);
     var reloadl = jQuery('<button class="reloadl">annuler les modifications</button>');
@@ -736,8 +736,8 @@ function removeLine(o) {
 
 /* soumettre les modifications d'une ligne */
 function sendModifiedLine() {
-    var ligne = $(this).parent().parent('tr');
-    var parent = ligne.parent().parent('table');
+    var ligne = $(this).closest('tr');
+    var parent = ligne.closest('table');
     var donnees = new Object();
     var tid = parseIdString(ligne.attr('id'));
     donnees['type'] = tid['type'];
