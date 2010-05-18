@@ -72,7 +72,7 @@ if (isset($_GET["id_parent"])) {
     if ($type != "enseignant") $set["id_".$par] = $id_parent;
 
     if (!isset($_GET["nom_cours"])) {
-	$_GET["nom_cours"] = 'Donner un nom';
+	$_GET["nom_cours"] = 'Nom du cours ?';
     }
 
     foreach ($champs[$type] as $field) {

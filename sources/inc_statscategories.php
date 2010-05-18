@@ -50,9 +50,9 @@ echo '</tr>';
 echo '<tr><th>Non titulaires du département</th>';
 $stat = stats("COUNT(*)","pain_service WHERE categorie = 3 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
-$stat = round(stats("SUM(service_annuel)","pain_service WHERE categorie = 2 AND annee_universitaire = $annee"));
+$stat = round(stats("SUM(service_annuel)","pain_service WHERE categorie = 3 AND annee_universitaire = $annee"));
 echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
-$stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 2 AND annee_universitaire = $annee"));
+$stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 3 AND annee_universitaire = $annee"));
 echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
 

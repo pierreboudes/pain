@@ -27,7 +27,7 @@ FROM
 pain_cours, pain_formation, pain_sformation
 WHERE pain_sformation.annee_universitaire = "2010"
 AND   pain_formation.id_sformation = pain_sformation.id_sformation
-AND   pain_cours.id_formation = pain_formation.id_prev
+AND   pain_cours.id_formation = pain_formation.id_prev;
 
 -- annualisation des services
 CREATE TABLE `pain_service` (
@@ -47,4 +47,4 @@ SELECT
   pain_enseignant.categorie,  
   pain_enseignant.service
 FROM pain_enseignant
-WHERE 1
+WHERE 1;

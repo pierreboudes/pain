@@ -209,7 +209,7 @@ table.enseignants {
     width:877px;
 }
 
-table.formations {
+table.cours {
     width:877px;
 }
 
@@ -236,13 +236,14 @@ tr.super > .intitule, tr.formation > .intitule {
 }
 
 tr.super > .enseignant, tr.formation > .enseignant {
-    width: 150px;
+    min-width: 150px;
     border-right: 0px;    
     border-left: 0px;
 }
 
 tr.super > .totaux, tr.formation > .totaux {
     min-width: 500px;
+    width: 500px;
     border-right: 0px;    
     border-left: 0px;
 }
@@ -522,7 +523,7 @@ div.imgformation img.imgbarre {
 
 span.totaux {
     float: right;
-    width: 50%;
+    width: 500px;
 }
 
 div.tip {

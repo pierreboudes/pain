@@ -20,25 +20,18 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-// $annee = annee_courante();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("gestion des enseignements et des services", "pain_index.js");
-require_once('utils.php');
-include("menu.php");
-include("inc_infobox.php");
-$annee = "2009";
-include("inc_listcours.php");
-echo '<p>&nbsp</p>';
-$annee = "2010";
-include("inc_listcours.php");
-include("skel_index.html");
-/* include("inc_aide.php"); */
-?>
-<p>
-<a href="http://validator.w3.org/check?uri=referer"><img
-    src="http://www.w3.org/Icons/valid-xhtml10-blue"
-    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    </p>
-<?php
-piedpage();
+
+require_once("inc_connect.php");
+require_once("utils.php");
+require_once("inc_functions.php");
+
+$id = 2;
+
+if (isset($_GET["id_formation"])) {
+    $id = getclean("id_formation");
+} 
+
+$r=htdformation($id);
+
+print json_encode($r);
 ?>

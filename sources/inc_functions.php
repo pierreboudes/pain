@@ -67,9 +67,11 @@ function ig_responsable($id)
     }
 }
 
-function ig_formselectenseignants($id_enseignant, $annee = NULL)
+function ig_formselectenseignants($id_enseignant)
 {
+/*    global $annee;
     if ($annee == NULL) $annee = annee_courante();
+*/
     $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
              FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
     $rens = mysql_query($qens) 
@@ -99,9 +101,8 @@ function list_superformations($annee = NULL)
     return $rsformation;
 }
 
-function list_formations($id_sformation, $annee = NULL)
+function list_formations($id_sformation)
 {
-    if ($annee == NULL) $annee = annee_courante();
     $qformation = "SELECT * FROM pain_formation 
                    WHERE `id_sformation` = ".$id_sformation."
                    ORDER BY numero ASC";    
@@ -604,7 +605,8 @@ function htdformation($id) {
 		 "libre"=>$libre, 
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule, 
-		 "tp"=>$tp);
+		 "tp"=>$tp,
+		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
 function htdsuper($id) {
@@ -663,7 +665,8 @@ function htdsuper($id) {
 		 "libre"=>$libre, 
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule, 
-		 "tp"=>$tp);
+		 "tp"=>$tp,
+		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
 function responsableducours($id) {
@@ -755,15 +758,16 @@ function enpostes($htd) {
 function ig_totauxenpostes($totaux) {
     $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
     echo enpostes($total).' postes ';
-    echo '(dont '.enpostes($totaux["tp"]).'p&nbsp;TP) = ';
-    echo enpostes($totaux["servi"]).'p&nbsp;servies +&nbsp;';
-    echo enpostes($totaux["mutualise"]).'p&nbsp;mutualisées +&nbsp;';
-    echo enpostes($totaux["libre"]).'p&nbsp;à pourvoir +&nbsp;';
-    echo enpostes($totaux["annule"]).'p&nbsp;annulées';
+    echo '(dont '.enpostes($totaux["tp"]).'&nbsp;TP) = ';
+    echo enpostes($totaux["servi"]).'&nbsp;servis +&nbsp;';
+    echo enpostes($totaux["mutualise"]).'&nbsp;mutualisés +&nbsp;';
+    echo enpostes($totaux["libre"]).'&nbsp;à pourvoir +&nbsp;';
+    echo enpostes($totaux["annule"]).'&nbsp;annulés';
 }
 
 
-function listeinterventions($id_enseignant, $annee = NULL) {
+function listeinterventions($id_enseignant) {
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT 
 pain_tranche.id_tranche,
@@ -837,7 +841,8 @@ function ig_intervention($i) {
     echo '<td class="remarque">'.$i["remarque"].'</td>';
 }
 
-function totauxinterventions($id_enseignant, $annee = NULL) {
+function totauxinterventions($id_enseignant) {
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT 
 SUM(pain_tranche.cm) AS cm,
@@ -874,7 +879,8 @@ function ig_totauxinterventions($totaux) {
 
 
 
-function listeservice($id_enseignant, $annee = NULL) {
+function listeservice($id_enseignant) {
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
 $query = "SELECT 
 pain_formation.nom,
@@ -952,7 +958,8 @@ function ig_totauxservice($totaux) {
     echo '</tr>';
 }
 
-function update_servicesreels($annee = NULL) {
+function update_servicesreels() {
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
     $qupdate = "UPDATE pain_service
@@ -970,7 +977,8 @@ function update_servicesreels($annee = NULL) {
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
 }
 
-function liste_enseignantscategorie($categorie, $annee = NULL) {
+function liste_enseignantscategorie($categorie) {
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT pain_enseignant.id_enseignant AS id_enseignant,
                  nom,

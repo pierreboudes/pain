@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	// toutBasculer();
-	$("table.super").draggable({ revert: true }); // js manquant ?
+//	$("table.super").draggable({ revert: true }); // js manquant ?
 //	$("a.enseignant").click(function(){window.open(this.href);return false;});
 
 

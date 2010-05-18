@@ -19,15 +19,6 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-$(document).ready(function(){
-	var s = "1 2,3";
-	var reg=new RegExp(",", "g");
-	var ns = s.replace(" ","").replace(reg,".");
-	alert(s+' : '+ns);}
-    );
-*/
-
 /* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
 /*
 bd : ligne_bd, tableau associatif (objet js) colonne => val.
@@ -182,7 +173,16 @@ intitule.prototype = new immutcell();
 /* constructeur du composite totaux */
 function totaux() {
     this.setval = function (c,o) {
-	c.text('TODO : getstats dynamique');
+	c.text('attente de données');
+	getjson("json_totauxformation.php",{id_formation: o["id_formation"]},function (o) {
+		var s;
+		s = htdpostes(o["total"]) + ' postes (dont '+htdpostes(o["tp"])+'&nbsp;TP) = '
+                    +htdpostes(o["servi"])+'&nbsp;servis +&nbsp;'
+                    +htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;'
+                    +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
+                    +htdpostes(o["annule"])+'&nbsp;annulés';
+		c.html(s);
+	    });
     }
 }
 totaux.prototype = new immutcell();
@@ -306,6 +306,10 @@ function ligne() {
 /*--------  FIN OBJET LIGNE --------------*/
 
 /* BLOC ----- UTILITAIRES ----- */
+function htdpostes(htd) {
+    return Math.round(htd*100/192)/100;
+}
+
 function edit() {
     if ($(this).hasClass("mutable")) {
 	$(this).removeClass("mutable");
@@ -691,7 +695,7 @@ function appendItem(type,prev,o,list) {
 
 /* BLOC ----- ENVOI DE MODIFS AU SERVEUR --------*/
 function findIdParent(tr,type) {
-    var table = tr.parent().parent();
+    var table = tr.closest("table").addClass('PLOUM');
     var sid = table.attr("id");
     var oid = parseIdString(sid);
     return oid.id;
@@ -699,12 +703,12 @@ function findIdParent(tr,type) {
 
 /* ajouter une nouvelle ligne */
 function newLine() {
-    var tr = $(this).parent().parent('tr');
+    var tr = $(this).closest('tr');
     var type = tr.attr('class');
     var list = tr.find('th');
     var n = list.length;
     var i = 0;
-    var id_parent = findIdParent(tr,type);
+    var id_parent = findIdParent(tr,type);    
     getjson("json_new.php", {type: type, id_parent: id_parent}, function (tabo) {
 	    appendItem(type,tr,tabo[i],list);
 	});
@@ -787,5 +791,5 @@ $(document).ready(function () {
 	L = new ligne(); // <-- var globale
 	/* masqer certaines colonnes */
 	$('th.code_geisha, th.alt').fadeOut('fast');
-//	$('#skel').fadeOut('fast');
+	$('#skel').fadeOut('fast');
     });
