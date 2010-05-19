@@ -1,4 +1,12 @@
 $(document).ready(function(){
+	/* masqer certaines colonnes */
+	$('th.code_geisha, th.alt').fadeOut('fast');
+	$('#skel').fadeOut('fast');
+
+	/* histogrammes */
+	$('tr.entete > td').each( function() {
+		addHistoGlobal($(this));
+	    });
 	// toutBasculer();
 //	$("table.super").draggable({ revert: true }); // js manquant ?
 //	$("a.enseignant").click(function(){window.open(this.href);return false;});
@@ -15,7 +23,7 @@ $(document).ready(function(){
 		// start variables as empty
 		var term = "";
 		var n = "0";
-		toutBasculer();
+//		toutBasculer();
 		// hide the results at first
 		$('#resultat-recherche').hide().empty();
 		// grab the input value and store in variable

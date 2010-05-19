@@ -892,3 +892,32 @@ tr.choix > td.action > div.removel {
 th.action, td.action {
     font-size: 12px;
 }
+
+td.nature {
+    padding: 0px;
+}
+
+table.nature {
+    border-collapse:collapse;
+//    border:1px solid #FBCB09;
+    border: 0px;
+}
+
+table.nature td {
+    border: 0px;
+    padding: 1px;
+    font-size: 10px;
+    text-align: center;
+    color:#1C94C4;
+}
+
+table.nature td.inact {
+    background-color: none;
+    color: white;
+}
+
+/*
+.mutable {
+    border-color: #fbd850;
+}
+*/

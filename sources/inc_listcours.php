@@ -25,13 +25,14 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 /* Les totaux globalement */
+echo '<div id="annee_'.$annee.'">';
 echo '<table class="super">';
 echo '<tr class="imgformation">';
 echo '<td  class="imgformation">';
-echo '<div class="imgformation" id="imgentete">';
+echo '<div class="imgformation" id="imgentete_'.$annee.'">';
 echo '</div></td></tr>';
-echo '<tr class="entete" id="entete"><td>';
-action_histodesformations();
+echo '<tr class="entete" id="entete_'.$annee.'"><td>';
+//action_histodesformations();
 $tot = htdtotaux($annee);
 echo "Ensemble des formations de l'année $annee-".($annee+1).".";
 echo ' <span class="totaux">';
@@ -50,12 +51,12 @@ while($sformation = mysql_fetch_array($rsformation))
     $id_sformation = $sformation["id_sformation"];
     $totaux=htdsuper($id_sformation);
 
-    echo '<table class="super" id="tablesuper'.$id_sformation.'">';   
+    echo '<table class="super" id="tablesuper_'.$id_sformation.'">';   
     /* affichage de la super formation */
 
     echo '<tr class="imgformation">';
     echo '<td  class="imgformation" colspan="4">';
-    echo '<div class="imgformation" id="imgsformation'.$id_sformation.'">';
+    echo '<div class="imgformation" id="imgsformation_'.$id_sformation.'">';
     echo '</div></td></tr>';
 
     echo '<tr class="super" id="sformation_'.$id_sformation.'">';
@@ -116,4 +117,5 @@ while($sformation = mysql_fetch_array($rsformation))
     endif;
     echo '</table>';
 } /* fin while superformation */
+echo '</div>';
 ?>

@@ -34,21 +34,6 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 2) cellule: timestamp
 */
 
-$(document).ready(function () {$("#skelcours th:first + th").bind("click",
-     function () {
-	var legende = $("#skelcours");
-	var list = legende.find('th');
-	var n = list.length;
-	var i;
-	var s = "liste: ";
-	for (i = 0; i < n; i++) {
-	    var blob = list.eq(i);
-            s = s + blob.attr("class") + ": " + blob.css('display') + '\n'; 
-	}
-	alert(s);
-    }
-	    )});
-
 /* constructeur de cellule */
 function cell() {
     this.name ="cell";
@@ -161,6 +146,7 @@ function enseignant () {
 enseignant.prototype = new cell();
 /* constructeur du composite intitule de formation */
 function intitule() {
+    this.name = "intitule";
     this.setval = function (c,o) {
 	var s;
 	s = o["nom"]+' '+o['annee_etude'];
@@ -184,8 +170,28 @@ function totaux() {
 		c.html(s);
 	    });
     }
+    this.name = "totaux";
 }
 totaux.prototype = new immutcell();
+
+
+
+
+/* constructeur du composite nature de l'intervention */
+function nature() {
+    this.setval = function (c,o) {
+	var s;
+	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">alt</td></tr><tr><td class="ntd">TD</td><td class="ntp">TP</td></tr></table>');
+	c.find("table.nature td").addClass("inact");
+	if (o["cm"] > 0) c.find("td.ncm").removeClass("inact");
+	if (o["alt"] > 0) c.find("td.nalt").removeClass("inact");
+	if (o["td"] > 0) c.find("td.ntd").removeClass("inact");
+	if (o["tp"] > 0) c.find("td.ntp").removeClass("inact");
+    }
+    this.name = "nature";
+}
+nature.prototype = new immutcell();
+
 
 /* objet ligne de tableau */
 function ligne() {
@@ -276,6 +282,9 @@ function ligne() {
 
     /* pain_tranche
      */
+    /* nature */
+    this.nature = new nature();
+    
     /* id_cours */
     this.id_cours = new cell();    
     this.id_cours.name = "id_cours";
@@ -337,18 +346,23 @@ function idString(o) {
 /* Pour envoyer et recevoir au format json */
 function getjson(url,data,callback) {
     $.ajax({ type: "GET",
-	     url: url,
-	     data:  data,
-	     datatype: 'json',
-	     error: function () {alert('erreur ajax !');},
-	     success: function(data) {
-		o = jQuery.parseJSON(data);
-		if (o.error != null) {
-		    // if (confirm()) ...
-		    alert(o.error);
-		} else {
-		    callback(o);
+		url: url,
+		data:  data,
+		datatype: 'json',
+		error: function () {alert('erreur ajax !');},
+		success: function(data) {
+		try {
+		    o = jQuery.parseJSON(data);
+		    if (o.error != null) {
+			// if (confirm()) ...
+			alert(o.error);
+			return;
+		    }
+		} catch (e) {
+		    alert("Erreur: vous avez peut être été déconnecté du CAS, rechargez la page.");
+		    return;
 		}
+		callback(o);
 	    }
 	});
 }
@@ -381,13 +395,13 @@ function basculerSuperFormation(id) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper'+id+' > tbody > tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper'+id+' tr.sousformations').fadeOut("slow").remove();
-	$('#tablesuper'+id+' tr.imgformation').fadeOut("slow").remove();
-	$('#tablesuper'+id+' tr.formation').fadeOut("slow").remove();
+	$('#tablesuper_'+id+' > tbody > tr.formation div.basculeOn').trigger("click");
+	$('#tablesuper_'+id+' tr.sousformations').fadeOut("slow").remove();
+	$('#tablesuper_'+id+' tr.imgformation').fadeOut("slow").remove();
+	$('#tablesuper_'+id+' tr.formation').fadeOut("slow").remove();
     } else {
 //	appendList("formation",$('#testing tbody'),id);
-	appendList("formation",$('#tablesuper'+id+' > tbody'),id,
+	appendList("formation",$('#tablesuper_'+id+' > tbody'),id,
 		   function () {
 		       var legende = $('#legendeformation'+id);
 		       legende.remove();
@@ -564,8 +578,80 @@ function removeMenuFields(td) {
     td.find('button.menufields').remove();
 }
 
-/* ------- FIN BOUTONS ET ACTIONNEURS --------------*/
+/*---- fin boutons ----*/
 
+/*bloc--------histogrammes ---------*/
+function addHistoGlobal(td) {
+    var oid = parseIdString(td.parent().attr('id'));
+    var annee = oid["id"];
+    td.find("micropalette").remove();
+    td.prepend( '<div class="micropalette"><div id="globalHisto_'+annee+'" class="globalHistoOff"></div></div>');
+    $('#globalHisto_'+annee).bind("click",{annee: annee},histoDesFormations);
+}
+
+function histoDesFormations(e) {
+    var annee = e.data.annee;
+    var divan = $('#annee_'+annee);
+    var bascule = $('#globalHisto_'+annee);
+    bascule.toggleClass('globalHistoOff');
+    bascule.toggleClass('globalHistoOn');
+    if (bascule.hasClass('globalHistoOn')) {
+	divan.find('div.imgformation').show();
+	$('#annee_'+annee+' table.formations').each(function (i) {
+		var tag = this.id;
+		if (tag != undefined) {
+		    var id = tag.replace('tableformation_','');
+		    htdFormation(id); // <-- TODO a voir, adapter
+		}
+	    });
+	$('#annee_'+annee+' table.super').each(function (i) {
+		var tag = this.id;
+		if (tag != undefined) {
+		    var id = tag.replace('tablesuper_','');
+		    htdSuperFormation(id); // ok
+		}
+	    });
+	htdTotaux(annee); // ok
+    } else {
+	$('#annee_'+annee+' div.imgformation').hide();
+    }
+    return false;
+}
+
+
+function htdTotaux(annee) {// OK pour le moment
+    jQuery.post("act_totaux.php", {annee_universitaire: annee}, function (data) {
+	    if (!contientERREUR(data)) {
+		data = trim(data);
+		$('#imgentete_'+annee).html(data);
+		var totaux = $('#imgentete img').attr('title');
+		$('#entete_'+annee+' td span.totaux').text(totaux);		
+	    } else {
+		$('#imgentete_'+annee).html('');
+	    }
+	}, 'html');
+    return false;
+}
+
+
+function htdSuperFormation(id) {
+    jQuery.post("act_totauxsuper.php", {id_sformation: id}, function (data) {
+	    if (!contientERREUR(data)) {
+        // DEBUG       alert('htdFormation('+id+') : data = '+data);
+		data = trim(data);
+		$('#imgsformation_'+id).html(data);
+	    } else {
+		$('#imgsformation_'+id).html('');
+	    }
+	}, 'html');
+    return false;
+}
+
+/*---------fin histogrammes---------*/
+
+
+
+/* ------- FIN BOUTONS ET ACTIONNEURS --------------*/
 
 /*BLOC-------- MENU CONTEXTUEL DU CHOIX DES CHAMPS ---------*/
 /*
@@ -677,18 +763,18 @@ function appendItem(type,prev,o,list) {
 	}
     }
     if (type == "cours") {
-	line.find('td.laction')
+	line.children('td.laction')
 	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="12"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     if (type == "formation") {
-	line.find('td.laction')
+	line.children('td.laction')
 	    .prepend('<div class="basculeOff" id="basculeformation_'+o["id_formation"]+'" />')
 	    .bind('click',{id: o["id_formation"]},basculerFormation);
 	line.before('<tr class="imgformation"><td class="imgformation" colspan="12"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
     } else {
-	addRm(line.find('td.action')); 
+	addRm(line.children('td.action')); 
     }
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
@@ -705,7 +791,7 @@ function findIdParent(tr,type) {
 function newLine() {
     var tr = $(this).closest('tr');
     var type = tr.attr('class');
-    var list = tr.find('th');
+    var list = tr.children('th');
     var n = list.length;
     var i = 0;
     var id_parent = findIdParent(tr,type);    
@@ -740,6 +826,7 @@ function sendModifiedLine() {
     var parent = ligne.closest('table');
     var donnees = new Object();
     var tid = parseIdString(ligne.attr('id'));
+    // alert(ligne.attr('id'));
     donnees['type'] = tid['type'];
     donnees['id'] = tid['id'];
     tid =  parseIdString(parent.attr('id'));
@@ -763,15 +850,16 @@ function replaceLine(tabo) {
     var id = idString(o);
     var ligne = $('#'+id);
     ligne.attr('class', o.type);
-    ligne.find('td').not('td.action').each(
+    ligne.children('td').not('td.action').not('td.laction').each(
 	function () {
 	    var td = $(this);
+	    var nom;
 	    td.removeClass('edit');
 	    td.removeClass('mutable');
-//	    alert(td.attr('class'));
-	    L[td.attr('class')].setval(td, o);
+	    nom = td.attr('class');
+	    L[nom].setval(td, o);
 //	    if ("editable" in o) {
-		td.addClass('mutable');
+	    L[nom].showmutable(td);
 //	    }
 	});
     ligne.find('td.action button.okl').remove();
@@ -787,9 +875,46 @@ function refreshLine(o) {
     getjson("json_get.php",oid, replaceLine);
 }
 
+/* BLOC--- GESTION (AFFICHAGE) DE DROITS --------*/
+
+/* ne fonctionne pas
+function responsable_add(td,resp) {
+    var oid = parseIdString(td.parent('tr').attr('id'));	    
+    resp[oid["type"]] = td.html();
+    resp.s = resp.s + oid["type"] + ": " + td.text() + "\n";
+    if (oid["type"] == "tranche") {
+	responsable_add(td.closest('tr > td > table').prev().prev().children('td.enseignant'),o);
+    } else if (oid["type"] == "cours") {
+	responsable_add(td.closest('tr.sousformation').prev().children('td.enseignant'),o);
+    } else if  (oid["type"] == "formation") {
+        responsable_add(td.closest('table').children('tr.super').children('td.enseignant'),o);
+    }
+}
+
+function responsables(jq) {
+    var resp = new Object();
+    var sel;
+    resp.s = 'responsables:\n';
+    sel = jq.closest('tr').children('td.enseignant');
+    responsable_add(sel, resp);
+    alert(resp.s);
+    return resp;
+}
+*/
+
+
+/*------- FIN GESTION DE DROITS --------*/
+
+
 $(document).ready(function () {
 	L = new ligne(); // <-- var globale
-	/* masqer certaines colonnes */
-	$('th.code_geisha, th.alt').fadeOut('fast');
-	$('#skel').fadeOut('fast');
-    });
+
+	/* TEST */
+	if (false) {/* bascules ... */
+	    $('#basculesuper7').trigger('click');
+	    window.setTimeout(function() {$('#basculeformation_17').trigger('click');}, 1000);
+	    window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);	
+            //	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);	
+	}
+	
+});

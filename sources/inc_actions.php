@@ -27,7 +27,9 @@ function action_nouveaucours($id_formation) {
 
 
 function action_histodesformations() {
- echo ' <div class="micropalette"><div id="globalHistoDesFormations" class="globalHistoOff" onclick="histoDesFormations()"></div></div>';
+    global $annee;
+    if ($annee == NULL) $annee = annee_courante();
+    echo ' <div class="micropalette"><div id="globalHistoDesFormations_'.$annee.'" class="globalHistoOff" onclick="histoDesFormations()"></div></div>';
 }
 
 function action_histodescours($id_formation) {
