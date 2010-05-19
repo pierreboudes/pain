@@ -35,7 +35,7 @@ $champs = array(
 	"alt", "type_conversion", "remarque", "htd", "descriptif"
 	),
     "choix" => array(
-	"id_enseignant", "choix", "htd"
+	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
 	)
     );
 
@@ -64,7 +64,7 @@ if (isset($_GET["type"])) {
 if (isset($_GET["id_parent"])) {
     $id_parent = getclean("id_parent");
 
-    if (!peutediter($type,NULL,$id_parent)) { 
+    if (!peutediter($type,NULL,$id_parent)) {
 	errmsg("droits insuffisants.");
     }
     $set = array();

@@ -26,7 +26,7 @@ require_once("inc_functions.php");
 
 if (isset($_GET["term"])) {
     $qens = "SELECT `id_enseignant` AS `id`,
-                    CONCAT(`prenom`, ' ',`nom`) AS `label`
+                    TRIM(CONCAT(`prenom`, ' ',`nom`)) AS `label`
              FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
     $rens = mysql_query($qens) 
 	  or die("Échec de la requête sur la table enseignant");

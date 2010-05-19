@@ -278,6 +278,9 @@ function ligne() {
     this.action.name = "action";
     /* action a gauche */
     this.laction = new notcell();
+    this.laction.setval = function(c,o) {
+	if (0 == c.find('div.palette').length) c.append('<div class="palette"/>');
+    }
     this.laction.name = "laction";    
 
     /* pain_tranche
@@ -359,7 +362,7 @@ function getjson(url,data,callback) {
 			return;
 		    }
 		} catch (e) {
-		    alert("Erreur: vous avez peut être été déconnecté du CAS, rechargez la page.");
+		    alert("Erreur: vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
 		    return;
 		}
 		callback(o);
@@ -476,10 +479,50 @@ function basculerChoix(e) {
 /* bloc --- fin des bascules --- */
 
 /* bloc --- Boutons ---*/
+
+/* duplication de ligne */
+function addMult(td) {
+    var tr = td.parent('tr');
+    var oid = parseIdString(tr.attr('id'));
+    var multl = jQuery('<button class="multl">Dupliquer '+oid["type"]+'</button>');
+    multl.button({
+	text: false,
+		icons: {
+	    primary: "ui-icon-copy" // ui-icon-cart
+		    }
+	});
+    multl.bind("click",oid,duplicateLine);
+    removeMult(td);
+    td.find('div.palette').append(multl);    
+}
+function removeMult(td) {
+    td.find('button.multl').remove();
+}
+
+/* caddy (choix) */
+function addChoisir(td) {
+    var tr = td.parent('tr');
+    var oid = parseIdString(tr.attr('id'));
+    var choixl = jQuery('<button class="choixl">Se proposer pour cette intervention</button>');
+    choixl.button({
+	text: false,
+		icons: {
+	    primary: "ui-icon-cart" // ui-icon-cart
+		    }
+	});
+    choixl.bind("click",oid,selectLine);
+    removeChoisir(td);
+    td.find('div.palette').append(choixl);
+}
+function removeChoisir(td) {
+    td.find('button.choixl').remove();
+}
+
+
 /* ajout de ligne */
 function addAdd(td) {
     var type = td.closest('tr').attr('class');
-    var addl = jQuery('<button class="addl">ajouter '+type+'</button>');
+    var addl = jQuery('<button class="addl">Ajouter '+type+'</button>');
     addl.button({
 	text: false,
 		icons: {
@@ -495,9 +538,10 @@ function removeAdd(td) {
 
 /* effacement de ligne */
 function addRm(td) {
+    var type = td.closest('tr').attr('class');
     var tr = td.parent('tr');
     var oid = parseIdString(tr.attr('id'));
-    var rml = jQuery('<button class="rml">effacer la ligne</button>');
+    var rml = jQuery('<button class="rml">Effacer la ligne</button>');
     var removel = jQuery('<div class="removel"/>');
     rml.button({
 	text: false,
@@ -533,7 +577,7 @@ function removeReload(td) {
     td.find('button.reloadl').remove();
 }
 
-/* bouton d'envoie */
+/* bouton d'envoi */
 function addOk(jqcell) {
     var ligne = jqcell.parent('tr');
     var td = ligne.find('td.action');
@@ -548,6 +592,7 @@ function addOk(jqcell) {
 	jqcell.find('div.ok').click(sendModifiedLine);
 	removeReload(td);
 	removeRm(td);
+	removeMult(td);
 	addReload(td); // <-- ajout du reload
 	var okl = jQuery('<button class="okl">envoyer les modifications</button>');
 	okl.button({
@@ -725,7 +770,7 @@ function toggleColumn(e) {
 /* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
 function  appendList(type,body,id_parent, do_it_last) {
     var legende = $("#skel"+type);
-    var list = legende.find('th');
+    var list = legende.children('th');
     /*  etait buggy !
     legende = legende.clone(true);
     legende.removeAttr('id');
@@ -773,21 +818,29 @@ function appendItem(type,prev,o,list) {
 	    .prepend('<div class="basculeOff" id="basculeformation_'+o["id_formation"]+'" />')
 	    .bind('click',{id: o["id_formation"]},basculerFormation);
 	line.before('<tr class="imgformation"><td class="imgformation" colspan="12"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
-    } else {
-	addRm(line.children('td.action')); 
+    } else {/* pas pour les formations */
+	addRm(line.find('td.action')); 
+    }
+    if (type == "tranche") {
+	addMult(line.children('td.action')); 
+	if (o["id_enseignant"] == 3) {
+	    addChoisir(line.children('td.laction')); 	    
+	} else {
+	    removeChoisir(line.children('td.laction'));
+	}
     }
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
 /* BLOC ----- ENVOI DE MODIFS AU SERVEUR --------*/
-function findIdParent(tr,type) {
-    var table = tr.closest("table").addClass('PLOUM');
+function findIdParent(tr,type) {/* ne fonctionnera pas avec le type formation */
+    var table = tr.closest("table");
     var sid = table.attr("id");
     var oid = parseIdString(sid);
     return oid.id;
 }
 
-/* ajouter une nouvelle ligne */
+/* ajouter une nouvelle ligne sur le serveur et dans la vue */
 function newLine() {
     var tr = $(this).closest('tr');
     var type = tr.attr('class');
@@ -801,7 +854,7 @@ function newLine() {
        
 }
 
-/* supprimer une ligne */
+/* supprimer une ligne du serveur et de la vue */
 function removeLine(o) {
     var oid = o.data;   
     var tr = $("#"+idString(oid));
@@ -820,7 +873,7 @@ function removeLine(o) {
 	});
 }
 
-/* soumettre les modifications d'une ligne */
+/* soumettre les modifications d'une ligne au serveur */
 function sendModifiedLine() {
     var ligne = $(this).closest('tr');
     var parent = ligne.closest('table');
@@ -831,11 +884,11 @@ function sendModifiedLine() {
     donnees['id'] = tid['id'];
     tid =  parseIdString(parent.attr('id'));
     donnees['id_parent'] = tid['id'];
-    ligne.find('td.modification').each(function (i,e) {
+    ligne.children('td.modification').each(function (i,e) {
 	    L.modification.getval($(this),donnees);
 	});
 
-    ligne.find('td.edit').each(
+    ligne.children('td.edit').each(
 	function () {
 	    $(this).removeClass('edit');
 	    var name = $(this).attr('class');
@@ -845,6 +898,8 @@ function sendModifiedLine() {
 
     getjson("json_modify.php",donnees, replaceLine);
 }
+
+/* rafraichir la vue sur une ligne avec les donnees fournie par le serveur */
 function replaceLine(tabo) {
     var o = tabo[0];
     var id = idString(o);
@@ -863,9 +918,56 @@ function replaceLine(tabo) {
 //	    }
 	});
     ligne.find('td.action button.okl').remove();
-    removeReload(ligne.find('td.action'));
-    addRm(ligne.find('td.action'));
+    removeReload(ligne.children('td.action'));
+    addRm(ligne.children('td.action'));
+    if (o["type"] == "tranche") {
+	addMult(ligne.children('td.action')); 
+	if (o["id_enseignant"] == 3) {
+	    addChoisir(ligne.children('td.laction'));
+	} else {
+	    removeChoisir(ligne.children('td.laction'));
+	}
+    }
 }
+
+
+/* Dupliquer une ligne */
+function duplicateLine(e) {
+    var oid = e.data;
+    var sid = idString(oid);
+    var original = $('#'+sid);
+    /* faut-il demander une confirmation ? */
+    getjson("json_duplicate.php",oid,function (tabo) {	    
+	    var o = tabo[0];
+	    var legende = $("#skel"+o["type"]);
+	    var list = legende.children('th');
+	    appendItem(o["type"],original,o,list);
+	});
+}
+
+/* Faire un choix d'intervention */
+function selectLine(e) {
+    var oid = e.data;
+    var source = $('#'+idString(oid));
+    source.effect('highlight',{},800,function () {});	   
+    getjson("json_get.php",oid,function (tabo) {
+	    var o = tabo[0];
+	    o.type = "choix";
+	    delete o.id;
+	    delete o.id_tranche;
+	    delete o.id_enseignant;
+	    o.id_parent = o.id_cours;
+	    getjson("json_new.php",o,function (tabo) {
+		    var o = tabo[0];
+		    var legende = $("#legendechoix"+o["id_cours"]);
+		    var list = legende.children('th');
+		    appendItem(o["type"],legende.siblings().andSelf().filter('tr:last'),o,list);
+		});
+	});
+    return false;
+}
+
+
 /*------- FIN ENVOI DE MODIFS AU SERVEUR --------*/
 
 /*  */
@@ -907,6 +1009,7 @@ function responsables(jq) {
 
 
 $(document).ready(function () {
+	$.datepicker.setDefaults($.datepicker.regional['fr']);
 	L = new ligne(); // <-- var globale
 
 	/* TEST */

@@ -869,12 +869,19 @@ th.action > div.palette, td.action > div.palette {
     margin-right: -64px;
 }
 
+th.laction > div.palette, td.laction > div.palette {
+    float: left;
+    height: 24px;
+    padding: 0px;
+    margin: 0px;
+    margin-left: -32px;
+}
+
 tr.choix > th.action > div.palette, tr.choix > td.action > div.palette {
     float: left;
     height: 24px; 
     margin-left: -64px;
 }
-
 
 td.action > div.removel {
     float:right; 
@@ -889,7 +896,7 @@ tr.choix > td.action > div.removel {
 }
 
 
-th.action, td.action {
+th.action, td.action, th.laction, td.laction {
     font-size: 12px;
 }
 

@@ -44,8 +44,30 @@ function peutchoisir() {
     return true;
 }
 
-function peutediterchoix() {
-    return true;
+function peutediterchoix($id_choix) {
+    global $user;
+    if ($user["su"]) return true;
+    $query = "SELECT pain_choix.id_enseignant AS enseignant, 
+                     pain_cours.id_enseignant AS respcours, 
+                     pain_formation.id_enseignant AS respannee,
+                     pain_sformation.id_enseignant AS respformation
+              FROM pain_choix, pain_cours, pain_formation, pain_sformation
+              WHERE pain_choix.id_choix = $id_choix
+              AND pain_cours.id_cours = pain_choix.id_cours
+              AND pain_formation.id_formation = pain_cours.id_formation
+              AND pain_sformation.id_sformation = 
+                  pain_formation.id_sformation";
+    $res = mysql_query($query) or die("ERREUR peutediterchoix($id_choix): ".mysql_error());
+    $r = mysql_fetch_array($res);
+    /* l'intervenant ne peut pas editer sa propre intervention :
+    if ($user["id_enseignant"] == $r["enseignant"]) return true;
+    */
+    /* le responsable du cours ne peut pas editer :
+    if ($user["id_enseignant"] == $r["respcours"]) return true;
+    */
+    if ($user["id_enseignant"] == $r["respannee"]) return true;
+    if ($user["id_enseignant"] == $r["respformation"]) return true;
+    return false;
 }
 
 
@@ -111,7 +133,9 @@ function peuteditertranche($id_tranche) {
                   pain_formation.id_sformation";
     $res = mysql_query($query) or die("ERREUR peuteditertranche($id_tranche)");
     $r = mysql_fetch_array($res);
+    /* l'intervenant ne peut pas editer sa propre intervention :
     if ($user["id_enseignant"] == $r["enseignant"]) return true;
+    */
     if ($user["id_enseignant"] == $r["respcours"]) return true;
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
@@ -119,7 +143,7 @@ function peuteditertranche($id_tranche) {
 }
 
 function peuteditertrancheducours($id_cours) {
-    return peuteditercours($id_cours); /* le responsable du cours peut */
+    return peuteditercours($id_cours); /* le responsable du cours ne peut pas */
 }
 
 function peutediterformation($id_formation) {
@@ -131,7 +155,7 @@ function peutediterformation($id_formation) {
               WHERE pain_formation.id_formation = $id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peuteditercours($idcours)");
+    $res = mysql_query($query) or die("ERREUR peutediterformation($idcours)");
     $r = mysql_fetch_array($res);
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
