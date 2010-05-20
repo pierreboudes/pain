@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	/* masqer certaines colonnes */
-	$('th.code_geisha, th.alt').fadeOut('fast');
+	$('th.code_geisha, th.alt, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut('fast');
 	$('#skel').fadeOut('fast');
 
 	/* histogrammes */

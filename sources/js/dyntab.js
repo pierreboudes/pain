@@ -34,6 +34,8 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 2) cellule: timestamp
 */
 
+var colcours = 18;
+
 /* constructeur de cellule */
 function cell() {
     this.name ="cell";
@@ -85,8 +87,47 @@ function numcell() {
 	o[this.name] = s.replace(" ","").replace(",",".");
     }
 }
-
 numcell.prototype = new cell();
+
+function datecell() {
+    this.setval = function (c, o) {
+	var isos = o[this.name];
+	c.removeClass("edit");
+	if ((isos != null) && (isos.length > 0) && (isos != "1970-01-01")) {
+	    var s = $.datepicker.formatDate('dd/mm/yy',new Date(isos));  // <--conversion
+	    c.html(s);
+	} else {
+	    c.html('');
+	}
+    }
+    this.edit = function(c) {
+	var s = c.text();
+	c.html('');
+	var dp = jQuery('<input type="text"/>');
+	c.append(dp);
+	dp.datepicker($.datepicker.regional['fr']);
+	if ((s != null) && (s.length > 0) && (s != "1970-01-01")) {
+	    dp.datepicker("setDate",s);
+	}
+	c.addClass('edit');
+    }
+    this.getval = function (c, o) {
+	var s;
+	var isos = "1970-01-01";
+	if (c.hasClass("edit")) {
+	    var dp = c.children('input');
+	    s = dp.datepicker("getDate");
+	} else {
+	    s = new Date(c.text());
+	}
+	if (s != null) {
+	    isos = $.datepicker.formatDate('yy-mm-dd', s); // <- conversion
+	} 
+	o[this.name] = isos;
+
+    }
+}
+datecell.prototype = new cell();
 
 /* constructeur de cellule non modifiable */
 function immutcell () {
@@ -264,6 +305,24 @@ function ligne() {
     /* alt */
     this.alt = new numcell();
     this.alt.name = "alt";
+    /* debut */
+    this.debut = new datecell();
+    this.debut.name = "debut";
+    /* fin */
+    this.fin = new datecell();
+    this.fin.name = "fin";
+    /* mcc */
+    this.mcc = new cell();
+    this.mcc.name = "mcc";
+    /* inscrits */
+    this.inscrits = new numcell();
+    this.inscrits.name = "inscrits";
+    /* presents */
+    this.presents = new numcell();
+    this.presents.name = "presents";
+    /* tirage */
+    this.tirage = new numcell();
+    this.tirage.name = "tirage";
     /* descriptif */
     this.descriptif = new cell(); /* faire une big cell et une small cell */
     this.descriptif.name = "descriptif";
@@ -452,7 +511,7 @@ function basculerCours(e) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="12"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="'+colcours+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
 	appendList("tranche",$('#tabletranches_'+id+' tbody'),id, function () {
 	var legende = $('#legendetranche'+id);
 	addMenuFields(legende);
@@ -811,13 +870,13 @@ function appendItem(type,prev,o,list) {
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
-	line.before('<tr class="imgcours"><td class="imgcours" colspan="12"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colcours+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     if (type == "formation") {
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff" id="basculeformation_'+o["id_formation"]+'" />')
 	    .bind('click',{id: o["id_formation"]},basculerFormation);
-	line.before('<tr class="imgformation"><td class="imgformation" colspan="12"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colcours+'"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
     } else {/* pas pour les formations */
 	addRm(line.find('td.action')); 
     }
@@ -1009,7 +1068,7 @@ function responsables(jq) {
 
 
 $(document).ready(function () {
-	$.datepicker.setDefaults($.datepicker.regional['fr']);
+	$.datepicker.setDefaults($.datepicker.regional['fr']); 
 	L = new ligne(); // <-- var globale
 
 	/* TEST */

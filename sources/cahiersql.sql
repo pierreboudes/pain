@@ -48,3 +48,12 @@ SELECT
   pain_enseignant.service
 FROM pain_enseignant
 WHERE 1;
+
+
+---- ajouts de champs pour les cours
+ALTER TABLE  `pain_cours` ADD  `debut` DATE NOT NULL DEFAULT '1970-01-01' AFTER  `code_geisha` ,
+ADD  `fin` DATE NOT NULL DEFAULT '1970-01-01' AFTER  `debut` ,
+ADD  `mcc` TEXT NULL AFTER  `fin` ,
+ADD  `inscrits` SMALLINT UNSIGNED NULL AFTER  `mcc` ,
+ADD  `presents` SMALLINT UNSIGNED NULL AFTER  `inscrits`,
+ADD  `tirage` SMALLINT UNSIGNED NULL AFTER  `presents`

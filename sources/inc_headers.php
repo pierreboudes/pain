@@ -33,6 +33,7 @@ function entete($titre, $js = NULL) {
 <link type="text/css" href="css/custom-theme/jquery-ui-1.8.1.custom.css" rel="stylesheet" />
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.1.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.ui.datepicker-fr.js"></script>
 <script type="text/javascript" src="js/dyntab.js"></script>
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;

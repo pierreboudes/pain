@@ -267,9 +267,13 @@ td.enseignant > input {
 }
 */
 
-.cm, .td, .tp, .alt, .groupe, .htd {
+.cm, .td, .tp, .alt, .groupe, .htd, .inscrits, .presents, .tirage {
     min-width:30px;
     max-width:60px;
+}
+.debut, .fin {
+    min-width: 30px;
+    width: 70px;
 }
 
 /*

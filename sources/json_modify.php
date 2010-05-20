@@ -27,7 +27,8 @@ require_once("inc_functions.php");
 $champs = array(
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_geisha"
+	"cm", "td", "tp", "alt", "descriptif", "code_geisha",
+	"debut", "fin", "inscrits", "presents", "tirage", "mcc"
 	/* modification */
 	),
     "tranche"=> array(
