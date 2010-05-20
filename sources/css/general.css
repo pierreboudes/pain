@@ -1,7 +1,71 @@
 body {
-font-family:"Arial","Helvetica","Verdana","sans-serif";
-font-size:10pt;
+  font-family:"Arial","Helvetica","Verdana","sans-serif";
+  font-size:10pt;
 }
+
+/* TOUTES LES COULEURS */
+/* #annee_2009 table {background-color: #dfe6ff;} */
+#menu li {background-color: #dfe6ff;}
+span.highlight {background-color: yellow;}
+div.infobox {border-color: #6495ed;}
+th, td {border-color: #6495ed;}
+th {background-color:#EFF6FF;}
+tr.formation td {background-color:#DFE6FF;}
+/*
+table.cours, table.super, table.interventions,  table.service, table.stat,table.annuaire
+{background-color: #ffffff;}
+*/
+table.enseignants, table.tranches, table.choix 
+{border-color: #6495ed;}
+tr.super {background-color:#3771c8;}
+#menu li, .statens,
+table.super, table.cours, table.interventions, table.service, table.stat, table.annuaire,
+tr.super td, tr.super th
+{border-color: #3771c8;}
+
+
+
+input, textarea {
+    color: darkblue;
+}
+.servi {background-color: rgb(58, 105, 35); /* vert */}
+.libre {background-color: rgb(175, 29, 30); /* rouge */}
+.annule {background-color: rgb(255, 144, 0); /* orange */}
+.mutualise {background-color: rgb(100, 149, 237); /* bleu clair */}
+.statens .barre {background-color: rgb(58, 105, 35);} /* servi */
+.statens1 .an {background-color: rgb(255, 0, 144);}
+.statens1 .formation {background-color: rgb(255, 144, 0);}
+.statens1 .barrecont, .statens2 .barrecont .legende, .statens2 .legende
+{border-color: gray;}
+.statens .ccm {background-color: transparent;}
+.statens .ccm, .lstatens1 .ccm {border-color: rgb(58, 105, 35);}
+.vignette .statens {background-color: white;}
+.historique div.timestamp {
+    color: white;
+    background-color: black;
+}
+div.diff {outline-color: rgb(100, 149, 237);}
+div.message .nom {background-color: rgb(150, 199, 255);} /* bleu ? */
+.message div.before {background-color: rgb(255, 129, 130);} /* rouge */
+.message div.after {background-color:  rgb(158, 205, 135);} /* vert */
+.debug_id {
+    color: red;
+    background-color: white;
+}
+td.edit, td.edit textarea {background-color: #ffe45c;}
+ul.menu {
+    background-color: #FFFFFF;
+    color:#1C94C4;
+    border-color: #FBCB09;
+}
+ul.menu:hover {background-color: #fdf5ce;}
+ul.menu li:hover {color: #FBCB09;}
+table.nature td {color:#1C94C4;}
+table.nature td.inact {
+    background-color: none;
+    color: white;
+}
+
 
 /* menu */
 #menu {
@@ -21,9 +85,9 @@ font-size:10pt;
     padding-bottom: 4px;
     padding-right: 5pt;
     padding-left: 5pt;
-    border: 3px solid #3771c8; /* #6495ed */
+    border-style: solid; 
+    border-width: 3px;
     border-top: 0px;
-    background-color: #DFE6FF;
 }
 
 li#menu-chercher {
@@ -49,22 +113,14 @@ li#menu-chercher {
     top: 30px;
 }
 
-
-span.highlight {
-    background-color: yellow;
-}
-
 div.infobox {
     text-align: justify;
     width: 600px;
     padding: 10px;
     margin: 10px;
     font-size: 14px;
-    border:1px dashed #6495ed;
-}
-
-body {
-/*    background-color: #ccccff; */
+    border-width: 1px;
+    border-style: dashed;
 }
 
 /* tables */
@@ -78,18 +134,19 @@ select, input {
 
 th {
     font-family:monospace;
-    border:1px dotted #6495ed;
+    border-width: 1px;
+    border-style: dotted;
     padding-top:5px;
     padding-bottom:5px;
     padding-left: 2px;
     padding-right: 2px;    
-    background-color:#EFF6FF;
 }
 
 td {
     font-family:sans-serif;
     font-size:10pt;
-    border:1px solid #6495ed;
+    border-width: 1px;
+    border-style: solid;
     padding-top:5px;
     padding-bottom:5px;
     padding-left: 2px;
@@ -98,34 +155,33 @@ td {
 }
 
 table.cours {
-    border:2px solid #3771c8;
+    border-width: 1px;
+    border-style: solid;
     border-collapse:collapse; 
     margin:auto;
     margin-top:-2px;    
-    background-color: #ffffff;
 }
 
 table.super {
-    border:2px solid #3771c8;
+    border-width: 2px;
+    border-style: solid;
     border-collapse:collapse; 
     margin:auto;
-    background-color: #ffffff;
 }
 
-
 table.interventions,  table.service {
-    border:2px solid #3771c8;
+    border-width: 2px;
+    border-style: solid;
     border-collapse:collapse; 
     margin:auto;
-    background-color: #ffffff;
 }
 
 table.stat,table.annuaire {
-    border: 2px solid #3771c8;
+    border-width: 2px;
+    border-style: solid;
     border-collapse: collapse; 
     margin: auto;
     margin-top: 10px;
-    background-color: #ffffff;
 }
 
 table.stat th {
@@ -140,13 +196,11 @@ table.stat td {
 
 tr.formation td {
     padding-top: 10px;
-    background-color:#DFE6FF;
 }    
 
 tr.super {
     padding-top: 10px;
     font-weight: bolder;    
-    background-color:#3771c8;
     color: white;
 }
 
@@ -159,16 +213,18 @@ tr.sousformations > td {
 }
 
 table.enseignants {
-    border:3px solid #6495ed;
+    border-style: solid;
+    border-width: 3px;
     border-collapse:collapse; 
     margin:auto;
 }
 
 table.tranches {
-    border:1px solid #6495ed;
-    border-bottom:2px solid #6495ed;
-    border-left:1px solid #6495ed;
-    border-right:0px;    
+    border-style: solid;
+    border-width: 1px;
+    border-bottom-width: 2px;
+    border-left-width: 1px;
+    border-right-width: 0px;    
     border-collapse:collapse;
     margin-left: auto;
     margin-top: -1px;
@@ -185,9 +241,11 @@ div.choix {
 }
 
 table.choix {
-    border:1px solid #6495ed;
-    border-bottom:2px solid #6495ed;
-    border-right:1px solid #6495ed;
+    border-style: solid;
+    border-width: 1px;
+    border-bottom-width: 2px;
+    border-left-width: 0px;
+    border-right-width: 1px;    
     border-left:0px;    
     border-collapse:collapse;
     margin-right: auto;
@@ -362,26 +420,9 @@ input.type_conversion, input.semestre {
     text-align: center;
 }
 
-input, textarea {
-    color: darkblue;
-}
-
 /* td.id {
  display:none;
 } */
-
-/* fusion manuelle des bords */
-table.formcours td.nom_cours {
-    border-left: 0px;
-}
-
-table.formcours td.action {
-    border-right: 0px;
-}
-
-table.formcours td {
-    border-bottom: 0px;
-}
 
 td.tranches {
     padding-top: 0px;
@@ -491,7 +532,7 @@ td.laction > div.basculeOff, td.laction > div.basculeOn {
 
 tr.imgcours, td.imgcours, div.imgcours {
     padding: 0px;
-    border: 0px;
+    border-width: 0px;
     margin: 0px;
     margin-top: -1px;
     height: 0px;
@@ -509,7 +550,7 @@ div.imgcours img.imgbarre {
 
 tr.imgformation, td.imgformation, div.imgformation {
     padding: 0px;
-    border: 0px;
+    border-width: 0px;
     margin: 0px;
     margin-top: -1px; 
     height: 0px;
@@ -550,28 +591,14 @@ A:active {text-decoration: none}
 A:hover {text-decoration: underline; color: red;}
    */
 
-
-/* COLORS */
-.servi {
-    background-color: rgb(58, 105, 35); /* vert */
-}
-.libre {
-    background-color: rgb(175, 29, 30); /* rouge */
-}
-.annule {
-    background-color: rgb(255, 144, 0); /* orange */
-}
-.mutualise {
-    background-color: rgb(100, 149, 237); /* bleu clair */
-}
-
 .clear {
     clear: both;
 }
 
 /* STATS */
 .statens {
-    border: 2px solid #3771c8;
+    border-style: solid;
+    border-width: 2px;
     float: left;
     //clear: both;
     padding: 2px;
@@ -590,7 +617,6 @@ div.lstatens1, div.rstatens1 {
 }
 
 .statens .barre {
-    background-color: rgb(58, 105, 35); /* servi */
     height: 10px;
     width: 0px;
     min-width: 0px;
@@ -606,15 +632,8 @@ div.lstatens1, div.rstatens1 {
 }
 
 .statens1 .barrecont {
-    border:1px solid gray;
-}
-
-.statens1 .an {
-    background-color: rgb(255, 0, 144);
-}
-
-.statens1 .formation {
-    background-color: rgb(255, 144, 0);
+    border-width: 1px;
+    border-style: solid;
 }
 
 .lstatens1 .barre {
@@ -644,16 +663,18 @@ div.lstatens1, div.rstatens1 {
 
 
 .statens2 .legende {
-        border-right: 2px solid gray;    
+        border-right-width: 2px;
+	border-right-style: solid;
 }
 
 .statens2 .barrecont .legende {
     float: left;
-    border-bottom: 2px solid gray;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
 }
 
 .statens2 .barrecont + .barrecont .legende {
-    border-bottom: 0px;
+    border-bottom-width: 0px;
 }
 
 .statens2 {
@@ -671,22 +692,20 @@ div.lstatens1, div.rstatens1 {
 }
 
 .statens .ccm {
-    background-color: transparent;
-    border-right: 1px solid rgb(58, 105, 35);
+    border-right-width: 1px;
+    border-right-style: solid;
 }
 
 .lstatens1 .ccm {
     border-right: 0px;
-    border-left: 1px solid rgb(58, 105, 35);
+    border-left-width: 1px;
+    border-left-style: solid;
 }
 
 .vignette {
     position: fixed;
     bottom: 5px;
     right: 5px;
-}
-.vignette .statens {
-    background-color: white;
 }
 /* LOGS */
 
@@ -698,8 +717,6 @@ div.lstatens1, div.rstatens1 {
 .historique div.timestamp {
     float: left;
     padding-right: 0.5em;
-    color: white;
-    background-color: black;
     font-weight: bolder;
     height: 100%;
 }
@@ -709,7 +726,7 @@ div.lstatens1, div.rstatens1 {
     width: 50px;    
     text-align: right;
     margin-right: 2px;
-    border: 0px;
+    border-width: 0px;
     padding-right: 0.25em;
 }
 .historique div.nav a {
@@ -720,7 +737,6 @@ div.lstatens1, div.rstatens1 {
     border: none;
     vertical-align: middle;
     margin-bottom: 2px;
-   /* margin-top: 3px; */
 }
 
 div.diff div {
@@ -730,20 +746,18 @@ div.diff div {
 
 div.diff {
     float: left;
-    outline: 1px dashed rgb(100, 149, 237);
+    outline-width: 1px;
+    outline-style: dashed;
     padding: 0pt;
 }
 
 div.message .nom {
-    background-color: rgb(150, 199, 255);
     float: left;
     padding: 0 0.25em;
 }
 
 div.diff div {
-  //  overflow: hidden;
       max-width: 252px;
-//    max-height: 48pt;
 }
 
 
@@ -752,18 +766,13 @@ div.diff .champ {
     overflow: hidden;
     width: 120px;
     text-align: right;
-    //background-color: rgb(150, 199, 255);
 }
 div.diff .champ:after {
     content: ":";
 }
 
 .message div.before {
-    background-color: rgb(255, 129, 130); /* rouge */
     text-decoration: line-through;
-}
-.message div.after {
-    background-color:  rgb(158, 205, 135); /* vert */
 }
 
 /* DEBUG */
@@ -773,8 +782,6 @@ div.diff .champ:after {
     z-index: 100;
     width: 2em;
     text-align: right;
-    color: red;
-    background-color: white;
     font-weight: bolder;
     opacity: 0.5;
 }
@@ -795,8 +802,6 @@ div.ok {
 
 div.okl {
   float:right;
-//  position: relative;
-//  z-index: 100;
   margin-right: -25px;
   width: 12px;
   height: 12px;
@@ -821,21 +826,12 @@ input {
     display: none;
 }
 
-td.edit, td.edit textarea {
-    background-color: #effff6;
-}
-
 ul.menu {
-    background-color: #FFFFFF;
     list-style: none;
     margin: 0px;
     padding: 2px;
-    border:1px solid #FBCB09;
-    color:#1C94C4;
-}
-
-ul.menu:hover {
-    background-color: #fdf5ce;
+    border-width: 1px;
+    border-style: solid;
 }
 
 ul.menu li {
@@ -849,18 +845,12 @@ ul.menu li.inv {
     font-style: italic;
 }
 
-ul.menu li:hover {
-//    background-color: #EFE6FF;
-    color: #FBCB09;
-}
-
-
 td.action, th.action {
     width: 0px;
     max-width: 0px;
     padding: 0px;
     margin: 0px;
-    background-color: none;
+//    background-color: none;
     border-right: 0px;
     border-left: 0px;
 }
@@ -870,6 +860,8 @@ th.action > div.palette, td.action > div.palette {
     height: 24px;
     padding: 0px;
     margin: 0px;
+    width: 54px;
+    text-align: right;
     margin-right: -64px;
 }
 
@@ -910,25 +902,12 @@ td.nature {
 
 table.nature {
     border-collapse:collapse;
-//    border:1px solid #FBCB09;
-    border: 0px;
+    border-width: 0px;
 }
 
 table.nature td {
-    border: 0px;
+    border-width: 0px;
     padding: 1px;
     font-size: 10px;
     text-align: center;
-    color:#1C94C4;
 }
-
-table.nature td.inact {
-    background-color: none;
-    color: white;
-}
-
-/*
-.mutable {
-    border-color: #fbd850;
-}
-*/
