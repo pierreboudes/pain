@@ -27,7 +27,7 @@ authrequired();
 <p>      
  En cas de problème d'affichage : recharger la page.</b></p>
 
-<p><b>Attention, la nouvelle version de pain (campagne)</b>, est en cours de développement. Merci de signaler les erreurs.</p>
-<p>La  <a href="https://www-lipn.univ-paris13.fr/projects/licences/wiki/AccueilPain" title="Accueil pain">page web de pain</a> contient des informations complémentaires. Un système de tickets, pour signaler des bugs ou demander des améliorations, y est disponible (vérifier que le bug n'est pas déjà signalé dans un ticket avant de créer un nouveau ticket).</p>
+<p><b>Attention, la nouvelle version de pain, <a href="https://www-lipn.univ-paris13.fr/projects/licences/milestone/Campagne" title="développement de Campagne">Campagne</a></b>, est en cours de développement. Merci de signaler les erreurs ou faire vos demandes d'amélioration, en émettant un ticket : vérifier que le bug n'est pas <a href="https://www-lipn.univ-paris13.fr/projects/licences/query?group=status&milestone=Campagne" title="liste de tous les tickets pour Campagne">déjà signalé dans un ticket</a> avant de <a href="https://www-lipn.univ-paris13.fr/projects/licences/newticket?milestone=Campagne" title="Créer un ticket pour le milestone Campagne">créer un nouveau ticket</a>.</p>
+<p>La  <a href="https://www-lipn.univ-paris13.fr/projects/licences/wiki/AccueilPain" title="Accueil pain">page web de pain</a> contient des informations complémentaires.</p>
 </div>
 </center>

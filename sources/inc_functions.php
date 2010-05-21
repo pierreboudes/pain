@@ -303,6 +303,18 @@ function selectionner_tranche($id)
     return $tranche;
 }
 
+function selectionner_choix($id)
+{
+    $qchoix = "SELECT * FROM pain_choix WHERE `id_choix` = $id";
+    $choix = NULL;
+    if ($rchoix = mysql_query($qchoix)) {
+	$choix = mysql_fetch_assoc($rchoix);
+    } else {
+	echo "Échec de la requête sur la table choix. $qchoix ".mysql_error();
+    }
+    return $choix;
+}
+
 
 function ig_tranche($t,$tag="") {
     $id = $t["id_tranche"];
@@ -396,7 +408,7 @@ function supprimer_tranche($id)
 	    pain_log("$qtranche -- supprimer_tranche($id)");
 	    echo '{"ok": "ok"}';
 	} else {
-	    errmsg("échec de la requête sur la table cours.");
+	    errmsg("échec de la requête sur la table tranche.");
 	}
     } else {
 	errmsg("droits insuffisants.");
@@ -409,7 +421,21 @@ function supprimer_enseignant($id) {
 }
 
 function supprimer_choix($id) {
-    errmsg("fonction non disponible.");
+    if (peutediterchoix($id)) {
+	$choix = selectionner_choix($id);
+	$qchoix = "DELETE FROM pain_choix WHERE `id_choix` = $id
+                 LIMIT 1";
+	
+	if (mysql_query($qchoix)) {
+	    historique_par_suppression(2, $choix);
+	    pain_log("$qchoix -- supprimer_choix($id)");
+	    echo '{"ok": "ok"}';
+	} else {
+	    errmsg("échec de la requête sur la table choix.");
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
 }
 
 
@@ -1085,6 +1111,10 @@ function historique_par_suppression($type, $old) {
 	$id = $old["id_tranche"];
 	$id_cours = $old["id_cours"];
 	$id_formation = formation_du_cours($old["id_cours"]);
+    } else if (3 == $type) {
+	$id = $old["id_choix"];
+	$id_cours = $old["id_cours"];
+	$id_formation = formation_du_cours($old["id_cours"]);
     } else {
 	$s .= "BUG ";
     }
@@ -1117,6 +1147,11 @@ function ig_historique($h) {
     case 2:
 	echo '<a href="#tranche'.$h["id"].'">';
 	echo '<img src="css/img/tranche.png" />';
+	echo '</a>';
+	break;
+    case 3:
+	echo '<a href="#choix'.$h["id"].'">';
+	echo '<img src="css/img/tranche.png" />'; /* choix.png n'existe pas TODO */
 	echo '</a>';
 	break;
     default: 

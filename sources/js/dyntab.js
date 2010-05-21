@@ -162,6 +162,9 @@ function enseignant () {
 	getjson("json_enseignants.php",{term: ""}, function (data) {
 		ens.autocomplete({ minLength: 2,
 			    source: data,
+			    mustMatch: true,
+			    selectFirst: true,
+			    autoFill: true,
 			    select: function(e, ui) {
 			    if (!ui.item) {
 				// remove invalid value, as it didn't match anything
@@ -171,12 +174,13 @@ function enseignant () {
 			    $(this).focus();
 			    ens.val(ui.item.label);
 			    c.find('.hiddenvalue').html(ui.item.id);
-			    } 
+			} 
 		    })});
 	c.addClass("edit");
     };
     this.getval = function (c,o) {
-	var ensid = c.find('.hiddenvalue').text();
+	// var ensid = c.find('.hiddenvalue').text();
+	var ensid = c.find('input').autocomplete( "widget" ).item.id;
 	o["id_enseignant"] = ensid;
     }
     this.setval = function (c,o) {
@@ -906,8 +910,14 @@ function newLine() {
     var list = tr.children('th');
     var n = list.length;
     var i = 0;
-    var id_parent = findIdParent(tr,type);    
-    getjson("json_new.php", {type: type, id_parent: id_parent}, function (tabo) {
+    var id_parent = findIdParent(tr,type);
+    var data = new Object();
+    data.type = type;
+    data.id_parent = id_parent;
+    if (type == "tranche") {
+	data.id_enseignant = 3;
+    }
+    getjson("json_new.php", data, function (tabo) {
 	    appendItem(type,tr,tabo[i],list);
 	});
        

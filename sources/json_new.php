@@ -86,7 +86,7 @@ if (isset($_GET["id_parent"])) {
     }
 
     /* Champs particuliers a controler */
-    if ($type != "enseignant") {
+    if (($type != "enseignant") && !isset($set["id_enseignant"])) {
 	$set["id_enseignant"] = $user["id_enseignant"];
     }
     /* formation de la requete */
