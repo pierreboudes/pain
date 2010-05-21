@@ -179,8 +179,8 @@ function enseignant () {
 	c.addClass("edit");
     };
     this.getval = function (c,o) {
-	// var ensid = c.find('.hiddenvalue').text();
-	var ensid = c.find('input').autocomplete( "widget" ).item.id;
+	var ensid = c.find('.hiddenvalue').text();
+//	var ensid = c.find('input').autocomplete( "widget" ).item.id;
 	o["id_enseignant"] = ensid;
     }
     this.setval = function (c,o) {
