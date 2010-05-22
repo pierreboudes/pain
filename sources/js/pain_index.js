@@ -7,9 +7,10 @@ $(document).ready(function(){
 	$('tr.entete > td').each( function() {
 		addHistoGlobal($(this));
 	    });
-	// toutBasculer();
-//	$("table.super").draggable({ revert: true }); // js manquant ?
-//	$("a.enseignant").click(function(){window.open(this.href);return false;});
+	/* on peut re-arranger les annees */
+	$("#annee_2009").sortable();
+	$("#annee_2010").sortable();
+
 
 
 /* Search box */

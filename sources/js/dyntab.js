@@ -470,6 +470,16 @@ function basculerSuperFormation(id) {
 		   function () {
 		       var legende = $('#legendeformation'+id);
 		       legende.remove();
+		       if ($('#imgsformation_'+id+' img').is(':visible')) {
+			   $('#tablesuper_'+id+' > tbody div.imgformation').show();
+			   $('#tablesuper_'+id+' > tbody tr.formation').each(function (i) {
+				   var tag = this.id;
+				   if (tag != undefined) {
+				       var id = tag.replace('formation_','');
+				       htdFormation(id);
+				   }
+			       });
+		       }
 		   });
     }
     return false;
@@ -700,11 +710,11 @@ function histoDesFormations(e) {
     bascule.toggleClass('globalHistoOn');
     if (bascule.hasClass('globalHistoOn')) {
 	divan.find('div.imgformation').show();
-	$('#annee_'+annee+' table.formations').each(function (i) {
+	$('#annee_'+annee+' tr.formation').each(function (i) {
 		var tag = this.id;
 		if (tag != undefined) {
-		    var id = tag.replace('tableformation_','');
-		    htdFormation(id); // <-- TODO a voir, adapter
+		    var id = tag.replace('formation_','');
+		    htdFormation(id);
 		}
 	    });
 	$('#annee_'+annee+' table.super').each(function (i) {
@@ -1083,8 +1093,10 @@ function responsables(jq) {
 $(document).ready(function () {
 	$.datepicker.setDefaults($.datepicker.regional['fr']); 
 	L = new ligne(); // <-- var globale
-	$("#annee_2009").sortable();
-	$("#annee_2010").sortable();
+
+	/* infobox: liens externes */
+	$("div.infobox a").click(function(){window.open(this.href);return false;});
+
 	/* TEST */
 	if (false) {/* bascules ... */
 	    $('#basculesuper7').trigger('click');
