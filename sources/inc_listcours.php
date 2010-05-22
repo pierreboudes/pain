@@ -27,7 +27,7 @@ require_once("inc_functions.php");
 /* Les totaux globalement */
 echo '<div id="annee_'.$annee.'">';
 echo '<table class="super">';
-echo '<tr class="imgformation">';
+echo '<tr class="imgsformation">';
 echo '<td  class="imgformation">';
 echo '<div class="imgformation" id="imgentete_'.$annee.'">';
 echo '</div></td></tr>';
@@ -54,7 +54,7 @@ while($sformation = mysql_fetch_array($rsformation))
     echo '<table class="super" id="tablesuper_'.$id_sformation.'">';   
     /* affichage de la super formation */
 
-    echo '<tr class="imgformation">';
+    echo '<tr class="imgsformation">';
     echo '<td  class="imgformation" colspan="4">';
     echo '<div class="imgformation" id="imgsformation_'.$id_sformation.'">';
     echo '</div></td></tr>';

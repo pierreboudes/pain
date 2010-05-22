@@ -14,7 +14,7 @@
    height="297mm"
    id="svg2"
    version="1.1"
-   inkscape:version="0.46+devel r21714"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="histogramme.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/cours.png"
@@ -23,7 +23,17 @@
   <defs
      id="defs4">
     <linearGradient
-       inkscape:collect="always"
+       id="linearGradient5267">
+      <stop
+         style="stop-color:#3771c8;stop-opacity:1;"
+         offset="0"
+         id="stop5269" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop5271" />
+    </linearGradient>
+    <linearGradient
        id="linearGradient3652">
       <stop
          style="stop-color:#3771c8;stop-opacity:1;"
@@ -113,6 +123,70 @@
        y2="57.475302"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(0.18253968,-0.18253968)" />
+    <inkscape:perspective
+       id="perspective2878"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2908"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2935"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3652"
+       id="radialGradient5273"
+       cx="11.156213"
+       cy="84.941765"
+       fx="11.156213"
+       fy="84.941765"
+       r="2.0240729"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3652"
+       id="radialGradient5275"
+       cx="9.8571911"
+       cy="100.32985"
+       fx="9.8571911"
+       fy="100.32985"
+       r="1.7863697"
+       gradientTransform="matrix(1,0,0,2.2285625,0,-123.2615)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3652"
+       id="radialGradient5277"
+       cx="11.00073"
+       cy="98.866745"
+       fx="11.00073"
+       fy="98.866745"
+       r="3.569051"
+       gradientTransform="matrix(1,0,0,0.39803073,0,59.514741)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3652"
+       id="radialGradient5279"
+       cx="11.780427"
+       cy="102.2139"
+       fx="11.780427"
+       fy="102.2139"
+       r="1.7254065"
+       gradientTransform="matrix(1,0,0,1.2837815,0,-29.006416)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -121,17 +195,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4974076"
-     inkscape:cx="163.31631"
-     inkscape:cy="935.02033"
+     inkscape:zoom="23.717726"
+     inkscape:cx="-1.6133721"
+     inkscape:cy="955.47622"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1280"
      inkscape:window-height="752"
-     inkscape:window-x="-4"
+     inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
@@ -319,12 +393,49 @@
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
-       style="fill:none;stroke:#3771c8;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#000020;stroke:#3771c8;stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="m 10.762857,88.774684 1.950813,2.930091"
        id="path3785"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/Applications/MAMP/htdocs/pain/img/tranche.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/choix.png"
+       transform="translate(-0.3236149,11.364537)"
+       d="m 12.680286,84.941765 a 1.5240728,1.5240728 0 1 1 -3.048146,0 1.5240728,1.5240728 0 1 1 3.048146,0 z"
+       sodipodi:ry="1.5240728"
+       sodipodi:rx="1.5240728"
+       sodipodi:cy="84.941765"
+       sodipodi:cx="11.156213"
+       id="path2941"
+       style="fill-opacity:1;stroke:url(#radialGradient5273);fill-rule:nonzero;stroke-opacity:1;fill:none"
+       sodipodi:type="arc" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/choix.png"
+       sodipodi:nodetypes="ccc"
+       id="path2943"
+       d="m 10.893561,97.098817 c 0,4.145483 0,3.779703 0,3.779703 l -2.0727393,2.68237"
+       style="stroke:url(#radialGradient5275);stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1;fill-rule:nonzero;fill:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/choix.png"
+       sodipodi:nodetypes="ccc"
+       id="path2945"
+       d="M 13.819781,99.537334 10.838404,98.19615 8.1816788,99.441051"
+       style="stroke:url(#radialGradient5277);stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1;fill-rule:nonzero;fill:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/choix.png"
+       sodipodi:nodetypes="cc"
+       id="path2947"
+       d="m 10.80502,100.74885 1.950813,2.93009"
+       style="stroke:url(#radialGradient5279);stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1;fill-rule:nonzero;fill:none" />
   </g>
 </svg>

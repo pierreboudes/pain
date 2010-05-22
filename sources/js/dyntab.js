@@ -466,15 +466,10 @@ function basculerSuperFormation(id) {
 	$('#tablesuper_'+id+' tr.imgformation').fadeOut("slow").remove();
 	$('#tablesuper_'+id+' tr.formation').fadeOut("slow").remove();
     } else {
-//	appendList("formation",$('#testing tbody'),id);
 	appendList("formation",$('#tablesuper_'+id+' > tbody'),id,
 		   function () {
 		       var legende = $('#legendeformation'+id);
 		       legende.remove();
-//	addMenuFields(legende);
-//	addAdd(legende.find('th.action'));
-//	$('#tablesuper'+id+' tr.imgformation').fadeIn("slow");
-//	$('#tablesuper'+id+' tr.formation').fadeIn("slow");
 		   });
     }
     return false;
@@ -877,10 +872,18 @@ function appendItem(type,prev,o,list) {
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colcours+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     if (type == "formation") {
+	var idf = o["id_formation"];
+	/* histogrammes et logs */
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculeformation_'+o["id_formation"]+'" />')
-	    .bind('click',{id: o["id_formation"]},basculerFormation);
-	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colcours+'"><div id="imgformation'+o["id_formation"]+'" class="imgformation"></div></td></tr>');	
+	    .prepend('<div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'+idf+'"></div><div class="logOff" id="logsFormation'+idf+'"></div></div>');
+	$('#histoDesCoursFormation'+idf).bind('click',{id: idf},histoDesCours);
+	$('#logsFormation'+idf).bind('click',{id: idf},logsFormation);
+	/* bascule de formation */
+	line.children('td.laction')
+	    .prepend('<div class="basculeOff" id="basculeformation_'+idf+'" />');
+	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
+	/* */
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colcours+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
     } else {/* pas pour les formations */
 	addRm(line.find('td.action')); 
     }
@@ -1080,7 +1083,8 @@ function responsables(jq) {
 $(document).ready(function () {
 	$.datepicker.setDefaults($.datepicker.regional['fr']); 
 	L = new ligne(); // <-- var globale
-
+	$("#annee_2009").sortable();
+	$("#annee_2010").sortable();
 	/* TEST */
 	if (false) {/* bascules ... */
 	    $('#basculesuper7').trigger('click');

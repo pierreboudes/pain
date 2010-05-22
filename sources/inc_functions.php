@@ -427,7 +427,7 @@ function supprimer_choix($id) {
                  LIMIT 1";
 	
 	if (mysql_query($qchoix)) {
-	    historique_par_suppression(2, $choix);
+	    historique_par_suppression(3, $choix);
 	    pain_log("$qchoix -- supprimer_choix($id)");
 	    echo '{"ok": "ok"}';
 	} else {
@@ -1040,6 +1040,11 @@ function historique_par_cmp($type, $before, $after) {
 	$id = $before["id_tranche"];
 	$id_cours = $before["id_cours"];
 	$id_formation = formation_du_cours($after["id_cours"]);
+   } else if ((3 == $type) 
+               && ($before["id_choix"] == $after["id_choix"])) {
+	$id = $before["id_choix"];
+	$id_cours = $before["id_cours"];
+	$id_formation = formation_du_cours($after["id_cours"]);
     } else {
 	$s .= ' BUG ';	
     }
@@ -1084,6 +1089,10 @@ function historique_par_ajout($type, $new) {
 	$id = $new["id_tranche"];
 	$id_cours = $new["id_cours"];
 	$id_formation = formation_du_cours($new["id_cours"]);
+    } else if (3 == $type) {
+	$id = $new["id_choix"];
+	$id_cours = $new["id_cours"];
+	$id_formation = formation_du_cours($new["id_cours"]);   
     } else {
 	$s .= ' BUG ';	
     }
@@ -1092,7 +1101,7 @@ function historique_par_ajout($type, $new) {
     $q = "INSERT INTO pain_hist 
           (type, id, id_formation, id_cours, message, timestamp) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', 
-                  '".$id_cours."', '".$s."', '".$timestamp."')";
+                  '".$id_cours."', '".$s."', NOW())";
     mysql_query($q) or die("$q ".mysql_error());
     pain_log($q);
 }
@@ -1140,18 +1149,18 @@ function ig_historique($h) {
     echo '<div class="nav">';
     switch ($h["type"]) {
     case 1:
-	echo '<a href="#cours'.$h["id"].'">';
+	echo '<a href="#cours_'.$h["id"].'">';
 	echo '<img src="css/img/cours.png" />';
 	echo '</a>';
 	break;
     case 2:
-	echo '<a href="#tranche'.$h["id"].'">';
+	echo '<a href="#tranche_'.$h["id"].'">';
 	echo '<img src="css/img/tranche.png" />';
 	echo '</a>';
 	break;
     case 3:
-	echo '<a href="#choix'.$h["id"].'">';
-	echo '<img src="css/img/tranche.png" />'; /* choix.png n'existe pas TODO */
+	echo '<a href="#choix_'.$h["id"].'">';
+	echo '<img src="css/img/choix.png" />';
 	echo '</a>';
 	break;
     default: 

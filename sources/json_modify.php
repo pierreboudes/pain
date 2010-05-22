@@ -87,6 +87,9 @@ if (isset($_GET["id"])) {
     if ($type == "tranche") {
 	$old = selectionner_tranche($id);
     }
+    if ($type == "choix") {
+	$old = selectionner_choix($id);
+    }
     /* calcul de l'équivalent TD, nul admis */
     if ($type == "tranche") {
 	$cm = isset($set["cm"])?$set["cm"]:$old["cm"];
@@ -126,6 +129,10 @@ if (isset($_GET["id"])) {
     if ($type == "tranche") {
 	$tranchenew = selectionner_tranche($id);
 	historique_par_cmp(2, $old, $tranchenew);	        
+    }
+   if ($type == "choix") {
+	$choixnew = selectionner_choix($id);
+	historique_par_cmp(3, $old, $choixnew);	        
     }
 
     

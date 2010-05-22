@@ -60,7 +60,7 @@ function htdCours(id) {
 		data = trim(data);
 		$('#imgcours'+id).html(data);
 	    } else {
-		$('#imgcours'+id).html('');
+		$('#imgcours'+id).html('PLOUM');
 	    }
 	}, 'html');
     return false;
@@ -134,13 +134,14 @@ function totauxCoursChanged(id_cours) {
     return false;
 }
 
-function histoDesCours(id) {
+function histoDesCours(e) {
+    var id = e.data.id;
     var bascule = $('#histoDesCoursFormation'+id);
     bascule.toggleClass('histoOff');
     bascule.toggleClass('histoOn');
     if (bascule.hasClass('histoOn')) {
-	$('#tableformation_'+id+' div.imgcours').show();
-	$('#tableformation_'+id+' tr.cours').each(function (i) {
+	$('#tablecours_'+id+' div.imgcours').show();
+	$('#tablecours_'+id+' tr.cours').each(function (i) {
 		var tag = this.id;
 		if (tag != undefined) {
 		    var id = tag.replace('cours_','');
@@ -148,17 +149,18 @@ function histoDesCours(id) {
 		}
 	    });
     } else {
-	$('#tableformation_'+id+' div.imgcours').hide();
+	$('#tablecours_'+id+' div.imgcours').hide();
     }
     return false;
 }
 
-function logsFormation(id) {
+function logsFormation(e) {
+    var id = e.data.id;
     var bascule = $('#logsFormation'+id);
     bascule.toggleClass('logOff');
     bascule.toggleClass('logOn');
     if (bascule.hasClass('logOn')) {
-	var titre = 'Logs '+$('#nomformation'+id).text();
+	var titre = 'Logs '+$('#formation_'+id+'> td.intitule').text();
 	jQuery.post("act_historique.php", {id_formation: id}, function (data) {
 	    if (!contientERREUR(data)) {
 		$('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
@@ -167,7 +169,7 @@ function logsFormation(id) {
 			    resizable: true, 
 			    width: 700,
 			    height: 300,
-			    close: function (event,ui) {logsFormation(id);},
+			    close: function (event,ui) {logsFormation(e);},
 			    title: titre
 			    });
 	    } else {

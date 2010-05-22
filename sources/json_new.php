@@ -48,12 +48,15 @@ if (isset($_GET["type"])) {
     if ($readtype == "cours") {	
 	$type = "cours";
 	$par = "formation";
+	$ntype = 1;
     } else if ($readtype == "tranche") {
 	$type = "tranche";
 	$par  = "cours";
+	$ntype = 2;
     } else if ($readtype == "choix") {
 	$type = "choix";
 	$par = "cours";
+	$ntype = 3;
     } else {
 	errmsg("type indéfini");
     }
@@ -103,9 +106,15 @@ if (isset($_GET["id_parent"])) {
     if (!mysql_query($query)) {
 	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
     } 
-    
+    $id = mysql_insert_id();
+    /* logs */
+    if (isset($ntype)) {
+	$new =Array("id_".$type => $id,
+		    "id_".$par => $id_parent);
+	historique_par_ajout($ntype, $new);
+    }
     /* affichage de la nouvelle entree en json */
-    $_GET["id"] = mysql_insert_id();
+    $_GET["id"] = $id;
     unset($_GET["id_parent"]);
     include("json_get.php");
 }
