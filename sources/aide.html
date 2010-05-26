@@ -1,0 +1,140 @@
+<div id="aide">
+  <h3><a href="#">Principaux actionneurs (boutons, etc.)</a></h3>
+  <div class="corps">
+    <p>Le <b>double-clic</b> passe une case en mode édition</p>
+    <table>
+      <tr><td><button
+  class="fauxadd">ajouter</button></td><td>Ajouter</td><td>Ajoute une ligne</td></tr>
+      <tr><td><button class="fauxrm">effacer la
+  ligne</button></td><td>Supprimer</td><td>Supprime une ligne (après confirmation)</td></tr>
+     <tr><td><button
+  class="fauxmult">dupliquer</button></td><td>Dupliquer</td><td>Duplique
+  une intervention</td></tr>
+    <tr><td><button class="fauxokl">envoyer la
+  ligne</button></td><td>Envoyer</td><td>Envoie les modifications de
+    la ligne au
+    serveur</td></tr>
+          <tr><td><img src="css/img/ok.png"
+  /></td><td>mini-envoyer</td><td>Envoie les modifications de la case
+  au serveur</td></tr>
+      <tr><td><button class="fauxreload">annuler les
+  modifications</button></td><td>Abandonner l'édition</td><td>Abandonne
+  l'édition d'une ligne et la recharge à partir du serveur</td></tr>
+      <tr><td><button
+  class="fauxmenu">champs...</button></td><td>Afficher/masquer...</td><td>déroule
+  un menu permettant d'afficher ou de masquer des colonnes</td></tr>
+   </table>
+ </div>
+  <h3><a href="#">Renseigner les besoins pour un cours (responsables d'années)</a></h3>
+<div class="corps">
+<div class="illustration">
+ <video preload="none" width="352" height="288" controls="controls" poster="documentation/video/previsionnel_cours.png">
+  <source src="documentation/video/previsionnel_cours.mp4" />
+  <source src="documentation/video/previsionnel_cours.ogg" />
+    Votre navigateur ne se montre pas vraiment compatible avec la balise
+  video du html 5. C'est lynx ? Vous pouvez toujours tenter de
+  télécharger la vidéo en <a href="documentation/video/previsionnel_cours.mp4">mp4</a> ou en <a href="documentation/video/previsionnel_cours.mov">h263</a>.
+ </video>
+</div>
+<p>Pour renseigner les besoins en interventions pour un cours, il
+  suffit d'<b>insérer de nouvelles interventions et de les attribuer à
+  l'enseignant "libre".</b></p>
+<p>La <b>convention</b> est qu'une intervention
+  correspond à une unité pédagogique qu'il n'est pas souhaitable de
+  tronçonner en plus petites interventions : faire autant
+  d"interventions que de groupes pour les TD ou les TP mais associer
+  le TD au TP, etc. Par exemple, on pourra créer une intervention pour
+  le cours magistral et autant d'interventions que de groupes pour les
+  TD/TP. Les enseignants feront leurs voeux en sélectionnant des
+  interventions. Même si vous savez qui sera l'intervenant avant
+  l'ouverture des voeux, il est préférable de laisser "libre"
+  l'intervention. La règle qui favorise les enseignants qui reprennent
+  un cours s'appliquera plutôt en clôture de voeux. Si pour boucler
+  des services il est nécessaire de tronçonner des interventions cela
+  se fera sans peine également en aval.</p>
+<p><b>En pratique</b>, (voir aussi la vidéo) il suffit de :</p>
+<ol>
+  <li>ouvrir la vue sur la liste des interventions du cours <img src="css/img/triangleLR.png"></img></li>
+  <li>ajouter une intervention <button class="fauxadd">ajouter</button></li>
+  <li>l'éditer (double-clic) </li>
+</ol>
+<p>Astuce : dupliquer l'intervention <button class="fauxmult">dupliquer</button>,
+  en crée une copie (et incrémente le numéro de groupe).</p>
+</div>
+<h3><a href="#">Colonnes masquées (exemple: effectif étudiant)</a></h3>
+<div class="corps">
+<div class="illustration">
+ <video preload="none" width="352" height="288" controls="controls" poster="documentation/video/editer_colonne_masquee.png">
+  <source src="documentation/video/editer_colonne_masquee.mp4" />
+  <source src="documentation/video/editer_colonne_masquee.ogg" />
+    Votre navigateur ne se montre pas vraiment compatible avec la balise
+  video du html 5. C'est lynx ? Vous pouvez toujours tenter de
+  télécharger la vidéo en <a href="documentation/video/editer_colonne_masquee.mp4">mp4</a> ou en <a href="documentation/video/editer_colonne_masquee.mov">h263</a>.
+ </video>
+</div>
+<p>Le bouton <button class="fauxmenu">champs...</button> déroule un
+  menu qui permet
+  d'afficher/masquer des colonnes de données. </p>
+
+<p> Par exemple, les colonnes détaillant les effectifs étudiants des cours (les inscrits, ou les
+présents aux examens) sont masquées par défaut. Avant de pouvoir
+éditer les champs associés, il faut afficher les colonnes
+correspondantes.</p>
+</div>
+<script>
+$(document).ready(function () {
+$('#basculeAide').button(
+{text: true,
+/* icons: {
+primary: "ui-icon-help"
+} */
+});
+$('#basculeAide').bind('click',basculerAide);
+$('#basculeAide').trigger('click');
+$('#aide').accordion();
+$('#aide button').wrap('<span class="buttonsize"/>');
+$('button.fauxmult').button(
+{text: false,
+icons: {
+primary: "ui-icon-copy"
+}
+});
+$('button.fauxadd').button(
+{text: false,
+icons: {
+primary: "ui-icon-plus"
+}
+});
+$('button.fauxrm').button(
+{text: false,
+icons: {
+primary: "ui-icon-trash"
+}
+});
+$('button.fauxokl').button(
+{text: false,
+icons: {
+primary: "ui-icon-check"
+}
+});
+$('button.fauxreload').button(
+{text: false,
+icons: {
+primary: "ui-icon-cancel"
+}
+});
+$('button.fauxchoixl').button(
+{text: false,
+icons: {
+primary: "ui-icon-cart"
+}
+});
+$('button.fauxmenu').button(
+{text: false,
+icons: {
+primary: "ui-icon-triangle-1-s"
+}
+});
+});
+</script>
+</div>

@@ -21,8 +21,9 @@
 require_once('authentication.php'); 
 authrequired();
 
-function ig_formselectformation($id_formation, $annee = "2009")
+function ig_formselectformation($id_formation, $annee = NULL)
 {
+    if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT id_formation, 
                  pain_formation.nom AS nom, 
                  pain_formation.parfum AS parfum, 
@@ -121,5 +122,33 @@ function ig_intervenants_du_cours($cours) {
 
 function ig_pied_du_cours($cours) {
     echo '</table>';
+}
+
+
+function liste_emails($type, $annee = NULL) {
+    if ($annee == NULL) $annee = annee_courante();
+
+    if ($type == "rsformation") {
+	$q = "SELECT pain_enseignant.email
+              FROM pain_sformation, pain_enseignant
+              WHERE pain_sformation.annee_universitaire = $annee,
+              AND pain_sformation.id_enseignant = pain_enseigant.id_enseignant
+              AND pain_enseignant.email <> NULL";
+    }
+/* Pour plus tard: possibilite de selectionner une liste d'emails.
+/* SELECT GROUP_CONCAT(DISTINCT email ORDER BY email ASC SEPARATOR ', ') FROM pain_sformation, pain_formation, pain_enseignant WHERE pain_sformation.annee_universitaire = "2009" AND pain_formation.id_sformation = pain_sformation.id_sformation AND pain_enseignant.id_enseignant = pain_formation.id_enseignant */
+/* 
+SELECT GROUP_CONCAT( DISTINCT email
+ORDER BY pain_enseignant.nom, pain_enseignant.prenom ASC
+SEPARATOR  ', ' )
+FROM pain_sformation, pain_formation, pain_enseignant
+WHERE pain_sformation.annee_universitaire =  "2009"
+AND 
+((pain_formation.id_sformation = pain_sformation.id_sformation
+AND pain_enseignant.id_enseignant = pain_formation.id_enseignant)
+OR
+pain_enseignant.id_enseignant = pain_sformation.id_enseignant
+)
+*/
 }
 ?>

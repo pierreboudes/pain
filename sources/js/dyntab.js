@@ -162,9 +162,22 @@ function enseignant () {
 	getjson("json_enseignants.php",{term: ""}, function (data) {
 		ens.autocomplete({ minLength: 2,
 			    source: data,
-			    mustMatch: true,
+/* USELESS (FAIL)			    mustMatch: true,
 			    selectFirst: true,
 			    autoFill: true,
+			    change: function (event, ui) {
+			    //if the value of the textbox does not match a suggestion, clear its value
+			    if ($(".ui-autocomplete li:textEquals('" + $(this).val() + "')").size() == 0) {
+				$(this).val('');
+			    }
+			}
+		    }).live('keydown', function (e) {
+			    var keyCode = e.keyCode || e.which;
+			    //if TAB or RETURN is pressed and the text in the textbox does not match a suggestion, set the value of the textbox to the text of the first suggestion
+			    if((keyCode == 9 || keyCode == 13) && ($(".ui-autocomplete li:textEquals('" + $(this).val() + "')").size() == 0)) {
+				$(this).val($(".ui-autocomplete li:visible:first").text());
+			    }
+*/
 			    select: function(e, ui) {
 			    if (!ui.item) {
 				// remove invalid value, as it didn't match anything
@@ -381,6 +394,11 @@ function ligne() {
 /*--------  FIN OBJET LIGNE --------------*/
 
 /* BLOC ----- UTILITAIRES ----- */
+/* custom selector for mustMatch autocomplete */
+$.expr[':'].textEquals = function (a, i, m) {
+    return $(a).text().match("^" + m[3] + "$");
+};
+
 function htdpostes(htd) {
     return Math.round(htd*100/192)/100;
 }
@@ -454,6 +472,19 @@ function getjsondb(url,data,callback) {
 
 
 /* BLOC ---- BOUTONS ET ACTIONNEURS --------------*/
+
+function basculerAide() {
+    var bascule =  $('#basculeAide');
+    var aide = $('#aide');
+    bascule.toggleClass('aideOff');
+    bascule.toggleClass('aideOn');
+    if (bascule.hasClass('aideOff')) {
+	aide.fadeOut('slow'); // explode ?
+    } else {
+	aide.fadeIn('slow'); // bounce
+    }
+    return false;
+}
 
 /* bloc --- Les bascules --- */
 function basculerSuperFormation(id) {

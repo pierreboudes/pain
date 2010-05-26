@@ -20,7 +20,6 @@
  */
 require_once('authentication.php'); 
 authrequired();
-
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 require_once("inc_annuairefunc.php");
@@ -39,7 +38,7 @@ if (isset($_POST['semestre'])) {
 echo '<center><div class="infobox" style="width:290px;">';
 echo '<form method="post" id="choixformation" class="formcours" name="enseignant" action="#">';
 echo '<select name="id_formation" style="display:inline; width:150px;">';
-ig_formselectformation($id_formation);
+ig_formselectformation($id_formation, $annee);
 echo '</select>';
 echo '<select name="semestre" style="display: inline; width: 100px;">';
 echo '<option value="0" ';
