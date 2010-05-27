@@ -25,8 +25,8 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 /* Les totaux globalement */
-echo '<div id="annee_'.$annee.'">';
-echo '<table class="super">';
+echo '<div id="annee_'.$annee.'" class="annee">';
+echo '<table class="super an'.$annee.'">';
 echo '<tr class="imgsformation">';
 echo '<td  class="imgformation">';
 echo '<div class="imgformation" id="imgentete_'.$annee.'">';
@@ -51,7 +51,7 @@ while($sformation = mysql_fetch_array($rsformation))
     $id_sformation = $sformation["id_sformation"];
     $totaux=htdsuper($id_sformation);
 
-    echo '<table class="super" id="tablesuper_'.$id_sformation.'">';   
+    echo '<table class="super an'.$annee.'" id="tablesuper_'.$id_sformation.'">';   
     /* affichage de la super formation */
 
     echo '<tr class="imgsformation">';
@@ -75,46 +75,8 @@ while($sformation = mysql_fetch_array($rsformation))
     echo ' <td class="totaux">';
 //    ig_htd($totaux);
     ig_totauxenpostes($totaux);
-    echo '</td>';	
+    echo '</td>';
     echo "</tr>\n";
-    if (0):
-    /* liste des annee de formation */
-    $rformation = list_formations($id_sformation);
-
-    while($formation = mysql_fetch_array($rformation)) 
-    /* pour chaque annee de formation */
-    {
-	$id_formation = $formation["id_formation"];
-	$totaux=htdformation($id_formation);
-	echo '<tr class="imgformation">';
-	echo '<td colspan="4" class="imgformation">';
-	echo '<div class="imgformation" id="imgformation'.$id_formation.'">';
-	echo '</div></td></tr>';
-	echo '<tr class="formation" id="formation_'.$id_formation.'">';
-	echo '<td class="laction">';
-	debug_show_id($id_formation);    
-	action_basculerformation($id_formation);
-	action_histodescours($id_formation);
-	echo '</td>';
-	echo '<td class="nom">'; // colspan="11"
-	echo '<span class="nomformation" id="nomformation'.$id_formation.'">';
-	echo $formation["nom"]." ".$formation["annee_etude"]." ";
-	echo $formation["parfum"]."</span>";
-	echo '</td>';	
-	echo ' <td class="enseignant">';	
-	/* affichage du responsable de la formation */
-	ig_responsable($formation["id_enseignant"]);
-	echo '</td><td class="totaux">';
-	ig_totauxenpostes($totaux);
-//	ig_htd($totaux);
-	echo '</td>';	
-	echo "</tr>\n";
-// 	echo '<tr class="sousformations" style="display: none;"><td colspan="2">';
-// 	echo '<table class="formations" id="tableformation_'.$id_formation.'">'; 
-// 	echo '</table>'."\n";
-// 	echo '</td></tr>';
-    } /* fin while formation */
-    endif;
     echo '</table>';
 } /* fin while superformation */
 echo '</div>';

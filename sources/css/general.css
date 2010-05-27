@@ -3,28 +3,39 @@ body {
   font-size:10pt;
 }
 
-/* TOUTES LES COULEURS */
-/* #annee_2009 table {background-color: #dfe6ff;} */
+/* TOUTES LES COULEURS */:
+// ul.menu li.inv {text-color: red;} 
 #menu li {background-color: #dfe6ff;}
 span.highlight {background-color: yellow;}
-div.infobox {border-color: #6495ed;}
-th, td {border-color: #6495ed;}
+div.infobox {border-color: #6495ed;} /* cornflowerblue */
+th, td {border-color: #6495ed;}      /* cornflowerblue */
 th {background-color:#EFF6FF;}
 tr.formation td {background-color:#DFE6FF;}
 /*
 table.cours, table.super, table.interventions,  table.service, table.stat,table.annuaire
 {background-color: #ffffff;}
 */
+
 table.enseignants, table.tranches, table.choix 
-{border-color: #6495ed;}
-tr.super {background-color:#3771c8;}
+{border-color: #6495ed;} /* cornflowerblue */
+tr.super {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 #menu li, .statens,
 table.super, table.cours, table.interventions, table.service, table.stat, table.annuaire,
 tr.super td, tr.super th
 {border-color: #3771c8;}
 
+/* 2009 : Sienne */
+table.an2009 th, table.an2009 td {border-color: #a0522d;} /* #95ed64; */
+table.an2009 th {background-color:#ffe4e1;}
+table.an2009 tr.formation td {background-color:#ffe4e1;}
+table.an2009 table.enseignants, table.an2009 table.tranches, table.an2009 table.choix 
+{border-color: #a0522d;}
+table.an2009 tr.super {background-color: #a0522d;}
+table.an2009, table.an2009 table.cours,
+table.an2009 tr.super td, table.an2009 tr.super th
+{border-color: #a0522d;}
 
-
+/* fin 2009 */
 input, textarea {
     color: darkblue;
 }
@@ -61,11 +72,13 @@ ul.menu {
 ul.menu:hover {background-color: #fdf5ce;}
 ul.menu li:hover {color: #FBCB09;}
 table.nature td {color:#1C94C4;}
-table.nature td.inact {
+/* 2009 */
+table.an2009 table.nature td {color: #a0522d;}
+
+table.nature td.inact, table.an2009 table.nature td.inact {
     background-color: none;
     color: white;
 }
-
 
 /* menu */
 #menu {
@@ -842,7 +855,7 @@ ul.menu li {
 
 ul.menu li.inv {
     font-weight: normal;
-    font-style: italic;
+    font-style: italic;    
 }
 
 td.action, th.action {

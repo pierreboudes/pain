@@ -25,7 +25,7 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 function statcatform($cat, $form) {
-    $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours, pain_formation WHERE pain_enseignant.categorie = $cat AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1 AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $form"));
+    $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours, pain_formation, pain_sformation, pain_service WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1 AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $form AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_enseignant.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_service.categorie = $cat"));
     return $stat;
 }
 

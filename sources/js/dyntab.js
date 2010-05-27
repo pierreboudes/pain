@@ -45,6 +45,7 @@ function cell() {
     this.edit = function (c) {
 	c.wrapInner("<textarea />");
 	c.addClass("edit");
+	c.find('textarea').focus();
     }
 
     /* recuperer la valeur de la cellule (en mode edition) */
@@ -75,6 +76,7 @@ function numcell() {
 	var s = c.text();
 	c.html('<input type="text" value="'+s+'"/>');
 	c.addClass('edit');
+	c.find('input').focus();
     }
     this.getval = function (c, o) {
 	var s;
@@ -110,6 +112,7 @@ function datecell() {
 	    dp.datepicker("setDate",s);
 	}
 	c.addClass('edit');
+	dp.focus();
     }
     this.getval = function (c, o) {
 	var s;
@@ -190,6 +193,7 @@ function enseignant () {
 			} 
 		    })});
 	c.addClass("edit");
+	c.find('input').focus();
     };
     this.getval = function (c,o) {
 	var ensid = c.find('.hiddenvalue').text();
@@ -224,7 +228,8 @@ function totaux() {
                     +htdpostes(o["servi"])+'&nbsp;servis +&nbsp;'
                     +htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;'
                     +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
-                    +htdpostes(o["annule"])+'&nbsp;annulés';
+                    +htdpostes(o["annule"])+'&nbsp;annulés'
+                    +' (dont '+htdpostes(o["annule"])+'&nbsp;permanents)';
 		c.html(s);
 	    });
     }

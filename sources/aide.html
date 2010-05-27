@@ -14,7 +14,7 @@
   ligne</button></td><td>Envoyer</td><td>Envoie les modifications de
     la ligne au
     serveur</td></tr>
-          <tr><td><img src="css/img/ok.png"
+          <tr><td><img src="css/img/ok.png" alt="mini-check bleu"
   /></td><td>mini-envoyer</td><td>Envoie les modifications de la case
   au serveur</td></tr>
       <tr><td><button class="fauxreload">annuler les
@@ -27,8 +27,8 @@
  </div>
   <h3><a href="#">Renseigner les besoins pour un cours (responsables d'années)</a></h3>
 <div class="corps">
-<div class="illustration">
- <video preload="none" width="352" height="288" controls="controls" poster="documentation/video/previsionnel_cours.png">
+<div class="illustration"> 
+ <video id="video" preload="none" width="352" height="288" controls="controls" poster="documentation/video/previsionnel_cours.png">
   <source src="documentation/video/previsionnel_cours.mp4" />
   <source src="documentation/video/previsionnel_cours.ogg" />
     Votre navigateur ne se montre pas vraiment compatible avec la balise
@@ -54,7 +54,8 @@
   se fera sans peine également en aval.</p>
 <p><b>En pratique</b>, (voir aussi la vidéo) il suffit de :</p>
 <ol>
-  <li>ouvrir la vue sur la liste des interventions du cours <img src="css/img/triangleLR.png"></img></li>
+  <li>ouvrir la vue sur la liste des interventions du cours <img
+  src="css/img/triangleLR.png" alt="triangle bleu gauche-droite"></img></li>
   <li>ajouter une intervention <button class="fauxadd">ajouter</button></li>
   <li>l'éditer (double-clic) </li>
 </ol>
@@ -81,60 +82,4 @@ présents aux examens) sont masquées par défaut. Avant de pouvoir
 éditer les champs associés, il faut afficher les colonnes
 correspondantes.</p>
 </div>
-<script>
-$(document).ready(function () {
-$('#basculeAide').button(
-{text: true,
-/* icons: {
-primary: "ui-icon-help"
-} */
-});
-$('#basculeAide').bind('click',basculerAide);
-$('#basculeAide').trigger('click');
-$('#aide').accordion();
-$('#aide button').wrap('<span class="buttonsize"/>');
-$('button.fauxmult').button(
-{text: false,
-icons: {
-primary: "ui-icon-copy"
-}
-});
-$('button.fauxadd').button(
-{text: false,
-icons: {
-primary: "ui-icon-plus"
-}
-});
-$('button.fauxrm').button(
-{text: false,
-icons: {
-primary: "ui-icon-trash"
-}
-});
-$('button.fauxokl').button(
-{text: false,
-icons: {
-primary: "ui-icon-check"
-}
-});
-$('button.fauxreload').button(
-{text: false,
-icons: {
-primary: "ui-icon-cancel"
-}
-});
-$('button.fauxchoixl').button(
-{text: false,
-icons: {
-primary: "ui-icon-cart"
-}
-});
-$('button.fauxmenu').button(
-{text: false,
-icons: {
-primary: "ui-icon-triangle-1-s"
-}
-});
-});
-</script>
 </div>

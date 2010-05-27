@@ -28,7 +28,7 @@ include("menu.php");
 include("inc_infobox.php");
 $annee = "2009";
 include("inc_listcours.php");
-echo '<p>&nbsp</p>';
+echo '<p>&nbsp;</p>';
 $annee = "2010";
 include("inc_listcours.php");
 include("skel_index.html");
