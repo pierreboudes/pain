@@ -229,7 +229,7 @@ function totaux() {
                     +htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;'
                     +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
                     +htdpostes(o["annule"])+'&nbsp;annulés'
-                    +' (dont '+htdpostes(o["annule"])+'&nbsp;permanents)';
+                    +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)';
 		c.html(s);
 	    });
     }
