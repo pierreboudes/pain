@@ -3,8 +3,7 @@ body {
   font-size:10pt;
 }
 
-/* TOUTES LES COULEURS */:
-// ul.menu li.inv {text-color: red;} 
+/* TOUTES LES COULEURS */
 #menu li {background-color: #dfe6ff;}
 span.highlight {background-color: yellow;}
 div.infobox {border-color: #6495ed;} /* cornflowerblue */
@@ -18,7 +17,7 @@ table.cours, table.super, table.interventions,  table.service, table.stat,table.
 
 table.enseignants, table.tranches, table.choix 
 {border-color: #6495ed;} /* cornflowerblue */
-tr.super {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
+tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 #menu li, .statens,
 table.super, table.cours, table.interventions, table.service, table.stat, table.annuaire,
 tr.super td, tr.super th
@@ -30,7 +29,7 @@ table.an2009 th {background-color:#ffe4e1;}
 table.an2009 tr.formation td {background-color:#ffe4e1;}
 table.an2009 table.enseignants, table.an2009 table.tranches, table.an2009 table.choix 
 {border-color: #a0522d;}
-table.an2009 tr.super {background-color: #a0522d;}
+table.an2009 tr.super, table.an2009 div.handle {background-color: #a0522d;}
 table.an2009, table.an2009 table.cours,
 table.an2009 tr.super td, table.an2009 tr.super th
 {border-color: #a0522d;}
@@ -76,7 +75,7 @@ table.nature td {color:#1C94C4;}
 table.an2009 table.nature td {color: #a0522d;}
 
 table.nature td.inact, table.an2009 table.nature td.inact {
-    background-color: none;
+    background-color: transparent;
     color: white;
 }
 
@@ -93,7 +92,6 @@ table.nature td.inact, table.an2009 table.nature td.inact {
 #menu li {
     font-family: monospace;
     display: inline;
-//    float:left;
     padding-top: 10px;
     padding-bottom: 4px;
     padding-right: 5pt;
@@ -319,24 +317,9 @@ tr.super > .totaux, tr.formation > .totaux {
     border-left: 0px;
 }
 
-/*
-td.responsable > input {
-    width: 90px;
-}
-
-td.enseignant > input {
-    width: 90px;
-}
-*/
-
 .descriptif {
     min-width: 140px;
 }
-
-/* td.descriptif > textarea {
-    width: 120px;
-}
-*/
 
 .cm, .td, .tp, .alt, .groupe, .htd, .inscrits, .presents, .tirage {
     min-width:30px;
@@ -347,12 +330,6 @@ td.enseignant > input {
     width: 70px;
 }
 
-/*
-td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input {
-    width:28px; /* 180 */
-}
-*/
-
 .semestre {
    max-width: 80px;
 } 
@@ -361,27 +338,9 @@ td.CM > input, td.TD > input, td.TP > input, td.alt > input,  td.HTD > input {
    width: 80px;
 } 
 
-/*
-td.credits > input {
-   width: 50px;  /* 180 */
-}
-*/
-
-
 .code_geisha {
     width:70px;
 }
-
-/*
-td.code_geisha > input {
-    width: 60px;
-}
-*/
-/*
-.action {
-   width: 70px;
-}
-*/
 
 .laction {
     width: 0px;
@@ -398,34 +357,9 @@ td.code_geisha > input {
     width: 140px;
 }
 
-/*
-td.remarque > textarea {
-    width: 120px;
-}
-*/
-
 .type_conversion {
     width: 100px;
 }
-
-/*
-td.type_conversion > input {
-    width: 90px;
-}
-*/
-
-/*
-td.groupe > input {
-    width:28px;
-}
-*/
-
-/*
-input.type_conversion, input.semestre {
-    width: 10px;
-    display: inline;
-}
-*/
 
 /**** FIN DIMENSIONS ****/
 
@@ -433,9 +367,6 @@ input.type_conversion, input.semestre {
     text-align: center;
 }
 
-/* td.id {
- display:none;
-} */
 
 td.tranches {
     padding-top: 0px;
@@ -454,18 +385,30 @@ div.basculeOff, div.basculeOn {
 div.basculeOff {
     background-image: url(img/triangleLR.png);
 }
-
 div.basculeOff:hover {
     background-image: url(img/triangleLRp.png);
 }
-
 div.basculeOn {
     background-image: url(img/triangleTD.png);
 }
-
 div.basculeOn:hover {
     background-image: url(img/triangleTDp.png);
 }
+
+/* 2009 */
+table.an2009 div.basculeOff {
+    background-image: url(img/Sienna-triangleLR.png);
+}
+table.an2009 div.basculeOff:hover {
+    background-image: url(img/Sienna-triangleLRp.png);
+}
+table.an2009 div.basculeOn {
+    background-image: url(img/Sienna-triangleTD.png);
+}
+table.an2009 div.basculeOn:hover {
+    background-image: url(img/Sienna-triangleTDp.png);
+}
+
 
 td.laction > div.basculeOff, td.laction > div.basculeOn {
     margin-left: -30px;
@@ -497,6 +440,11 @@ td.laction > div.basculeOff, td.laction > div.basculeOn {
 .globalHistoOn, .globalHistoOff:hover {
     background-image: url(img/touthisto1.png);    
 }
+/* 2009 */
+table.an2009 .globalHistoOn, table.an2009 .globalHistoOff:hover {
+    background-image: url(img/Sienna-touthisto1.png);    
+}
+
 
 .histoOn, .histoOff {
     position: relative;
@@ -514,8 +462,10 @@ td.laction > div.basculeOff, td.laction > div.basculeOn {
 .histoOn, .histoOff:hover {
     background-image: url(img/histo1.png);    
 }
-
-
+/* 2009 */
+table.an2009 .histoOn, table.an2009 .histoOff:hover {
+    background-image: url(img/Sienna-histo1.png);    
+}
 
 .logOn, .logOff {
     position: relative;
@@ -529,15 +479,20 @@ td.laction > div.basculeOff, td.laction > div.basculeOn {
 .logOff:hover, .logOn {
     background-image: url(img/log2.png);
 }
-
 .logOff, .logOn:hover {
     background-image: url(img/log1.png);
 }
 
+table.an2009 .logOff:hover, table.an2009 .logOn {
+    background-image: url(img/Sienna-log2.png);
+}
+table.an2009 .logOff, table.an2009 .logOn:hover {
+    background-image: url(img/Sienna-log1.png);
+}
+
+
 .logsformationtmp {
     position: absolute;
-//    width: 600px;
-//    background-color: white;
 }
 
 /******** barres de cours *********/
@@ -597,12 +552,12 @@ a.enseignant {
 a.enseignant:hover {
     text-decoration: underline;
 }
-/*
-   A:link {text-decoration: none}
+/* aide-memoire ---
+A:link {text-decoration: none}
 A:visited {text-decoration: none}
 A:active {text-decoration: none}
 A:hover {text-decoration: underline; color: red;}
-   */
+*/
 
 .clear {
     clear: both;
@@ -613,7 +568,6 @@ A:hover {text-decoration: underline; color: red;}
     border-style: solid;
     border-width: 2px;
     float: left;
-    //clear: both;
     padding: 2px;
     margin: 2px;
 }
@@ -668,12 +622,6 @@ div.lstatens1, div.rstatens1 {
 .rstatens1 .barrecont {
     border-right: none;
 }
-
-/* .statens2 .barrecont {
-    border: 1px solid gray;
-    border-right: 0px;
-} */
-
 
 .statens2 .legende {
         border-right-width: 2px;
@@ -863,7 +811,6 @@ td.action, th.action {
     max-width: 0px;
     padding: 0px;
     margin: 0px;
-//    background-color: none;
     border-right: 0px;
     border-left: 0px;
 }
@@ -904,6 +851,14 @@ tr.choix > td.action > div.removel {
     margin-left: -39px;
 }
 
+td.laction > div.handle {
+    float:left;
+    margin-left: -6px;
+    margin-right: 0px;
+    width: 6px;
+    height: 20px;
+}
+
 
 th.action, td.action, th.laction, td.laction {
     font-size: 12px;
@@ -927,7 +882,6 @@ table.nature td {
 
 /* AIDE EN LIGNE */
 #aide {
-//display: none;
 width: 880px;
 text-align: justify;
 margin-bottom: 10px;

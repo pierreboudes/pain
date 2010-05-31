@@ -36,7 +36,7 @@ $champs = array(
 	"alt", "type_conversion", "remarque", "htd", "descriptif"
 	),
     "choix" => array(
-	"id_enseignant", "choix", "htd"
+	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
 	)
     );
 

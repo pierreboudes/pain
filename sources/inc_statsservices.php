@@ -28,7 +28,7 @@ require_once("inc_functions.php");
 echo "<h3>Dépassements de service des permanents</h3>";
 $r = liste_enseignantscategorie(2);
 $negtot = $postot = 0;
-echo '<div style="align: center; margin-top: 10px;">';
+echo '<div style="text-align: center; margin-top: 10px;">';
 while ($e = mysql_fetch_assoc($r)) {
     echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 350px; clear: both;'>";
     echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
@@ -56,7 +56,7 @@ echo '</div>';
 echo "<h3>Dépassements de service des non-permanents</h3>";
 $r = liste_enseignantscategorie(3);
 $negtot = $postot = 0;
-echo '<div style="align: center; margin-top: 10px;">';
+echo '<div style="text-align: center; margin-top: 10px;">';
 while ($e = mysql_fetch_assoc($r)) {
     echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 350px; clear: both;'>";
   echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
@@ -78,5 +78,7 @@ while ($e = mysql_fetch_assoc($r)) {
 echo "<div style='text-align: right; border-right: 1px black solid; width: 350px; clear: both;'>";
 echo "Totaux : ".$negtot;
 echo "<div style='text-align: left; width: 100px; height: 16px; margin-right: -101px; float: right;'>".$postot."</div>";
+echo '</div>';
+echo '</div>';
 echo '</div>';
 ?>

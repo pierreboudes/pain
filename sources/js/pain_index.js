@@ -1,19 +1,23 @@
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
-	$('th.code_geisha, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut('fast'); // th.alt
-	$('#skel').fadeOut('fast');
-
+	$('#skelcours').children('th.code_geisha, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt
+	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0); // th.alt
+	$('#skel').fadeOut(0);
+	
 	/* histogrammes */
 	$('tr.entete > td').each( function() {
 		addHistoGlobal($(this));
 	    });
+
 	/* on peut re-arranger les annees */
 	$("#annee_2009, #annee_2010").sortable({
 	    connectWith: '.annee',
 		    revert: true
-		    }).disableSelection();
+		    }).disableSelection(); 
 //	$("#annee_2010").sortable();
 
+	/* on peut déplacer des cours ?? */
+//	$(".basculeOff").draggable(); pas encore !
 	
 /* aide */
 	$('video').bind('click', function () {
@@ -28,7 +32,7 @@ $(document).ready(function(){
 		$('#basculeAide').button({text: true});
 		$('#basculeAide').bind('click',basculerAide);
 		$('#basculeAide').trigger('click');
-		$('#aide').accordion();
+		$('#aide').accordion({ collapsible: true });
 		$('#aide button').wrap('<span class="buttonsize"/>');
 		$('button.fauxmult').button(
 		    {text: false,

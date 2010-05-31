@@ -57,3 +57,16 @@ ADD  `mcc` TEXT NULL AFTER  `fin` ,
 ADD  `inscrits` SMALLINT UNSIGNED NULL AFTER  `mcc` ,
 ADD  `presents` SMALLINT UNSIGNED NULL AFTER  `inscrits`,
 ADD  `tirage` SMALLINT UNSIGNED NULL AFTER  `presents`
+
+
+------nouvelles extractions possibles
+SELECT  nom, annee_etude, nom_cours, (pain_cours.cm+pain_cours.td+pain_cours.tp+pain_cours.alt)*presents AS vetu,
+SUM(pain_tranche.htd) AS vens,
+vetu / vens
+FROM pain_formation, pain_cours, pain_tranche 
+WHERE presents > 0
+AND pain_formation.id_formation = pain_cours.id_formation
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_tranche.id_enseignant > 9
+GROUP BY pain_cours.id_cours
+ORDER BY vens DESC

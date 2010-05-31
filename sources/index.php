@@ -20,17 +20,18 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-// $annee = annee_courante();
+$annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("gestion des enseignements et des services", "pain_index.js");
 require_once('utils.php');
 include("menu.php");
 include("inc_infobox.php");
-$annee = "2009";
 include("inc_listcours.php");
+if ($annee == "2009") {
 echo '<p>&nbsp;</p>';
-$annee = "2010";
+    $annee = "2010";
 include("inc_listcours.php");
+}
 include("skel_index.html");
 /* include("inc_aide.php"); */
 ?>
