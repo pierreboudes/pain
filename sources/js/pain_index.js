@@ -32,12 +32,13 @@ $(document).ready(function(){
 	    });
 
 	/* on peut re-arranger les annees */
-	$("#annee_2009, #annee_2010").sortable({
+/*	$("#annee_2009, #annee_2010").sortable({
 	    connectWith: '.annee',
 		    handle: 'td.intitule',
 		    revert: true
 		    }).disableSelection(); 
-
+BUG: meme avec handle, très mauvaise interaction avec les textarea
+*/
 	/* on peut déplacer des cours ?? */
 //	$(".basculeOff").draggable(); pas encore !
 	

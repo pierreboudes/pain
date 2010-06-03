@@ -58,7 +58,7 @@ if (isset($_GET["type"])) {
 	$ntype = 2;
     } else if ($readtype == "choix") {
 	$type = "choix";
-	$apr = "cours";
+	$par = "cours";
 	$ntype = 3;
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
