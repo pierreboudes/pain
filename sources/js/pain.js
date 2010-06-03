@@ -19,6 +19,7 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* TODO virer code mort, sauver et utiliser existsjQuery ou l'utilitaire equivalent, utiliser le trim de jQuery */
 
 function contientERREUR(str) {
     var patt=/ERREUR/g;

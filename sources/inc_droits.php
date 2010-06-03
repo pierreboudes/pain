@@ -34,9 +34,9 @@ function peutediter($type, $id, $id_parent) {
     if ($id_parent != NULL) {
 	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
-	if ($type == "enseignant") return peutproposerenseignant();
 	if ($type == "choix") return peutchoisir();
     }
+    if ($type == "enseignant") return peutproposerenseignant();
     return false;
 }
 
@@ -181,5 +181,10 @@ function peutproposerenseignant() {
     $res = mysql_result($q) or ("ERREUR peutproposerenseignant()");
     $r = mysql_fetch_array($res);
     return 0 < $r["resp"];
+}
+
+function peutsupprimerenseignant($id_enseignant = 0) {
+    global $user;
+    return ($user["su"] == 1);
 }
 ?>

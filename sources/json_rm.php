@@ -36,11 +36,11 @@ if (isset($_GET["type"])) {
     $readtype = getclean("type");
     if ($readtype == "cours") {
 	supprimer_cours($id);
-    } else if ($readtype == "tranche") {
+    } else if (($readtype == "tranche") || ($readtype == "longtranche")) {
 	supprimer_tranche($id);
     } else if ($readtype == "enseignant") {
 	supprimer_enseignant($id);
-    } else if ($readtype == "choix") {
+    } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
 	supprimer_choix($id);
     } else {
 	errmsg("erreur de script (type inconnu)");

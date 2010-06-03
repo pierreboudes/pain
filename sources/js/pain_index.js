@@ -1,7 +1,29 @@
+/* -*- coding: utf-8 -*-*/
+/* Pain - outil de gestion des services d'enseignement        
+ *
+ * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ *
+ * This file is part of Pain.
+ *
+ * Pain is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pain is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.code_geisha, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt
-	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0); // th.alt
+	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
+	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
 	$('#skel').fadeOut(0);
 	
 	/* histogrammes */
@@ -12,9 +34,9 @@ $(document).ready(function(){
 	/* on peut re-arranger les annees */
 	$("#annee_2009, #annee_2010").sortable({
 	    connectWith: '.annee',
+		    handle: 'td.intitule',
 		    revert: true
 		    }).disableSelection(); 
-//	$("#annee_2010").sortable();
 
 	/* on peut déplacer des cours ?? */
 //	$(".basculeOff").draggable(); pas encore !
@@ -28,57 +50,95 @@ $(document).ready(function(){
 		else
 		    myVideo.pause();
 	    });
-	$(document).ready(function () {
-		$('#basculeAide').button({text: true});
-		$('#basculeAide').bind('click',basculerAide);
-		$('#basculeAide').trigger('click');
-		$('#aide').accordion({ collapsible: true });
-		$('#aide button').wrap('<span class="buttonsize"/>');
-		$('button.fauxmult').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-copy"
-				}
+	$('#basculeAide').button({text: true});
+	$('#basculeAide').bind('click',basculerAide);
+	$('#basculeAide').trigger('click');
+	$('#aide').accordion({ collapsible: true });
+	$('#aide button').wrap('<span class="buttonsize"/>');
+ 	$('button.fauxmult').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-copy"
+			}
+	    });
+	$('button.fauxadd').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-plus"
+			}
+	    });
+	$('button.fauxrm').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-trash"
+			}
+	    });
+	$('button.fauxokl').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-check"
+			}
+	    });
+	$('button.fauxreload').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-cancel"
+			}
 		    });
-		$('button.fauxadd').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-plus"
-				}
-		    });
-		$('button.fauxrm').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-trash"
-				}
-		    });
-		$('button.fauxokl').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-check"
-				}
-		    });
-		$('button.fauxreload').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-cancel"
-				}
-		    });
-		$('button.fauxchoixl').button(
+	$('button.fauxchoixl').button(
 		    {text: false,
 			    icons: {
 			primary: "ui-icon-cart"
 				}
 		    });
-		$('button.fauxmenu').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-triangle-1-s"
-				}
-		    });
+	$('button.fauxmenu').button(
+	    {text: false,
+		    icons: {
+		primary: "ui-icon-triangle-1-s"
+			}
+	    });
+
+/* dialogues */
+	$("#dialog-drop").dialog({
+	    autoOpen: false,
+		    resizable: false,
+		    height:160,
+		    modal: true,
+		    buttons: {
+		    'Copier': dropCopier,
+			'Déplacer': dropDeplacer,
+			Cancel: function() {
+			$(this).dialog('close');
+		    }
+		}
 	    });
 	
-       
+	$("#panier").dialog({
+	    autoOpen: false,
+		    title: "Choix de cours",
+		    resizable: true,
+/*		    height:400,
+		    width: 875, */
+		    modal: false
+/*		    buttons: {
+		    'Copier': dropCopier,
+			'Déplacer': dropDeplacer,
+			Cancel: function() {
+			$(this).dialog('close');
+			}
+		    }
+*/
+	    });
+
+	$('#bouton-panier').button(
+		    {text: true,
+			    icons: {
+			primary: "ui-icon-cart"
+				}
+		    });
+	$('#bouton-panier').bind('click', togglePanier);
+    
+
 /* Search box */
 
 	$('#menu').append('<li id="menu-chercher"><form id="search-highlight" action="#" method="post"><input id="term" class="text" name="term" size="10" type="text"></input><input id="chercher" name="submit" type="submit" value="Chercher"></input></form></li>');

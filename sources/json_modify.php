@@ -37,6 +37,13 @@ $champs = array(
 	),
     "choix" => array(
 	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	),
+    "longchoix" => array(
+	"choix", "htd", "cm", "td", "tp", "alt"
+	),
+    "enseignant" => array(
+	"prenom", "nom", "statut", "email", "telephone", "bureau",
+	"service", "categorie", "debut", "fin"
 	)
     );
 
@@ -54,7 +61,9 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "tranche") {
 	$type = "tranche";
 	$par  = "cours";
-    } else if ($readtype == "choix") {
+    } else if ($readtype == "enseignant") {
+	$type = "enseignant";
+    } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
 	$type = "choix";
 	$par = "cours";
     } else {
@@ -66,7 +75,7 @@ if (isset($_GET["type"])) {
 
 if (isset($_GET["id"])) {
     $id = getclean("id");
-    if (!peutediter($type,$id,$id_parent)) { 
+    if (!peutediter($type,$id,NULL)) { 
 	errmsg("droits insuffisants.");
     }
     $set = array();
@@ -91,7 +100,7 @@ if (isset($_GET["id"])) {
 	$old = selectionner_choix($id);
     }
     /* calcul de l'équivalent TD, nul admis */
-    if ($type == "tranche") {
+    if (($type == "tranche") || ($type == "choix")) {
 	$cm = isset($set["cm"])?$set["cm"]:$old["cm"];
 	if ($cm < 0) errmsg("CM doit être positif.");
 	$td = isset($set["td"])?$set["td"]:$old["td"];
@@ -121,7 +130,7 @@ if (isset($_GET["id"])) {
     if (!mysql_query($query)) {
 	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
     }
-    pain_log($query);
+    pain_log($query); // LOG DE LA REQUETE !
     if ($type == "cours") {
 	$coursnew = selectionner_cours($id);
 	historique_par_cmp(1, $old, $coursnew);

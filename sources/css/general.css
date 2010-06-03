@@ -15,7 +15,11 @@ table.cours, table.super, table.interventions,  table.service, table.stat,table.
 {background-color: #ffffff;}
 */
 
-table.enseignants, table.tranches, table.choix 
+table.longchoix {
+background-color: white;
+}
+
+table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 #menu li, .statens,
@@ -195,6 +199,17 @@ table.stat,table.annuaire {
     margin-top: 10px;
 }
 
+table.longchoix {
+    border-width: 1px;
+    border-style: solid;
+    border-collapse:collapse; 
+    margin:auto;
+ /*   margin-right: 40px;
+    margin-left: 10px;
+*/
+}
+
+
 table.stat th {
     font-family: monospace;    
     text-align:right;
@@ -223,9 +238,9 @@ tr.sousformations > td {
     padding: 0px;
 }
 
-table.enseignants {
+table.categorie, table.enseignants {
     border-style: solid;
-    border-width: 3px;
+    border-width: 1px;
     border-collapse:collapse; 
     margin:auto;
 }
@@ -270,7 +285,7 @@ table.choix th {
 
 /* DIMENSIONS */
 
-table.super {
+table.categorie, table.super {
     width:879px;
 }
 
@@ -315,6 +330,10 @@ tr.super > .totaux, tr.formation > .totaux {
     width: 500px;
     border-right: 0px;    
     border-left: 0px;
+}
+
+td.nopadding {
+    padding: 0px;
 }
 
 .descriptif {
@@ -367,6 +386,12 @@ tr.super > .totaux, tr.formation > .totaux {
     text-align: center;
 }
 
+th.titre {
+    text-align: left;
+}
+
+th.stats {
+}
 
 td.tranches {
     padding-top: 0px;
@@ -825,6 +850,11 @@ th.action > div.palette, td.action > div.palette {
     margin-right: -64px;
 }
 
+tr.longchoix > th.action > div.palette {
+    width: 29px;
+    margin-right: -39px;
+}
+
 th.laction > div.palette, td.laction > div.palette {
     float: left;
     height: 24px;
@@ -899,3 +929,14 @@ span.buttonsize {
     margin-bottom: 10px;
 }
 
+
+div.bouton-panier {
+    position: fixed;
+    bottom: 2px;
+    left: 2px;
+}
+
+div.panier-conteneur {
+    min-width: 250px;
+    margin-right: 50px; 
+}

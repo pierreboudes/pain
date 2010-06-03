@@ -44,7 +44,8 @@ function cell() {
 
     /* passer la cellule en mode edition */
     this.edit = function (c) {
-	c.wrapInner("<textarea />");
+	var s = c.text();
+	c.html("<textarea>"+s+"</textarea>");
 	c.addClass("edit");
 	c.find('textarea').focus();
     }
@@ -71,6 +72,16 @@ function cell() {
 	}
     }
 }
+
+function richcell() {
+    this.setval = function (c, o) {
+	c.removeClass("edit");
+	c.html(o[this.name]);
+	followLinks(c);
+    }
+}
+
+richcell.prototype = new cell();
 
 function numcell() {
     this.edit = function(c) {
@@ -269,10 +280,10 @@ function ligne() {
     
     /* nom */
     this.nom = new cell();
-    this.nom.name = "name";
+    this.nom.name = "nom";
     /* prenom */
     this.prenom = new cell();
-    this.prenom.name = "surname";
+    this.prenom.name = "prenom";
     /* statut */
     this.statut = new cell();
     this.statut.name = "statut";
@@ -280,8 +291,8 @@ function ligne() {
     this.email = new cell();
     this.email.name = "email";
     /* telephone */
-    this.tel = new cell();
-    this.tel.name = "email";
+    this.telephone = new cell();
+    this.telephone.name = "telephone";
     /* bureau */
     this.email = new cell();
     this.email.name = "email";
@@ -388,7 +399,7 @@ function ligne() {
     this.htd = new numcell();
     this.htd.name = "htd";
     /* descriptif */
-    this.descriptif = new cell();
+    this.descriptif = new richcell();
     this.descriptif.name = "descriptif";
     /* pain_choix
      */
@@ -403,6 +414,13 @@ function ligne() {
 
 /* BLOC ----- UTILITAIRES ----- */
 /* custom selector for mustMatch autocomplete */
+
+function followLinks (c) {    
+    c.html(c.html().replace(/(http:\/\/\S+)/g,"<a href=\"$1\">$1</a>"));
+    c.find('a').click(function(){window.open(this.href);return false;});
+}
+
+
 $.expr[':'].textEquals = function (a, i, m) {
     return $(a).text().match("^" + m[3] + "$");
 };
@@ -505,7 +523,7 @@ function basculerSuperFormation(id) {
 	$('#tablesuper_'+id+' tr.imgformation').fadeOut("slow").remove();
 	$('#tablesuper_'+id+' tr.formation').fadeOut("slow").remove();
     } else {
-	appendList("formation",$('#tablesuper_'+id+' > tbody'),id,
+	appendList({type:"formation", id_parent: id},$('#tablesuper_'+id+' > tbody'),
 		   function () {
 		       var legende = $('#legendeformation'+id);
 		       legende.remove();
@@ -542,7 +560,7 @@ function basculerFormation(e) {
 	$('#trtablecours_'+id).remove();
     } else {
 	$('#formation_'+id).after('<tr class="sousformations" id="trtablecours_'+id+'"><td colspan="4"><table class="cours" id="tablecours_'+id+'"><tbody></tbody></table></td></tr>');
-	appendList("cours",$('#tablecours_'+id+' > tbody'),id, function(){
+	appendList({type: "cours", id_parent: id},$('#tablecours_'+id+' > tbody'), function(){
 		var legende = $('#legendecours'+id);
 		addMenuFields(legende);
 		addAdd(legende.find('th.action'));
@@ -560,22 +578,22 @@ function basculerCours(e) {
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
 	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="'+colcours+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
-	appendList("tranche",$('#tabletranches_'+id+' tbody'),id, function () {
+	appendList({type: "tranche", id_parent: id},$('#tabletranches_'+id+' tbody'), function () {
 	var legende = $('#legendetranche'+id);
 	addMenuFields(legende);
 	addAdd(legende.find('th.action'));
 	    });
+        basculerChoix(e);
     } else {
 	$('#trtabletranches'+id).remove();
     }
-    basculerChoix(e);
     return false;
 }
 
 function basculerChoix(e) {
    var id = e.data.id;
    $("#tabletranches_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
-   appendList("choix",$('#tablechoix_'+id+' tbody'),id, function(){});
+   appendList({type: "choix", id_parent: id},$('#tablechoix_'+id+'> tbody'));
    var legende = $('#legendechoix'+id);
    addMenuFields(legende);
    addAdd(legende.find('th.action'));
@@ -583,6 +601,26 @@ function basculerChoix(e) {
    /* positionner les actions */
    return false;
 }
+
+function basculerCategorie(e) {
+    var id = parseIdString($(this).attr('id')).id;
+    var bascule =  $('#basculeCat_'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+    if (bascule.hasClass('basculeOn')) {
+
+	$('#'+idString({id: id, type: "tablecat"}))
+	    .append('<tr id="trtableens_'+id+'"><td class="nopadding" colspan="3"><table id="tableens_'+id+'" class="enseignants"><tbody></tbody></table>');
+	appendList({type: "enseignant", id_parent: id}, $('#tableens_'+id+'> tbody'));
+	var legende = $('#legendeenseignant'+id);
+	addMenuFields(legende);
+	addAdd(legende.find('th.action'));
+    } else {
+	$("#trtableens_"+id).fadeOut(500).remove();
+    }
+    return false;
+}
+
 /* bloc --- fin des bascules --- */
 
 /* bloc --- Boutons ---*/
@@ -595,7 +633,7 @@ function addMult(td) {
     multl.button({
 	text: false,
 		icons: {
-	    primary: "ui-icon-copy" // ui-icon-cart
+	    primary: "ui-icon-copy" 
 		    }
 	});
     multl.bind("click",oid,duplicateLine);
@@ -614,7 +652,7 @@ function addChoisir(td) {
     choixl.button({
 	text: false,
 		icons: {
-	    primary: "ui-icon-cart" // ui-icon-cart
+	    primary: "ui-icon-cart"
 		    }
 	});
     choixl.bind("click",oid,selectLine);
@@ -866,13 +904,15 @@ togglecolumn: masque ou affiche une colonne puis detruit le menu.
 function openMenuFields(e) {
     var th = e.data.th;
     var list = th.siblings('th').not(th);
-    var type = th.parent().closest('tr').attr('class');
+    var type = th.closest('tr').attr('class');
     var button = e.data.button;
     var menu = jQuery('<ul class="menu"></ul>');
     var offset = button.offset();
     var h = (button.outerHeight) ? button.outerHeight() : button.height();
     menu.css({position: 'absolute', 
-            'top': offset.top + h - 1, 'left': offset.left
+		'top': offset.top + h - 1, 
+		'left': offset.left,
+		'z-index': 2000
 		}).click(function(e) { e.stopPropagation(); }).show(200, function() {
 			$(document).one('click', {button: button, menu: menu, th: th}, 
 					closeMenuFields);
@@ -924,25 +964,81 @@ function toggleColumn(e) {
 /* ---------- FIN MENU CONTEXTUEL DES CHAMPS ---------*/
 
 
+/* ---------- PANIER -------------*/
+function togglePanier() {
+    var panier = $("#panier");
+    var id = $('#userid').text();
+    panier.dialog("open");
+    /* reset */
+    panier.html('');
+    panier.append('<div class="panier-conteneur"><table id="tablelongchoix_'+id+'" class="longchoix"><tbody></tbody></table></div>');
+    appendList({type: "longchoix",id_parent: id, annee_universitaire: "2010"}, 
+	       $('#tablelongchoix_'+id+' tbody'), 
+	       function (o) {
+		   var legende = $('#legendelongchoix'+id);
+		   addMenuFields(legende);
+		   /* totaux */
+		   var n = o.length;
+		   var i = 0;
+		   var htd = 0;
+		   var cm = 0;
+		   var td = 0;
+		   var tp = 0;
+		   var alt = 0;		   
+		   for (i = n - 1; i >= 0; i--) {
+		       htd += parseFloat(o[i].htd);
+		       cm += parseFloat(o[i].cm);
+		       td += parseFloat(o[i].td);
+		       tp += parseFloat(o[i].tp);
+		       alt += parseFloat(o[i].alt);
+		   }
+		   var line = legende.clone().attr('id','sumlongchoix');
+		   line.children('th').html('');		   
+		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   $('#sumlongchoix > th.htd').html(htd);
+		   $('#sumlongchoix > th.cm').html(cm);
+		   $('#sumlongchoix > th.td').html(td);
+		   $('#sumlongchoix > th.tp').html(tp);
+		   $('#sumlongchoix > th.alt').html(alt);
+/*		   var list = legende.children('th');
+		   i = list.index(legende.children('th.htd'));
+		   n = list.length;
+		   if (i >= 0) {
+		       var line = jQuery('<tr><th class="htd">'+htd+'</th></tr>');
+		       if (i > 0) {
+			   line.prepend('<th colspan="'+i+'"></th>');
+		       }
+		       if (n - 2 > i) {
+			   line.append('<th colspan="'+(n - i - 1)+'"></th>');
+		       }
+		       $('#tablelongchoix_'+id+' > tbody').append(line);
+		   }
+*/
+	       });
+}
+/* BLOC ----- PANIER -------------*/
+
 
 /* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
-function  appendList(type,body,id_parent, do_it_last) {
-    var legende = $("#skel"+type);
+function  appendList(data,body, do_it_last) {
+    var legende = $("#skel"+data.type);
     var list = legende.children('th');
     /*  etait buggy !
     legende = legende.clone(true);
     legende.removeAttr('id');
     body.append(legende);
     */
-    legende.clone(true).attr('id','legende'+type+id_parent).appendTo(body);
-    legende = $('#legende'+type+id_parent);
-    getjson("json_get.php",{id_parent: id_parent, type: type}, function (o) {
+    legende.clone(true).attr('id','legende'+data.type+data.id_parent).appendTo(body);
+    legende = $('#legende'+data.type+data.id_parent);
+    getjson("json_get.php",data, function (o) {
 	    var n = o.length;
 	    var i = 0;
 	    for (i = n - 1; i >= 0; i--) {
-		appendItem(type,legende,o[i],list);
+		appendItem(data.type,legende,o[i],list);
 	    }
-	    do_it_last(); 
+	    if (do_it_last != undefined) {// comment tester si fonction ?
+		do_it_last(o); 
+	    }
 	});
 }
 
@@ -1041,6 +1137,41 @@ function removeLine(o) {
 			    tr.prev('tr.imgcours').remove();
 			}
 			tr.fadeOut('slow');
+			if (oid.type == "choix") {
+			    tr.remove();
+			    oid.type = "longchoix";	
+			    tr = $("#"+idString(oid));
+			}
+			if ((oid.type == "longchoix")) {
+			    /* TODO faire mieux ! */
+			    var htd = parseFloat(tr.children('td.htd').text());			    
+			    var chtd = tr.siblings('tr:last > th.htd');
+			    var tothtd = parseFloat(chtd.text());
+			    if ((tothtd - htd) >= 0) chtd.html(tothtd - htd);
+
+			    var cm = parseFloat(tr.children('td.cm').text());			    
+			    var ccm = tr.siblings('tr:last > th.cm');
+			    var totcm = parseFloat(ccm.text());
+			    if ((totcm - cm) >= 0) ccm.html(totcm - cm);
+
+			    var td = parseFloat(tr.children('td.td').text());			    
+			    var ctd = tr.siblings('tr:last > th.td');
+			    var tottd = parseFloat(ctd.text());
+			    if ((tottd - td) >= 0) ctd.html(tottd - td);
+
+			    var tp = parseFloat(tr.children('td.tp').text());			    
+			    var ctp = tr.siblings('tr:last > th.tp');
+			    var tottp = parseFloat(ctp.text());
+			    if ((tottp - tp) >= 0) ctp.html(tottp - tp);
+
+			    var alt = parseFloat(tr.children('td.alt').text());			    
+			    var calt = tr.siblings('tr:last > th.alt');
+			    var totalt = parseFloat(calt.text());
+			    if ((totalt - alt) >= 0) calt.html(totalt - alt);
+
+			    oid.type = "choix";
+			    $('#'+idString(oid)).remove();
+			}
 			tr.remove();
 		    });
 	    }
@@ -1136,6 +1267,7 @@ function selectLine(e) {
 		    var legende = $("#legendechoix"+o["id_cours"]);
 		    var list = legende.children('th');
 		    appendItem(o["type"],legende.siblings().andSelf().filter('tr:last'),o,list);
+		    $('#bouton-panier').trigger('click');
 		});
 	});
     return false;
@@ -1219,28 +1351,11 @@ $(document).ready(function () {
 	/* infobox: liens externes */
 	$("div.infobox a").click(function(){window.open(this.href);return false;});
 
-	/* dialogues */
-	$("#dialog-drop").dialog({
-	    autoOpen: false,
-		    resizable: false,
-		    height:160,
-		    modal: true,
-		    buttons: {
-		    'Copier': dropCopier,
-			'Déplacer': dropDeplacer,
-			    Cancel: function() {
-			    $(this).dialog('close');
-			}
-		}
-	    });
-
-
 	/* TEST */
 	if (false) {/* bascules ... */
 	    $('#basculesuper7').trigger('click');
 	    window.setTimeout(function() {$('#basculeformation_17').trigger('click');}, 1000);
 	    window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);	
             //	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);	
-	}
-	
+	} 
 });

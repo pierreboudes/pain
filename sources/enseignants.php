@@ -22,11 +22,47 @@ require_once('authentication.php');
 $user = authentication();
 $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("les enseignants");
-require_once('utils.php');
+entete("les enseignants","pain_enseignants.js");
 include("menu.php");
-include("act_ajouterenseignant.php");
-include("inc_listenseignants.php");
-include("inc_statsenseignants.php");
+
+function ig_tablecategorie($id, $nom) {
+    echo '<table id="tablecat_'.$id.'" class="categorie">';
+    echo '<tr id="categorie_'.$id.'" class="categorie">';
+    echo '<td class="laction"><div id="basculeCat_'.$id.'" class="basculeOff"></div></td>';
+    echo '<th class="titre">'.$nom.'</th>';
+    echo '<th class="action"></th>';    
+    echo '</tr>';
+    echo '</table>';
+}
+
+echo "<center><div class=\"infobox\">Les enseignants nouvellement ajoutés sont listés sous le titre <em>en attente de catégorie</em>.</div></center>";
+ig_tablecategorie(2,"Titulaires du département");
+ig_tablecategorie(3,"Non titulaires du département");
+ig_tablecategorie(4,"Autres enseignants de Galilée");
+ig_tablecategorie(5,"Autres enseignants de Paris 13");
+ig_tablecategorie(6,"Extérieurs et vacataires");
+ig_tablecategorie(0,"En attente de catégorie");
+ig_tablecategorie(10,"Anciens enseignants");
+?>
+
+<div id="skel">
+<table class="enseignants">
+<tbody>
+<tr id="skelenseignant" class="enseignant">
+<th class="laction"></th>
+<th class="prenom">prénom</th>
+<th class="nom">nom</th>
+<th class="statut">statut</th>
+<th class="email">email</th>
+<th class="telephone">tél.</th>
+<th class="service">service</th>
+<th class="debut">debut</th>
+<th class="fin">fin</th>
+<th class="action"><div class="palette"></div></th>
+</tr>
+</tbody>
+</table>
+</div>
+<?php
 piedpage();
 ?>

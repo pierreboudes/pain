@@ -68,7 +68,7 @@ function authentication() {
     if ($user = mysql_fetch_array($result)) {
 	return $user;
     } else {
-	die("D&ecute;sol&ecute; votre login ($login) n'est pas enregistr&ecute; dans la base du d&ecute;partement. (<a href='logout.php'>logout</a>)");
+	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement d'informatique, vous pouvez envoyer un message avec votre login : $login à Pierre Boudes. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
     };
 }
 

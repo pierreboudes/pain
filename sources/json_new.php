@@ -36,6 +36,9 @@ $champs = array(
 	),
     "choix" => array(
 	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	),
+    "enseignant" => array(
+	"prenom", "nom", "statut", "email", "telephone", "bureau", "service"
 	)
     );
 
@@ -55,8 +58,12 @@ if (isset($_GET["type"])) {
 	$ntype = 2;
     } else if ($readtype == "choix") {
 	$type = "choix";
-	$par = "cours";
+	$apr = "cours";
 	$ntype = 3;
+    } else if ($readtype == "enseignant") {
+	$type = "enseignant";
+	$_GET["id_parent"] = 0; /* bypass */
+	$ntype = 4;
     } else {
 	errmsg("type indéfini");
     }
@@ -72,7 +79,12 @@ if (isset($_GET["id_parent"])) {
     }
     $set = array();
 
-    if ($type != "enseignant") $set["id_".$par] = $id_parent;
+    if ($type != "enseignant") {
+	$set["id_".$par] = $id_parent;
+    } else {
+	$set["categorie"] = 0;
+	$set["debut"] = date('Y-m-d');
+    }
 
     if (!isset($_GET["nom_cours"])) {
 	$_GET["nom_cours"] = 'Nom du cours ?';

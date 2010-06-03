@@ -315,6 +315,18 @@ function selectionner_choix($id)
     return $choix;
 }
 
+function selectionner_enseignant($id)
+{
+    $qens = "SELECT * FROM pain_enseignant WHERE `id_enseignant` = $id";
+    $ens = NULL;
+    if ($rens = mysql_query($qens)) {
+	$ens = mysql_fetch_assoc($rens);
+    } else {
+	echo "Échec de la requête sur la table enseignant. $qens ".mysql_error();
+    }
+    return $ens;
+}
+
 
 function ig_tranche($t,$tag="") {
     $id = $t["id_tranche"];
@@ -417,7 +429,21 @@ function supprimer_tranche($id)
 
 
 function supprimer_enseignant($id) {
-    errmsg("fonction non disponible.");
+    if (peutsupprimerenseignant($id)) {
+	$ens = selectionner_enseignant($id);
+	$qens = "DELETE FROM pain_enseignant WHERE `id_enseignant` = $id
+                 LIMIT 1";
+	
+	if (mysql_query($qens)) {
+	    historique_par_suppression(4, $ens);
+	    pain_log("$qens -- supprimer_ens($id)");
+	    echo '{"ok": "ok"}';
+	} else {
+	    errmsg("échec de la requête sur la table enseignant.");
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
 }
 
 function supprimer_choix($id) {
@@ -1189,6 +1215,9 @@ function historique_par_suppression($type, $old) {
 	$id = $old["id_choix"];
 	$id_cours = $old["id_cours"];
 	$id_formation = formation_du_cours($old["id_cours"]);
+    } else if (4 == $type) {
+	$id = $old["id_enseignant"];
+	$s .= $old["prenom"]." ".$old["nom"]." : ";
     } else {
 	$s .= "BUG ";
     }
@@ -1204,6 +1233,7 @@ function historique_par_suppression($type, $old) {
 function historique_de_formation($id) {
     $q = "SELECT * from pain_hist 
           WHERE id_formation = $id
+          AND type = 1 OR type = 2 OR type = 3
           ORDER BY timestamp DESC";
     $r = mysql_query($q) 
 	or die("historique_de_formation($id), $q ".mysql_error());
