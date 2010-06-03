@@ -39,8 +39,8 @@ echo "<center><div class=\"infobox\">Les enseignants nouvellement ajoutés sont 
 ig_tablecategorie(2,"Titulaires du département");
 ig_tablecategorie(3,"Non titulaires du département");
 ig_tablecategorie(4,"Autres enseignants de Galilée");
-ig_tablecategorie(5,"Autres enseignants de Paris 13");
-ig_tablecategorie(6,"Extérieurs et vacataires");
+ig_tablecategorie(6,"Autres enseignants de Paris 13");
+ig_tablecategorie(5,"Extérieurs et vacataires");
 ig_tablecategorie(0,"En attente de catégorie");
 ig_tablecategorie(10,"Anciens enseignants");
 ?>
