@@ -42,6 +42,7 @@ $champs = array(
 	"choix", "htd", "cm", "td", "tp", "alt"
 	),
     "enseignant" => array(
+	"login",
 	"prenom", "nom", "statut", "email", "telephone", "bureau",
 	"service", "categorie", "debut", "fin"
 	)
