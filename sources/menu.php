@@ -40,5 +40,11 @@ echo '</select>';
 echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
 echo '</form>'."\n";
 ?>
-</li> 
+</li>
 </ul>
+<?php
+echo '<div id="user" class="hiddenvalue">';
+echo '<span class="id">'.$user["id_enseignant"].'</span>';
+echo '<span class="su">'.$user["su"].'</span>';
+echo '</div>';
+?>

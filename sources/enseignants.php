@@ -50,6 +50,7 @@ ig_tablecategorie(10,"Anciens enseignants");
 <tbody>
 <tr id="skelenseignant" class="enseignant">
 <th class="laction"></th>
+<th class="login">login</th>
 <th class="prenom">prénom</th>
 <th class="nom">nom</th>
 <th class="statut">statut</th>
@@ -58,6 +59,7 @@ ig_tablecategorie(10,"Anciens enseignants");
 <th class="service">service</th>
 <th class="debut">debut</th>
 <th class="fin">fin</th>
+<th class="categorie">categorie</th>
 <th class="action"><div class="palette"></div></th>
 </tr>
 </tbody>

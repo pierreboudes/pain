@@ -44,9 +44,7 @@ function peutchoisir() {
     return true;
 }
 
-function peutediterchoix($id_choix) {
-    global $user;
-    if ($user["su"]) return true;
+function selectenseignantschoix($id_choix) {
     $query = "SELECT pain_choix.id_enseignant AS enseignant, 
                      pain_cours.id_enseignant AS respcours, 
                      pain_formation.id_enseignant AS respannee,
@@ -59,12 +57,32 @@ function peutediterchoix($id_choix) {
                   pain_formation.id_sformation";
     $res = mysql_query($query) or die("ERREUR peutediterchoix($id_choix): ".mysql_error());
     $r = mysql_fetch_array($res);
+    return $r;
+}
+
+function peutediterchoix($id_choix) {
+    global $user;
+    if ($user["su"]) return true;
+    $r = selectenseignantschoix($id_choix);
     /* l'intervenant ne peut pas editer sa propre intervention :
     if ($user["id_enseignant"] == $r["enseignant"]) return true;
     */
     /* le responsable du cours ne peut pas editer :
     if ($user["id_enseignant"] == $r["respcours"]) return true;
     */
+    if ($user["id_enseignant"] == $r["respannee"]) return true;
+    if ($user["id_enseignant"] == $r["respformation"]) return true;
+    return false;
+}
+
+function peutsupprimerchoix($id_choix) {
+    global $user;
+    if ($user["su"]) return true;
+    $r = selectenseignantschoix($id_choix);
+    /* l'intervenant peut supprimer son choix : */
+    if ($user["id_enseignant"] == $r["enseignant"]) return true;
+    /* le responsable du cours ne peut pas */
+    if ($user["id_enseignant"] == $r["respcours"]) return false;
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
@@ -133,10 +151,8 @@ function peuteditertranche($id_tranche) {
                   pain_formation.id_sformation";
     $res = mysql_query($query) or die("ERREUR peuteditertranche($id_tranche)");
     $r = mysql_fetch_array($res);
-    /* l'intervenant ne peut pas editer sa propre intervention :
-    if ($user["id_enseignant"] == $r["enseignant"]) return true;
-    */
-    if ($user["id_enseignant"] == $r["respcours"]) return true;
+    if ($user["id_enseignant"] == $r["enseignant"]) return false;
+    if ($user["id_enseignant"] == $r["respcours"]) return false;
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;

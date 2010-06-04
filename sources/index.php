@@ -34,7 +34,6 @@ include("inc_listcours.php");
 }
 include("skel_index.html");
 /* include("inc_aide.php"); */
-echo '<div id="userid" class="hiddenvalue">'.$user["id_enseignant"].'</div>';
 ?>
 <p>
 <a href="http://validator.w3.org/check?uri=referer"><img

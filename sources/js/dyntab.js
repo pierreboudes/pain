@@ -154,6 +154,49 @@ function immutcell () {
 }
 immutcell.prototype = new cell();
 
+/* constructeur de cellule modifiable uniquement par super-user */
+function sucell () {
+    this.mutable = superuser(); /* valeur calculee au demarrage */
+    this.edit = function (c) {if (superuser()) {
+	    var s = c.text();
+	    c.html("<textarea>"+s+"</textarea>");
+	    c.addClass("edit");
+	    c.find('textarea').focus();
+	}
+    };
+    this.showmutable = function (c) {
+	if (superuser()) {
+	    if(!c.hasClass("mutable")) {
+		c.addClass("mutable");
+	    }
+	}
+    }
+
+}
+sucell.prototype = new cell();
+
+/* constructeur de cellule num modifiable uniquement par super-user */
+function sunumcell () {
+    this.mutable = superuser(); /* valeur calculee au demarrage */
+    this.edit = function (c) {
+	if (superuser()){
+	    var s = c.text();
+	    c.html('<input type="text" value="'+s+'"/>');
+	    c.addClass('edit');
+	    c.find('input').focus();
+	}
+    };
+    this.showmutable = function (c) {
+	if (superuser()) {
+	    if(!c.hasClass("mutable")) {
+		c.addClass("mutable");
+	    }
+	}
+    }
+}
+sunumcell.prototype = new numcell();
+
+
 /* constructeur de cellule non modifiable et sans valeur */
 function notcell () {
     this.getval = function (c, o) {};
@@ -277,7 +320,9 @@ function ligne() {
     
     /* composite : enseignant */
     this.enseignant = new enseignant();
-    
+    /* login */
+    this.login = new cell();
+    this.login.name = "login";    
     /* nom */
     this.nom = new cell();
     this.nom.name = "nom";
@@ -297,13 +342,13 @@ function ligne() {
     this.email = new cell();
     this.email.name = "email";
     /* service statutaire */
-    this.service = new cell();
+    this.service = new numcell();
     this.service.name = "service";
     /* service reel */
     this.service_reel = new immutcell();
     this.service_reel.name = "service_reel";
     /* categorie */
-    this.categorie = new immutcell();
+    this.categorie = new sunumcell();
     this.categorie.name = "categorie";
     /* peut stats */
     this.stats = new immutcell();
@@ -414,6 +459,10 @@ function ligne() {
 
 /* BLOC ----- UTILITAIRES ----- */
 /* custom selector for mustMatch autocomplete */
+
+function superuser() {
+    return ($.trim($('#user > .su').text()) == "1");
+}
 
 function followLinks (c) {    
     c.html(c.html().replace(/(http:\/\/\S+)/g,"<a href=\"$1\">$1</a>"));
@@ -967,7 +1016,7 @@ function toggleColumn(e) {
 /* ---------- PANIER -------------*/
 function togglePanier() {
     var panier = $("#panier");
-    var id = $('#userid').text();
+    var id = $('#user > .id').text();
     panier.dialog("open");
     /* reset */
     panier.html('');

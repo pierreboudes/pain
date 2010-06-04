@@ -447,7 +447,7 @@ function supprimer_enseignant($id) {
 }
 
 function supprimer_choix($id) {
-    if (peutediterchoix($id)) {
+    if (peutsupprimerchoix($id)) {
 	$choix = selectionner_choix($id);
 	$qchoix = "DELETE FROM pain_choix WHERE `id_choix` = $id
                  LIMIT 1";
@@ -509,34 +509,6 @@ function ig_enseignant($t) {
     echo '</tr>';
     echo "\n";
 }
-
-function ig_listenseignants() {
-    /* pain_service modifier cette requete lorsqu'il faudra ne lister que les enseignants de l'annee */
-    $q = "SELECT * from pain_enseignant WHERE id_enseignant > 9 ORDER by categorie ASC, nom,prenom ASC";
-    ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
-    while ($t = mysql_fetch_array($r))
-    {
-	ig_enseignant($t);
-    }
-}
-
-function ig_formenseignant()
-{
-    echo '<tr class="enseignant">';
-    echo '<td class="prenom"><input type="text" name="prenom" value="" /></td>';
-    echo '<td class="nom"><input type="text" name="nom" value="" /></td>';
-    echo '<td class="statut"><input type="text" name="statut" value="" /></td>';
-    echo '<td class="email"><input type="text" name="email" value="" /></td>';
-    echo '<td class="tel"><input type="text" name="telephone" value="" /></td>';
-    echo '<td class="bureau"><input type="text" name="bureau" value="" /></td>';
-    echo '<td class="service"><input type="text" name="service" value="1" /></td>';
-    echo '<td>';
-    echo '<input type="submit" value="Ajouter"/>';
-    echo '</td>';
-    echo '</tr>';
-    echo "\n";
-}
-
 
 function htdtotaux($annee = NULL) {    
     if ($annee == NULL) $annee = annee_courante();
