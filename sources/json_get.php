@@ -91,10 +91,11 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "longtranche") {
 	$type = "tranche";
 	$requete = "SELECT pain_tranche.*, 
-                           pain_tranche.id_tranche as id_longtranche,
+                           pain_tranche.id_tranche AS id_longtranche,
                            pain_tranche.id_tranche AS id,
                            pain_cours.nom_cours, 
-                           pain_cours.id_cours, 
+                           pain_cours.id_cours,
+                           pain_cours.semestre,
                            pain_formation.nom,
                            pain_formation.annee_etude,
                            pain_formation.parfum,

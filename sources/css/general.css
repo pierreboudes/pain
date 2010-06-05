@@ -389,6 +389,9 @@ td.nopadding {
 th.titre {
     text-align: left;
 }
+th.label {
+    text-align: right;
+}
 
 th.stats {
 }
@@ -932,8 +935,8 @@ span.buttonsize {
 
 div.bouton-panier {
     position: fixed;
-    bottom: 2px;
-    left: 2px;
+    top: 2px;
+    right: 2px;
 }
 
 div.panier-conteneur {

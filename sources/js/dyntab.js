@@ -342,7 +342,7 @@ function ligne() {
     this.email = new cell();
     this.email.name = "email";
     /* service statutaire */
-    this.service = new numcell();
+    this.service = new sunumcell();
     this.service.name = "service";
     /* service reel */
     this.service_reel = new immutcell();
@@ -360,7 +360,7 @@ function ligne() {
     this.modification = new immutcell();
     this.modification.name = "modification";
 
-    /* pain_cours 
+    /* pain_cours
      */
     /* semestre */
     this.semestre = new numcell();
@@ -405,7 +405,7 @@ function ligne() {
     this.tirage = new numcell();
     this.tirage.name = "tirage";
     /* descriptif */
-    this.descriptif = new cell(); /* faire une big cell et une small cell */
+    this.descriptif = new cell(); 
     this.descriptif.name = "descriptif";
     /* code_geisha */
     this.code_geisha = new cell();
@@ -1017,6 +1017,9 @@ function toggleColumn(e) {
 function togglePanier() {
     var panier = $("#panier");
     var id = $('#user > .id').text();
+    if (panier.dialog("isOpen")) {
+	panier.dialog("close"); /* fermeture suivie de la re-ouverture, pour forcer l'affichage en emplacement central */
+    }
     panier.dialog("open");
     /* reset */
     panier.html('');
@@ -1026,45 +1029,72 @@ function togglePanier() {
 	       function (o) {
 		   var legende = $('#legendelongchoix'+id);
 		   addMenuFields(legende);
-		   /* totaux */
-		   var n = o.length;
-		   var i = 0;
-		   var htd = 0;
-		   var cm = 0;
-		   var td = 0;
-		   var tp = 0;
-		   var alt = 0;		   
-		   for (i = n - 1; i >= 0; i--) {
-		       htd += parseFloat(o[i].htd);
-		       cm += parseFloat(o[i].cm);
-		       td += parseFloat(o[i].td);
-		       tp += parseFloat(o[i].tp);
-		       alt += parseFloat(o[i].alt);
-		   }
 		   var line = legende.clone().attr('id','sumlongchoix');
-		   line.children('th').html('');		   
+		   line.children('th').html('');
+/*		   line.children('th.nom_cours').remove();
+		   line.children('th.intitule').attr('colspan','2'); */
+		   line.children('th.nom_cours').addClass('label').html('total');
 		   $('#tablelongchoix_'+id+' > tbody').append(line);
-		   $('#sumlongchoix > th.htd').html(htd);
-		   $('#sumlongchoix > th.cm').html(cm);
-		   $('#sumlongchoix > th.td').html(td);
-		   $('#sumlongchoix > th.tp').html(tp);
-		   $('#sumlongchoix > th.alt').html(alt);
-/*		   var list = legende.children('th');
-		   i = list.index(legende.children('th.htd'));
-		   n = list.length;
-		   if (i >= 0) {
-		       var line = jQuery('<tr><th class="htd">'+htd+'</th></tr>');
-		       if (i > 0) {
-			   line.prepend('<th colspan="'+i+'"></th>');
-		       }
-		       if (n - 2 > i) {
-			   line.append('<th colspan="'+(n - i - 1)+'"></th>');
-		       }
-		       $('#tablelongchoix_'+id+' > tbody').append(line);
-		   }
-*/
+		   line = legende.clone().attr('id','s1sumlongchoix');
+		   line.children('th').html('');
+		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
+		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   line = legende.clone().attr('id','s2sumlongchoix');
+		   line.children('th').html('');
+		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
+		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   recalculatePanier();
 	       });
 }
+
+function recalculatePanier() {
+    /* totaux */
+    var id = $('#user > .id').text();
+    var body = $('#tablelongchoix_'+id+'> tbody');
+    var htd = 0; var cm = 0; var td = 0; var tp = 0; var alt = 0;
+    var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0; var alt1 = 0;
+    var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0; var alt2 = 0;
+    body.children("tr[id^='longchoix_']").each(function(i) {
+	    var line = $(this);
+	    htd += parseFloat(line.children('td.htd').text());
+	    cm += parseFloat(line.children('td.cm').text());
+	    td += parseFloat(line.children('td.td').text());
+	    tp += parseFloat(line.children('td.tp').text());
+	    alt += parseFloat(line.children('td.alt').text());
+	    if (line.children('td.semestre').text() == '1') {
+		htd1 += parseFloat(line.children('td.htd').text());
+		cm1 += parseFloat(line.children('td.cm').text());
+		td1 += parseFloat(line.children('td.td').text());
+		tp1 += parseFloat(line.children('td.tp').text());
+		alt1 += parseFloat(line.children('td.alt').text());
+	    }
+	    if (line.children('td.semestre').text() == '2') {
+		htd2 += parseFloat(line.children('td.htd').text());
+		cm2 += parseFloat(line.children('td.cm').text());
+		td2 += parseFloat(line.children('td.td').text());
+		tp2 += parseFloat(line.children('td.tp').text());
+		alt2 += parseFloat(line.children('td.alt').text());
+	    }
+	});
+    $('#sumlongchoix > th.htd').html(htd);
+    $('#sumlongchoix > th.cm').html(cm);
+    $('#sumlongchoix > th.td').html(td);
+    $('#sumlongchoix > th.tp').html(tp);
+    $('#sumlongchoix > th.alt').html(alt);
+
+    $('#s1sumlongchoix > th.htd').html(htd1);
+    $('#s1sumlongchoix > th.cm').html(cm1);
+    $('#s1sumlongchoix > th.td').html(td1);
+    $('#s1sumlongchoix > th.tp').html(tp1);
+    $('#s1sumlongchoix > th.alt').html(alt1);
+
+    $('#s2sumlongchoix > th.htd').html(htd2);
+    $('#s2sumlongchoix > th.cm').html(cm2);
+    $('#s2sumlongchoix > th.td').html(td2);
+    $('#s2sumlongchoix > th.tp').html(tp2);
+    $('#s2sumlongchoix > th.alt').html(alt2);
+}
+
 /* BLOC ----- PANIER -------------*/
 
 
@@ -1192,7 +1222,7 @@ function removeLine(o) {
 			    tr = $("#"+idString(oid));
 			}
 			if ((oid.type == "longchoix")) {
-			    /* TODO faire mieux ! */
+			    /* TODO faire mieux ! FAIT...
 			    var htd = parseFloat(tr.children('td.htd').text());			    
 			    var chtd = tr.siblings('tr:last > th.htd');
 			    var tothtd = parseFloat(chtd.text());
@@ -1217,11 +1247,14 @@ function removeLine(o) {
 			    var calt = tr.siblings('tr:last > th.alt');
 			    var totalt = parseFloat(calt.text());
 			    if ((totalt - alt) >= 0) calt.html(totalt - alt);
-
+			   */
+			    tr.remove();
 			    oid.type = "choix";
 			    $('#'+idString(oid)).remove();
+			    recalculatePanier(); /* <-- ...plus lent, mais mieux. */
+			} else {
+			    tr.remove();
 			}
-			tr.remove();
 		    });
 	    }
 	});

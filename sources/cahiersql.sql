@@ -43,7 +43,7 @@ REPLACE INTO pain_service
   (id_enseignant, annee_universitaire, categorie, service_annuel)
 SELECT 
   pain_enseignant.id_enseignant,
-  "2009",
+  "2010",
   pain_enseignant.categorie,  
   pain_enseignant.service
 FROM pain_enseignant
