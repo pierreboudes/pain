@@ -81,8 +81,8 @@ function peutsupprimerchoix($id_choix) {
     $r = selectenseignantschoix($id_choix);
     /* l'intervenant peut supprimer son choix : */
     if ($user["id_enseignant"] == $r["enseignant"]) return true;
-    /* le responsable du cours ne peut pas */
-    if ($user["id_enseignant"] == $r["respcours"]) return false;
+    /* le responsable du cours ne peut pas 
+     if ($user["id_enseignant"] == $r["respcours"]) return false; */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
@@ -151,8 +151,8 @@ function peuteditertranche($id_tranche) {
                   pain_formation.id_sformation";
     $res = mysql_query($query) or die("ERREUR peuteditertranche($id_tranche)");
     $r = mysql_fetch_array($res);
-    if ($user["id_enseignant"] == $r["enseignant"]) return false;
-    if ($user["id_enseignant"] == $r["respcours"]) return false;
+    /*  if ($user["id_enseignant"] == $r["enseignant"]) return false;
+     if ($user["id_enseignant"] == $r["respcours"]) return false; */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
