@@ -350,6 +350,9 @@ function ligne() {
     /* categorie */
     this.categorie = new sunumcell();
     this.categorie.name = "categorie";
+    /* responsabilite */
+    this.responsabilite = new cell();
+    this.responsabilite.name = "responsabilite";
     /* peut stats */
     this.stats = new immutcell();
     this.stats.name = "stats";
@@ -441,7 +444,7 @@ function ligne() {
     this.remarque = new cell();    
     this.remarque.name = "remarque";
     /* htd */
-    this.htd = new numcell();
+    this.htd = new sunumcell();
     this.htd.name = "htd";
     /* descriptif */
     this.descriptif = new richcell();
@@ -465,7 +468,7 @@ function superuser() {
 }
 
 function followLinks (c) {    
-    c.html(c.html().replace(/(http:\/\/\S+)/g,"<a href=\"$1\">$1</a>"));
+    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a href=\"$1\" title=\"$1\">lien</a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
 }
 

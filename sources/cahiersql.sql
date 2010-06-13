@@ -70,3 +70,14 @@ AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_tranche.id_enseignant > 9
 GROUP BY pain_cours.id_cours
 ORDER BY vens DESC
+
+---- annee anterieure 2006-2007
+INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, numero) SELECT `id_sformation` as id_prev, "2006", `id_enseignant`, `nom`, `numero` FROM pain_sformation WHERE `annee_universitaire` = "2009";
+
+-- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2010"
+
+-- formation:
+INSERT INTO pain_formation 
+(id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
+ SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2006";
+

@@ -57,6 +57,7 @@ ig_tablecategorie(10,"Anciens enseignants");
 <th class="email">email</th>
 <th class="telephone">tél.</th>
 <th class="service">service</th>
+<!-- pas dans la base prod <th class="responsabilite">responsabilité</th> -->
 <th class="debut">debut</th>
 <th class="fin">fin</th>
 <th class="categorie">categorie</th>

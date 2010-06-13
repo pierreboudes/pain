@@ -580,6 +580,16 @@ a.enseignant {
 a.enseignant:hover {
     text-decoration: underline;
 }
+
+/* NE FONCTIONNE PAS
+a {
+    max-width: 50px;
+    overflow: hidden; 
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+*/
+
 /* aide-memoire ---
 A:link {text-decoration: none}
 A:visited {text-decoration: none}

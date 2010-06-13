@@ -29,7 +29,7 @@ $id = 2;
 if (isset($_POST["annee_universitaire"])) {
     $annee = postclean("annee_universitaire");
 } else {
-    $annee = "2009";
+    $annee = annee_courante();
 }
 
 $r=htdtotaux($annee);

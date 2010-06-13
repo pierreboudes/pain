@@ -31,7 +31,7 @@
 echo '<form method="post" id="choixannee" class="formcours" name="annee" action="#" style="display:inline;">';
 echo '<select name="annee" style="display:inline; width:100px;">';
 $anneecivile = date('Y', time());
-for ($i = 2009; $i <= $anneecivile ; $i++) {
+for ($i = 2005; $i <= $anneecivile ; $i++) {
     echo '<option value="'.$i.'"';
     if ($i == $annee) echo  'selected="selected"';
     echo '>'.$i.'-'.($i+1).'</option>';

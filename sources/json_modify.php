@@ -44,7 +44,7 @@ $champs = array(
     "enseignant" => array(
 	"login",
 	"prenom", "nom", "statut", "email", "telephone", "bureau",
-	"service", "categorie", "debut", "fin"
+	"service", "categorie", "debut", "fin", "responsabilite"
 	)
     );
 
