@@ -280,13 +280,23 @@ function totaux() {
     this.setval = function (c,o) {
 	c.text('attente de données');
 	getjson("json_totauxformation.php",{id_formation: o["id_formation"]},function (o) {
-		var s;
-		s = htdpostes(o["total"]) + ' postes (dont '+htdpostes(o["tp"])+'&nbsp;TP) = '
+		var s = "";
+/*		s = htdpostes(o["total"]) + ' postes (dont '+htdpostes(o["tp"])+'&nbsp;TP) = '
                     +htdpostes(o["servi"])+'&nbsp;servis +&nbsp;'
                     +htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;'
                     +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
                     +htdpostes(o["annule"])+'&nbsp;annulés'
-                    +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)';
+                    +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)'; */
+		s += htdpostes(o["total"])+' postes ';
+		/*    s += '('+htdpostes(o["cm"])+'&nbsp;CM + '+htdpostes(o["td"])+'&nbsp;TD + '+htdpostes(o["tp"])+'&nbsp;TP)<br/>'; */
+		s += '=&nbsp;';
+		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
+		s += htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;';
+		s += htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;';
+		s += htdpostes(o["annule"])+'&nbsp;annulés';
+		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents + '+htdpostes(o["libre"])+'&nbsp;à pourvoir';
+		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = '+htdpostes(o["exterieurs"])+" servis + "+htdpostes(o["autre"])+" inconnus";
+
 		c.html(s);
 	    });
     }
@@ -408,7 +418,7 @@ function ligne() {
     this.tirage = new numcell();
     this.tirage.name = "tirage";
     /* descriptif */
-    this.descriptif = new cell(); 
+    this.descriptif = new richcell();
     this.descriptif.name = "descriptif";
     /* code_geisha */
     this.code_geisha = new cell();
@@ -446,9 +456,6 @@ function ligne() {
     /* htd */
     this.htd = new sunumcell();
     this.htd.name = "htd";
-    /* descriptif */
-    this.descriptif = new richcell();
-    this.descriptif.name = "descriptif";
     /* pain_choix
      */
     this.choix = new cell();
@@ -478,7 +485,7 @@ $.expr[':'].textEquals = function (a, i, m) {
 };
 
 function htdpostes(htd) {
-    return Math.round(htd*100/192)/100;
+    return Math.round(parseFloat(htd)*100/192)/100;
 }
 
 function edit() {

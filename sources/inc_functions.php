@@ -512,38 +512,6 @@ function ig_enseignant($t) {
 
 function htdtotaux($annee = NULL) {    
     if ($annee == NULL) $annee = annee_courante();
-    $qservi ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
-
-    $rservi = mysql_query($qservi) 
-	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
-
-    $servi = mysql_fetch_assoc($rservi);
-    $servi = $servi["SUM(htd)"];
-    if ($servi == "") {
-	$servi = 0;
-    } 
-
-    $qmutualise ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
-
-    $rmutualise = mysql_query($qmutualise) 
-	or die("erreur d'acces aux tables : $qmutualise erreur:".mysql_error());
-
-    $mutualise = mysql_fetch_assoc($rmutualise);
-    $mutualise = $mutualise["SUM(htd)"];
-    if ($mutualise == "") {
-	$mutualise = 0;
-    }
-
-    $qlibre ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
-
-    $rlibre = mysql_query($qlibre) 
-	or die("erreur d'acces aux tables : $qlibre erreur:".mysql_error());
-
-    $libre = mysql_fetch_assoc($rlibre);
-    $libre = $libre["SUM(htd)"];
-    if ($libre == "") {
-	$libre = 0;
-    } 
 
     $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
@@ -555,7 +523,7 @@ function htdtotaux($annee = NULL) {
 	$annule = 0;
     } 
 
-    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
+    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
     $rcomp = mysql_query($qcomp) 
 	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
 
@@ -572,152 +540,68 @@ function htdtotaux($annee = NULL) {
     if ($tp == "") {
 	$tp = 0;
     } 
-    $qperm ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.categorie = 2 AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1';
+    $alt = $comp["alt"];
+    if ($alt == "") {
+	$alt = 0;
+    }
+    $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = mysql_fetch_assoc($rperm);
-    $perm = $perm["SUM(htd)"];
-    if ($perm == "") {
-	$perm = 0;
-    } 
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    while ($cat = mysql_fetch_assoc($rperm)) {
+	switch ($cat["categorie"]) {
+	case 1: /* 'annule': decompte specifique */ break;
+	case 2: /* permanents */
+	    $perm += $cat["SUM(htd)"];
+	    break;
+	case 3: /* non permanents */
+	    $nperm += $cat["SUM(htd)"];
+	    break;
+	case 22: /* enseignant 'mutualise' */
+	    $mutualise += $cat["SUM(htd)"];
+	    break;
+	case 23: /* enseignant 'libre' */
+	    $libre += $cat["SUM(htd)"];
+	    break;
+	case 29: /* enseignant 'autre' (exterieur) */ 
+	    $autre += $cat["SUM(htd)"];
+	    break;
+	default: /* tout le reste = exterieurs */
+	    $ext += $cat["SUM(htd)"];
+	}
+    }
+    $servi = $ext + $autre + $perm + $nperm;
 
     return array("servi"=>$servi, 
 		 "libre"=>$libre,
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule,
 		 "permanents" => $perm,
-		 "cm"=>$cm,
-		 "td"=>$td,
-		 "tp"=>$tp);
-}
-
-
-function htdformation($id) {
-
-    $qservi = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
-    $rservi = mysql_query($qservi) 
-	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
-
-    $servi = mysql_fetch_assoc($rservi);
-    $servi = $servi["SUM(htd)"];
-    if ($servi == "") {
-	$servi = 0;
-    } 
-
-   $qmutualise = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
-    $rmutualise = mysql_query($qmutualise) 
-	or die("erreur d'acces aux tables : $qmutualise erreur:".mysql_error());
-
-    $mutualise = mysql_fetch_assoc($rmutualise);
-    $mutualise = $mutualise["SUM(htd)"];
-    if ($mutualise == "") {
-	$mutualise = 0;
-    } 
-    
-    $qlibre = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
-    $rlibre = mysql_query($qlibre) 
-	or die("erreur d'acces a la table tranche : $qlibre erreur:".mysql_error());
-    
-    $libre = mysql_fetch_assoc($rlibre);
-    $libre = $libre["SUM(htd)"];
-    if ($libre == "") {
-	$libre = 0;
-    }
-    
-    $qannule = 'SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
-
-    $annule = mysql_fetch_assoc($rannule);
-    $annule = $annule["SUM(htd)"];
-    if ($annule == "") {
-	$annule = 0;
-    }
-
-    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = '.$id;
-    $rcomp = mysql_query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
-
-    $comp = mysql_fetch_assoc($rcomp);
-    $cm = $comp["cm"];
-    if ($cm == "") {
-	$cm = 0;
-    } 
-    $td = $comp["td"];
-    if ($td == "") {
-	$td = 0;
-    } 
-    $tp = $comp["tp"];
-    if ($tp == "") {
-	$tp = 0;
-    } 
-    $qperm ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_formation.id_formation = '.$id.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.categorie = 2 AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1';
-
-    $rperm = mysql_query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
-
-    $perm = mysql_fetch_assoc($rperm);
-    $perm = $perm["SUM(htd)"];
-    if ($perm == "") {
-	$perm = 0;
-    } 
-
-    return array("servi"=>$servi, 
-		 "libre"=>$libre, 
-		 "mutualise"=>$mutualise,
-		 "annule"=>$annule, 
-		 "permanents" => $perm,
+		 "nonpermanents" => $nperm,
+		 "exterieurs" =>$ext,
+		 "autre" => $autre,
 		 "cm"=>$cm,
 		 "td"=>$td,
 		 "tp"=>$tp,
+		 "alt"=>$alt,
 		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
-function htdsuper($id) {
+function htdsuper($id) {    
 
-    $qservi = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant > 8 AND pain_cours.id_enseignant <> 1';
-    $rservi = mysql_query($qservi) 
-	or die("erreur d'acces aux tables : $qservi erreur:".mysql_error());
-
-    $servi = mysql_fetch_assoc($rservi);
-    $servi = $servi["SUM(htd)"];
-    if ($servi == "") {
-	$servi = 0;
-    }
-
-   $qmutualise = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant = 2 AND pain_cours.id_enseignant <> 1';
-    $rmutualise = mysql_query($qmutualise) 
-	or die("erreur d'acces aux tables : $qmutualise erreur:".mysql_error());
-
-    $mutualise = mysql_fetch_assoc($rmutualise);
-    $mutualise = $mutualise["SUM(htd)"];
-    if ($mutualise == "") {
-	$mutualise = 0;
-    } 
-    
-    $qlibre = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND pain_tranche.id_enseignant = 3 AND pain_cours.id_enseignant <> 1';
-    $rlibre = mysql_query($qlibre) 
-	or die("erreur d'acces a la table tranche : $qlibre erreur:".mysql_error());
-    
-    $libre = mysql_fetch_assoc($rlibre);
-    $libre = $libre["SUM(htd)"];
-    if ($libre == "") {
-	$libre = 0;
-    }
-    
-    $qannule = 'SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
+    $qannule ="SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = mysql_query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
 
     $annule = mysql_fetch_assoc($rannule);
     $annule = $annule["SUM(htd)"];
     if ($annule == "") {
 	$annule = 0;
-    }
+    } 
 
-    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp  FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_formation = pain_formation.id_formation AND pain_formation.id_sformation = '.$id;
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_formation, pain_cours, pain_tranche WHERE pain_formation.id_sformation = $id AND pain_formation.id_formation = pain_cours.id_formation AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = mysql_query($qcomp) 
 	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
 
@@ -734,25 +618,129 @@ function htdsuper($id) {
     if ($tp == "") {
 	$tp = 0;
     } 
-    $qperm ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.id_sformation = '.$id.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.categorie = 2 AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1';
+    $alt = $comp["alt"];
+    if ($alt == "") {
+	$alt = 0;
+    }
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = mysql_fetch_assoc($rperm);
-    $perm = $perm["SUM(htd)"];
-    if ($perm == "") {
-	$perm = 0;
-    } 
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    while ($cat = mysql_fetch_assoc($rperm)) {
+	switch ($cat["categorie"]) {
+	case 1: /* 'annule': decompte specifique */ break;
+	case 2: /* permanents */
+	    $perm += $cat["SUM(htd)"];
+	    break;
+	case 3: /* non permanents */
+	    $nperm += $cat["SUM(htd)"];
+	    break;
+	case 22: /* enseignant 'mutualise' */
+	    $mutualise += $cat["SUM(htd)"];
+	    break;
+	case 23: /* enseignant 'libre' */
+	    $libre += $cat["SUM(htd)"];
+	    break;
+	case 29: /* enseignant 'autre' (exterieur) */ 
+	    $autre += $cat["SUM(htd)"];
+	    break;
+	default: /* tout le reste = exterieurs */
+	    $ext += $cat["SUM(htd)"];
+	}
+    }
+    $servi = $ext + $autre + $perm + $nperm;
 
     return array("servi"=>$servi, 
-		 "libre"=>$libre, 
+		 "libre"=>$libre,
 		 "mutualise"=>$mutualise,
-		 "annule"=>$annule, 
+		 "annule"=>$annule,
 		 "permanents" => $perm,
+		 "nonpermanents" => $nperm,
+		 "exterieurs" =>$ext,
+		 "autre" => $autre,
 		 "cm"=>$cm,
 		 "td"=>$td,
 		 "tp"=>$tp,
+		 "alt"=>$alt,
+		 "total"=>$servi+$libre+$mutualise+$annule);
+}
+
+function htdformation($id) {    
+    $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
+    $rannule = mysql_query($qannule) 
+	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+
+    $annule = mysql_fetch_assoc($rannule);
+    $annule = $annule["SUM(htd)"];
+    if ($annule == "") {
+	$annule = 0;
+    }
+
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
+    $rcomp = mysql_query($qcomp) 
+	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+
+    $comp = mysql_fetch_assoc($rcomp);
+    $cm = $comp["cm"];
+    if ($cm == "") {
+	$cm = 0;
+    } 
+    $td = $comp["td"];
+    if ($td == "") {
+	$td = 0;
+    } 
+    $tp = $comp["tp"];
+    if ($tp == "") {
+	$tp = 0;
+    } 
+    $alt = $comp["alt"];
+    if ($alt == "") {
+	$alt = 0;
+    }
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+
+    $rperm = mysql_query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    while ($cat = mysql_fetch_assoc($rperm)) {
+	switch ($cat["categorie"]) {
+	case 1: /* 'annule': decompte specifique */ break;
+	case 2: /* permanents */
+	    $perm += $cat["SUM(htd)"];
+	    break;
+	case 3: /* non permanents */
+	    $nperm += $cat["SUM(htd)"];
+	    break;
+	case 22: /* enseignant 'mutualise' */
+	    $mutualise += $cat["SUM(htd)"];
+	    break;
+	case 23: /* enseignant 'libre' */
+	    $libre += $cat["SUM(htd)"];
+	    break;
+	case 29: /* enseignant 'autre' (exterieur) */ 
+	    $autre += $cat["SUM(htd)"];
+	    break;
+	default: /* tout le reste = exterieurs */
+	    $ext += $cat["SUM(htd)"];
+	}
+    }
+    $servi = $ext + $autre + $perm + $nperm;
+
+    return array("servi"=>$servi, 
+		 "libre"=>$libre,
+		 "mutualise"=>$mutualise,
+		 "annule"=>$annule,
+		 "permanents" => $perm,
+		 "nonpermanents" => $nperm,
+		 "exterieurs" =>$ext,
+		 "autre" => $autre,
+		 "cm"=>$cm,
+		 "td"=>$td,
+		 "tp"=>$tp,
+		 "alt"=>$alt,
 		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
@@ -844,14 +832,15 @@ function enpostes($htd) {
 }
 
 function ig_totauxenpostes($totaux) {
-    $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
-    echo enpostes($total).' postes ';
-    echo '(dont '.enpostes($totaux["tp"]).'&nbsp;TP) = ';
+    echo enpostes($totaux["total"]).' postes ';
+    /*    echo '('.enpostes($totaux["cm"]).'&nbsp;CM + '.enpostes($totaux["td"]).'&nbsp;TD + '.enpostes($totaux["tp"]).'&nbsp;TP)<br/>'; */
+    echo '=&nbsp;';
     echo enpostes($totaux["servi"]).'&nbsp;servis +&nbsp;';
     echo enpostes($totaux["mutualise"]).'&nbsp;mutualisés +&nbsp;';
     echo enpostes($totaux["libre"]).'&nbsp;à pourvoir +&nbsp;';
     echo enpostes($totaux["annule"]).'&nbsp;annulés';
-    echo ' (dont '.enpostes($totaux["permanents"]).'&nbsp;permanents)';
+    echo '<br/>Département: '.enpostes($totaux["permanents"] + $totaux["nonpermanents"] + $totaux["libre"]).'  = '.enpostes($totaux["permanents"]).'&nbsp;permanents + '.enpostes($totaux["nonpermanents"]).'&nbsp;non-permanents + '.enpostes($totaux["libre"]).'&nbsp;à pourvoir';
+    echo '<br/>Extérieurs: '.enpostes($totaux["exterieurs"] + $totaux["autre"]).' = '.enpostes($totaux["exterieurs"])." servis + ".enpostes($totaux["autre"])." inconnus";
 }
 
 
