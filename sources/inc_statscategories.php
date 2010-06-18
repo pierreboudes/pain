@@ -60,10 +60,20 @@ echo '</tr>';
 $autre = round(stats("service_reel","pain_service WHERE id_enseignant = 9 AND annee_universitaire = $annee"));
 
 echo '<tr><th>Intervenants hors département</th>';
-$stat = stats("COUNT(*)","pain_service WHERE categorie > 3 AND annee_universitaire = $annee");
+$stat = stats("COUNT(*)","pain_service WHERE 
+(categorie = 4
+OR categorie = 5
+OR categorie = 6
+OR categorie = 29)
+AND annee_universitaire = $annee");
 echo '<th>'.$stat.'</th>';
 echo '<td rowspan="7" colspan="2"></td>';
-$stat = round(stats("SUM(service_reel)","pain_service WHERE categorie > 3 AND annee_universitaire = $annee")) + $autre;
+$stat = round(stats("SUM(service_reel)","pain_service WHERE 
+(categorie = 4
+OR categorie = 5
+OR categorie = 6
+OR categorie = 29)
+AND annee_universitaire = $annee"));
 echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 

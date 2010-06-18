@@ -41,63 +41,10 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 */
 	/* on peut déplacer des cours ?? */
 //	$(".basculeOff").draggable(); pas encore !
-	
 /* aide */
-	$('video').bind('click', function () {
-		$(this).attr('poster','');
-		var myVideo = this; // $(this).get(); // [0]
-		if (myVideo.paused)
-		    myVideo.play();
-		else
-		    myVideo.pause();
-	    });
 	$('#basculeAide').button({text: true});
 	$('#basculeAide').bind('click',basculerAide);
-	$('#basculeAide').trigger('click');
-	$('#aide').accordion({ collapsible: true });
-	$('#aide button').wrap('<span class="buttonsize"/>');
- 	$('button.fauxmult').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-copy"
-			}
-	    });
-	$('button.fauxadd').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-plus"
-			}
-	    });
-	$('button.fauxrm').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-trash"
-			}
-	    });
-	$('button.fauxokl').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-check"
-			}
-	    });
-	$('button.fauxreload').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-cancel"
-			}
-		    });
-	$('button.fauxchoixl').button(
-		    {text: false,
-			    icons: {
-			primary: "ui-icon-cart"
-				}
-		    });
-	$('button.fauxmenu').button(
-	    {text: false,
-		    icons: {
-		primary: "ui-icon-triangle-1-s"
-			}
-	    });
+	
 
 /* dialogues */
 	$("#dialog-drop").dialog({

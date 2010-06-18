@@ -77,7 +77,7 @@ function richcell() {
     this.setval = function (c, o) {
 	c.removeClass("edit");
 	c.html(o[this.name]);
-	followLinks(c);
+	addLinks(c);
     }
 }
 
@@ -288,7 +288,9 @@ function totaux() {
                     +htdpostes(o["annule"])+'&nbsp;annulés'
                     +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)'; */
 		s += htdpostes(o["total"])+' postes ';
-		/*    s += '('+htdpostes(o["cm"])+'&nbsp;CM + '+htdpostes(o["td"])+'&nbsp;TD + '+htdpostes(o["tp"])+'&nbsp;TP)<br/>'; */
+		if (1)  {
+		    s += '('+htdpostes(o["cm"])+'&nbsp;CM + '+htdpostes(o["td"])+'&nbsp;TD + '+htdpostes(o["tp"])+'&nbsp;TP + '+htdpostes(o["alt"])+'&nbsp;alt)<br/>';
+		}
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
 		s += htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;';
@@ -468,18 +470,26 @@ function ligne() {
 /*--------  FIN OBJET LIGNE --------------*/
 
 /* BLOC ----- UTILITAIRES ----- */
-/* custom selector for mustMatch autocomplete */
+function existsjQuery(jQ) {
+    if ( undefined == jQ.length ) {
+	return false; // safari ?
+    }
+    else if (0 == jQ.length) {
+	return false; // firefox
+    }
+    return true;
+}
 
 function superuser() {
     return ($.trim($('#user > .su').text()) == "1");
 }
 
-function followLinks (c) {    
+function addLinks (c) {
     c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a href=\"$1\" title=\"$1\">lien</a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
 }
 
-
+/* custom selector for mustMatch autocomplete */
 $.expr[':'].textEquals = function (a, i, m) {
     return $(a).text().match("^" + m[3] + "$");
 };
@@ -535,6 +545,7 @@ function getjson(url,data,callback) {
 	    }
 	});
 }
+
 /* la meme version debug */
 function getjsondb(url,data,callback) {
     $.ajax({ type: "GET",
@@ -553,6 +564,9 @@ function getjsondb(url,data,callback) {
 	    }
 	});
 }
+
+
+
 /* ----- FIN UTILITAIRES ----- */
 
 
@@ -566,7 +580,66 @@ function basculerAide() {
     if (bascule.hasClass('aideOff')) {
 	aide.fadeOut('slow'); // explode ?
     } else {
-	aide.fadeIn('slow'); // bounce
+	if (!existsjQuery(aide)) {
+	    $.get("aide.html", null, function(data) {
+		    $('#infobox').after(data);
+		    $('#aide').accordion({ collapsible: true });
+		    $('#aide video').bind('click', function () {
+			    $(this).attr('poster','');
+			    var myVideo = this; // $(this).get(); // [0]
+			    if (myVideo.paused)
+				myVideo.play();
+			    else
+				myVideo.pause();
+			});
+		    $('#aide button').wrap('<span class="buttonsize"/>');
+		    $('#aide button.fauxmult').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-copy"
+				    }
+			});
+		    $('#aide button.fauxadd').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-plus"
+				    }
+			});
+		    $('#aide button.fauxrm').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-trash"
+				    }
+			});
+		    $('#aide button.fauxokl').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-check"
+				    }
+			});
+		    $('#aide button.fauxreload').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-cancel"
+				    }
+			});
+		    $('#aide button.fauxchoixl').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-cart"
+				    }
+			});
+		    $('#aide button.fauxmenu').button(
+			{text: false,
+				icons: {
+			    primary: "ui-icon-triangle-1-s"
+				    }
+			});		    
+		    $('#aide').fadeIn('slow');
+		});
+	} else {
+	    aide.fadeIn('slow');
+	}
     }
     return false;
 }
@@ -1031,11 +1104,20 @@ function togglePanier() {
 	panier.dialog("close"); /* fermeture suivie de la re-ouverture, pour forcer l'affichage en emplacement central */
     }
     panier.dialog("open");
-    /* reset */
+    reloadChoix(panier,id, 2010);
+}
+
+function showChoix() { // utilisee dans service.php
+    var choix = $("#choix");
+    var id = $('#formuser > .id').text();
+    reloadChoix(choix,id);
+}
+
+function reloadChoix(panier,id, annee) {
     panier.html('');
-    panier.append('<div class="panier-conteneur"><table id="tablelongchoix_'+id+'" class="longchoix"><tbody></tbody></table></div>');
-    appendList({type: "longchoix",id_parent: id, annee_universitaire: "2010"}, 
-	       $('#tablelongchoix_'+id+' tbody'), 
+    panier.append('<div class="panier-conteneur"><table id="tablelongchoix" class="longchoix"><tbody></tbody></table></div>');
+    appendList({type: "longchoix",id_parent: id, annee_universitaire: annee}, 
+	       $('#tablelongchoix > tbody'), 
 	       function (o) {
 		   var legende = $('#legendelongchoix'+id);
 		   addMenuFields(legende);
@@ -1044,23 +1126,22 @@ function togglePanier() {
 /*		   line.children('th.nom_cours').remove();
 		   line.children('th.intitule').attr('colspan','2'); */
 		   line.children('th.nom_cours').addClass('label').html('total');
-		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   $('#tablelongchoix > tbody').append(line);
 		   line = legende.clone().attr('id','s1sumlongchoix');
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
-		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   $('#tablelongchoix > tbody').append(line);
 		   line = legende.clone().attr('id','s2sumlongchoix');
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
-		   $('#tablelongchoix_'+id+' > tbody').append(line);
+		   $('#tablelongchoix > tbody').append(line);
 		   recalculatePanier();
 	       });
 }
 
 function recalculatePanier() {
     /* totaux */
-    var id = $('#user > .id').text();
-    var body = $('#tablelongchoix_'+id+'> tbody');
+    var body = $('#tablelongchoix > tbody');
     var htd = 0; var cm = 0; var td = 0; var tp = 0; var alt = 0;
     var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0; var alt1 = 0;
     var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0; var alt2 = 0;
@@ -1232,32 +1313,6 @@ function removeLine(o) {
 			    tr = $("#"+idString(oid));
 			}
 			if ((oid.type == "longchoix")) {
-			    /* TODO faire mieux ! FAIT...
-			    var htd = parseFloat(tr.children('td.htd').text());			    
-			    var chtd = tr.siblings('tr:last > th.htd');
-			    var tothtd = parseFloat(chtd.text());
-			    if ((tothtd - htd) >= 0) chtd.html(tothtd - htd);
-
-			    var cm = parseFloat(tr.children('td.cm').text());			    
-			    var ccm = tr.siblings('tr:last > th.cm');
-			    var totcm = parseFloat(ccm.text());
-			    if ((totcm - cm) >= 0) ccm.html(totcm - cm);
-
-			    var td = parseFloat(tr.children('td.td').text());			    
-			    var ctd = tr.siblings('tr:last > th.td');
-			    var tottd = parseFloat(ctd.text());
-			    if ((tottd - td) >= 0) ctd.html(tottd - td);
-
-			    var tp = parseFloat(tr.children('td.tp').text());			    
-			    var ctp = tr.siblings('tr:last > th.tp');
-			    var tottp = parseFloat(ctp.text());
-			    if ((tottp - tp) >= 0) ctp.html(tottp - tp);
-
-			    var alt = parseFloat(tr.children('td.alt').text());			    
-			    var calt = tr.siblings('tr:last > th.alt');
-			    var totalt = parseFloat(calt.text());
-			    if ((totalt - alt) >= 0) calt.html(totalt - alt);
-			   */
 			    tr.remove();
 			    oid.type = "choix";
 			    $('#'+idString(oid)).remove();

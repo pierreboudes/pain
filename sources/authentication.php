@@ -34,7 +34,7 @@ function default_year() {
     if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
 	return $_COOKIE["painAnnee"];
     }
-    return date('Y', strtotime('-7 month'));
+    return date('Y', strtotime('-5 month -15 days'));
 }
 
 function annee_courante() {

@@ -1,4 +1,4 @@
-<?php /* -*- coding: utf-8 -*-*/
+/* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
@@ -18,14 +18,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
-$user = authentication();
-$annee = annee_courante();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("affichage des services (temporaire)","pain_service.js");
-include("menu.php");
-include("inc_service.php");
-include("skel_index.html");
-piedpage();
-?>
 
+$(document).ready(function(){
+	/* masqer certaines colonnes et les squelettes de lignes */
+	$('#skelcours').children('th.code_geisha, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt
+	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
+	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
+	$('#skel').fadeOut(0);
+	
+	/* choix */
+	showChoix(); // <-- temporaire (faire actionneur)
+});

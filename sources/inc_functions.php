@@ -833,7 +833,9 @@ function enpostes($htd) {
 
 function ig_totauxenpostes($totaux) {
     echo enpostes($totaux["total"]).' postes ';
-    /*    echo '('.enpostes($totaux["cm"]).'&nbsp;CM + '.enpostes($totaux["td"]).'&nbsp;TD + '.enpostes($totaux["tp"]).'&nbsp;TP)<br/>'; */
+    if (1) {
+	echo '('.enpostes($totaux["cm"]).'&nbsp;CM + '.enpostes($totaux["td"]).'&nbsp;TD + '.enpostes($totaux["tp"]).'&nbsp;TP + '.enpostes($totaux["alt"]).'&nbsp;alt)<br/>';
+    }
     echo '=&nbsp;';
     echo enpostes($totaux["servi"]).'&nbsp;servis +&nbsp;';
     echo enpostes($totaux["mutualise"]).'&nbsp;mutualisés +&nbsp;';

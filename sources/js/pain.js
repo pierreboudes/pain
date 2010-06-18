@@ -27,17 +27,6 @@ function contientERREUR(str) {
 }
 
 
-
-function existsjQuery(jQ) {
-    if ( undefined == jQ.length ) {
-	return false; // safari ?
-    }
-    else if (0 == jQ.length) {
-	return false; // firefox
-    }
-    return true;
-}
-
 /*****  Les bascules *********/
 
 

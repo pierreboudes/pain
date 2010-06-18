@@ -47,6 +47,9 @@ echo '</form>'."\n";
 echo '</div></center>';
 
 if ($id_enseignant != "") {
+    /* pour le javascript */
+    echo '<div id="formuser" class="hiddenvalue"><span class="id">'.$id_enseignant.'</span></div>';
+
     /* annuaire */
     echo "<h2>Informations d'annuaire</h2>";
 
@@ -62,7 +65,6 @@ if ($id_enseignant != "") {
     echo '</table>';
 
     $totaux = totauxinterventions($id_enseignant);
-
     /* Feuille de service */
     echo "<h2>Déclaration du service d'enseignement</h2>";
 
@@ -94,10 +96,13 @@ if ($id_enseignant != "") {
     ig_totauxinterventions($totaux);
     echo '</tr>';
     echo '</table>';
-}
+
+    /* Choix */
+    echo "<h2>Choix</h2>";
+    echo '<div id="choix"></div>';
 
     echo '<div class="vignette">';
     ig_statsenseignant($ens);
     echo '</div>';
-
+}
 ?>
