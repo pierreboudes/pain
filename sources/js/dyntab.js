@@ -1022,6 +1022,38 @@ function htdSuperFormation(id) {
 
 /*---------fin histogrammes---------*/
 
+/*---------logs de formation---------*/
+function logsFormation(e) {
+    var id = e.data.id;
+    var bascule = $('#logsFormation'+id);
+    bascule.toggleClass('logOff');
+    bascule.toggleClass('logOn');
+    if (bascule.hasClass('logOn')) {
+	var titre = 'Logs '+$('#formation_'+id+'> td.intitule').text();
+	jQuery.post("act_historique.php", {id_formation: id}, function (data) {
+	    if (!contientERREUR(data)) {
+		$('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
+		$('#logF'+id).dialog({autopen: true, 
+			    draggable: true, 
+			    resizable: true, 
+			    width: 700,
+			    height: 300,
+			    close: function (event,ui) {logsFormation(e);},
+			    title: titre
+			    });
+	    } else {
+		alert(data);
+	    }
+	    return false;
+	}, 'html');
+    }  else {
+	$('#logF'+id).dialog('destroy');
+	$('#logF'+id).remove();	
+    }
+    return false;
+}
+/*------fin logs de formation---------*/
+
 
 
 /* ------- FIN BOUTONS ET ACTIONNEURS --------------*/

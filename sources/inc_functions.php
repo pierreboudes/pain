@@ -1193,11 +1193,14 @@ function historique_par_suppression($type, $old) {
     pain_log($q);
 }
 
-function historique_de_formation($id) {
+function historique_de_formation($id,$timestamp = NULL) {
     $q = "SELECT * from pain_hist 
           WHERE id_formation = $id
-          AND type = 1 OR type = 2 OR type = 3
-          ORDER BY timestamp DESC";
+          AND (type = 1 OR type = 2 OR type = 3)";
+    if ($timestamp != NULL) {
+	$q .= " AND timestamp <= \"$timestamp\" ";
+    }
+    $q .= "ORDER BY timestamp DESC LIMIT 51";
     $r = mysql_query($q) 
 	or die("historique_de_formation($id), $q ".mysql_error());
     return $r;

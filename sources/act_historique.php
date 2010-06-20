@@ -29,9 +29,14 @@ if (isset($_POST["id_formation"])) {
 } else if (isset($_GET["id_formation"])) {
     $id = getclean("id_formation");
 }
+$timestamp = NULL;
+if (isset($_POST["timestamp"])) {
+    $timestamp = postclean("timestamp");
+} else if (isset($_GET["timestamp"])) {
+    $timestamp = getclean("timestamp");
+}
 
-
-$liste = historique_de_formation($id);
+$liste = historique_de_formation($id, $timestamp);
 
 while ($h = mysql_fetch_assoc($liste)) {
     echo '<div class="historique">';
