@@ -590,6 +590,14 @@ a {
 }
 */
 
+a.url > span.url {
+    display: none;
+}
+
+a.url > span.urlicon:after {
+    content:"lien";
+}
+
 /* aide-memoire ---
 A:link {text-decoration: none}
 A:visited {text-decoration: none}

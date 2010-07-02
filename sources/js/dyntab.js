@@ -485,7 +485,7 @@ function superuser() {
 }
 
 function addLinks (c) {
-    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a href=\"$1\" title=\"$1\">lien</a>"));
+    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"urlicon\"></span><span class=\"url\">$1</span></a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
 }
 

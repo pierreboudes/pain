@@ -51,10 +51,10 @@ function annee_courante() {
 
 function authentication() {
     if (isset($_COOKIE['painAnonyme'])) {
-	/* return  array("id_enseignant"=> 50,
-		     "prenom" => "testeur",
-		     "nom" => "Anonyme",
-		     "login" => "testeur",
+	/* return  array("id_enseignant"=> 10,
+		     "prenom" => "Pierre",
+		     "nom" => "Boudes",
+		     "login" => "boudes",
 		     "su" => 0,
 		     "stat" => 0
 		     ); */
