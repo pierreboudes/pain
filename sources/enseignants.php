@@ -36,8 +36,8 @@ function ig_tablecategorie($id, $nom) {
 }
 
 echo "<center><div class=\"infobox\">Les enseignants nouvellement ajoutés sont listés sous le titre <em>en attente de catégorie</em>.</div></center>";
-ig_tablecategorie(2,"Titulaires du département");
-ig_tablecategorie(3,"Non titulaires du département");
+ig_tablecategorie(2,"Permanents du département");
+ig_tablecategorie(3,"Non permanents du département");
 ig_tablecategorie(4,"Autres enseignants de Galilée");
 ig_tablecategorie(6,"Autres enseignants de Paris 13");
 ig_tablecategorie(5,"Extérieurs et vacataires");
