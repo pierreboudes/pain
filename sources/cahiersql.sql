@@ -91,7 +91,7 @@ INSERT INTO pain_service (id_enseignant, annee_universitaire, categorie, service
 UPDATE pain_service SET tmpnom =(SELECT CONCAT(nom,' ', prenom) FROM pain_enseignant WHERE pain_enseignant.id_enseignant = pain_service.id_enseignant)
 
 ---Selection des responsables (supprimer manuellement les responsables hors departement)
-SELECT GROUP_CONCAT(CONCAT(prenom, " ",nom," <",email,">") SEPARATOR ",\n") FROM pain_enseignant WHERE id_enseignant IN (
+SELECT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE id_enseignant IN (
 SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010 
 UNION 
 SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation 
@@ -101,3 +101,35 @@ SELECT pain_tranche.id_enseignant FROM pain_tranche, pain_cours WHERE id_formati
 
 ---Selection des membres 
 SELECT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE categorie = 2 OR categorie = 3
+
+
+---Listes 
+CREATE TABLE `pain_listes` (
+`liste` VARCHAR( 60 ) NOT NULL ,
+`id_enseignant` MEDIUMINT NOT NULL ,
+`email` VARCHAR( 60 ) NOT NULL ,
+`tmpnom` VARCHAR( 80 ) NULL DEFAULT NULL ,
+`modification` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (`liste`,`id_enseignant`)
+);
+ALTER TABLE  `pain_listes` ADD INDEX (  `liste` );
+ALTER TABLE  `pain_listes` ADD INDEX (  `id_enseignant` )
+ALTER TABLE  `pain_listes` ADD INDEX (  `email` );
+
+--liste responsables (supprimer manuellement les responsables hors departement) 
+INSERT INTO pain_listes SELECT "responsables", id_enseignant, email, CONCAT(prenom, " ",nom), NOW() 
+FROM pain_enseignant WHERE email IS NOT NULL AND id_enseignant IN (
+SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010 
+UNION
+SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation 
+UNION
+SELECT pain_tranche.id_enseignant FROM pain_tranche, pain_cours WHERE id_formation = 48 AND pain_tranche.id_cours = pain_cours.id_cours
+ ORDER BY id_enseignant ASC)
+
+--Maj droits
+UPDATE pain_enseignant SET stats = 0 WHERE 1;
+UPDATE pain_enseignant, pain_listes SET stats = 1 WHERE pain_enseignant.id_enseignant = pain_listes.id_enseignant AND pain_listes.liste LIKE "responsables"
+
+--liste membres 
+INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
+FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)

@@ -57,28 +57,28 @@ echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>';
 echo '</tr>';
 
 
+// autre id: 9 categorie: 29
 $autre = round(stats("service_reel","pain_service WHERE id_enseignant = 9 AND annee_universitaire = $annee"));
 
 echo '<tr><th>Intervenants hors département</th>';
 $stat = stats("COUNT(*)","pain_service WHERE 
 (categorie = 4
 OR categorie = 5
-OR categorie = 6
-OR categorie = 29)
+OR categorie = 6)
+AND service_reel > 0
 AND annee_universitaire = $annee");
 echo '<th>'.$stat.'</th>';
 echo '<td rowspan="7" colspan="2"></td>';
 $stat = round(stats("SUM(service_reel)","pain_service WHERE 
 (categorie = 4
 OR categorie = 5
-OR categorie = 6
-OR categorie = 29)
-AND annee_universitaire = $annee"));
+OR categorie = 6)
+AND annee_universitaire = $annee") + $autre);
 echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
 echo '<tr><th>autres enseignants de Galilée</th>';
-$stat = stats("COUNT(*)","pain_service WHERE categorie = 4 AND annee_universitaire = $annee");
+$stat = stats("COUNT(*)","pain_service WHERE categorie = 4 AND service_reel > 0 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 //echo '<td></td>';
 $stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 4 AND annee_universitaire = $annee"));
@@ -87,7 +87,7 @@ echo '</tr>';
 
 
 echo '<tr><th>enseignants de Paris 13 hors Galilée</th>';
-$stat = stats("COUNT(*)","pain_service WHERE categorie = 6 AND annee_universitaire = $annee");
+$stat = stats("COUNT(*)","pain_service WHERE categorie = 6 AND service_reel > 0 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 //echo '<td></td>';
 $stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 6 AND annee_universitaire = $annee"));
@@ -96,7 +96,7 @@ echo '</tr>';
 
 
 echo '<tr><th>autres (vacataires, industriels etc.)</th>';
-$stat = stats("COUNT(*)","pain_service WHERE categorie = 5 AND annee_universitaire = $annee");
+$stat = stats("COUNT(*)","pain_service WHERE categorie = 5 AND service_reel > 0 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>'; 
 //echo '<td></td>';
 $stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 5 AND annee_universitaire = $annee"));
@@ -110,10 +110,10 @@ echo '<td>'.$autre.'HTD</td><td>'.enpostes($autre).' postes</td>';
 echo '</tr>';
 
 echo '<tr><th>Total</th>';
-$stat = stats("COUNT(*)","pain_service WHERE categorie > 1 AND annee_universitaire = $annee");
+$stat = stats("COUNT(*)","pain_service WHERE categorie < 10 AND categorie > 1 AND (service_reel > 0 OR categorie < 4)  AND annee_universitaire = $annee");
 echo '<th>'.$stat.'</th>';
 //echo '<td></td>';
-$stat = round(stats("SUM(service_reel)","pain_service WHERE categorie > 1 AND annee_universitaire = $annee")) + $autre;
+$stat = round(stats("SUM(service_reel)","pain_service WHERE categorie > 1 AND categorie < 10 AND annee_universitaire = $annee") + $autre);
 echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
