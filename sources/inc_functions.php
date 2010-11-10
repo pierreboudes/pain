@@ -1050,8 +1050,9 @@ function update_servicesreels() {
                     WHERE pain_tranche.id_enseignant = pain_service.id_enseignant 
                     AND pain_tranche.id_cours = pain_cours.id_cours AND pain_cours.id_enseignant <> 1 
                     AND pain_formation.id_formation = pain_cours.id_formation
-                    AND pain_sformation.id_sformation = pain_formation.id_sformation 
-                    AND pain_sformation.annee_universitaire = ".$annee.")
+                    AND pain_sformation.id_sformation = pain_formation.id_sformation ".
+	//" AND pain_formation.id_formation <> 22 ".
+                   " AND pain_sformation.annee_universitaire = ".$annee.")
                 WHERE pain_service.annee_universitaire = ".$annee;
     mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());

@@ -133,3 +133,37 @@ UPDATE pain_enseignant, pain_listes SET stats = 1 WHERE pain_enseignant.id_ensei
 --liste membres 
 INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
+
+--- maj de la liste membre :
+--- 1) lister les membres à désabonner
+--- 2) lister les membres à abonner
+--- 3) lister les membres ayant changé d'adresse
+--- 4) mettre à jour la table pain_listes
+
+--- 1) liste des membres a sortir de la liste :
+SELECT id_enseignant, tmpnom, email FROM `pain_listes` WHERE liste = "membres" 
+AND NOT EXISTS 
+(SELECT pain_enseignant.id_enseignant FROM pain_enseignant WHERE (categorie = 3 OR categorie = 2) AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
+----- mis en forme :
+SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres" 
+AND NOT EXISTS 
+(SELECT pain_enseignant.id_enseignant FROM pain_enseignant WHERE (categorie = 3 OR categorie = 2) AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
+
+--- 2) liste des membres à abonner
+SELECT id_enseignant, CONCAT(prenom," ", nom), email FROM `pain_enseignant` WHERE (categorie = 3 OR categorie = 2)
+AND NOT EXISTS 
+(SELECT pain_listes.id_enseignant FROM pain_listes WHERE liste = "membres" AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
+----- mise en forme :
+SELECT CONCAT(prenom," ", nom, " <", email,">") FROM `pain_enseignant` WHERE (categorie = 3 OR categorie = 2)
+AND NOT EXISTS 
+(SELECT pain_listes.id_enseignant FROM pain_listes WHERE liste = "membres" AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
+--- 3) liste des membres dont l'adresse doit etre changee
+SELECT pain_listes.id_enseignant, tmpnom, pain_listes.email, pain_enseignant.email FROM pain_listes, pain_enseignant 
+WHERE liste = "membres"
+AND pain_listes.id_enseignant = pain_enseignant.id_enseignant
+AND pain_listes.email <> pain_enseignant.email;
+--- 4) Mettre a jour
+DELETE FROM pain_listes WHERE liste = "membres";
+INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
+FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
+
