@@ -430,13 +430,26 @@ function supprimer_tranche($id)
 
 function supprimer_enseignant($id) {
     if (peutsupprimerenseignant($id)) {
+	if (estintervenant($id) 
+	    || estresponsablecours($id)
+	    || estresponsableformation($id)
+	    || estresponsablesformation($id)) {
+	    errmsg("suppression impossible. Cet enseignant a au moins une intervention ou une responsabilité renseignée dans la base.");
+	    return;
+	}
+
 	$ens = selectionner_enseignant($id);
-	$qens = "DELETE FROM pain_enseignant WHERE `id_enseignant` = $id
-                 LIMIT 1";
+	$qens = "DELETE FROM pain_enseignant WHERE `id_enseignant` = $id LIMIT 1";
 	
 	if (mysql_query($qens)) {
 	    historique_par_suppression(4, $ens);
 	    pain_log("$qens -- supprimer_ens($id)");
+	    $q = "DELETE FROM pain_service WHERE `id_enseignant` = $id";
+	    mysql_query($q) or ($q .= " -- ".mysql_error());
+	    pain_log("$q");
+	    $q = "DELETE FROM pain_choix WHERE `id_enseignant` = $id";
+	    mysql_query($q) or ($q .= " -- ".mysql_error());
+	    pain_log("$q");
 	    echo '{"ok": "ok"}';
 	} else {
 	    errmsg("échec de la requête sur la table enseignant.");
@@ -872,6 +885,34 @@ function ig_totauxenpostes($totaux) {
 }
 
 
+function estintervenant($id_enseignant)
+{
+    $q = "SELECT 1 FROM pain_tranche WHERE id_enseignant = $id_enseignant LIMIT 1";
+    $r = mysql_query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".mysql_error());
+    return mysql_num_rows($r);
+}
+
+function estresponsablecours($id_enseignant)
+{
+    $q = "SELECT 1 FROM pain_cours WHERE id_enseignant = $id_enseignant LIMIT 1";
+    $r = mysql_query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".mysql_error());
+    return mysql_num_rows($r);
+}
+
+function estresponsableformation($id_enseignant)
+{
+    $q = "SELECT 1 FROM pain_formation WHERE id_enseignant = $id_enseignant LIMIT 1";
+    $r = mysql_query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
+    return mysql_num_rows($r);
+}
+
+function estresponsablesformation($id_enseignant)
+{
+    $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
+    $r = mysql_query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
+    return mysql_num_rows($r);
+}
+
 function listeinterventions($id_enseignant) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
@@ -1092,7 +1133,7 @@ function liste_enseignantscategorie($categorie) {
                  prenom,
                  pain_service.service_annuel AS service,
                  pain_service.service_reel AS service_reel 
-          FROM pain_enseignant, pain_service 
+          FROM pain_enseignant, pain_service
           WHERE pain_service.categorie = $categorie 
             AND pain_enseignant.id_enseignant > 9
             AND pain_service.id_enseignant = pain_enseignant.id_enseignant

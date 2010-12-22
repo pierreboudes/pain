@@ -91,13 +91,12 @@ function pain_log($message, $logname='pain') {
 		fclose($f);
 	}
 	if ($rotate) {
-		@unlink($logfile.'.5');
-		@rename($logfile.'.4',$logfile.'.5');
-		@rename($logfile.'.3',$logfile.'.4');
-		@rename($logfile.'.2',$logfile.'.3');
-		@rename($logfile.'.1',$logfile.'.2');
-		@rename($logfile,$logfile.'.1');
-		
+	    $nb = 50;
+	    @unlink($logfile.".$i");
+	    for ($i = $nb; $i > 1; --$i) {
+		@rename($logfile.".".($i - 1),$logfile.".$i");
+	    }
+	    @rename($logfile,$logfile.'.1');		
 	}
 }
 
