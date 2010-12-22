@@ -100,9 +100,5 @@ if ($id_enseignant != "") {
     /* Choix */
     echo "<h2>Choix</h2>";
     echo '<div id="choix"></div>';
-
-    echo '<div class="vignette">';
-    ig_statsenseignant($ens);
-    echo '</div>';
 }
 ?>

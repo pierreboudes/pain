@@ -40,6 +40,7 @@ CREATE TABLE `pain_service` (
 );
 
 -- mise à jour de pain_service (pour 2010)
+DELETE FROM pain_service WHERE annee_universitaire = 2010;
 REPLACE INTO pain_service 
   (id_enseignant, annee_universitaire, categorie, service_annuel, tmpnom)
 SELECT 

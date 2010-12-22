@@ -24,89 +24,98 @@ authrequired();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-function statcatform($cat, $form) {
-    $stat = round(stats("SUM(pain_tranche.htd)","pain_enseignant, pain_tranche, pain_cours, pain_formation, pain_sformation, pain_service WHERE pain_tranche.id_enseignant = pain_enseignant.id_enseignant AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1 AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $form AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_enseignant.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_service.categorie = $cat"));
-    return $stat;
-}
-
-function statensform($ens, $form) {
-    if ($ens != 1) {
-	$stat = round(stats("SUM(pain_tranche.htd)","pain_tranche, pain_cours, pain_formation WHERE pain_tranche.id_enseignant = $ens AND pain_cours.id_cours = pain_tranche.id_cours AND pain_cours.id_enseignant <> 1 AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $form"));
-    } else {
-	$stat = round(stats("SUM(pain_tranche.htd)","pain_tranche, pain_cours, pain_formation WHERE (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1) AND pain_cours.id_cours = pain_tranche.id_cours  AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $form"));
-    }
-    return $stat;
-}
-
 $query = "SELECT id_sformation, nom FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
 $res = mysql_query($query) or die("BD Impossible d'effectuer la requête: $query");
 $formation = mysql_fetch_assoc($res);
 
+/* TODO : mettre les catégorie et leurs légendes (longue, courte, détaillée) dans une table. passer la catégorie 29 à 5. */
+
+$tab = array(
+    array("Catégorie"),
+    array("Permanents"),
+    array("Non-permanents"),
+    array("Ens. Galilée"),
+    array("Ens. Paris&nbsp;13"),
+    array("Autres"),
+    array("Vacants"),
+    array("ss totaux"),
+    array("Annulés"),
+    array("Aidés")
+    );
+
+mysql_data_seek($res,0);
+$i = 1;
+
+while ($formation = mysql_fetch_assoc($res)) {
+    $tab[0][$i] = $formation["nom"]; /* nom de la super formation */
+    $sfid = $formation["id_sformation"];
+
+    $stat = stats_sform($sfid);
+
+    $tab[1][$i] = isset($stat[2])?$stat[2]:0;
+    $tab[2][$i] = isset($stat[3])?$stat[3]:0;    
+    $tab[3][$i] = isset($stat[4])?$stat[4]:0;    
+    $tab[4][$i] = isset($stat[6])?$stat[6]:0;    
+    $tab[5][$i] = (isset($stat[5])?$stat[5]:0) + (isset($stat[29])?$stat[29]:0);
+    $tab[6][$i] = isset($stat[23])?$stat[23]:0;
+    $tab[7][$i] = 0;
+    $tab[8][$i] = isset($stat[1])?$stat[1]:0;
+    $tab[9][$i] = isset($stat[22])?$stat[22]:0;
+
+    ++$i;
+}
+$nbsf = $i - 1;
+$nbcat = 9;
+/* ajout des totaux par formation */
+$tab[$nbcat + 1][0] = "totaux";
+for ($i = 1; $i <= $nbsf; ++$i) {
+    $sum = 0;
+    for ($j = 1; $j <= $nbcat; ++$j) {
+	$sum = $sum + $tab[$j][$i];
+    }
+    $tab[$nbcat + 1][$i] = $sum;
+}
+/* ajout des sous-totaux par formation */
+$tab[$nbcat + 1][0] = "totaux";
+for ($i = 1; $i <= $nbsf; ++$i) {
+    $sum = 0;
+    for ($j = 1; $j <= 6; ++$j) {
+	$sum = $sum + $tab[$j][$i];
+    }
+    $tab[7][$i] = $sum;
+}
+
+/* ajout des totaux par categorie, et total global */
+$tab[0][$nbsf + 1] = "totaux"; 
+for ($j = 1; $j <= $nbcat + 1; ++$j) {
+    $sum = 0;
+    for ($i = 1; $i <= $nbsf; ++$i) {
+	$sum = $sum + $tab[$j][$i];
+    }
+    $tab[$j][$nbsf + 1] = $sum;
+}
+
+/* affichage du tab */
 echo '<table class="stat">';
-echo '<tr><th>Catégorie</th>';
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    echo '<th>'.$formation["nom"].'</th>';
-}
-echo '<tr></tr>';
-
-echo '<tr><th>Titulaires du département</th>'; // cat 2
-$cat = 2;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statcatform($cat, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
+/* les categories en ligne d'en-tete */
+echo '<tr>';
+for ($i = 0; $i <= $nbcat + 1; ++$i) {
+    echo '<th>'.$tab[$i][0].'</th>';
 }
 echo '</tr>';
-
-echo '<tr><th>Non titulaires du département</th>'; // cat 3
-$cat = 3;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statcatform($cat, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
+/* une ligne par formation */
+for ($j = 1; $j <= $nbsf + 1; $j = $j + 1)
+{
+echo '<tr>';
+echo '<th>'.$tab[0][$j].'</th>';
+for ($i = 1; $i <= $nbcat + 1; ++$i) {
+    if ($tab[$i][$j] > 0) {
+	echo '<td>'.enpostes($tab[$i][$j]).'</td>';
+    } else {
+	echo '<td></td>';
+    }
 }
 echo '</tr>';
-
-echo '<tr><th>Autres enseignants de Galilée</th>'; // cat 4
-$cat = 4;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statcatform($cat, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
 }
-echo '</tr>';
-echo '<tr><th>Autres enseignants de Paris 13 hors Galilée</th>'; // cat 6
-$cat = 6;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statcatform($cat, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
-}
-echo '</tr>';
-echo '<tr><th>Autres (vacataires, industriels etc.)</th>'; // cat 5
-$cat = 5;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statcatform($cat, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
-}
-echo '</tr>';
-echo '<tr><th>Cours annulés</th>'; // ens 1
-$ens = 1;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statensform($ens, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
-}
-echo '</tr>';
-echo '<tr><th>Cours vacants</th>'; // ens 3
-$ens = 3;
-mysql_data_seek($res,0);
-while ($formation = mysql_fetch_assoc($res)) {
-    $stat = statensform($ens, $formation["id_sformation"]);
-    echo '<td>'.enpostes($stat).'</td>'; 
-}
-echo '</tr>';
 echo '</table>';
 ?>

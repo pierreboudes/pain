@@ -510,6 +510,32 @@ function ig_enseignant($t) {
     echo "\n";
 }
 
+function stats_sform($idsf) {
+    $q = "SELECT pain_service.categorie AS categorie, SUM(pain_tranche.htd) as somme
+          FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service
+          WHERE pain_tranche.id_cours = pain_cours.id_cours
+          AND pain_formation.id_formation = pain_cours.id_formation
+          AND pain_formation.id_sformation = $idsf
+          AND pain_sformation.id_sformation = $idsf
+          AND ((pain_tranche.id_enseignant = pain_service.id_enseignant
+                AND pain_cours.id_enseignant <> 1)
+              OR
+              (pain_cours.id_enseignant = 1 
+               AND pain_service.categorie = 1))
+          AND pain_service.annee_universitaire = pain_sformation.annee_universitaire
+          GROUP BY pain_service.categorie";
+    $r = mysql_query($q) or die("erreur d'acces aux tables: $q erreur: ".mysqlerror());
+    $tab = array();
+
+    while ($a = mysql_fetch_assoc($r)) {
+	$tab[$a["categorie"]] = $a["somme"];
+    }
+
+    return $tab;
+}
+
+
+
 function htdtotaux($annee = NULL) {    
     if ($annee == NULL) $annee = annee_courante();
 
@@ -1004,7 +1030,7 @@ function ig_legendeservice() {
     echo '<th class="CM">CM</th>';
     echo '<th class="TD">TD</th>';
     echo '<th class="TP">TP</th>';
-    echo '<th class="regime">Régime</th>';
+/*    echo '<th class="regime">Régime</th>'; */
     echo '</tr>';
 }
 function ig_ligneservice($ligne) {
@@ -1021,7 +1047,7 @@ function ig_ligneservice($ligne) {
     echo '<td class="CM">'.$ligne["cm"].'</td>';
     echo '<td class="TD">'.($ligne["td"] + $ligne["alt"]).'</td>';
     echo '<td class="TP">'.$ligne["tp"].'</td>';
-    echo '<td class="regime">FI</td>';
+/*    echo '<td class="regime">FI</td>'; */
     echo '</tr>';
 }
 
@@ -1034,7 +1060,7 @@ function ig_totauxservice($totaux) {
     echo '<td class="CM">'.$totaux["cm"].'</td>';
     echo '<td class="TD">'.($totaux["td"] + $totaux["alt"]).'</td>';
     echo '<td class="TP">'.$totaux["tp"].'</td>';
-    echo '<td class="regime"></td>';
+/*    echo '<td class="regime"></td>'; */
     echo '</tr>';
 }
 
@@ -1084,7 +1110,7 @@ function historique_par_cmp($type, $before, $after) {
     $id_cours = 0;
     $modifie = false;
     $timestamp = $after["modification"];
-    $s .= '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
+    $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
     $s .= '<div class="diff">';
     if ((1 == $type) 
 	&& ($before["id_cours"] == $after["id_cours"])) {
