@@ -19,7 +19,7 @@ table.longchoix {
 background-color: white;
 }
 
-table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix
+table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 #menu li, .statens,
@@ -31,7 +31,7 @@ tr.super td, tr.super th
 table.an2009 th, table.an2009 td {border-color: #a0522d;} /* #95ed64; */
 table.an2009 th {background-color:#ffe4e1;}
 table.an2009 tr.formation td {background-color:#ffe4e1;}
-table.an2009 table.enseignants, table.an2009 table.tranches, table.an2009 table.choix 
+table.an2009 table.enseignants, table.an2009 table.tranches, table.an2009 table.choix, table.an2009 table.services
 {border-color: #a0522d;}
 table.an2009 tr.super, table.an2009 div.handle {background-color: #a0522d;}
 table.an2009, table.an2009 table.cours,
@@ -245,7 +245,7 @@ table.categorie, table.enseignants {
     margin:auto;
 }
 
-table.tranches {
+table.tranches, table.services {
     border-style: solid;
     border-width: 1px;
     border-bottom-width: 2px;
@@ -256,7 +256,7 @@ table.tranches {
     margin-top: -1px;
 }
 
-table.tranches th {
+table.tranches th, table.services th {
     text-align: center;
 }
 div.choix {
@@ -371,6 +371,28 @@ td.nopadding {
     display: none;
 }
 
+.categorie {
+    width: 120px;
+    text-align: center;
+}
+
+.service_annuel  {
+    width: 80px;
+}
+
+.service_reel  {
+    width: 100px;
+}
+
+td.service_annuel, td.service_reel  {
+    text-align:right;
+}
+
+.annee_universitaire {
+    width: 70px;
+    text-align: center;
+}
+
 /* dimensions pour les tranches */
 .remarque {
     width: 140px;
@@ -396,7 +418,7 @@ th.label {
 th.stats {
 }
 
-td.tranches {
+td.tranches, td.services {
     padding-top: 0px;
     padding-right: 0px;
 }

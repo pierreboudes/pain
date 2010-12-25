@@ -63,6 +63,22 @@ ig_tablecategorie(10,"Anciens enseignants");
 <th class="categorie">categorie</th>
 <th class="action"><div class="palette"></div></th>
 </tr>
+	    <tr id="_trtableservices_82" class="trservices">
+	      <td class="services" colspan="12">
+	      <table id="_tableservices_82" class="service">
+		<tbody>
+		  <tr id="skelservice" class="service">
+		    <th class="laction"></th>
+		    <th class="annee_universitaire">Année</th>
+		    <th class="categorie">Catégorie</th>
+		    <th class="service_annuel">Service</th>
+		    <th class="service_reel">Service réel</th>
+		    <th class="action"><div class="palette"></div></th>
+		  </tr>
+		</tbody>
+	      </table>
+	    </td>
+	  </tr>
 </tbody>
 </table>
 </div>

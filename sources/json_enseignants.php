@@ -24,12 +24,10 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
+if ($annee == NULL) $annee = annee_courante();
+
 if (isset($_GET["term"])) {
-    $qens = "SELECT `id_enseignant` AS `id`,
-                    TRIM(CONCAT(`prenom`, ' ',`nom`)) AS `label`
-             FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
-    $rens = mysql_query($qens) 
-	  or die("Échec de la requête sur la table enseignant");
+    $rens = lister_enseignantsannee($annee);
     $arr = array();
     while ($ens = mysql_fetch_object($rens)) {
 	$arr[] = $ens;

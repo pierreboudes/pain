@@ -36,6 +36,7 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 */
 
 var colcours = 18; /* nombre de colonnes d'un cours (pour colspan) */
+var colenseignant = 12; /* nombre de colonnes d'un enseignant (pour colspan) */
 
 /* constructeur de cellule */
 function cell() {
@@ -324,6 +325,74 @@ function nature() {
 }
 nature.prototype = new immutcell();
 
+/* constructeur du composite annee */
+function annee_universitaire() {
+    this.setval = function (c,o) {
+	var s;
+	c.html(o["annee_universitaire"]+'-'+(parseInt(o["annee_universitaire"]) + 1));
+    }
+    this.name = "annee_universitaire";
+}
+annee_universitaire.prototype = new immutcell();
+
+
+
+/* constructeur du composite categorie */
+function categorie () {
+    this.name = "categorie";
+    this.mutable = true;
+    this.edit = function (c) {
+	/* sauvegarder l'id actuel */
+	var catid = c.find('.hiddenvalue').text(); 
+	// TODO refaire avec value au lien de span hidden
+	c.remove('.hiddenvalue');
+	var catname = $.trim(c.find('a').text());
+	/* installer la zone d'input */
+	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
+	/* charger une seule fois la liste des categories */	
+	/* mettre en place l'autocomplete */
+	var cat = c.find("input");
+	getjson("json_categories.php",{term: ""}, function (data) {
+		cat.autocomplete({ minLength: 0,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				return false;
+			    }
+			    $(this).focus();
+			    cat.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			} 
+		    })});
+	c.addClass("edit");
+	c.find('input').focus();
+    };
+    this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["categorie"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["nom_court"]+'<span class="hiddenvalue">'+o["categorie"]+'</span>');
+	c.find("a.categorie").click(function(){window.open(this.href);return false;});
+    }
+}
+categorie.prototype = new cell();
+
+function service_reel () 
+{
+    this.name = "service_reel";
+    this.setval = function (c,o) {
+	var sr = o["service_reel"];
+	if (null == sr) {
+	    sr = 0;
+	}
+	c.html('<a class="enseignant" href="service.php?annee='+o["annee_universitaire"]+'&id_enseignant='+o["id_enseignant"]+'">'+sr+'</a>');
+	c.find("a.enseignant").click(function(){window.open(this.href);return false;});
+    }
+}
+service_reel.prototype = new immutcell();
 
 /* objet ligne de tableau */
 function ligne() {
@@ -357,11 +426,12 @@ function ligne() {
     this.service = new sunumcell();
     this.service.name = "service";
     /* service reel */
-    this.service_reel = new immutcell();
-    this.service_reel.name = "service_reel";
-    /* categorie */
-    this.categorie = new sunumcell();
-    this.categorie.name = "categorie";
+    this.service_reel = new service_reel();
+    /* composite : categorie */
+    this.categorie = new categorie();
+
+/*    this.categorie = new sunumcell();
+      this.categorie.name = "categorie"; */
     /* responsabilite */
     this.responsabilite = new cell();
     this.responsabilite.name = "responsabilite";
@@ -466,6 +536,13 @@ function ligne() {
      */
     this.intitule = new intitule();
     this.totaux = new totaux();
+
+    /* pain_enseignant, pain_service 
+     */
+    this.annee_universitaire = new annee_universitaire();
+    this.service_annuel = new sunumcell();
+    this.service_annuel.name = "service_annuel";
+
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -753,6 +830,29 @@ function basculerCategorie(e) {
     return false;
 }
 
+function basculerEnseignant(e) {
+    var id = e.data.id;
+    var sid = idString({id: id, type: "enseignant"});
+    var bascule = $('#basculeenseignant_'+id);
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+
+    if (bascule.hasClass('basculeOn')) {
+	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+colenseignant+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
+	appendList({type: "service", id_parent: id},$('#tableservices_'+id+' tbody'), function () {
+	var legende = $('#legendeservice'+id);
+	addMenuFields(legende);
+	addServiceAdd(legende);
+
+//	addAdd(legende.find('th.action'));
+	    });
+    } else {
+	$('#trtableservices'+id).remove();
+    }
+
+    return false;
+}
+
 /* bloc --- fin des bascules --- */
 
 /* bloc --- Boutons ---*/
@@ -798,7 +898,8 @@ function removeChoisir(td) {
 
 /* ajout de ligne */
 function addAdd(td) {
-    var type = td.closest('tr').attr('class');
+    var tr = td.closest('tr');
+    var type = tr.attr('class');
     var addl = jQuery('<button class="addl">Ajouter '+type+'</button>');
     addl.button({
 	text: false,
@@ -806,7 +907,7 @@ function addAdd(td) {
 	    primary: "ui-icon-plus"
 		    }
 	});
-    addl.bind("click",newLine);
+    addl.bind("click",{tr: tr},newLine);
     td.find('div.palette').append(addl);
 }
 function removeAdd(td) {
@@ -937,7 +1038,7 @@ function addOk(jqcell) {
 function addMenuFields(tr) {
     var th = tr.find('th.action');
     th.find('div.palette').prepend('<button class="menufields">champs...</button>');
-    var button = th.find('button').button({
+    var button = th.find('button.menufields').button({
 			text: false,
 			icons: {
 				primary: "ui-icon-triangle-1-s"
@@ -949,6 +1050,23 @@ function addMenuFields(tr) {
 }
 function removeMenuFields(td) {
     td.find('button.menufields').remove();
+}
+
+function addServiceAdd(tr) {
+    var th = tr.find('th.action');
+    th.find('div.palette').append('<button class="menuadd">ajouter...</button>');
+    var button = th.find('button.menuadd').button({
+			text: false,
+			icons: {
+				primary: "ui-icon-plus"
+			}
+	});
+    button.one("click", {th: th, button: button},
+	       openServiceAdd);
+    return false;
+}
+function removeServiceAdd(td) {
+    td.find('button.menuadd').remove();
 }
 
 /*---- fin boutons ----*/
@@ -1128,6 +1246,78 @@ function toggleColumn(e) {
 /* ---------- FIN MENU CONTEXTUEL DES CHAMPS ---------*/
 
 
+
+
+/*BLOC-------- MENU AJOUT SERVICE ---------*/
+/*
+sur le meme modele que le menu contextuel des champs
+ */
+function openServiceAdd(e) {
+    var th = e.data.th;
+    var tr = th.closest('tr');
+    var tbody = tr.closest('tbody');
+    var list = $('#choixannee').find('option');
+    var type = th.closest('tr').attr('class');
+    var button = e.data.button;
+    var menu = jQuery('<ul class="menu"></ul>');
+    var offset = button.offset();
+    var h = (button.outerHeight) ? button.outerHeight() : button.height();
+    menu.css({position: 'absolute', 
+		'top': offset.top + h - 1, 
+		'left': offset.left,
+		'z-index': 2000
+		}).click(function(e) { e.stopPropagation(); }).show(200, function() {
+			$(document).one('click', {button: button, menu: menu, th: th}, 
+					closeServiceAdd);
+		    });
+    var n = list.length;
+    var i = 0;
+    var menuisempty = true;
+    for (i = 0; i < n; i++) {
+	var item = list.eq(i);
+	var valeur = item.val();
+        var titre = item.text();
+//	var visible = (item.css('display') != 'none');
+//	if (!visible) blob.addClass('inv');
+	if (!existsjQuery(tbody.find('tr.service > td.annee_universitaire:contains('+titre+')'))) {
+	    var blob = jQuery('<li>'+titre+'</li>');
+	    blob.one('click',
+		     {type: type,
+			     annee: valeur,
+			     button: button,
+			     menu: menu, 
+			     th: th,
+			     tr: tr},
+		     nouveauService);
+	    menu.append(blob);
+	    menuisempty = false;
+	}
+    }
+    if (menuisempty) {
+	menu.append(jQuery('<li><i>ajout impossible</i></li>'));
+    }
+    $('body').append(menu);
+//    th.find('select').selectmenu();
+    return false;
+}
+
+
+function closeServiceAdd(e) {
+   e.data.menu.fadeOut('slow');
+    e.data.menu.remove();
+    e.data.button.one('click', {button: e.data.button, th: e.data.th}, openServiceAdd);
+    return false;
+}
+
+function   nouveauService(e) {  
+    closeServiceAdd(e);
+    newLine(e);
+}
+
+
+/* ---------- FIN MENU AJOUT SERVICE ---------*/
+
+
 /* ---------- PANIER -------------*/
 function togglePanier() {
     var panier = $("#panier");
@@ -1295,6 +1485,11 @@ function appendItem(type,prev,o,list) {
 	    removeChoisir(line.children('td.laction'));
 	}
     }
+    if (type == "enseignant") {
+	line.children('td.laction')
+	    .prepend('<div class="basculeOff" id="basculeenseignant_'+o["id_enseignant"]+'" />')
+	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
+    }
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
@@ -1307,8 +1502,13 @@ function findIdParent(tr,type) {/* ne fonctionnera pas avec le type formation */
 }
 
 /* ajouter une nouvelle ligne sur le serveur et dans la vue */
-function newLine() {
-    var tr = $(this).closest('tr');
+function newLine(e) {
+    var tr;
+    if (existsjQuery(e.data.tr)) {
+	tr = e.data.tr;
+    } else {
+	tr = $(this).closest('tr');
+    }
     var type = tr.attr('class');
     var list = tr.children('th');
     var n = list.length;
@@ -1319,6 +1519,9 @@ function newLine() {
     data.id_parent = id_parent;
     if (type == "tranche") {
 	data.id_enseignant = 3;
+    }
+    if (type == "service") {
+	data.annee = e.data.annee;
     }
     getjson("json_new.php", data, function (tabo) {
 	    appendItem(type,tr,tabo[i],list);

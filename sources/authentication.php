@@ -38,8 +38,12 @@ function default_year() {
 }
 
 function annee_courante() {
-/* si on a reçu une annee dans le formulaire on utilise celle la */
-    if (isset($_POST['annee'])) {
+/* On a reçu une annee dans l'URL */
+    if (isset($_GET['annee'])) {
+	$annee = getclean('annee');
+    }
+/* Mise a jour de l'annee par le formulaire du menu */
+    else if (isset($_POST['annee'])) {
 	$annee = postclean('annee');
 	set_year($annee);
     } else { 

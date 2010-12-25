@@ -67,7 +67,7 @@ function ig_responsable($id)
     }
 }
 
-function ig_formselectenseignants($id_enseignant)
+function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_service */
 {
 /*    global $annee;
     if ($annee == NULL) $annee = annee_courante();
@@ -85,6 +85,32 @@ function ig_formselectenseignants($id_enseignant)
 	echo trim($ens["nom"]." ".$ens["prenom"]);
 	echo '</option>';
     }
+}
+
+function lister_enseignantsannee($an)
+{
+    $qens = "SELECT pain_enseignant.id_enseignant AS `id`, ".
+                    "TRIM(CONCAT(prenom, ' ',nom)) AS `label` ".
+             "FROM pain_enseignant, pain_service ".
+             "WHERE pain_service.annee_universitaire = $an ".
+	     "AND pain_service.id_enseignant = pain_enseignant.id_enseignant ".
+	     "ORDER BY nom, prenom ASC";
+    $rens = mysql_query($qens) 
+	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".mysql_error());
+    return $rens;
+}
+
+function lister_categories($an)
+{
+    $qcat = "SELECT id_categorie AS `id`, ".
+                    "TRIM(nom_court) AS `label`, ".
+	            "nom_long, descriptif ".
+	"FROM pain_categorie ".
+	"WHERE descriptif <> \"\" ". /* <- debile, TODO : trouver la bonne structure */
+	"ORDER BY id_categorie ASC";
+    $rcat = mysql_query($qcat) 
+	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".mysql_error());
+    return $rcat;
 }
 
 
@@ -477,6 +503,25 @@ function supprimer_choix($id) {
     }
 }
 
+function supprimer_service($id_enseignant, $an) {
+    if (peutsupprimerservice($id_enseignant, $an)) { 
+	if (serviceestvide($id_enseignant, $an)) {	    
+	    $qservice = "DELETE FROM pain_service WHERE `id_enseignant` = $id_enseignant AND `annee_universitaire` = $an LIMIT 1";
+	
+	    if (mysql_query($qservice)) {
+//		historique_par_suppression(3, $choix);
+		pain_log("$qservice -- supprimer_service($id_enseignant, $an)");
+		echo '{"ok": "ok"}';
+	    } else {
+		errmsg("échec de la requête sur la table choix.");
+	    }
+	} else {
+		errmsg("Il y a des interventions associées à ce service.");
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
+}
 
 function formation_du_cours($id)
 {
@@ -906,16 +951,23 @@ function estresponsableformation($id_enseignant)
     return mysql_num_rows($r);
 }
 
-function estresponsablesformation($id_enseignant)
-{
-    $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = mysql_query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
-    return mysql_num_rows($r);
+function serviceestvide($id_enseignant, $an) {
+    $res =  listeinterventions($id_enseignant, $an);
+    if (mysql_fetch_array($res)) {
+	return false;
+    } else {
+	return true;
+    }
 }
 
-function listeinterventions($id_enseignant) {
+function listeinterventions($id_enseignant, $an = NULL) {    
     global $annee;
-    if ($annee == NULL) $annee = annee_courante();
+    if ($an == NULL) {
+	if ($annee == NULL) {
+	    $annee = annee_courante();
+	}
+	$an = $annee;
+    }
     $query = "SELECT 
 pain_tranche.id_tranche,
 pain_formation.nom,
@@ -939,7 +991,7 @@ WHERE ".(($id_enseignant == 1)?
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
-AND pain_sformation.annee_universitaire = $annee
+AND pain_sformation.annee_universitaire = $an
 ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
 
     ($result = mysql_query($query)) or die("Échec de la connexion à la base");

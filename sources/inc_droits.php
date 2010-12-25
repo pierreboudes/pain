@@ -29,11 +29,13 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "cours") return peuteditercours($id);
 	if ($type == "tranche") return peuteditertranche($id);
 	if ($type == "enseignant") return peutediterenseignant($id);
+	if ($type == "service") return peutediterservice($id);
 	if ($type == "choix") return peutediterchoix($id);
     }
     if ($id_parent != NULL) {
 	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
+	if ($type == "service") return peutediterservicedeenseignant($id_parent);
 	if ($type == "choix") return peutchoisir();
     }
     if ($type == "enseignant") return peutproposerenseignant();
@@ -179,6 +181,22 @@ function peutediterformation($id_formation) {
 }
 
 function peutediterenseignant($id_enseignant = 0) {
+    global $user;
+    return ($user["su"] == 1) or ($id_enseignant == $user["id_enseignant"]);
+}
+
+function peutediterservice($id_serv = 0X0) {
+    global $user;
+    list($id_enseignant,$an) = split('X',$id_serv);
+    return ($user["su"] == 1) or ($id_enseignant == $user["id_enseignant"]);
+}
+
+function peutsupprimerservice($id_enseignant, $an) {
+    global $user;
+    return ($user["su"] == 1) or ($id_enseignant == $user["id_enseignant"]);
+}
+
+function peutediterservicedeenseignant($id_enseignant) {
     global $user;
     return ($user["su"] == 1) or ($id_enseignant == $user["id_enseignant"]);
 }

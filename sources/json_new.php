@@ -64,6 +64,10 @@ if (isset($_GET["type"])) {
 	$type = "enseignant";
 	$_GET["id_parent"] = 0; /* bypass */
 	$ntype = 4;
+    } else if ($readtype == "service") {
+	$type = "service";
+	$par = "enseignant";
+	$ntype = 5;
     } else {
 	errmsg("type indéfini");
     }
@@ -110,15 +114,35 @@ if (isset($_GET["id_parent"])) {
 	    $setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
-    $query = "INSERT INTO pain_${type} 
-              SET $strset, modification = NOW()";
-    
+    if ($type == "service") {
+	if (isset($_GET["annee"])) {
+	    $an = $_GET["annee"];	    
+	} else {
+	    $an = annee_courante();
+	}
+	$query = "INSERT INTO pain_service ".
+	         "(id_enseignant, annee_universitaire, categorie, ".
+                 "service_annuel, service_reel) ".
+	         "SELECT $id_parent, $an, ".
+                 "  pain_enseignant.categorie, ".
+                 "  pain_enseignant.service, ".
+                 "  0 ".
+                 "FROM pain_enseignant ".
+                 "WHERE pain_enseignant.id_enseignant = $id_parent";
+    } else {
+	$query = "INSERT INTO pain_${type} SET $strset, modification = NOW()";
+    }
     /* requete */
 
     if (!mysql_query($query)) {
 	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
     } 
     $id = mysql_insert_id();
+    if ($type == "service") {
+	$id = $id_parent.'X'.$an;
+    }
+    pain_log($query." -- insert_id = $id");
+
     /* logs */
     if (isset($ntype)) {
 	$new =Array("id_".$type => $id,

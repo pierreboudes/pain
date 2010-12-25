@@ -50,10 +50,11 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
 	$par = "categorie";
-	$requete = "SELECT *,
+	$requete = "SELECT pain_enseignant.*,
+                    pain_categorie.nom_court,
                     \"$type\" AS type,
                     id_$type AS id
-                    FROM pain_enseignant";
+                    FROM pain_enseignant, pain_categorie";
 	if (isset($_GET['id_parent'])) {
 	    $id_par = $_GET['id_parent'];
 	    $requete .= " WHERE categorie = $id_par ";	    
@@ -61,6 +62,7 @@ if (isset($_GET["type"])) {
 	    $id = $_GET['id'];
 	    $requete .= " WHERE id_enseignant = $id ";	    
 	}
+	$requete .= " AND id_categorie = categorie ";
 	$requete .= "ORDER BY nom, prenom ASC";
     } else if ($readtype == "longchoix") {
 	$type = "choix";
@@ -103,10 +105,10 @@ if (isset($_GET["type"])) {
                            \"long$type\" AS type
                      FROM pain_tranche, pain_cours, pain_formation, pain_sformation ";
 	if (isset($_GET['id_parent'])) {
-	    $id_par = getnumclean('id_parent');
+	    $id_par = getclean('id_parent');
 	    $requete .= " WHERE pain_tranche.id_enseignant = $id_par ";	    
         } else if (isset($_GET["id"])) {
-	    $id = getnumclean('id');
+	    $id = getclean('id');
 	    $requete .= " WHERE pain_tranche.id_tranche = $id ";	    
 	}
 	$requete .="AND pain_cours.id_cours = pain_tranche.id_cours
@@ -114,6 +116,27 @@ if (isset($_GET["type"])) {
                     AND pain_sformation.id_sformation = pain_formation.id_sformation
                     AND pain_sformation.annee_universitaire = $annee
                     ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC";
+    } else if ($readtype == "service") {
+	$type = "service";
+	$requete = "SELECT pain_service.*,
+                           pain_categorie.nom_court,
+                           \"$type\" AS type,
+                           CONCAT(id_enseignant,'X',annee_universitaire) AS id_service,
+                           CONCAT(id_enseignant,'X',annee_universitaire) AS id
+                    FROM pain_service, pain_categorie
+                    WHERE ";
+	if (isset($_GET['id_parent'])) {
+	    $id_par = getclean('id_parent');
+	    $requete .= " pain_service.id_enseignant = $id_par ";
+        } else if (isset($_GET["id"])) {
+	    $id = getclean('id');
+	    list($id_ens,$an) = split('X',$id);
+	    $requete .= " id_enseignant = $id_ens AND annee_universitaire = $an ";
+	} else {
+	    $requete .= " 0 ";
+	}
+       $requete .= "AND id_categorie = categorie 
+                    ORDER BY annee_universitaire ASC";
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

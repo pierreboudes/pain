@@ -45,7 +45,12 @@ $champs = array(
 	"login",
 	"prenom", "nom", "statut", "email", "telephone", "bureau",
 	"service", "categorie", "debut", "fin", "responsabilite"
-	)
+	),
+    "service" => array(
+	"annee_universitaire",
+	"categorie",
+	"service_annuel"
+	),
     );
 
 
@@ -67,6 +72,8 @@ if (isset($_GET["type"])) {
     } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
 	$type = "choix";
 	$par = "cours";
+    } else if ($readtype == "service") {
+	$type = "service";
     } else {
 	errmsg("type indéfini");
     }
@@ -122,9 +129,15 @@ if (isset($_GET["id"])) {
 	    $setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
-    $query = "UPDATE pain_${type} 
-              SET $strset, modification = NOW() 
-              WHERE `id_$type`=".$id;
+    $query = "UPDATE pain_${type} ".
+             "SET $strset, modification = NOW() ".
+             "WHERE `id_$type`=".$id;
+
+    if ($type == "service") {
+	list($id_enseignant,$an) = split('X',$id);
+	$query = "UPDATE pain_service SET $strset ". 
+	    "WHERE id_enseignant = $id_enseignant AND annee_universitaire = $an";
+    }
     
     /* log et requete a moderniser (loguer le json) TODO */
 

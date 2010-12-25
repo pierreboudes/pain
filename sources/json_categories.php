@@ -22,33 +22,14 @@ require_once('authentication.php');
 $user = authentication();
 
 require_once("inc_connect.php");
-require_once("utils.php");
 require_once("inc_functions.php");
 
-
-if (isset($_GET["id"])) {
-    $id = getclean("id");
-} else {
-    errmsg("erreur de script (id non renseigné)");
-}
-
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
-    if ($readtype == "cours") {
-	supprimer_cours($id);
-    } else if (($readtype == "tranche") || ($readtype == "longtranche")) {
-	supprimer_tranche($id);
-    } else if ($readtype == "enseignant") {
-	supprimer_enseignant($id);
-    } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
-	supprimer_choix($id);
-    } else if ($readtype == "service") {
-	list($id_ens,$an) = split('X',$id);
-	supprimer_service($id_ens, $an);
-    } else {
-	errmsg("erreur de script (type inconnu)");
+if (isset($_GET["term"])) {
+    $rens = lister_categories();
+    $arr = array();
+    while ($ens = mysql_fetch_object($rens)) {
+	$arr[] = $ens;
     }
-} else {
-    errmsg("erreur de script (type non renseigné)");
+    print json_encode($arr);
 }
 ?>
