@@ -96,7 +96,7 @@ for ($j = 1; $j <= $nbcat + 1; ++$j) {
 }
 
 /* affichage du tab */
-echo '<table class="stat">';
+echo '<table class="stat" id="tableCatForm">';
 /* les categories en ligne d'en-tete */
 echo '<tr>';
 for ($i = 0; $i <= $nbcat + 1; ++$i) {
@@ -118,4 +118,9 @@ for ($i = 1; $i <= $nbcat + 1; ++$i) {
 echo '</tr>';
 }
 echo '</table>';
+/*
+echo '<pre>';
+print_r($tab);
+echo '</pre>';
+*/
 ?>

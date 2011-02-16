@@ -19,7 +19,10 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict"; /* From now on, lets pretend we are strict */
+
 /* TODO virer code mort, sauver et utiliser existsjQuery ou l'utilitaire equivalent, utiliser le trim de jQuery */
+
 
 function contientERREUR(str) {
     var patt=/ERREUR/g;

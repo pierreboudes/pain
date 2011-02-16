@@ -19,6 +19,8 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict"; /* From now on, lets pretend we are strict */
+
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
 	$('#skelenseignant').children('th.su, th.stats, th.fin, th.categorie').fadeOut(0);

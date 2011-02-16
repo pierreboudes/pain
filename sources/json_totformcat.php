@@ -1,4 +1,4 @@
-/* -*- coding: utf-8 -*-*/
+<?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
@@ -18,17 +18,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once('authentication.php'); 
+$user = authentication();
 
-"use strict"; /* From now on, lets pretend we are strict */
+require_once("inc_connect.php");
+require_once("inc_functions.php");
 
+if (isset($_GET["annee"])) {
+    $annee = getclean("annee");
+    $query = "SELECT id_sformation, nom, id_prev FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
+    $res = mysql_query($query) or die("BD Impossible d'effectuer la requête: $query");
 
-$(document).ready(function(){
-      	/* masqer certaines colonnes et les squelettes de lignes */
-	$('#skelcours').children('th.code_geisha, th.inscrits, th.presents, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt
-	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
-	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
-	$('#skel').fadeOut(0);
-	
-	/* choix */
-	showChoix(); // <-- temporaire (faire actionneur)
-});
+    $arr = array();
+    while ($formation = mysql_fetch_assoc($res)) {
+	$form = array();
+	$sfid = $formation['id_sformation'];
+	$form['id_prev'] = $formation['id_prev'];
+	$form['nom'] = $formation['nom'];
+	$form['categories'] = stats_sform($sfid);
+	$arr[$sfid] = $form;
+    }
+    print json_encode($arr);
+}
+?>

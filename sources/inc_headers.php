@@ -21,7 +21,11 @@
 require_once('authentication.php'); 
 authrequired();
 
-function entete($titre, $js = NULL) {
+function entete() {
+    /* premier argument : titre de la page */
+    /* arguments suivants : des noms de fichiers javascripts à inclure */
+    $narg = func_num_args();
+    $titre = func_get_arg(0);
     echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
@@ -37,8 +41,8 @@ function entete($titre, $js = NULL) {
 <script type="text/javascript" src="js/dyntab.js"></script>
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;
-    if ($js != NULL) {
-	echo "<script type='text/javascript' src='js/".$js."'></script>";
+    for($i = 1; $i < $narg; $i++){
+	echo "<script type='text/javascript' src='js/".func_get_arg($i)."'></script>";
     }
 /* ------ tweaks --------
 

@@ -26,7 +26,7 @@ require_once("inc_functions.php");
 
 /* TODO pain_service quelques jointures pour le service statutaire et formulaire annee */
 
-echo '<table class="stat">';
+echo '<table class="stat" id="tableCat">';
 echo '<tr><th>Catégorie</th><th>nombre de personnes</th><th colspan="2">services statutaires</th><th colspan="2">services réels</th></tr>';
 
 echo '<th>Ensemble du département</th>';
@@ -39,7 +39,7 @@ echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>';
 echo '</tr>';
 
 
-echo '<tr><th>Titulaires du département</th>';
+echo '<tr><th>Permanents du département</th>';
 $stat = stats("COUNT(*)","pain_service WHERE categorie = 2 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 $stat = round(stats("SUM(service_annuel)","pain_service WHERE categorie = 2 AND annee_universitaire = $annee"));
@@ -47,7 +47,7 @@ echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>';
 $stat = round(stats("SUM(service_reel)","pain_service WHERE categorie = 2 AND annee_universitaire = $annee"));
 echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>'; 
 echo '</tr>';
-echo '<tr><th>Non titulaires du département</th>';
+echo '<tr><th>Non permanents du département</th>';
 $stat = stats("COUNT(*)","pain_service WHERE categorie = 3 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 $stat = round(stats("SUM(service_annuel)","pain_service WHERE categorie = 3 AND annee_universitaire = $annee"));

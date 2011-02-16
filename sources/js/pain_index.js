@@ -19,6 +19,8 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict"; /* From now on, lets pretend we are strict */
+
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.code_geisha, th.credits, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt, th.inscrits, th.presents,

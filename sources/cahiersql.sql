@@ -1,3 +1,5 @@
+---- replication 2009 -> 2010 ----
+
 INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, numero) SELECT `id_sformation` as id_prev, "2010", `id_enseignant`, `nom`, `numero` FROM pain_sformation WHERE `annee_universitaire` = "2009";
 
 -- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2010"
@@ -28,6 +30,78 @@ pain_cours, pain_formation, pain_sformation
 WHERE pain_sformation.annee_universitaire = "2010"
 AND   pain_formation.id_sformation = pain_sformation.id_sformation
 AND   pain_cours.id_formation = pain_formation.id_prev;
+
+
+---- replication 2001 -> 2002 ----
+
+INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, numero) SELECT `id_sformation` as id_prev, "2002", `id_enseignant`, `nom`, `numero` FROM pain_sformation WHERE `annee_universitaire` = "2001";
+
+-- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2002"
+
+-- formation:
+INSERT INTO pain_formation 
+(id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
+ SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2002";
+
+-- cours:
+INSERT INTO pain_cours
+(id_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif, code_geisha)
+SELECT
+pain_cours.id_cours as id_prev,
+pain_formation.id_formation,
+pain_cours.semestre,
+pain_cours.nom_cours,
+pain_cours.credits,
+pain_cours.id_enseignant,
+pain_cours.cm,
+pain_cours.td,
+pain_cours.tp,
+pain_cours.alt,
+pain_cours.descriptif,
+pain_cours.code_geisha
+FROM
+pain_cours, pain_formation, pain_sformation
+WHERE pain_sformation.annee_universitaire = "2002"
+AND   pain_formation.id_sformation = pain_sformation.id_sformation
+AND   pain_cours.id_formation = pain_formation.id_prev;
+
+-------------- STOP 2001 -> 2002
+
+
+---- replication 2002 -> 2003 ----
+
+INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, numero) SELECT `id_sformation` as id_prev, "2003", `id_enseignant`, `nom`, `numero` FROM pain_sformation WHERE `annee_universitaire` = "2002";
+
+-- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2003"
+
+-- formation:
+INSERT INTO pain_formation 
+(id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
+ SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2003";
+
+-- cours:
+INSERT INTO pain_cours
+(id_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif, code_geisha)
+SELECT
+pain_cours.id_cours as id_prev,
+pain_formation.id_formation,
+pain_cours.semestre,
+pain_cours.nom_cours,
+pain_cours.credits,
+pain_cours.id_enseignant,
+pain_cours.cm,
+pain_cours.td,
+pain_cours.tp,
+pain_cours.alt,
+pain_cours.descriptif,
+pain_cours.code_geisha
+FROM
+pain_cours, pain_formation, pain_sformation
+WHERE pain_sformation.annee_universitaire = "2003"
+AND   pain_formation.id_sformation = pain_sformation.id_sformation
+AND   pain_cours.id_formation = pain_formation.id_prev;
+
+-------------- STOP 2002 -> 2003
 
 -- annualisation des services
 CREATE TABLE `pain_service` (
@@ -168,3 +242,6 @@ DELETE FROM pain_listes WHERE liste = "membres";
 INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
 
+
+
+------

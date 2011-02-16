@@ -19,6 +19,12 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict"; /* From now on, lets pretend we are strict */
+
+var L;                  /* variable globale pour l'objet générique ligne */
+var COLCOURS = 18;      /* nombre de colonnes d'un cours (pour colspan) */
+var COLENSEIGNANT = 12; /* nombre de colonnes d'un enseignant (pour colspan) */
+
 /* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
 /*
 bd : ligne_bd, tableau associatif (objet js) colonne => val.
@@ -34,9 +40,6 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 2) cellule: timestamp <-- non utilisee
 3) cellule: intitule | colonnes: nom annee_etude parfum | non modifiable
 */
-
-var colcours = 18; /* nombre de colonnes d'un cours (pour colspan) */
-var colenseignant = 12; /* nombre de colonnes d'un enseignant (pour colspan) */
 
 /* constructeur de cellule */
 function cell() {
@@ -172,7 +175,6 @@ function sucell () {
 	    }
 	}
     }
-
 }
 sucell.prototype = new cell();
 
@@ -607,6 +609,7 @@ function getjson(url,data,callback) {
 		datatype: 'json',
 		error: function () {alert('erreur ajax !');},
 		success: function(data) {
+		var o;
 		try {
 		    o = jQuery.parseJSON(data);
 		    if (o.error != null) {
@@ -615,7 +618,7 @@ function getjson(url,data,callback) {
 			return;
 		    }
 		} catch (e) {
-		    alert("Erreur: vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
+		    alert("Erreur: "+e+" vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
 		    return;
 		}
 		callback(o);
@@ -630,6 +633,7 @@ function getjsondb(url,data,callback) {
 	     data:  data,
 	     error: function () {alert('erreur ajax !');},
 	     success: function(data) {
+		var o;
 		alert("RECEIVED: " + data); 
 		o = jQuery.parseJSON(data);
 		if (o.error != null) {
@@ -786,7 +790,7 @@ function basculerCours(e) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="'+colcours+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="'+COLCOURS+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
 	appendList({type: "tranche", id_parent: id},$('#tabletranches_'+id+' tbody'), function () {
 	var legende = $('#legendetranche'+id);
 	addMenuFields(legende);
@@ -838,7 +842,7 @@ function basculerEnseignant(e) {
     bascule.toggleClass('basculeOn');
 
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+colenseignant+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
+	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+COLENSEIGNANT+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
 	appendList({type: "service", id_parent: id},$('#tableservices_'+id+' tbody'), function () {
 	var legende = $('#legendeservice'+id);
 	addMenuFields(legende);
@@ -1458,7 +1462,7 @@ function appendItem(type,prev,o,list) {
 	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	addHandle(line.children('td.laction'));
-	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colcours+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+COLCOURS+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     if (type == "formation") {
 	var idf = o["id_formation"];
@@ -1473,7 +1477,7 @@ function appendItem(type,prev,o,list) {
 	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
 	/* */
-	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colcours+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+COLCOURS+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
     } else {/* pas pour les formations */
 	addRm(line.find('td.action')); 
     }
@@ -1726,6 +1730,8 @@ function responsables(jq) {
 
 
 /* ----- DEMARRAGE DU DOCUMENT ---------*/
+
+
 $(document).ready(function () {
 	$.datepicker.setDefaults($.datepicker.regional['fr']); 
 	L = new ligne(); // <-- var globale
