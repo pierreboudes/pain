@@ -26,6 +26,7 @@ authrequired();
 
 function peutediter($type, $id, $id_parent) {
     if ($id != NULL) {
+	if ($type == "formation") return peutediterformation($id);
 	if ($type == "cours") return peuteditercours($id);
 	if ($type == "tranche") return peuteditertranche($id);
 	if ($type == "enseignant") return peutediterenseignant($id);
@@ -33,6 +34,7 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "choix") return peutediterchoix($id);
     }
     if ($id_parent != NULL) {
+	if ($type == "formation") return peutediterformationdelasformation($id_parent);
 	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
 	if ($type == "service") return peutediterservicedeenseignant($id_parent);
@@ -173,9 +175,21 @@ function peutediterformation($id_formation) {
               WHERE pain_formation.id_formation = $id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutediterformation($idcours)");
+    $res = mysql_query($query) or die("ERREUR peutediterformation($id_formation)");
     $r = mysql_fetch_array($res);
     if ($user["id_enseignant"] == $r["respannee"]) return true;
+    if ($user["id_enseignant"] == $r["respformation"]) return true;
+    return false;
+}
+
+function peutediterformationdelasformation($id_sformation) {
+    global $user;
+    if ($user["su"]) return true;
+    $query = "SELECT  pain_sformation.id_enseignant AS respformation
+              FROM pain_sformation
+              WHERE pain_sformation.id_sformation = $id_sformation";
+    $res = mysql_query($query) or die("ERREUR peutediterformationdelasformation($id_sformation)");
+    $r = mysql_fetch_array($res);
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
 }

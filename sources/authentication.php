@@ -55,13 +55,6 @@ function annee_courante() {
 
 function authentication() {
     if (isset($_COOKIE['painAnonyme'])) {
-	/* return  array("id_enseignant"=> 10,
-		     "prenom" => "Pierre",
-		     "nom" => "Boudes",
-		     "login" => "boudes",
-		     "su" => 0,
-		     "stat" => 0
-		     ); */
 	return array("id_enseignant"=> -1,
 		     "prenom" => "",
 		     "nom" => "Anonyme",
@@ -71,7 +64,8 @@ function authentication() {
 	    );
     }
     phpCAS::forceAuthentication();
-    $login = phpCAS::getUser();    
+    $login = phpCAS::getUser();
+    // $login = "boudes";  /* (no) SHUNT */
     $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
               FROM pain_enseignant 
               WHERE login LIKE '$login' LIMIT 1";
@@ -84,6 +78,7 @@ function authentication() {
 }
 
 function authrequired() {
+    // return; /* no SHUNT */
     if (isset($_COOKIE['painAnonyme'])) return;
     if (!(phpCAS::isAuthenticated())) {
 	header("Location: http://perdu.com");

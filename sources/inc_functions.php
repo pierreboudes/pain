@@ -951,6 +951,13 @@ function estresponsableformation($id_enseignant)
     return mysql_num_rows($r);
 }
 
+function estresponsablesformation($id_enseignant)
+{
+    $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
+    $r = mysql_query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
+    return mysql_num_rows($r);
+}
+
 function serviceestvide($id_enseignant, $an) {
     $res =  listeinterventions($id_enseignant, $an);
     if (mysql_fetch_array($res)) {

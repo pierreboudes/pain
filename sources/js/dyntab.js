@@ -607,7 +607,7 @@ function getjson(url,data,callback) {
 		url: url,
 		data:  data,
 		datatype: 'json',
-		error: function () {alert('erreur ajax !');},
+		error: function () {alert('erreur ajax ! [url: '+url+'] [data: '+data+']');},
 		success: function(data) {
 		var o;
 		try {

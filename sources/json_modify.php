@@ -25,6 +25,9 @@ require_once("utils.php");
 require_once("inc_functions.php");
 
 $champs = array(
+    "formation" => array(
+	"id_enseignant"
+	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
 	"cm", "td", "tp", "alt", "descriptif", "code_geisha",
@@ -61,7 +64,10 @@ $champs = array(
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "cours") {	
+    if ($readtype == "formation") {	
+	$type = "formation";
+	$par = "sformation";	
+    } else if ($readtype == "cours") {	
 	$type = "cours";
 	$par = "formation";
     } else if ($readtype == "tranche") {

@@ -38,7 +38,7 @@ $champs = array(
 	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
 	),
     "enseignant" => array(
-	"prenom", "nom", "statut", "email", "telephone", "bureau", "service"
+	"prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie"
 	)
     );
 
@@ -62,7 +62,6 @@ if (isset($_GET["type"])) {
 	$ntype = 3;
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
-	$_GET["id_parent"] = 0; /* bypass */
 	$ntype = 4;
     } else if ($readtype == "service") {
 	$type = "service";
@@ -86,7 +85,7 @@ if (isset($_GET["id_parent"])) {
     if ($type != "enseignant") {
 	$set["id_".$par] = $id_parent;
     } else {
-	$set["categorie"] = 0;
+	$set["categorie"] = $id_parent;
 	$set["debut"] = date('Y-m-d');
     }
 
