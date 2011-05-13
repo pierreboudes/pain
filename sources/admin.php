@@ -20,18 +20,25 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
+$annee = annee_courante();
+require_once("inc_headers.php"); /* pour en-tete et pied de page */
+entete("gestion des enseignements et des services", "pain_admin.js");
+require_once('utils.php');
+include("menu.php");
+?>
 
-require_once("inc_connect.php");
-require_once("utils.php");
-require_once("inc_functions.php");
+<div id="vueadmin">
+</div>
 
-$id = 2;
-
-if (isset($_GET["id_formation"])) {
-    $id = getclean("id_formation");
-} 
-
-$r=htdformation($id);
-
-print json_encode($r);
+<?php
+include("skel_admin.html");
+/* include("inc_aide.php"); */
+?>
+<p>
+<a href="http://validator.w3.org/check?uri=referer"><img
+    src="http://www.w3.org/Icons/valid-xhtml10-blue"
+    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+    </p>
+<?php
+piedpage();
 ?>

@@ -18,15 +18,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */ ?>
+
 <div class="bouton-panier"><button id="bouton-panier">Panier</button></div>
 
 <div id="skel">
-
-<div id="dialog-drop-cours">
-  Voulez-vous copier le cours, ou bien le
-  déplacer avec toutes ses données auxilliaires (interventions,
-  voeux) ?
-  <div class="hiddenvalue"></div>
+<div id="dialog-attendre">
+  Opération en cours (attendre quelque minutes)
+</div>
+  
+<div id="dialog-drop">
+  Copie de formations.
+  
+  Jusqu'à quelle profondeur voulez-vous copier ?
+  <ol>
+    <li>Titre(s) seulement,</li>
+    <li>Cycle(s) (titre(s) et années d'étude dans le cycle),</li>
+    <li>Cycle(s) et cours,</li>
+    <li>Cycle(s), cours et interventions ?</li>
+  </ol>
+<div class="hiddenvalue"></div>
 </div>
 
 <div id="panier">
@@ -37,19 +47,25 @@
     <tr class="annee" id="skelannee">
       <th class="laction"></th>
       <th class="annee_universitaire">Année universitaire</th>
-      <th class="totaux">stats</th>
+      <th class="totaux_loader">stats</th>      
     </tr>
-    <tr class="sformation" id="skelsformation">
+   <tr class="sformation" id="skelsformation">
       <th class="laction"></th>
       <th class="nom">nom</th>
       <th class="enseignant">responsable</th>
-      <th class="totaux">stats</th>
+      <th class="numero">ordre</th>
+      <th class="totaux_loader">stats</th>
+      <th class="action"><div class="palette"></div></th>
     </tr>
     <tr class="formation" id="skelformation">
       <th class="laction"></th>
-      <th class="intitule">intitulé</th>
+      <th class="nom">nom</th>
+      <th class="annee_etude">année d'étude</th>
+      <th class="parfum">parfum</th>
       <th class="enseignant">responsable</th>
-      <th class="totaux">totaux</th>
+      <th class="numero">ordre</th>
+      <th class="totaux_loader">stats</th>
+     <th class="action"><div class="palette"></div></th>
     </tr>
     <tr class="cours" id="skelcours">
       <th class="laction"></th>
@@ -57,7 +73,8 @@
       <th class="semestre">Semestre</th>
       <th class="credits">Crédits</th>
       <th class="enseignant">Responsable</th>
-      <th class="cm">CM</th>
+      <th class="totaux_loader">stats</th>
+ <!--     <th class="cm">CM</th>
       <th class="td">TD</th>
       <th class="tp">TP</th>
       <th class="alt">alt.</th>
@@ -68,60 +85,33 @@
       <th class="presents">Présents</th>
       <th class="tirage">Tirage</th>
       <th class="descriptif">Remarque</th>
-      <th class="code_geisha">Code</th>
-      <th class="action"><div class="palette"></div></th>
+      <th class="code_geisha">Code</th> -->
+      <th class="action"><div class="palette"></div></th> 
     </tr>
     <tr id="skelchoix" class="choix">
-      <th class="action"><div class="palette"></div></th>
-      <th class="nature">Type</th>
+<!--      <th class="action"><div class="palette"></div></th> -->
+      <th class="nature">Type</th> 
       <th class="enseignant">Enseignant</th>
-      <th class="choix">choix</th>
+<!--      <th class="choix">choix</th>
       <th class="cm">CM</th>
       <th class="td">TD</th>
       <th class="tp">TP</th>
       <th class="alt">alt.</th>
-      <th class="htd">htd</th>
+      <th class="htd">htd</th> -->
     </tr>
-    <tr id="skeltranche" class="tranche">
-      <th class="laction"></th>
-      <th class="nature">Type</th>
-      <th class="enseignant">Enseignant</th>
-      <th class="cm">CM</th>
-      <th class="td">TD</th>
-      <th class="tp">TP</th>
-      <th class="alt">alt.</th>
-      <th class="htd">htd</th>
-      <th class="remarque">Remarque</th>
-      <th class="groupe">Groupe</th>
-      <th class="action"><div class="palette"></div></th>
-    </tr>
-    <tr class="longchoix" id="skellongchoix">
-      <th class="laction"></th>
-      <th class="intitule">formation</th>
-      <th class="nom_cours">cours</th>
-      <th class="nature">type</th>
-      <th class="htd">htd</th>
-      <th class="semestre">semestre</th>
-      <th class="choix">choix</th>
-      <th class="cm">CM</th>
-      <th class="td">TD</th>
-      <th class="tp">TP</th>
-      <th class="alt">alt.</th>
-     <th class="action"><div class="palette"></div></th>
-    </tr>
-    <tr class="longtranche" id="skellongtranche">
-      <th class="laction"></th>
-      <th class="intitule">formation</th>
-      <th class="cours">cours</th>
-      <th class="nature">type</th>
-      <th class="htd">htd</th>
-      <th class="choix">choix</th>
-      <th class="cm">CM</th>
-      <th class="td">TD</th>
-      <th class="tp">TP</th>
-      <th class="alt">alt.</th>
-      <th class="action"><div class="palette"></div></th>
-    </tr>
-  </tbody>
-</table>
+      <tr id="skeltranche" class="tranche">
+<!--	<th class="laction"></th>  -->
+	<th class="nature">Type</th>
+	<th class="enseignant">Enseignant</th>
+	<th class="cm">CM</th>
+	<th class="td">TD</th>
+	<th class="tp">TP</th>
+	<th class="alt">alt.</th>
+	<th class="htd">htd</th>
+	<th class="remarque">Remarque</th>
+	<th class="groupe">Groupe</th>
+<!--	<th class="action"><div class="palette"></div></th>  -->
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -25,6 +25,12 @@ require_once("utils.php");
 require_once("inc_functions.php");
 
 $champs = array(
+   "sformation" => array(
+	"id_enseignant", "nom", "numero"
+	),
+    "formation" => array(
+	"id_enseignant", "nom", "annee_etude", "parfum", "numero"
+	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
 	"cm", "td", "tp", "alt", "descriptif", "code_geisha"
@@ -48,24 +54,30 @@ $champs = array(
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "cours") {	
+    if ($readtype == "sformation") {	
+	$type = "sformation";
+	$par = "annee_universitaire";
+    } else if ($readtype == "formation") {	
+	$type = "formation";
+	$par = "id_sformation";
+    } else if ($readtype == "cours") {	
 	$type = "cours";
-	$par = "formation";
+	$par = "id_formation";
 	$ntype = 1;
     } else if ($readtype == "tranche") {
 	$type = "tranche";
-	$par  = "cours";
+	$par  = "id_cours";
 	$ntype = 2;
     } else if ($readtype == "choix") {
 	$type = "choix";
-	$par = "cours";
+	$par = "id_cours";
 	$ntype = 3;
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
 	$ntype = 4;
     } else if ($readtype == "service") {
 	$type = "service";
-	$par = "enseignant";
+	$par = "id_enseignant";
 	$ntype = 5;
     } else {
 	errmsg("type indéfini");
@@ -83,7 +95,7 @@ if (isset($_GET["id_parent"])) {
     $set = array();
 
     if ($type != "enseignant") {
-	$set["id_".$par] = $id_parent;
+	$set[$par] = $id_parent;
     } else {
 	$set["categorie"] = $id_parent;
 	$set["debut"] = date('Y-m-d');
@@ -92,7 +104,9 @@ if (isset($_GET["id_parent"])) {
     if (!isset($_GET["nom_cours"])) {
 	$_GET["nom_cours"] = 'Nom du cours ?';
     }
-
+    if (!isset($_GET["nom"])) {
+	$_GET["nom"] = 'Nom ?';
+    }
     foreach ($champs[$type] as $field) {
 	if (isset($_GET[$field])) {
 	    $set[$field] = getclean($field);
@@ -107,6 +121,17 @@ if (isset($_GET["id_parent"])) {
     if (($type != "enseignant") && !isset($set["id_enseignant"])) {
 	$set["id_enseignant"] = $user["id_enseignant"];
     }
+
+    if ( ("formation" == $type) || ("sformation" == $type)) {
+	$sq = "SELECT MAX(numero) + 1 as num 
+               FROM pain_$type WHERE $par = $id_parent";
+	if (!($sr = mysql_query($sq))) {
+	    errmsg("erreur avec la requete :\n".$sq."\n".mysql_error());
+	}
+        $sl = mysql_fetch_assoc($sr);
+	$set["numero"] = $sl["num"];
+    }
+
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
@@ -145,7 +170,7 @@ if (isset($_GET["id_parent"])) {
     /* logs */
     if (isset($ntype)) {
 	$new =Array("id_".$type => $id,
-		    "id_".$par => $id_parent);
+		    $par => $id_parent);
 	historique_par_ajout($ntype, $new);
     }
     /* affichage de la nouvelle entree en json */

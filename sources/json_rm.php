@@ -34,7 +34,11 @@ if (isset($_GET["id"])) {
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "cours") {
+    if ($readtype == "sformation") {
+	supprimer_sformation($id);
+    } else if ($readtype == "formation") {
+	supprimer_formation($id);
+    } else if ($readtype == "cours") {
 	supprimer_cours($id);
     } else if (($readtype == "tranche") || ($readtype == "longtranche")) {
 	supprimer_tranche($id);

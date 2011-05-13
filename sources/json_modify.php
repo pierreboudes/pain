@@ -25,8 +25,11 @@ require_once("utils.php");
 require_once("inc_functions.php");
 
 $champs = array(
+    "sformation" => array(
+	"id_enseignant", "nom", "numero"
+	),
     "formation" => array(
-	"id_enseignant"
+	"id_enseignant", "nom", "annee_etude", "parfum", "numero"
 	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
@@ -64,7 +67,10 @@ $champs = array(
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "formation") {	
+    if ($readtype == "sformation") {	
+	$type = "sformation";
+	$par = "annee";
+    } else if ($readtype == "formation") {	
 	$type = "formation";
 	$par = "sformation";	
     } else if ($readtype == "cours") {	
@@ -89,8 +95,15 @@ if (isset($_GET["type"])) {
 
 if (isset($_GET["id"])) {
     $id = getclean("id");
-    if (!peutediter($type,$id,NULL)) { 
-	errmsg("droits insuffisants.");
+    if (!peutediter($type,$id,NULL)) {
+	if (($type == "cours") && peutmajcours($id)) {
+	    /* on restreint l'edition */
+	    $champs["cours"] = array(
+		"debut", "fin", "inscrits", "presents", "tirage", "mcc"
+		);
+	} else {
+	    errmsg("droits insuffisants.");
+	}
     }
     $set = array();
     foreach ($champs[$type] as $field) {
@@ -135,38 +148,37 @@ if (isset($_GET["id"])) {
 	    $setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
-    $query = "UPDATE pain_${type} ".
-             "SET $strset, modification = NOW() ".
-             "WHERE `id_$type`=".$id;
+       
+    if ($strset != "") { /* il y a de vraies modifs */
+	$query = "UPDATE pain_${type} ".
+	    "SET $strset, modification = NOW() ".
+	    "WHERE `id_$type`=".$id;
 
-    if ($type == "service") {
-	list($id_enseignant,$an) = split('X',$id);
-	$query = "UPDATE pain_service SET $strset ". 
-	    "WHERE id_enseignant = $id_enseignant AND annee_universitaire = $an";
-    }
+	if ($type == "service") {
+	    list($id_enseignant,$an) = split('X',$id);
+	    $query = "UPDATE pain_service SET $strset ". 
+		"WHERE id_enseignant = $id_enseignant AND annee_universitaire = $an";
+	}
     
-    /* log et requete a moderniser (loguer le json) TODO */
+	/* log et requete a moderniser (loguer le json) TODO */
 
-    if (!mysql_query($query)) {
-	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+	if (!mysql_query($query)) {
+	    errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+	}
+	pain_log($query); // LOG DE LA REQUETE !
+	if ($type == "cours") {
+	    $coursnew = selectionner_cours($id);
+	    historique_par_cmp(1, $old, $coursnew);
+	}
+	if ($type == "tranche") {
+	    $tranchenew = selectionner_tranche($id);
+	    historique_par_cmp(2, $old, $tranchenew);	        
+	}
+	if ($type == "choix") {
+	    $choixnew = selectionner_choix($id);
+	    historique_par_cmp(3, $old, $choixnew);	        
+	}   
     }
-    pain_log($query); // LOG DE LA REQUETE !
-    if ($type == "cours") {
-	$coursnew = selectionner_cours($id);
-	historique_par_cmp(1, $old, $coursnew);
-    }
-    if ($type == "tranche") {
-	$tranchenew = selectionner_tranche($id);
-	historique_par_cmp(2, $old, $tranchenew);	        
-    }
-   if ($type == "choix") {
-	$choixnew = selectionner_choix($id);
-	historique_par_cmp(3, $old, $choixnew);	        
-    }
-
-    
-    
-
     /* affichage de la nouvelle entree en json */
     unset($_GET["id_parent"]);
     include("json_get.php");

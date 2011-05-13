@@ -23,9 +23,15 @@
 require_once('authentication.php'); 
 authrequired();
 
+function peuttoutfaire() {
+    global $user;
+    if ($user["su"]) return true;
+    return false;
+}
 
 function peutediter($type, $id, $id_parent) {
     if ($id != NULL) {
+	if ($type == "sformation") return peuteditersformation($id);
 	if ($type == "formation") return peutediterformation($id);
 	if ($type == "cours") return peuteditercours($id);
 	if ($type == "tranche") return peuteditertranche($id);
@@ -34,6 +40,7 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "choix") return peutediterchoix($id);
     }
     if ($id_parent != NULL) {
+	if ($type == "sformation") return peuteditersformationdelannee($id_parent);
 	if ($type == "formation") return peutediterformationdelasformation($id_parent);
 	if ($type == "cours") return peuteditercoursdelaformation($id_parent);
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
@@ -79,6 +86,15 @@ function peutediterchoix($id_choix) {
     return false;
 }
 
+
+function peutsupprimersformation($id) {
+    return peuttoutfaire();
+}
+
+function peutsupprimerformation($id) {
+    return peuttoutfaire();
+}
+
 function peutsupprimerchoix($id_choix) {
     global $user;
     if ($user["su"]) return true;
@@ -118,6 +134,27 @@ function peuteditercours($id_cours) {
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
 }
+
+
+function peutmajcours($id_cours) {
+    global $user;
+    if ($user["su"]) return true;
+    $query = "SELECT pain_cours.id_enseignant AS respcours, 
+                     pain_formation.id_enseignant AS respannee,
+                     pain_sformation.id_enseignant AS respformation
+              FROM pain_cours, pain_formation, pain_sformation
+              WHERE pain_cours.id_cours = $id_cours
+              AND pain_formation.id_formation = pain_cours.id_formation
+              AND pain_sformation.id_sformation = 
+                  pain_formation.id_sformation";
+    $res = mysql_query($query) or die("ERREUR peutmajcours($id_cours)");
+    $r = mysql_fetch_array($res);
+    if ($user["id_enseignant"] == $r["respcours"]) return true; 
+    if ($user["id_enseignant"] == $r["respannee"]) return true;
+    if ($user["id_enseignant"] == $r["respformation"]) return true;
+    return false;
+}
+
 
 function peutediterformationducours($id_cours) {
     global $user;
@@ -165,6 +202,15 @@ function peuteditertranche($id_tranche) {
 function peuteditertrancheducours($id_cours) {
     return peuteditercours($id_cours); /* le responsable du cours ne peut pas */
 }
+
+function peuteditersformation($id_sformation) {
+    return peuttoutfaire();
+}
+
+function peuteditersformationdelannee($annee) {
+    return peuttoutfaire();
+}
+
 
 function peutediterformation($id_formation) {
     global $user;

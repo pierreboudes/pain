@@ -22,23 +22,13 @@ background-color: white;
 table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
+tr.sformation {background-color: #6495ed  ;}
 #menu li, .statens,
 table.super, table.cours, table.interventions, table.service, table.stat, table.annuaire,
-tr.super td, tr.super th
+tr.super td, tr.super th,
+tr.sformation td, tr.sformation th
 {border-color: #3771c8;}
 
-/* 2009 : Sienne */
-table.an2009 th, table.an2009 td {border-color: #a0522d;} /* #95ed64; */
-table.an2009 th {background-color:#ffe4e1;}
-table.an2009 tr.formation td {background-color:#ffe4e1;}
-table.an2009 table.enseignants, table.an2009 table.tranches, table.an2009 table.choix, table.an2009 table.services
-{border-color: #a0522d;}
-table.an2009 tr.super, table.an2009 div.handle {background-color: #a0522d;}
-table.an2009, table.an2009 table.cours,
-table.an2009 tr.super td, table.an2009 tr.super th
-{border-color: #a0522d;}
-
-/* fin 2009 */
 input, textarea {
     color: darkblue;
 }
@@ -75,10 +65,8 @@ ul.menu {
 ul.menu:hover {background-color: #fdf5ce;}
 ul.menu li:hover {color: #FBCB09;}
 table.nature td {color:#1C94C4;}
-/* 2009 */
-table.an2009 table.nature td {color: #a0522d;}
 
-table.nature td.inact, table.an2009 table.nature td.inact {
+table.nature td.inact {
     background-color: transparent;
     color: white;
 }
@@ -141,6 +129,7 @@ div.infobox {
 /* tables */
 table {
     border: 0px;
+    border-collapse:collapse; 
 }
 
 select, input {
@@ -283,10 +272,25 @@ table.choix th {
     text-align: center;
 }  
 
-/* DIMENSIONS */
 
+/* DIMENSIONS */
+/* marges et bords */
+table.conteneur, tr.conteneur, td.conteneur, table.tablesupers, table.tableformations {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
+    border-collapse: none;
+}
+table.tablesupers, table.tableformations {
+    margin-left: -1px;
+/*    margin: 0px -1px; */
+}
+
+/* autres dimensions */
 table.categorie, table.super {
     width:879px;
+    max-width:879px;
 }
 
 table.enseignants {
@@ -445,21 +449,6 @@ div.basculeOn:hover {
     background-image: url(img/triangleTDp.png);
 }
 
-/* 2009 */
-table.an2009 div.basculeOff {
-    background-image: url(img/Sienna-triangleLR.png);
-}
-table.an2009 div.basculeOff:hover {
-    background-image: url(img/Sienna-triangleLRp.png);
-}
-table.an2009 div.basculeOn {
-    background-image: url(img/Sienna-triangleTD.png);
-}
-table.an2009 div.basculeOn:hover {
-    background-image: url(img/Sienna-triangleTDp.png);
-}
-
-
 td.laction > div.basculeOff, td.laction > div.basculeOn {
     margin-left: -30px;
 }
@@ -490,11 +479,6 @@ td.laction > div.basculeOff, td.laction > div.basculeOn {
 .globalHistoOn, .globalHistoOff:hover {
     background-image: url(img/touthisto1.png);    
 }
-/* 2009 */
-table.an2009 .globalHistoOn, table.an2009 .globalHistoOff:hover {
-    background-image: url(img/Sienna-touthisto1.png);    
-}
-
 
 .histoOn, .histoOff {
     position: relative;
@@ -512,10 +496,6 @@ table.an2009 .globalHistoOn, table.an2009 .globalHistoOff:hover {
 .histoOn, .histoOff:hover {
     background-image: url(img/histo1.png);    
 }
-/* 2009 */
-table.an2009 .histoOn, table.an2009 .histoOff:hover {
-    background-image: url(img/Sienna-histo1.png);    
-}
 
 .logOn, .logOff {
     position: relative;
@@ -532,14 +512,6 @@ table.an2009 .histoOn, table.an2009 .histoOff:hover {
 .logOff, .logOn:hover {
     background-image: url(img/log1.png);
 }
-
-table.an2009 .logOff:hover, table.an2009 .logOn {
-    background-image: url(img/Sienna-log2.png);
-}
-table.an2009 .logOff, table.an2009 .logOn:hover {
-    background-image: url(img/Sienna-log1.png);
-}
-
 
 .logsformationtmp {
     position: absolute;

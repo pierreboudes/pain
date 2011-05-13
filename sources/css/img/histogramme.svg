@@ -187,6 +187,13 @@
        r="1.7254065"
        gradientTransform="matrix(1,0,0,1.2837815,0,-29.006416)"
        gradientUnits="userSpaceOnUse" />
+    <inkscape:perspective
+       id="perspective2889"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -195,9 +202,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="23.717726"
-     inkscape:cx="-1.6133721"
-     inkscape:cy="955.47622"
+     inkscape:zoom="1"
+     inkscape:cx="11.375"
+     inkscape:cy="922.875"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -205,7 +212,7 @@
      inkscape:window-height="752"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
@@ -437,5 +444,85 @@
        id="path2947"
        d="m 10.80502,100.74885 1.950813,2.93009"
        style="stroke:url(#radialGradient5279);stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1;fill-rule:nonzero;fill:none" />
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       transform="matrix(0.98897042,0,0,0.98897042,0.46327447,97.825519)"
+       d="m 18.162698,30.048714 a 7.7579365,7.7579365 0 1 1 -15.5158732,0 7.7579365,7.7579365 0 1 1 15.5158732,0 z"
+       sodipodi:ry="7.7579365"
+       sodipodi:rx="7.7579365"
+       sodipodi:cy="30.048714"
+       sodipodi:cx="10.404761"
+       id="path2895"
+       style="fill:#749cd9;fill-opacity:1;stroke:#3771c8;stroke-width:2.02230518;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:type="arc" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#749cd9;fill-opacity:1;stroke:#3771c8;stroke-width:3.57899399;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2916"
+       sodipodi:cx="10.404761"
+       sodipodi:cy="30.048714"
+       sodipodi:rx="7.7579365"
+       sodipodi:ry="7.7579365"
+       d="m 18.162698,30.048714 a 7.7579365,7.7579365 0 1 1 -15.5158732,0 7.7579365,7.7579365 0 1 1 15.5158732,0 z"
+       transform="matrix(0.55881625,0,0,0.55881625,4.9389259,110.65449)"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -110.47032,130.79347 -13.26243,-3.64024 2.35794,4.99749 -10.0441,5.7443 3.44593,6.81489 10.46841,-5.07766 2.29077,4.69793 4.74343,-13.53668 z"
+       id="path3690"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:transform-center-x="5.6034483" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 11.739156,127.10111 2.252001,-1.03017"
+       id="path3692"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 10.780857,126.4303 0,-2.58741"
+       id="path3694"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 9.6788139,127.0532 7.6424298,126.07094"
+       id="path3696"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:#ffff00;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="m 11.643325,128.1792 2.156171,1.6291"
+       id="path3698"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 10.732942,128.70627 0.02396,2.32387"
+       id="path3700"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:nodetypes="cc"
+       id="path3710"
+       d="m 9.6833811,128.16323 -1.8451217,1.3066"
+       style="fill:none;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="/Applications/MAMP/htdocs/pain/css/img/dblclick.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>

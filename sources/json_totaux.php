@@ -20,24 +20,34 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-$annee = annee_courante();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("gestion des enseignements et des services", "pain_index.js");
-require_once('utils.php');
-include("menu.php");
-include("inc_infobox.php");
-//include("inc_listcours.php");
 
-echo '<div id="vuecourante"></div>';
+require_once("inc_connect.php");
+require_once("utils.php");
+require_once("inc_functions.php");
 
-include("skel_index.html");
-/* include("inc_aide.php"); */
-?>
-<p>
-<a href="http://validator.w3.org/check?uri=referer"><img
-    src="http://www.w3.org/Icons/valid-xhtml10-blue"
-    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    </p>
-<?php
-piedpage();
+$id = 2;
+
+if (isset($_GET["id"])) {
+    $id = getclean("id");
+}
+if (isset($_GET["type"])) {
+    $readtype = getclean("type");
+}
+if ($readtype == "annee") {
+    $r = htdtotaux($id);
+}
+if ($readtype == "sformation") {
+    $r = htdsuper($id);
+}
+if ($readtype == "formation") {
+    $r = htdformation($id);
+}
+if ($readtype == "annee") {
+    $r = htdtotaux($id);
+}
+if ($readtype == "cours") {
+    $r = htdcours($id);
+}
+
+print json_encode($r);
 ?>

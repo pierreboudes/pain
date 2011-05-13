@@ -24,32 +24,50 @@ $annee = annee_courante();
 
 require_once("inc_connect.php");
 require_once("utils.php");
-// require_once("inc_functions.php");
+require_once("inc_functions.php"); // pour update_servicesreels($id_par);
 if (isset($_GET["annee_universitaire"])) {
     $annee = getclean("annee_universitaire");
 }
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "formation") {
+    if ($readtype == "cetteannee") {
+
+    } else if ($readtype == "annee") {
+	if (isset($_GET["cetteannee"])) {
+	    print "[{\"annee_universitaire\": \"$annee\",\"id\": \"$annee\", \"id_annee\": \"$annee\", \"type\":\"annee\"}]";
+	    exit(0);
+	}
+
+	print "[";
+	for ($i = $annee - 3; $i < $annee + 3; $i += 1) {
+	    print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"},";
+	}
+	print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"}]";
+	exit(0);
+    } else if ($readtype == "sformation") {
+	$type = "sformation";
+	$par = "annee_universitaire";
+	$order = "ORDER BY numero ASC";	
+    } else if ($readtype == "formation") {
 	$type = "formation";
-	$par = "sformation";
+	$par = "id_sformation";
 	$order = "ORDER BY numero ASC";
     } else if ($readtype == "cours") {
 	$type = "cours";
-	$par = "formation";
+	$par = "id_formation";
 	$order = "ORDER BY semestre, nom_cours ASC";
     } else if ($readtype == "tranche") {
 	$type = "tranche";
-	$par  = "cours";
+	$par  = "id_cours";
 	$order = "ORDER by groupe ASC";
     } else if ($readtype == "choix") {
 	$type = "choix";
-	$par = "cours";
+	$par = "id_cours";
 	$order = "ORDER by modification ASC";
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
-	$par = "categorie";
+	$par = "id_categorie";
 	$requete = "SELECT pain_enseignant.*,
                     pain_categorie.nom_court,
                     \"$type\" AS type,
@@ -127,10 +145,12 @@ if (isset($_GET["type"])) {
                     WHERE ";
 	if (isset($_GET['id_parent'])) {
 	    $id_par = getclean('id_parent');
+	    update_servicesreels($id_par);
 	    $requete .= " pain_service.id_enseignant = $id_par ";
         } else if (isset($_GET["id"])) {
 	    $id = getclean('id');
 	    list($id_ens,$an) = split('X',$id);
+	    update_servicesreels($id_par);
 	    $requete .= " id_enseignant = $id_ens AND annee_universitaire = $an ";
 	} else {
 	    $requete .= " 0 ";
@@ -147,11 +167,14 @@ if (isset($_GET["type"])) {
 if (isset($_GET["id_parent"])) {
     $id_par = getclean("id_parent");
     if (!isset($requete)) {
-	$requete = "SELECT pain_$type.*,  
+	$requete = "SELECT 
+                      pain_$type.*,
+                       \"$type\" AS type, 
+                      id_$type AS id,
                       pain_enseignant.prenom AS prenom_enseignant,
                       pain_enseignant.nom AS nom_enseignant
              FROM pain_$type, pain_enseignant 
-             WHERE `id_$par` = $id_par
+             WHERE `$par` = $id_par
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant
              $order";
     }

@@ -22,8 +22,6 @@
 "use strict"; /* From now on, lets pretend we are strict */
 
 var L;                  /* variable globale pour l'objet générique ligne */
-var COLCOURS = 18;      /* nombre de colonnes d'un cours (pour colspan) */
-var COLENSEIGNANT = 12; /* nombre de colonnes d'un enseignant (pour colspan) */
 
 /* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
 /*
@@ -278,11 +276,11 @@ function intitule() {
 }
 intitule.prototype = new immutcell();
 
-/* constructeur du composite totaux */
-function totaux() {
-    this.setval = function (c,o) {
-	c.text('attente de données');
-	getjson("json_totauxformation.php",{id_formation: o["id_formation"]},function (o) {
+function load_totaux(c,o) {
+	c.text('attente de données '+o["type"]+o["id"]);
+	getjson("json_totaux.php",
+    {id: o["id"], type: o["type"]},
+		function (o) {
 		var s = "";
 /*		s = htdpostes(o["total"]) + ' postes (dont '+htdpostes(o["tp"])+'&nbsp;TP) = '
                     +htdpostes(o["servi"])+'&nbsp;servis +&nbsp;'
@@ -305,12 +303,41 @@ function totaux() {
 		c.html(s);
 	    });
     }
+
+/* constructeur du composite totaux */
+function totaux() {
+   this.autoload = true;
+    this.setval = function (c, o) {
+	if (this.autoload) {
+	    load_totaux(c, o);
+	} else {
+	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
+	}
+	c.dblclick(function () {
+		load_totaux(c, o);
+	    });
+    };
+/*    this.edit = function (c) {
+	var oid = parseIdString(c.parent('tr').attr('id'));
+	load_totaux(c,oid);
+	}; */
+    this.mutable = false;
     this.name = "totaux";
 }
 totaux.prototype = new immutcell();
 
-
-
+function totaux_loader() {
+/*    this.setval = function (c, o) {
+	c.html('double-clic pour stats');
+    };
+    this.edit = function (c) {
+	var oid = parseIdString(c.parent('tr').attr('id'));
+	load_totaux(c,oid);
+	}; */
+    this.autoload = false;
+    this.name = "totaux_loader";  
+};
+totaux_loader.prototype = new totaux();
 
 /* constructeur du composite nature de l'intervention */
 function nature() {
@@ -395,6 +422,171 @@ function service_reel ()
     }
 }
 service_reel.prototype = new immutcell();
+
+
+/* numero d'ordre : via des boutons */
+/* pour empiler des boutons voir: git://gist.github.com/760885.git */
+function numero() {
+    this.setval= function (c, o) {	
+	c.html('<div class="groupeboutons"><button class="moveupward"></button><button class="movedownward"></button></div><div class="hiddenvalue">'+o["numero"]+'</div>');
+	var up = c.find('button.moveupward').button({
+            icons: {
+                primary: "ui-icon-triangle-1-n"
+            },
+            text: false
+        });
+	var down = c.find('button.movedownward').button({
+            icons: {
+                primary: "ui-icon-triangle-1-s"
+            },
+            text: false
+        });
+	var group = c.find('.groupeboutons').buttonset();
+	up.removeClass('ui-corner-left').addClass('ui-corner-top');
+	down.removeClass('ui-corner-right').addClass('ui-corner-bottom');
+	group.removeClass('ui-corner-left').addClass('ui-corner-top');
+	group.removeClass('ui-corner-right').addClass('ui-corner-bottom');
+	group.width(up.width());
+
+	up.click(moveup);
+	down.click(movedown);
+    };
+    this.mutable = false;
+    this.name = "numero";
+    this.edit = function () {};  
+}
+numero.prototype = new immutcell();
+
+
+function moveup(e) {
+    var td = $(e.currentTarget).closest('td');
+    var tr = td.parent('tr');
+    var trid = parseIdString(tr.attr('id'));
+    var trprev = tr.prev();
+    var trprevaux = null;
+    var traux = null;
+    if (!existsjQuery(trprev)) return false;
+
+    var bascule = tr.find('td.laction > div.basculeOn');
+    if (existsjQuery(bascule)) {
+	bascule.trigger('click'); /* on peut proceder a l'echange pendant la fermeture */
+    }
+
+    if (!trprev.hasClass(trid["type"])) {
+	traux = trprev;
+	trprev = trprev.prev();
+	trprevaux = trprev.prev();
+	if ( (!trprev.hasClass(trid["type"]))
+	     || (!traux.hasClass("img"+trid["type"]))
+	     || (!trprevaux.hasClass("img"+trid["type"]))
+	    ) return false;
+    }
+
+    bascule = trprev.find('td.laction > div.basculeOn');
+    if (existsjQuery(bascule)) {
+	bascule.trigger('click');
+	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule */
+	return false;
+    }
+
+
+    var previd = parseIdString(trprev.attr('id'));
+    /* echange des lignes */
+    tr.after(trprev);
+    if (traux != null) {
+	tr.before(traux);
+	trprev.before(trprevaux);
+    }
+
+    /* echange des hiddenvalue */
+    var num = tr.find("td.numero div.hiddenvalue").text();
+    var numprev =  trprev.find("td.numero div.hiddenvalue").text();
+    trprev.find("td.numero div.hiddenvalue").text(num);
+    tr.find("td.numero div.hiddenvalue").text(numprev);
+
+    trid["numero"] = numprev;
+    previd["numero"] = num;
+
+    /* envoie des modifications au serveur (en parallèle) */
+    getjson("json_modify.php",trid, replaceLine);
+    getjson("json_modify.php",previd, replaceLine);
+    
+    
+/*    getjson("json_exchange.php", 
+	    {"type": id["type"],
+		    "idprev": previd["id"], 
+		    "idnext": nextid["id"]
+		    }, 
+	    function () {
+		tr.after(trprev);
+		}); */
+    return false;
+}
+
+
+function movedown(e) {
+    var td = $(e.currentTarget).closest('td');
+    var tr = td.parent('tr');
+    var trid = parseIdString(tr.attr('id'));
+    var trnext = tr.next();
+    var trnextaux = null;
+    var traux = null;
+    if (!existsjQuery(trnext)) return false;
+    var bascule = tr.find('td.laction > div.basculeOn');
+    if (existsjQuery(bascule)) {
+	bascule.trigger('click');
+	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule */
+	return false;
+    }
+    if (!trnext.hasClass(trid["type"])) {
+	trnextaux = trnext;
+	trnext = trnext.next();
+	traux = tr.prev();
+	if ((!trnext.hasClass(trid["type"]) )
+	    || (!trnextaux.hasClass("img"+trid["type"]))
+	    || (!traux.hasClass("img"+trid["type"]))
+	    ) return false;
+    }
+
+    bascule = trnext.find('td.laction > div.basculeOn');
+    if (existsjQuery(bascule)) {
+	bascule.trigger('click'); /* on peut proceder a l'echange pendant la fermeture */
+    }
+
+    var nextid = parseIdString(trnext.attr('id'));
+
+    /* echange des lignes */
+    tr.before(trnext);
+    if (traux != null) {
+	tr.before(traux);
+	trnext.before(trnextaux);
+    }
+
+    /* echange des hiddenvalue */
+    var num = tr.find("td.numero div.hiddenvalue").text();
+    var numnext =  trnext.find("td.numero div.hiddenvalue").text();
+    trnext.find("td.numero div.hiddenvalue").text(num);
+    tr.find("td.numero div.hiddenvalue").text(numnext);
+
+    trid["numero"] = numnext;
+    nextid["numero"] = num;
+
+    /* envoie des modifications au serveur (en parallèle) */
+    getjson("json_modify.php",trid, replaceLine);
+    getjson("json_modify.php",nextid, replaceLine);
+    
+    
+/*    getjson("json_exchange.php", 
+	    {"type": id["type"],
+		    "idnext": nextid["id"], 
+		    "idnext": nextid["id"]
+		    }, 
+	    function () {
+		tr.after(trnext);
+		}); */
+    return false;
+}
+
 
 /* objet ligne de tableau */
 function ligne() {
@@ -534,17 +726,27 @@ function ligne() {
      */
     this.choix = new cell();
     this.choix.name = "choix";
-    /* pain_formation
-     */
-    this.intitule = new intitule();
-    this.totaux = new totaux();
 
     /* pain_enseignant, pain_service 
      */
     this.annee_universitaire = new annee_universitaire();
     this.service_annuel = new sunumcell();
     this.service_annuel.name = "service_annuel";
-
+    /* pain_sformation, pain_formation
+     */
+    /* intitule */
+    this.intitule = new intitule();
+    /* stats / totaux */
+    this.totaux = new totaux();
+    this.totaux_loader = new totaux_loader();
+    /* numero */
+    this.numero = new numero();
+    /* annee_etude */
+    this.annee_etude = new numcell();
+    this.annee_etude.name = "annee_etude";
+    /* parfum */
+    this.parfum = new cell();
+    this.parfum.name = "parfum";
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -647,6 +849,15 @@ function getjsondb(url,data,callback) {
 }
 
 
+/* combien de cases dans la ligne du tableau ? */
+function largeurligne(dansligne) {
+    var ligne = dansligne.parentsUntil('tbody');
+    if (existsjQuery(ligne)) {
+	return ligne.children('td, th').length;
+        /* TODO: compter les colspan > 1 */
+    }
+    return 1;
+}
 
 /* ----- FIN UTILITAIRES ----- */
 
@@ -726,33 +937,77 @@ function basculerAide() {
 }
 
 /* bloc --- Les bascules --- */
-function basculerSuperFormation(id) {
-    var bascule =  $('#basculesuper'+id);
-    bascule.toggleClass('basculeOff');
-    bascule.toggleClass('basculeOn');
-    if (bascule.hasClass('basculeOff')) {
-	$('#tablesuper_'+id+' > tbody > tr.formation div.basculeOn').trigger("click");
-	$('#tablesuper_'+id+' tr.sousformations').fadeOut("slow").remove();
-	$('#tablesuper_'+id+' tr.imgformation').fadeOut("slow").remove();
-	$('#tablesuper_'+id+' tr.formation').fadeOut("slow").remove();
+function basculerAnnee(e) {
+    var id;
+    if ((e.data != undefined) && (e.data.id != undefined)) {
+	id = e.data.id;
     } else {
-	appendList({type:"formation", id_parent: id},$('#tablesuper_'+id+' > tbody'),
-		   function () {
-		       var legende = $('#legendeformation'+id);
-		       legende.remove();
-		       if ($('#imgsformation_'+id+' img').is(':visible')) {
-			   $('#tablesuper_'+id+' > tbody div.imgformation').show();
-			   $('#tablesuper_'+id+' > tbody tr.formation').each(function (i) {
-				   var tag = this.id;
-				   if (tag != undefined) {
-				       var id = tag.replace('formation_','');
-				       htdFormation(id);
-				   }
-			       });
-		       }
-		   });
+	id = e;
     }
-    return false;
+   var bascule =  $('#basculeannee'+id);
+   /* changement d'etat de la bascule (classes On Off)*/
+   bascule.toggleClass('basculeOff');
+   bascule.toggleClass('basculeOn');
+   /* effacement (off) ou affichage (on) de la descendance */
+   if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
+       $('#trtablesupers'+id).remove(); 
+   } else {
+   /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
+       var colspan = largeurligne(bascule);
+       $('#annee_'+id).after('<tr class="conteneur" id="trtablesupers'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="tablesupers" id="tablesupers_'+id+'"><tbody></tbody></table></td></tr>');
+       appendList({type: "sformation", id_parent: id}, /* ajouter quoi ? */
+		  $('#tablesupers_'+id+' > tbody'),   /* ou ? */
+		  function(){ /* fonction de post-traitement */
+		      var legende = $('#legendesformation'+id);
+		      addMenuFields(legende);
+		      addAdd(legende.find('th.action'));
+		      $('#tablesupers_'+id+' tr.sformation').fadeIn("slow");
+		  });
+   }
+   return false;
+}
+
+function basculerSuperFormation(e) {
+    var id;
+    if ((e.data != undefined) && (e.data.id != undefined)) {
+	id = e.data.id;
+    } else {
+	id = e;
+    }
+    var bascule =  $('#basculesformation_'+id);
+   /* changement d'etat de la bascule (classes On Off)*/
+   bascule.toggleClass('basculeOff');
+   bascule.toggleClass('basculeOn');
+   /* effacement (off) ou affichage (on) de la descendance */
+   if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
+       $('#trtableformations'+id).remove(); 
+   } else {
+   /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
+       var colspan = largeurligne(bascule);
+       $('#sformation_'+id).after('<tr class="conteneur" id="trtableformations'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="tableformations" id="tableformations_'+id+'"><tbody></tbody></table></td></tr>');
+       appendList({type: "formation", id_parent: id}, /* ajouter quoi ? */
+		  $('#tableformations_'+id+' > tbody'),   /* ou ? */
+		  function(){ /* fonction de post-traitement */
+		      var legende = $('#legendeformation'+id);
+		      addMenuFields(legende);
+		      addAdd(legende.find('th.action'));
+		      $('#tableformations_'+id+' tr.formation').fadeIn("slow");
+		      /* si la barre image de stats de la super etait
+		       * visible, on rend visible aussi les barres de
+		       * stats des formations */
+		      if ($('#imgsformation_'+id+' img').is(':visible')) {
+			  $('#tableformations_'+id+' > tbody div.imgformation').show();
+			  $('#tableformations_'+id+' > tbody tr.formation').each(function (i) {
+				  var tag = this.id;
+				  if (tag != undefined) {
+				      var id = tag.replace('formation_','');
+				      htdFormation(id);
+				  }
+			      });
+		      }
+		  });
+   }
+   return false;
 }
 
 function basculerFormation(e) {
@@ -770,9 +1025,10 @@ function basculerFormation(e) {
 	    histo.toggleClass('histoOff');
 	    histo.toggleClass('histoOn');
 	}
-	$('#trtablecours_'+id).remove();
+	$('#trtablecours'+id).remove();
     } else {
-	$('#formation_'+id).after('<tr class="sousformations" id="trtablecours_'+id+'"><td colspan="4"><table class="cours" id="tablecours_'+id+'"><tbody></tbody></table></td></tr>');
+       var colspan = largeurligne(bascule);
+	$('#formation_'+id).after('<tr class="conteneur" id="trtablecours'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="cours" id="tablecours_'+id+'"><tbody></tbody></table></td></tr>');
 	appendList({type: "cours", id_parent: id},$('#tablecours_'+id+' > tbody'), function(){
 		var legende = $('#legendecours'+id);
 		addMenuFields(legende);
@@ -790,7 +1046,8 @@ function basculerCours(e) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="trtabletranches'+id+'" class="trtranches"><td class="tranches" colspan="'+COLCOURS+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
+       var colspan = largeurligne(bascule);
+	$('#'+sid).after('<tr class="conteneur" id="trtabletranches'+id+'"><td class="conteneur" colspan="'+colspan+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
 	appendList({type: "tranche", id_parent: id},$('#tabletranches_'+id+' tbody'), function () {
 	var legende = $('#legendetranche'+id);
 	addMenuFields(legende);
@@ -842,7 +1099,8 @@ function basculerEnseignant(e) {
     bascule.toggleClass('basculeOn');
 
     if (bascule.hasClass('basculeOn')) {
-	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+COLENSEIGNANT+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
+	var colspan = largeurligne(bascule);
+	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+colspan+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
 	appendList({type: "service", id_parent: id},$('#tableservices_'+id+' tbody'), function () {
 	var legende = $('#legendeservice'+id);
 	addMenuFields(legende);
@@ -863,6 +1121,7 @@ function basculerEnseignant(e) {
 
 /* duplication de ligne */
 function addMult(td) {
+    if (!existsjQuery(td)) return;
     var tr = td.parent('tr');
     var oid = parseIdString(tr.attr('id'));
     var multl = jQuery('<button class="multl">Dupliquer '+oid["type"]+'</button>');
@@ -882,6 +1141,7 @@ function removeMult(td) {
 
 /* caddy (choix) */
 function addChoisir(td) {
+    if (!existsjQuery(td)) return;
     var tr = td.parent('tr');
     var oid = parseIdString(tr.attr('id'));
     var choixl = jQuery('<button class="choixl">Se proposer pour cette intervention</button>');
@@ -902,6 +1162,7 @@ function removeChoisir(td) {
 
 /* ajout de ligne */
 function addAdd(td) {
+    if (!existsjQuery(td)) return;
     var tr = td.closest('tr');
     var type = tr.attr('class');
     var addl = jQuery('<button class="addl">Ajouter '+type+'</button>');
@@ -920,6 +1181,7 @@ function removeAdd(td) {
 
 /* effacement de ligne */
 function addRm(td) {
+    if (!existsjQuery(td)) return;
     var tr = td.parent('tr');
     var type = tr.attr('class');
     var oid = parseIdString(tr.attr('id'));
@@ -940,10 +1202,11 @@ function removeRm(td) {
 }
 
 
-/* poignee de manipulation (pour glisser/deposer)*/
-function addHandle(td) {
+/* poignee de manipulation (pour glisser/deposer) */
+function addHandle(td, type) {
+    if (!existsjQuery(td)) return;
     removeHandle(td);
-    td.prepend('<div class="handle cours"/>');
+    td.prepend('<div class="handle '+type+'"/>');
     td.children('div.handle').draggable({
 		helper:  dragLine
 	});
@@ -969,29 +1232,36 @@ function dragLine(e) {
 
 function dropLine(e,ui) {
     var tr = ui.draggable.find('tr');
-    var id = tr.attr('id');
-    /*
-    var copy = ui.draggable.clone();
-    copy.removeAttr('id');
-    $('body').append(copy);
-    */
-    var dragoid = parseIdString(id);
-    if (dragoid["type"] != "drag-cours") return; /* on n'accepte que les cours */
-    var dragname = tr.children('td.nom_cours').text();   
+    var dragoid = parseIdString(tr.attr('id'));
     var drop = $(e.target).closest('tr');
     var dropoid = parseIdString(drop.attr('id'));
-    var dropname = drop.children('td.intitule').text();
-/*    alert(' id: '+id+ ' class: '+ui.draggable.attr('class') +
-      ' dropped onto: ' + drop.attr('id')); */
-    $("#dialog-drop").children(".hiddenvalue").html("<span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
-    $("#dialog-drop").dialog("option","title",dragname+" -> "+dropname);
-    $("#dialog-drop").dialog('open');
+    if (dragoid["type"] == "drag-cours") {/* cours */
+	var dragname = tr.children('td.nom_cours').text();   
+	var dropname = drop.children('td.intitule').text();
+	$("#dialog-drop-cours").children(".hiddenvalue").html("<span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
+	$("#dialog-drop-cours").dialog("option","title",dragname+" -> "+dropname);
+	$("#dialog-drop-cours").dialog('open');
+    };
+    if ("drag-sformation" == dragoid["type"]) {
+	var dragname = tr.children('td.nom').text();   
+	var dropname = drop.children('td.annee').text();
+	$("#dialog-drop").dialog("option","title","Copie en profondeur "+dragname+" -> "+dropname);
+	$("#dialog-drop").children(".hiddenvalue").html("<span>sformation</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
+	$("#dialog-drop").dialog('open');
+    }
+    if ("drag-annee" == dragoid["type"]) {
+	var dragname = tr.children('td.annee').text();   
+	var dropname = drop.children('td.annee').text();
+	$("#dialog-drop").dialog("option","title","Copie en profondeur "+dragname+" -> "+dropname);
+	$("#dialog-drop").children(".hiddenvalue").html("<span>annee</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
+	$("#dialog-drop").dialog('open');
+    }
+
 }
-
-
 
 /* reload de ligne */
 function addReload(td) {
+    if (!existsjQuery(td)) return;
     var sid = td.closest('tr').attr('id');
     // alert(sid);
     var oid = parseIdString(sid);
@@ -1014,6 +1284,7 @@ function removeReload(td) {
 function addOk(jqcell) {
     var ligne = jqcell.parent('tr');
     var td = ligne.find('td.action');
+    if (!existsjQuery(td)) return;
     if (ligne.hasClass('edit')) {
 	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
 	ligne.find('div.ok').remove();
@@ -1041,6 +1312,7 @@ function addOk(jqcell) {
 
 function addMenuFields(tr) {
     var th = tr.find('th.action');
+    if (!existsjQuery(th)) return;
     th.find('div.palette').prepend('<button class="menufields">champs...</button>');
     var button = th.find('button.menufields').button({
 			text: false,
@@ -1058,6 +1330,7 @@ function removeMenuFields(td) {
 
 function addServiceAdd(tr) {
     var th = tr.find('th.action');
+    if (!existsjQuery(th)) return;
     th.find('div.palette').append('<button class="menuadd">ajouter...</button>');
     var button = th.find('button.menuadd').button({
 			text: false,
@@ -1077,6 +1350,7 @@ function removeServiceAdd(td) {
 
 /*bloc--------histogrammes ---------*/
 function addHistoGlobal(td) {
+    if (!existsjQuery(td)) return;
     var oid = parseIdString(td.parent().attr('id'));
     var annee = oid["id"];
     td.find("micropalette").remove();
@@ -1416,14 +1690,9 @@ function recalculatePanier() {
 
 
 /* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
-function  appendList(data,body, do_it_last) {
+function  appendList(data, body, do_it_last) {
     var legende = $("#skel"+data.type);
     var list = legende.children('th');
-    /*  etait buggy !
-    legende = legende.clone(true);
-    legende.removeAttr('id');
-    body.append(legende);
-    */
     legende.clone(true).attr('id','legende'+data.type+data.id_parent).appendTo(body);
     legende = $('#legende'+data.type+data.id_parent);
     getjson("json_get.php",data, function (o) {
@@ -1439,7 +1708,7 @@ function  appendList(data,body, do_it_last) {
 }
 
 
-function appendItem(type,prev,o,list) {
+function appendItem(type, prev, o, list) {
     var n = list.length;
     var i = 0;
     var id = idString({id: o["id_"+type], type: type});
@@ -1461,8 +1730,27 @@ function appendItem(type,prev,o,list) {
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
-	addHandle(line.children('td.laction'));
-	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+COLCOURS+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
+	addHandle(line.children('td.laction'), "cours");
+	var colspan = largeurligne(line);
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
+    }
+    if (type == "annee") {
+	var idannee = o["id"];
+	/* bascule d'annee */
+	line.children('td.laction')
+	    .prepend('<div class="basculeOff" id="basculeannee'+idannee+'" />');
+	$('#basculeannee'+idannee).bind('click',{id: idannee},basculerAnnee);
+	addHandle(line.children('td.laction'), "annee");
+	$('#basculeannee'+idannee).droppable({accept:'div.handle', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
+    }
+    if (type == "sformation") {
+	var idsf = o["id_sformation"];
+	/* bascule de sformation */
+	line.children('td.laction')
+	    .prepend('<div class="basculeOff" id="basculesformation_'+idsf+'" />');
+	$('#basculesformation_'+idsf).bind('click',{id: idsf},basculerSuperFormation);
+	addHandle(line.children('td.laction'), "sformation");
+	$('#basculesformation_'+idsf).droppable({accept:'div.handle.formation', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
     }
     if (type == "formation") {
 	var idf = o["id_formation"];
@@ -1477,9 +1765,8 @@ function appendItem(type,prev,o,list) {
 	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
 	/* */
-	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+COLCOURS+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
-    } else {/* pas pour les formations */
-	addRm(line.find('td.action')); 
+	var colspan = largeurligne(line);
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
     }
     if (type == "tranche") {
 	addMult(line.children('td.action')); 
@@ -1494,6 +1781,7 @@ function appendItem(type,prev,o,list) {
 	    .prepend('<div class="basculeOff" id="basculeenseignant_'+o["id_enseignant"]+'" />')
 	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
     }
+    addRm(line.find('td.action')); 
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
@@ -1687,6 +1975,46 @@ function dropDeplacer() {
     }
     $(this).dialog("close");
 }
+
+/* copier une formation, ses cours, ses Interventions */
+function copierSformation() {
+    copierSuper(1);
+}
+function copierFormations() {
+    copierSuper(2);
+}
+function copierFormationsCours() {
+    copierSuper(3);
+}
+function copierFormationsCoursInterventions() {
+    copierSuper(4);
+}
+
+function copierSuper(profondeur) {
+    var arg =  $("#dialog-drop div.hiddenvalue span:first");
+    var type = arg.text();
+    arg = arg.next();
+    var source = arg.text();
+    arg = arg.next();
+    var but = arg.text();
+/*    alert("Copier "+source+" ("+type+") dans "+but+": a profondeur "+profondeur+" fonction non disponible"); */
+
+    $("#dialog-drop").dialog("close");
+    /* fermer l'annee */
+    if ($('#basculeannee'+but).hasClass("basculeOn")) {
+	basculerAnnee(but);
+    }
+    $("#dialog-attendre").dialog("open");
+    getjson("json_copy.php", 
+	    {"type": type, "id": source, "id_cible": but, "profondeur": profondeur},
+	    function () {	    
+		    $("#dialog-attendre").dialog("close");
+		if ( "annee" == type || "sformation" == type){
+		   	basculerAnnee(but);
+		}
+	    });  
+}
+
 
 /*------- FIN ENVOI DE MODIFS AU SERVEUR --------*/
 

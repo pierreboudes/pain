@@ -45,9 +45,9 @@ INSERT INTO pain_formation
 
 -- cours:
 INSERT INTO pain_cours
-(id_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif, code_geisha)
+(id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif, code_geisha)
 SELECT
-pain_cours.id_cours as id_prev,
+pain_cours.id_cours as id_cours_prev,
 pain_formation.id_formation,
 pain_cours.semestre,
 pain_cours.nom_cours,
@@ -246,5 +246,4 @@ FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 
 
 ------Pseudonommage
 UPDATE pain_enseignant, pseudos SET nom=pseudo_nom, prenom=pseudo_prenom, email=CONCAT(pseudo_prenom,'.',pseudo_nom,'@nullepart'), bureau='A501', telephone='40 67' WHERE id_enseignant > 9 AND id_enseignant = id_pseudo
-
 UPDATE pain_enseignant, pseudos SET login=CONCAT(pseudo_prenom,'.',pseudo_nom) WHERE id_enseignant > 10 AND id_enseignant = id_pseudo

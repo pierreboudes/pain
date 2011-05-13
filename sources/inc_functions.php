@@ -162,6 +162,100 @@ function selectionner_cours($id)
     }
     return $cours;
 }
+/* supprimer sformation */
+function supprimer_sformation($id)
+{    
+    if (!peutsupprimersformation($id)) {
+	errmsg("droits insuffisants.");
+    }
+
+    pain_log("-- supprimer_sformation($id)");
+
+    $q = "DELETE pain_choix FROM pain_choix, pain_cours, pain_formation 
+          WHERE pain_formation.id_sformation = $id
+          AND  pain_cours.id_formation = pain_formation.id_formation
+          AND  pain_choix.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_tranche FROM pain_tranche, pain_cours, pain_formation
+          WHERE pain_formation.id_sformation = $id
+          AND  pain_cours.id_formation = pain_formation.id_formation
+          AND  pain_tranche.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_cours FROM pain_cours, pain_formation 
+          WHERE pain_formation.id_sformation = $id
+          AND  pain_cours.id_formation = pain_formation.id_formation";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_formation FROM pain_formation 
+          WHERE pain_formation.id_sformation = $id";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    /* sformation */
+    $q = "DELETE FROM pain_sformation WHERE `id_sformation` = $id LIMIT 1";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    echo '{"ok": "ok"}';
+}
+
+/* supprimer formation */
+function supprimer_formation($id)
+{    
+    if (!peutsupprimerformation($id)) {
+	errmsg("droits insuffisants.");
+    }
+
+    pain_log("-- supprimer_formation($id)");
+
+    $q = "DELETE pain_choix FROM pain_choix, pain_cours 
+          WHERE pain_cours.id_formation = $id
+          AND  pain_choix.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_tranche FROM pain_tranche, pain_cours 
+          WHERE pain_cours.id_formation = $id
+          AND  pain_tranche.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_cours FROM pain_cours 
+          WHERE pain_cours.id_formation = $id ";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    /* formation */
+    $q = "DELETE FROM pain_formation WHERE `id_formation` = $id LIMIT 1";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    echo '{"ok": "ok"}';
+}
+
 
 /* a conserver */
 function supprimer_cours($id)
@@ -752,6 +846,7 @@ function htdsuper($id) {
 }
 
 function htdformation($id) {    
+/* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est compté deux fois dans le total des annulation, à vérifier ! */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
@@ -828,15 +923,86 @@ function htdformation($id) {
 		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
-function responsableducours($id) {
-    $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id;
-    $rresponsable = mysql_query($qresponsable)
-	or die("erreur d'acces a la table cours : $qresponsable erreur:".mysql_error());
-    $responsable = mysql_fetch_assoc($rresponsable);
-    return $responsable["id_enseignant"];    
+
+function htdcours($id) {    
+    $qannule = "SELECT SUM(htd) FROM pain_tranche WHERE pain_tranche.id_cours = $id AND pain_tranche.id_enseignant = 1";
+    $rannule = mysql_query($qannule) 
+	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+
+    $annule = mysql_fetch_assoc($rannule);
+    $annule = $annule["SUM(htd)"];
+    if ($annule == "") {
+	$annule = 0;
+    }
+
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_tranche WHERE pain_tranche.id_cours = $id";
+    $rcomp = mysql_query($qcomp) 
+	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+
+    $comp = mysql_fetch_assoc($rcomp);
+    $cm = $comp["cm"];
+    if ($cm == "") {
+	$cm = 0;
+    } 
+    $td = $comp["td"];
+    if ($td == "") {
+	$td = 0;
+    } 
+    $tp = $comp["tp"];
+    if ($tp == "") {
+	$tp = 0;
+    } 
+    $alt = $comp["alt"];
+    if ($alt == "") {
+	$alt = 0;
+    }
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+
+    $rperm = mysql_query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    while ($cat = mysql_fetch_assoc($rperm)) {
+	switch ($cat["categorie"]) {
+	case 1: /* 'annule': decompte specifique */ break;
+	case 2: /* permanents */
+	    $perm += $cat["SUM(htd)"];
+	    break;
+	case 3: /* non permanents */
+	    $nperm += $cat["SUM(htd)"];
+	    break;
+	case 22: /* enseignant 'mutualise' */
+	    $mutualise += $cat["SUM(htd)"];
+	    break;
+	case 23: /* enseignant 'libre' */
+	    $libre += $cat["SUM(htd)"];
+	    break;
+	case 29: /* enseignant 'autre' (exterieur) */ 
+	    $autre += $cat["SUM(htd)"];
+	    break;
+	default: /* tout le reste = exterieurs */
+	    $ext += $cat["SUM(htd)"];
+	}
+    }
+    $servi = $ext + $autre + $perm + $nperm;
+
+    return array("servi"=>$servi, 
+		 "libre"=>$libre,
+		 "mutualise"=>$mutualise,
+		 "annule"=>$annule,
+		 "permanents" => $perm,
+		 "nonpermanents" => $nperm,
+		 "exterieurs" =>$ext,
+		 "autre" => $autre,
+		 "cm"=>$cm,
+		 "td"=>$td,
+		 "tp"=>$tp,
+		 "alt"=>$alt,
+		 "total"=>$servi+$libre+$mutualise+$annule);
 }
 
-function htdcours($id) {
+
+function htdcours_old($id) {
 
     $qservi = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant > 8';
     $rservi = mysql_query($qservi) 
@@ -929,6 +1095,13 @@ function ig_totauxenpostes($totaux) {
     echo '<br/>Extérieurs: '.enpostes($totaux["exterieurs"] + $totaux["autre"]).' = '.enpostes($totaux["exterieurs"])." servis + ".enpostes($totaux["autre"])." inconnus";
 }
 
+function responsableducours($id) {
+    $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id;
+    $rresponsable = mysql_query($qresponsable)
+	or die("erreur d'acces a la table cours : $qresponsable erreur:".mysql_error());
+    $responsable = mysql_fetch_assoc($rresponsable);
+    return $responsable["id_enseignant"];    
+}
 
 function estintervenant($id_enseignant)
 {
@@ -1164,7 +1337,7 @@ function ig_totauxservice($totaux) {
     echo '</tr>';
 }
 
-function update_servicesreels() {
+function update_servicesreels($id_ens = NULL) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
@@ -1178,8 +1351,12 @@ function update_servicesreels() {
                     AND pain_formation.id_formation = pain_cours.id_formation
                     AND pain_sformation.id_sformation = pain_formation.id_sformation ".
 	//" AND pain_formation.id_formation <> 22 ".
-                   " AND pain_sformation.annee_universitaire = ".$annee.")
-                WHERE pain_service.annee_universitaire = ".$annee;
+                  " AND pain_sformation.annee_universitaire =  pain_service.annee_universitaire) ";
+    if (NULL == $id_ens) {
+	$qupdate .= " WHERE pain_service.annee_universitaire = ".$annee;
+    } else {
+	$qupdate .= " WHERE pain_service.id_enseignant = ".$id_ens;
+    }
     mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
 }
