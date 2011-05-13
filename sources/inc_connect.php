@@ -31,16 +31,20 @@ mysql_query("SET NAMES 'utf8'");
 
 require_once('utils.php');
 
-function bkp_base() {
+function bkp_base($force = false) {
     $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
     $s = @stat($dir.'/bkp/void_bkp.txt');
-    if  (time() > ($s[9] + 604800)) /* weekly */
+    if  (time() > ($s[9] + 604800) || $force) /* weekly */
     {
 	@touch($dir.'/bkp/void_bkp.txt');
 	pain_log("-- backup base start");
-	shell_exec("$dir/../secret/painbkp.sh $dir");
+	$output = shell_exec("$dir/../secret/painbkp.sh $dir");
+	if (0 == strlen($output)) {
+	   pain_log("-- Warning: backup problem (no script output)");
+	}
 	pain_log("-- backup base end");
     }
+    return $output;
 }
 /* le script painbkp.sh contient :
 mkdir -p ${1}/bkp/;
