@@ -110,7 +110,7 @@ $qmajservices = 'REPLACE INTO pain_service
                  pain_enseignant.service,
                  CONCAT(nom," ",prenom)
                  FROM pain_enseignant
-                 WHERE pain_enseignant.id_enseignant IN ';
+                 WHERE  (pain_enseignant.id_enseignant NOT IN (SELECT pain_service.id_enseignant FROM pain_service WHERE pain_service.annee_universitaire = "'.$annee_cible.'")) AND pain_enseignant.id_enseignant IN ';
 
 
 /* supers formations */
@@ -209,8 +209,45 @@ pain_formation, pain_sformation WHERE '.$cond;
     $profondeur -= 1;    
 }
 
-/* tranches */
-if ($profondeur > 0) {
+
+/* tranches rendues anonymes */
+if (1 == $profondeur) {
+
+ if ($type == "annee") {
+	$cond = "annee_universitaire = ".$annee_cible."
+                 AND pain_formation.id_sformation = 
+                     pain_sformation.id_sformation 
+                 AND pain_cours.id_formation = 
+                     pain_formation.id_formation 
+                 AND pain_tranche.id_cours = 
+                     pain_cours.id_cours_prev ";
+    } else if ($type == "sformation") {
+	$cond = "pain_formation.id_sformation = ".$id_new."
+                 AND pain_sformation.id_sformation =  ".$id_new
+/*la derniere clause juste pour eviter que le resultat soit multipliee
+ * par le nb de sformations ! */
+              ." AND pain_cours.id_formation = 
+                     pain_formation.id_formation 
+                 AND pain_tranche.id_cours = 
+                     pain_cours.id_cours_prev ";
+    }
+
+    /*Pas de mise à jour des services des intervenants de tranches */
+
+
+    /* insertion de nouvelles tranches anonymes */
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT 
+pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+pain_formation, pain_sformation WHERE '.$cond;
+    error_log($q);
+
+    if (!mysql_query($q)) {
+	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+    }    
+}
+
+/* tranches avec noms des intervenants */
+if ($profondeur == 2) {
 
  if ($type == "annee") {
 	$cond = "annee_universitaire = ".$annee_cible."

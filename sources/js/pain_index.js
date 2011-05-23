@@ -23,7 +23,7 @@
 
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
-	$('#skelcours').children('th.code_geisha, th.credits, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt, th.inscrits, th.presents,
+	$('#skelcours').children('th.code_geisha, th.credits, th.mcc, th.fin, th.tirage, th.totaux_loader').fadeOut(0); // th.alt, th.inscrits, th.presents,
 	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
 	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);

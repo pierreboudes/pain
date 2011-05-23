@@ -37,7 +37,7 @@ function bkp_base($force = false) {
     if  (time() > ($s[9] + 604800) || $force) /* weekly */
     {
 	@touch($dir.'/bkp/void_bkp.txt');
-	pain_log("-- backup base start");
+	pain_log("-- backup base start");	
 	$output = shell_exec("$dir/../secret/painbkp.sh $dir");
 	if (0 == strlen($output)) {
 	   pain_log("-- Warning: backup problem (no script output)");

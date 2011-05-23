@@ -42,14 +42,15 @@ $(document).ready(function(){
 	$("#dialog-drop").dialog({
 	    autoOpen: false,
 		    resizable: false,
-		    width: 600,
+		    width: 700,
 		    //height:240,
 		    modal: true,
 		    buttons: {
 		    'Annuler': function() {
 			$(this).dialog('close');
 		    },
-			'4. Tout': copierFormationsCoursInterventions,
+			'5. Tout': copierFormationsCoursInterventionsNoms,			    
+			    '4. Interventions': copierFormationsCoursInterventions,
 			    '3. Cours': copierFormationsCours,
 			    '2. Cycle(s)': copierFormations,
 			    '1. Titre(s)': copierSformation

@@ -1989,6 +1989,9 @@ function copierFormationsCours() {
 function copierFormationsCoursInterventions() {
     copierSuper(4);
 }
+function copierFormationsCoursInterventionsNoms() {
+    copierSuper(5);
+}
 
 function copierSuper(profondeur) {
     var arg =  $("#dialog-drop div.hiddenvalue span:first");
