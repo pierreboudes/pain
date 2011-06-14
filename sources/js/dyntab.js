@@ -299,7 +299,7 @@ function load_totaux(c,o) {
 		s += htdpostes(o["annule"])+'&nbsp;annulés';
 		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents + '+htdpostes(o["libre"])+'&nbsp;à pourvoir';
 		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = '+htdpostes(o["exterieurs"])+" servis + "+htdpostes(o["autre"])+" inconnus";
-
+		s += '<div style="float: right">['+Math.round(o["etu"])+'h étu.]</div>';
 		c.html(s);
 	    });
     }
@@ -1598,13 +1598,14 @@ function   nouveauService(e) {
 
 /* ---------- PANIER -------------*/
 function togglePanier() {
+    var annee = $('#choixannee option:selected').attr('value');
     var panier = $("#panier");
     var id = $('#user > .id').text();
     if (panier.dialog("isOpen")) {
 	panier.dialog("close"); /* fermeture suivie de la re-ouverture, pour forcer l'affichage en emplacement central */
     }
     panier.dialog("open");
-    reloadChoix(panier,id, 2010);
+    reloadChoix(panier, id, annee);
 }
 
 function showChoix() { // utilisee dans service.php

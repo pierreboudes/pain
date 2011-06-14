@@ -688,8 +688,23 @@ function stats_sform($idsf) {
 
 
 
-function htdtotaux($annee = NULL) {    
+function htdtotaux($annee = NULL) {
     if ($annee == NULL) $annee = annee_courante();
+
+    /* heures etudiants */
+    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+             FROM pain_sformation, pain_formation, pain_cours 
+             WHERE  pain_formation.id_formation = pain_cours.id_formation 
+             AND pain_sformation.id_sformation = pain_formation.id_sformation  
+             AND annee_universitaire = $annee";
+    $retu = mysql_query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
+    $letu = mysql_fetch_assoc($retu);    
+    $etu = $letu["etu"];
+    if ($etu == "") {
+	$etu = 0;
+    }
+
 
     $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
@@ -764,10 +779,24 @@ function htdtotaux($annee = NULL) {
 		 "td"=>$td,
 		 "tp"=>$tp,
 		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule);
+		 "total"=>$servi+$libre+$mutualise+$annule,
+	         "etu"=>$etu);
 }
 
 function htdsuper($id) {    
+    /* heures etudiants */
+    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+             FROM pain_formation, pain_cours
+             WHERE pain_formation.id_sformation  = $id 
+             AND pain_cours.id_formation = pain_formation.id_formation";
+    $retu = mysql_query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
+    $letu = mysql_fetch_assoc($retu);    
+    $etu = $letu["etu"];
+    if ($etu == "") {
+	$etu = 0;
+    }
+
 
     $qannule ="SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = mysql_query($qannule) 
@@ -842,10 +871,22 @@ function htdsuper($id) {
 		 "td"=>$td,
 		 "tp"=>$tp,
 		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule);
+		 "total"=>$servi+$libre+$mutualise+$annule,
+	         "etu"=>$etu);
 }
 
-function htdformation($id) {    
+function htdformation($id) {
+    /* heures etudiants */
+    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+             FROM pain_cours WHERE id_formation = $id";
+    $retu = mysql_query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
+    $letu = mysql_fetch_assoc($retu);    
+    $etu = $letu["etu"];
+    if ($etu == "") {
+	$etu = 0;
+    }
+
 /* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est compté deux fois dans le total des annulation, à vérifier ! */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = mysql_query($qannule) 
@@ -920,11 +961,23 @@ function htdformation($id) {
 		 "td"=>$td,
 		 "tp"=>$tp,
 		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule);
+		 "total"=>$servi+$libre+$mutualise+$annule,
+	         "etu"=>$etu);
 }
 
 
-function htdcours($id) {    
+function htdcours($id) {
+    /* heures etudiants */
+    $qetu = "SELECT (cm + td + tp + alt) * presents as etu
+             FROM pain_cours WHERE id_cours = $id";
+    $retu = mysql_query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
+    $letu = mysql_fetch_assoc($retu);    
+    $etu = $letu["etu"];
+    if ($etu == "") {
+	$etu = 0;
+    }
+
     $qannule = "SELECT SUM(htd) FROM pain_tranche WHERE pain_tranche.id_cours = $id AND pain_tranche.id_enseignant = 1";
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
@@ -998,7 +1051,8 @@ function htdcours($id) {
 		 "td"=>$td,
 		 "tp"=>$tp,
 		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule);
+		 "total"=>$servi+$libre+$mutualise+$annule,
+	         "etu"=>$etu);
 }
 
 
