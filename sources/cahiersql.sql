@@ -113,7 +113,7 @@ CREATE TABLE `pain_service` (
   PRIMARY KEY (`id_enseignant`,`annee_universitaire`)
 );
 
--- mise à jour de pain_service (pour 2010)
+-- mise �Á� jour de pain_service (pour 2010)
 DELETE FROM pain_service WHERE annee_universitaire = 2010;
 REPLACE INTO pain_service 
   (id_enseignant, annee_universitaire, categorie, service_annuel, tmpnom)
@@ -162,11 +162,11 @@ INSERT INTO pain_formation
 ---service
 INSERT INTO pain_service (id_enseignant, annee_universitaire, categorie, service_annuel) SELECT serv.id_enseignant, "2006", serv.categorie, serv.service_annuel FROM pain_service AS serv WHERE serv.annee_universitaire = "2009"
 
---- pour faciliter les éditions manuelles de pain_service :
+--- pour faciliter les editions manuelles de pain_service :
 UPDATE pain_service SET tmpnom =(SELECT CONCAT(nom,' ', prenom) FROM pain_enseignant WHERE pain_enseignant.id_enseignant = pain_service.id_enseignant)
 
 ---Selection des responsables (supprimer manuellement les responsables hors departement)
-SELECT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE id_enseignant IN (
+SELECT DISTINCT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE id_enseignant IN (
 SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010 
 UNION 
 SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation 
@@ -210,10 +210,10 @@ INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, "
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
 
 --- maj de la liste membre :
---- 1) lister les membres à désabonner
---- 2) lister les membres à abonner
---- 3) lister les membres ayant changé d'adresse
---- 4) mettre à jour la table pain_listes
+--- 1) lister les membres a�desabonner
+--- 2) lister les membres a� abonner
+--- 3) lister les membres ayant change d'adresse
+--- 4) mettre a jour la table pain_listes
 
 --- 1) liste des membres a sortir de la liste :
 SELECT id_enseignant, tmpnom, email FROM `pain_listes` WHERE liste = "membres" 
@@ -224,7 +224,7 @@ SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres"
 AND NOT EXISTS 
 (SELECT pain_enseignant.id_enseignant FROM pain_enseignant WHERE (categorie = 3 OR categorie = 2) AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
 
---- 2) liste des membres à abonner
+--- 2) liste des membres a abonner
 SELECT id_enseignant, CONCAT(prenom," ", nom), email FROM `pain_enseignant` WHERE (categorie = 3 OR categorie = 2)
 AND NOT EXISTS 
 (SELECT pain_listes.id_enseignant FROM pain_listes WHERE liste = "membres" AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
