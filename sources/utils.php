@@ -51,6 +51,18 @@ function getclean($s) {
     else return NULL;
 }
 
+function cookieclean($s) {
+    if (isset($_COOKIE[$s])) {
+	if(get_magic_quotes_gpc()) {
+	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_COOKIE[$s]))), ENT_QUOTES));
+	}
+	else {
+	    return trim(htmlspecialchars(mysql_real_escape_string($_COOKIE[$s]), ENT_QUOTES));
+	}
+    }
+    else return NULL;
+}
+
 function ip_client() {
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
     $IP = $_SERVER['HTTP_X_FORWARDED_FOR']; 

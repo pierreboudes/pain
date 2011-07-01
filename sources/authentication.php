@@ -56,7 +56,7 @@ function annee_courante() {
 function authentication() {
     if (isset($_COOKIE['painAnonyme'])) {
 	$login = "anonymous";
-	if ($_COOKIE['painAnonyme'] == "christian.codognet") {
+	if (cookieclean(['painAnonyme']) == "christian.codognet") {
 	    $login = "christian.codognet";
 	}
         $user = array("id_enseignant"=> -1,
@@ -82,7 +82,7 @@ function authentication() {
                           WHERE id_enseignant = ".$user["id"]." LIMIT 1";
 		$result = mysql_query($query);
 		if (mysql_fetch_array($result)) {
-		    $user["id"] = $_COOKIE['painFakeId'];
+		    $user["id"] = cookieclean('painFakeId']);
 		}
 	    }
 	} else {
