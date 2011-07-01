@@ -88,7 +88,7 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 		    }
 */
 	    });
-
+	$('#menu').after('<div class="bouton-panier"><button id="bouton-panier">Panier</button></div>');
 	$('#bouton-panier').button(
 		    {text: true,
 			    icons: {

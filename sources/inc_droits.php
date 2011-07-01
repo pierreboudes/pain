@@ -52,7 +52,14 @@ function peutediter($type, $id, $id_parent) {
 }
 
 function peutchoisir() {
-    return true;
+    $query = "SELECT id_enseignant 
+              FROM pain_enseignant 
+              WHERE id_enseignant = ".$user["id"]." LIMIT 1";
+    $result = mysql_query($query);
+    if (mysql_fetch_array($result)) {
+	return true;
+    }
+   return false;
 }
 
 function selectenseignantschoix($id_choix) {
@@ -66,7 +73,7 @@ function selectenseignantschoix($id_choix) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutediterchoix($id_choix): ".mysql_error());
+    $res = mysql_query($query) or die("ERREUR selectenseignantschoix($id_choix): ".mysql_error());
     $r = mysql_fetch_array($res);
     return $r;
 }

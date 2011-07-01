@@ -1,3 +1,4 @@
+-- -*- coding: utf-8 -*-
 DROP TABLE IF EXISTS `pain_categorie`;
 CREATE TABLE IF NOT EXISTS `pain_categorie` (
   `id_categorie` mediumint(9) NOT NULL,
@@ -206,4 +207,5 @@ CREATE TABLE IF NOT EXISTS `pain_tranche` (
   `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_tranche`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
 

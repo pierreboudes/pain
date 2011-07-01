@@ -55,26 +55,41 @@ function annee_courante() {
 
 function authentication() {
     if (isset($_COOKIE['painAnonyme'])) {
-	return array("id_enseignant"=> -1,
+	$login = "anonymous";
+	if ($_COOKIE['painAnonyme'] == "christian.codognet") {
+	    $login = "christian.codognet";
+	}
+        $user = array("id_enseignant"=> -1,
 		     "prenom" => "",
 		     "nom" => "Anonyme",
-		     "login" => "anonymous",
+		     "login" => $login,
 		     "su" => 0,
 		     "stat" => 0
 	    );
-    }
-    phpCAS::forceAuthentication();
-    $login = phpCAS::getUser();
-    // $login = "boudes";  /* (no) SHUNT */
-    $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
-              FROM pain_enseignant 
-              WHERE login LIKE '$login' LIMIT 1";
-    $result = mysql_query($query);
-    if ($user = mysql_fetch_array($result)) {
-	return $user;
     } else {
-	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement d'informatique, vous pouvez envoyer un message avec votre login : $login à Pierre Boudes. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
-    };
+	phpCAS::forceAuthentication();
+	$login = phpCAS::getUser();
+    }
+    if ($login != "anonymous") {
+	$query = "SELECT id_enseignant, prenom, nom, login, su, stats 
+                 FROM pain_enseignant 
+                 WHERE login LIKE '$login' LIMIT 1";
+	$result = mysql_query($query);
+	if ($user = mysql_fetch_array($result)) {
+	    if ( (1 == $user["su"]) && isset($_COOKIE['painFakeId']) ){
+		$query = "SELECT id_enseignant 
+                          FROM pain_enseignant 
+                          WHERE id_enseignant = ".$user["id"]." LIMIT 1";
+		$result = mysql_query($query);
+		if (mysql_fetch_array($result)) {
+		    $user["id"] = $_COOKIE['painFakeId'];
+		}
+	    }
+	} else {
+	    die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement d'informatique, vous pouvez envoyer un message avec votre login : $login &agrave; Pierre Boudes. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
+	};
+    }
+    return $user;
 }
 
 function authrequired() {
