@@ -52,10 +52,11 @@ function peutediter($type, $id, $id_parent) {
 }
 
 function peutchoisir() {
+    global $user;
     $query = "SELECT id_enseignant 
               FROM pain_enseignant 
-              WHERE id_enseignant = ".$user["id"]." LIMIT 1";
-    $result = mysql_query($query);
+              WHERE id_enseignant = ".$user["id_enseignant"]." LIMIT 1";
+  $result = mysql_query($query) or die("ERREUR peutchoisir(): $query ".mysql_error());
     if (mysql_fetch_array($result)) {
 	return true;
     }

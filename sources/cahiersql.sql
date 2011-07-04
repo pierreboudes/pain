@@ -247,3 +247,13 @@ FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 
 ------Pseudonommage
 UPDATE pain_enseignant, pseudos SET nom=pseudo_nom, prenom=pseudo_prenom, email=CONCAT(pseudo_prenom,'.',pseudo_nom,'@nullepart'), bureau='A501', telephone='40 67' WHERE id_enseignant > 9 AND id_enseignant = id_pseudo
 UPDATE pain_enseignant, pseudos SET login=CONCAT(pseudo_prenom,'.',pseudo_nom) WHERE id_enseignant > 10 AND id_enseignant = id_pseudo
+
+
+
+------ stats voeux 
+
+select pain_choix.id_enseignant, pain_choix.id_cours,
+sum(pain_choix.htd) from pain_choix, pain_service where
+pain_service.annee_universitaire = 2011 AND pain_choix.id_enseignant =
+pain_service.id_enseignant AND pain_service.service_annuel > 1 GROUP
+BY pain_choix.id_cours
