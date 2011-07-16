@@ -150,13 +150,82 @@ if (isset($_GET["type"])) {
         } else if (isset($_GET["id"])) {
 	    $id = getclean('id');
 	    list($id_ens,$an) = split('X',$id);
-	    update_servicesreels($id_par);
+	    update_servicesreels($id_ens);
 	    $requete .= " id_enseignant = $id_ens AND annee_universitaire = $an ";
 	} else {
 	    $requete .= " 0 ";
 	}
        $requete .= "AND id_categorie = categorie 
                     ORDER BY annee_universitaire ASC";
+    } else if ($readtype == "potentiel" and isset($_GET['id_parent'])) {
+	$id_par =  getclean('id_parent');
+	$requete = "select *,
+id_cours as id_potentiel,
+greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
+greatest(ifnull(tranche_td,0),ifnull(choix_td,0)) as td,
+greatest(ifnull(tranche_tp,0),ifnull(choix_tp,0)) as tp,
+greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)) as alt,
+greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)) as htd 
+from
+((
+select
+pain_sformation.numero,
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_choix, pain_cours, pain_formation, pain_sformation 
+where
+pain_choix.id_enseignant = ".$id_par." 
+and pain_choix.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = ".$annee.")
+union
+(select
+pain_sformation.numero,
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_tranche, pain_cours, pain_formation, pain_sformation 
+where
+pain_tranche.id_enseignant = ".$id_par." 
+and pain_tranche.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = ".$annee.")) as t0
+left join
+(select id_cours, 
+sum(cm) as choix_cm,
+sum(td) as choix_td,
+sum(tp) as choix_tp,
+sum(alt) as choix_alt,
+sum(htd) as choix_htd
+from pain_choix
+where
+id_enseignant = ".$id_par." 
+group by id_cours) as t1 using(id_cours)
+left join
+(select id_cours,
+sum(cm) as tranche_cm,
+sum(td) as tranche_td,
+sum(tp) as tranche_tp,
+sum(alt) as tranche_alt,
+sum(htd) as tranche_htd
+from pain_tranche
+where
+id_enseignant = ".$id_par." 
+group by id_cours) as t2
+ using(id_cours)
+order by semestre ASC,
+numero ASC, 
+annee_etude ASC, 
+nom_cours ASC";   
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

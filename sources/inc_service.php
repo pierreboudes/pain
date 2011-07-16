@@ -100,5 +100,9 @@ if ($id_enseignant != "") {
     /* Choix */
     echo "<h2>Choix</h2>";
     echo '<div id="choix"></div>';
+
+    /* Choix et tranches */
+    echo "<h2>Bilan des interventions choisies et prévues</h2>";
+    echo '<div id="potentiel"></div>';
 }
 ?>

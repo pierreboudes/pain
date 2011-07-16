@@ -1406,13 +1406,42 @@ function update_servicesreels($id_ens = NULL) {
                     AND pain_sformation.id_sformation = pain_formation.id_sformation ".
 	//" AND pain_formation.id_formation <> 22 ".
                   " AND pain_sformation.annee_universitaire =  pain_service.annee_universitaire) ";
-    if (NULL == $id_ens) {
 	$qupdate .= " WHERE pain_service.annee_universitaire = ".$annee;
-    } else {
-	$qupdate .= " WHERE pain_service.id_enseignant = ".$id_ens;
+    if (NULL != $id_ens) {
+	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
     }
     mysql_query($qupdate)
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
+}
+
+function update_servicespotentiels($id_ens = NULL) {
+    global $annee;
+    if ($annee == NULL) $annee = annee_courante();
+/* ne pas loguer */
+    $qupdate = "update pain_service set
+service_potentiel = (select
+sum(greatest(ifnull(
+(select sum(htd)
+from pain_tranche
+where pain_tranche.id_enseignant  = pain_service.id_enseignant
+and pain_tranche.id_cours = tid.id_cours)
+,0),ifnull(
+(select sum(htd)
+from pain_choix
+where pain_choix.id_enseignant = pain_service.id_enseignant
+and pain_choix.id_cours = tid.id_cours)
+,0)))
+from pain_cours as tid, pain_formation, pain_sformation 
+where pain_sformation.annee_universitaire = pain_service.annee_universitaire
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and tid.id_formation = pain_formation.id_formation 
+)";
+   $qupdate .= " WHERE pain_service.annee_universitaire = ".$annee;
+    if (NULL != $id_ens) {
+	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
+    }
+    mysql_query($qupdate)
+	or die("erreur update_servicespotentiels : $qupdate: ".mysql_error());
 }
 
 function liste_enseignantscategorie($categorie) {
@@ -1422,6 +1451,7 @@ function liste_enseignantscategorie($categorie) {
                  nom,
                  prenom,
                  pain_service.service_annuel AS service,
+                 pain_service.service_potentiel AS service_potentiel,
                  pain_service.service_reel AS service_reel 
           FROM pain_enseignant, pain_service
           WHERE pain_service.categorie = $categorie 

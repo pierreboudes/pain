@@ -747,6 +747,13 @@ function ligne() {
     /* parfum */
     this.parfum = new cell();
     this.parfum.name = "parfum";
+
+    /* potentiel (tranches + choix) 
+     */
+    this.choix_htd = new immutcell();
+    this.choix_htd.name = "choix_htd";
+    this.tranche_htd = new immutcell();
+    this.tranche_htd.name = "tranche_htd";
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -1595,10 +1602,13 @@ function   nouveauService(e) {
 
 /* ---------- FIN MENU AJOUT SERVICE ---------*/
 
+function getAnnee() {
+    return $('#choixannee option:selected').attr('value');
+}
 
 /* ---------- PANIER -------------*/
 function togglePanier() {
-    var annee = $('#choixannee option:selected').attr('value');
+    var annee = getAnnee();
     var panier = $("#panier");
     var id = $('#user > .id').text();
     if (panier.dialog("isOpen")) {
@@ -1611,42 +1621,55 @@ function togglePanier() {
 function showChoix() { // utilisee dans service.php
     var choix = $("#choix");
     var id = $('#formuser > .id').text();
-    reloadChoix(choix,id);
+    reloadChoix(choix, id, getAnnee());
+}
+function showPotentiel() { // utilisee dans service.php
+    var choix = $("#potentiel");
+    var id = $('#formuser > .id').text();
+    reloadChoix(choix, id, getAnnee(), "potentiel");
 }
 
-function reloadChoix(panier,id, annee) {
+function reloadChoix(panier,id, annee, type) {
+    if (type === undefined) {
+	type = "longchoix";
+    }
     panier.html('');
-    panier.append('<div class="panier-conteneur"><table id="tablelongchoix" class="longchoix"><tbody></tbody></table></div>');
-    appendList({type: "longchoix",id_parent: id, annee_universitaire: annee}, 
-	       $('#tablelongchoix > tbody'), 
+    panier.append('<div class="panier-conteneur"><table id="table'+type+'" class="'+type+'"><tbody></tbody></table></div>');
+    appendList({type: type, id_parent: id, annee_universitaire: annee}, 
+	       $('#table'+type+' > tbody'), 
 	       function (o) {
-		   var legende = $('#legendelongchoix'+id);
+		   var legende = $('#legende'+type+id);
 		   addMenuFields(legende);
-		   var line = legende.clone().attr('id','sumlongchoix');
+		   var line = legende.clone().attr('id','sum'+type);
 		   line.children('th').html('');
-/*		   line.children('th.nom_cours').remove();
-		   line.children('th.intitule').attr('colspan','2'); */
 		   line.children('th.nom_cours').addClass('label').html('total');
-		   $('#tablelongchoix > tbody').append(line);
-		   line = legende.clone().attr('id','s1sumlongchoix');
+		   $('#table'+type+' > tbody').append(line);
+		   line = legende.clone().attr('id','s1sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
-		   $('#tablelongchoix > tbody').append(line);
-		   line = legende.clone().attr('id','s2sumlongchoix');
+		   $('#table'+type+' > tbody').append(line);
+		   line = legende.clone().attr('id','s2sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
-		   $('#tablelongchoix > tbody').append(line);
-		   recalculatePanier();
+		   $('#table'+type+' > tbody').append(line);
+		   recalculatePanier(type);
+		   if (type == "potentiel") {
+		       $('#tablepotentiel > tbody > tr > td').removeClass("mutable");
+		       $('#tablepotentiel > tbody > tr > td.action').hide();		       
+		   }
 	       });
 }
 
-function recalculatePanier() {
+function recalculatePanier(type) {
+    if (type === undefined) {
+	type = "longchoix";
+    }
     /* totaux */
-    var body = $('#tablelongchoix > tbody');
+    var body = $('#table'+type+' > tbody');
     var htd = 0; var cm = 0; var td = 0; var tp = 0; var alt = 0;
     var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0; var alt1 = 0;
     var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0; var alt2 = 0;
-    body.children("tr[id^='longchoix_']").each(function(i) {
+    body.children("tr[id^='"+type+"_']").each(function(i) {
 	    var line = $(this);
 	    htd += parseFloat(line.children('td.htd').text());
 	    cm += parseFloat(line.children('td.cm').text());
@@ -1668,23 +1691,23 @@ function recalculatePanier() {
 		alt2 += parseFloat(line.children('td.alt').text());
 	    }
 	});
-    $('#sumlongchoix > th.htd').html(htd);
-    $('#sumlongchoix > th.cm').html(cm);
-    $('#sumlongchoix > th.td').html(td);
-    $('#sumlongchoix > th.tp').html(tp);
-    $('#sumlongchoix > th.alt').html(alt);
+    $('#sum'+type+' > th.htd').html(htd);
+    $('#sum'+type+' > th.cm').html(cm);
+    $('#sum'+type+' > th.td').html(td);
+    $('#sum'+type+' > th.tp').html(tp);
+    $('#sum'+type+' > th.alt').html(alt);
 
-    $('#s1sumlongchoix > th.htd').html(htd1);
-    $('#s1sumlongchoix > th.cm').html(cm1);
-    $('#s1sumlongchoix > th.td').html(td1);
-    $('#s1sumlongchoix > th.tp').html(tp1);
-    $('#s1sumlongchoix > th.alt').html(alt1);
+    $('#s1sum'+type+' > th.htd').html(htd1);
+    $('#s1sum'+type+' > th.cm').html(cm1);
+    $('#s1sum'+type+' > th.td').html(td1);
+    $('#s1sum'+type+' > th.tp').html(tp1);
+    $('#s1sum'+type+' > th.alt').html(alt1);
 
-    $('#s2sumlongchoix > th.htd').html(htd2);
-    $('#s2sumlongchoix > th.cm').html(cm2);
-    $('#s2sumlongchoix > th.td').html(td2);
-    $('#s2sumlongchoix > th.tp').html(tp2);
-    $('#s2sumlongchoix > th.alt').html(alt2);
+    $('#s2sum'+type+' > th.htd').html(htd2);
+    $('#s2sum'+type+' > th.cm').html(cm2);
+    $('#s2sum'+type+' > th.td').html(td2);
+    $('#s2sum'+type+' > th.tp').html(tp2);
+    $('#s2sum'+type+' > th.alt').html(alt2);
 }
 
 /* BLOC ----- PANIER -------------*/

@@ -19,7 +19,7 @@ table.longchoix {
 background-color: white;
 }
 
-table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services
+table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services, table.potentiel
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 tr.sformation {background-color: #6495ed  ;}
@@ -188,7 +188,7 @@ table.stat,table.annuaire {
     margin-top: 10px;
 }
 
-table.longchoix {
+table.longchoix, table.potentiel {
     border-width: 1px;
     border-style: solid;
     border-collapse:collapse; 
@@ -344,7 +344,8 @@ td.nopadding {
     min-width: 140px;
 }
 
-.cm, .td, .tp, .alt, .groupe, .htd, .inscrits, .presents, .tirage {
+.cm, .td, .tp, .alt, .groupe, .htd, .inscrits, .presents, .tirage, 
+.choix_htd, .tranche_htd {
     min-width:30px;
     max-width:60px;
 }
@@ -408,7 +409,7 @@ td.service_annuel, td.service_reel  {
 
 /**** FIN DIMENSIONS ****/
 
-.semestre, .credits, .cm, .td, .tp, .alt, .code_geisha, .action, .groupe, .htd {
+.semestre, .credits, .cm, .td, .tp, .alt, .code_geisha, .action, .groupe, .htd, .choix_htd, .tranche_htd {
     text-align: center;
 }
 
@@ -870,6 +871,11 @@ tr.longchoix > th.action > div.palette {
     margin-right: -39px;
 }
 
+tr.potentiel > th.action > div.palette {
+    width: 29px;
+    margin-right: -39px;
+}
+
 th.laction > div.palette, td.laction > div.palette {
     float: left;
     height: 24px;
@@ -954,4 +960,13 @@ div.bouton-panier {
 div.panier-conteneur {
     min-width: 250px;
     margin-right: 50px; 
+}
+
+
+div.graphdepassementpotentiel {
+margin-top: 0px;
+height: 12px;
+border: dotted 2px #F6A828;
+border-left: none;
+float: right;
 }

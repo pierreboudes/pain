@@ -32,6 +32,7 @@ mysql_query("SET NAMES 'utf8'");
 require_once('utils.php');
 
 function bkp_base($force = false) {
+    $output = "";
     $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
     $s = @stat($dir.'/bkp/void_bkp.txt');
     if  (time() > ($s[9] + 604800) || $force) /* weekly */

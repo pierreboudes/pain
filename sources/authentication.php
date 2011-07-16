@@ -56,9 +56,11 @@ function annee_courante() {
 function authentication() {
     if (isset($_COOKIE['painAnonyme'])) {
 	$login = "anonymous";
+/*
 	if (cookieclean('painAnonyme') == "christian.codognet") {
 	    $login = "christian.codognet";
 	}
+*/
         $user = array("id_enseignant"=> -1,
 		     "prenom" => "",
 		     "nom" => "Anonyme",

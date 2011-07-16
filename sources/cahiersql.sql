@@ -243,12 +243,9 @@ INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, "
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
 
 
-
 ------Pseudonommage
 UPDATE pain_enseignant, pseudos SET nom=pseudo_nom, prenom=pseudo_prenom, email=CONCAT(pseudo_prenom,'.',pseudo_nom,'@nullepart'), bureau='A501', telephone='40 67' WHERE id_enseignant > 9 AND id_enseignant = id_pseudo
 UPDATE pain_enseignant, pseudos SET login=CONCAT(pseudo_prenom,'.',pseudo_nom) WHERE id_enseignant > 10 AND id_enseignant = id_pseudo
-
-
 
 ------ stats voeux 
 
@@ -257,3 +254,270 @@ sum(pain_choix.htd) from pain_choix, pain_service where
 pain_service.annee_universitaire = 2011 AND pain_choix.id_enseignant =
 pain_service.id_enseignant AND pain_service.service_annuel > 1 GROUP
 BY pain_choix.id_cours
+
+select * from (select pain_choix.id_enseignant as enseignant, pain_choix.id_cours as cours, pain_cours.nom_cours, sum(pain_choix.htd) as choix
+from pain_choix, pain_cours, pain_formation, pain_sformation 
+where
+pain_sformation.annee_universitaire = 2011
+and
+pain_formation.id_sformation = pain_sformation.id_sformation
+and
+pain_cours.id_formation = pain_formation.id_formation
+and
+pain_choix.id_cours = pain_cours.id_cours
+group by pain_choix.id_cours)
+outer join
+(select pain_tranche.id_enseignant as enseignant, pain_tranche.id_cours as cours, sum(pain_tranche.htd) as interventions
+from pain_tranche, pain_cours, pain_formation, pain_sformation 
+where
+pain_sformation.annee_universitaire = 2011
+and
+pain_formation.id_sformation = pain_sformation.id_sformation
+and
+pain_cours.id_formation = pain_formation.id_formation
+and
+pain_tranche.id_cours = pain_cours.id_cours
+group by pain_tranche.id_cours) as t1
+
+
+pain_service.annee_universitaire = 2011 AND pain_choix.id_enseignant =
+pain_service.id_enseignant AND pain_service.service_annuel > 1 GROUP
+BY pain_choix.id_cours
+
+
+
+select idc,
+(select 
+sum(cm) as cm,
+sum(td) as td,
+sum(tp) as tp,
+sum(alt) as alt,
+sum(htd) as htd
+from pain_choix where pain_choix.id_cours = idc and pain_choix.id_enseignant = 10 
+group by pain_choix.id_cours),
+(select 
+sum(htd) as htd2
+from pain_tranche where pain_tranche.id_cours = idc and pain_tranche.id_enseignant = 10 
+group by pain_tranche.id_cours)
+from
+((
+select 
+pain_choix.id_cours as idc, 
+pain_cours.nom_cours,
+pain_cours.id_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_choix, pain_cours, pain_formation, pain_sformation 
+where pain_choix.id_enseignant = 10 
+and pain_choix.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = 2011
+)
+union
+(
+select 
+pain_tranche.id_cours as idc,
+pain_cours.nom_cours,
+pain_cours.id_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_tranche, pain_cours, pain_formation, pain_sformation 
+where pain_tranche.id_enseignant = 10
+and pain_tranche.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = 2011
+)) as t2
+
+
+select * from 
+(select id_cours, sum(htd) as choix
+from pain_choix
+where
+id_enseignant = 10
+group by id_cours) as t1
+outer join
+(select id_cours, sum(htd) as tranche
+from pain_tranche
+where
+id_enseignant = 10
+group by id_cours) as t2 using(id_cours)
+
+
+
+SELECT * 
+FROM (
+SELECT id_cours, SUM( htd ) AS choix
+FROM pain_choix
+WHERE id_enseignant =10
+GROUP BY id_cours
+) AS t1
+LEFT JOIN (
+SELECT id_cours, SUM( htd ) AS tranche
+FROM pain_tranche
+WHERE id_enseignant =10
+GROUP BY id_cours
+) AS t2
+USING ( id_cours )
+
+
+select *,
+greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
+greatest(ifnull(tranche_td,0),ifnull(choix_td,0)) as td,
+greatest(ifnull(tranche_tp,0),ifnull(choix_tp,0)) as tp,
+greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)) as alt,
+greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)) as htd 
+from
+((
+select
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_choix, pain_cours, pain_formation, pain_sformation 
+where
+pain_choix.id_enseignant = 10 
+and pain_choix.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = 2011)
+union
+(select
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_tranche, pain_cours, pain_formation, pain_sformation 
+where
+pain_tranche.id_enseignant = 10 
+and pain_tranche.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and annee_universitaire = 2011)) as t0
+left join
+(select id_cours, 
+sum(cm) as choix_cm,
+sum(td) as choix_td,
+sum(tp) as choix_tp,
+sum(alt) as choix_alt,
+sum(htd) as choix_htd
+from pain_choix
+where
+id_enseignant = 10
+group by id_cours) as t1 using(id_cours)
+left join
+(select id_cours,
+sum(cm) as tranche_cm,
+sum(td) as tranche_td,
+sum(tp) as tranche_tp,
+sum(alt) as tranche_alt,
+sum(htd) as tranche_htd
+from pain_tranche
+where
+id_enseignant = 10
+group by id_cours) as t2
+ using(id_cours)
+
+
+
+
+
+
+
+
+
+
+
+
+select bob.id_enseignant,
+sum(greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)))
+from pain_service as bob,
+((
+select
+pain_sformation.numero,
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_choix, pain_cours, pain_formation, pain_sformation 
+where
+pain_choix.id_enseignant = 10
+and pain_choix.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and pain_sformation.annee_universitaire = 2011)
+union
+(select
+pain_sformation.numero,
+pain_cours.id_cours,
+pain_cours.nom_cours,
+pain_cours.semestre,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum
+from pain_tranche, pain_cours, pain_formation, pain_sformation 
+where
+pain_tranche.id_enseignant = 10
+and pain_tranche.id_cours = pain_cours.id_cours
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and pain_sformation.annee_universitaire = 2011)) as t0
+left join
+(select id_cours, 
+sum(cm) as choix_cm,
+sum(td) as choix_td,
+sum(tp) as choix_tp,
+sum(alt) as choix_alt,
+sum(htd) as choix_htd
+from pain_choix
+where
+pain_choix.id_enseignant = bob.id_enseignant 
+group by id_cours) as t1 using(id_cours)
+left join
+(select id_cours,
+sum(cm) as tranche_cm,
+sum(td) as tranche_td,
+sum(tp) as tranche_tp,
+sum(alt) as tranche_alt,
+sum(htd) as tranche_htd
+from pain_tranche
+where
+pain_tranche.id_enseignant = bob.id_enseignant 
+group by id_cours) as t2
+using(id_cours)
+where bob.id_enseignant = 10
+
+
+
+update pain_service set
+service_potentiel = (select
+sum(greatest(ifnull(
+(select sum(htd)
+from pain_tranche
+where pain_tranche.id_enseignant  = pain_service.id_enseignant
+and pain_tranche.id_cours = tid.id_cours)
+,0),ifnull(
+(select sum(htd)
+from pain_choix
+where pain_choix.id_enseignant = pain_service.id_enseignant
+and pain_choix.id_cours = tid.id_cours)
+,0)))
+from pain_cours as tid, pain_formation, pain_sformation 
+where pain_sformation.annee_universitaire = pain_service.annee_universitaire
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and tid.id_formation = pain_formation.id_formation 
+)
+where
+pain_service.annee_universitaire = 2011
+

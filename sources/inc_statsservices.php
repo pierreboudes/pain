@@ -24,61 +24,50 @@ authrequired();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
+update_servicespotentiels();
+
+function ig_depassementparcategorie($categorie) {
+    $r = liste_enseignantscategorie($categorie);
+    $negtot = $postot = $pottot = 0;
+    echo '<div style="margin-top: 10px;">';
+    while ($e = mysql_fetch_assoc($r)) {
+	echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 350px; clear: both;'>";
+	echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
+	echo $e["prenom"]." ".$e["nom"];
+	echo "</a> (".$e["service"].")";
+	$d = $e["service_reel"] - $e["service"];
+	if ($d < 0) {/* negatif */
+	    $largeur = round(-$d);
+	    echo "<div style='background-color: #FF0000; width: ".$largeur."px; height: 16px; float: right;'></div>";
+	    $negtot += $d; 
+	$dd = $e["service_potentiel"] - $e["service_reel"];
+	$largeur = round($dd - 2);
+	echo "<div class='graphdepassementpotentiel' style='width: ".$largeur."px; margin-right: -".($largeur + 2)."px;'></div>";
+	$pottot += $dd; 
+	} else {/* positif */
+	$dd = $e["service_potentiel"] - $e["service"];
+	$largeur = round($dd - 2);
+	echo "<div class='graphdepassementpotentiel' style='width: ".$largeur."px; margin-right: -".($largeur + 2)."px;'></div>";
+	$pottot += $dd;
+	    $largeur = round($d);
+	    echo "<div style='background-color: #00FF00; width: ".$largeur."px; height: 16px; margin-right: -".($largeur + 1)."px; float: right;'></div>";
+	    $postot += $d; 
+	}
+	echo "<div style='float:right;'>".$d."</div>";
+	echo "</div>";
+    }
+    echo "<div style='text-align: right; border-right: 1px black solid; width: 350px; clear: both;'>";
+    echo "Totaux : ".$negtot;
+    echo "<div style='text-align: left; width: 100px; height: 16px; margin-right: -101px; float: right;'>".$postot."</div>";
+    echo '</div>';
+    echo '</div>';
+}
+
 /* permanents */
 echo "<h3>Dépassements de service des permanents</h3>";
-$r = liste_enseignantscategorie(2);
-$negtot = $postot = 0;
-echo '<div style="margin-top: 10px;">';
-while ($e = mysql_fetch_assoc($r)) {
-    echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 350px; clear: both;'>";
-    echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
-    echo $e["prenom"]." ".$e["nom"];
-    echo "</a>";
-    $d = $e["service_reel"] - $e["service"];
-    if ($d < 0) {
-	$largeur = round(-$d);
-	echo "<div style='background-color: #FF0000; width: ".$largeur."px; height: 16px; float: right;'></div>";
-	$negtot += $d; 
-    } else {
-	$largeur = round($d);
-	echo "<div style='background-color: #00FF00; width: ".$largeur."px; height: 16px; margin-right: -".($largeur + 1)."px; float: right;'></div>";
-	$postot += $d; 
-    }
-    echo "<div style='float:right;'>".$d."</div>";    
-    echo "</div>";
-}
-echo "<div style='text-align: right; border-right: 1px black solid; width: 350px; clear: both;'>";
-echo "Totaux : ".$negtot;
-echo "<div style='text-align: left; width: 100px; height: 16px; margin-right: -101px; float: right;'>".$postot."</div>";
-echo '</div>';
-echo '</div>';
+ig_depassementparcategorie(2);
 
 /* Non permanents */
 echo "<h3>Dépassements de service des non-permanents</h3>";
-$r = liste_enseignantscategorie(3);
-$negtot = $postot = 0;
-echo '<div style="margin-top: 10px;">';
-while ($e = mysql_fetch_assoc($r)) {
-    echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 350px; clear: both;'>";
-  echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
-    echo $e["prenom"]." ".$e["nom"];
-    echo "</a>";
-    $d = $e["service_reel"] - $e["service"];
-    if ($d < 0) {
-	$largeur = round(-$d);
-	echo "<div style='background-color: #FF0000; width: ".$largeur."px; height: 16px; float: right;'></div>";
-	$negtot += $d; 
-    } else {
-	$largeur = round($d);
-	echo "<div style='background-color: #00FF00; width: ".$largeur."px; height: 16px; margin-right: -".($largeur + 1)."px; float: right;'></div>";
-	$postot += $d; 
-    }
-    echo "<div style='float:right;'>".$d."</div>";    
-    echo "</div>";
-}
-echo "<div style='text-align: right; border-right: 1px black solid; width: 350px; clear: both;'>";
-echo "Totaux : ".$negtot;
-echo "<div style='text-align: left; width: 100px; height: 16px; margin-right: -101px; float: right;'>".$postot."</div>";
-echo '</div>';
-echo '</div>';
+ig_depassementparcategorie(3);
 ?>
