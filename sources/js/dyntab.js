@@ -21,6 +21,7 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
+var hasTouch = false;
 var nextclickdbl = false;
 
 function canceldoublingnextclick() {
@@ -31,20 +32,18 @@ function doublingnextclick() {
     nextclickdbl = true;
     $('#bouton-dblclick').hide();
     setTimeout(canceldoublingnextclick, 10000);  /* annulation apres 10s */
+    return false;
 }
 
-(function($){
-// Determine if we are on a touch-based device
-    var hasTouch = false;
-    var agent = navigator.userAgent.toLowerCase();
-    if(agent.indexOf('iphone') >= 0 || agent.indexOf('ipad') >= 0 || agent.indexOf('android') >= 0){
-	hasTouch = true;
-	alert('hastouch');
-    }
-})(jQuery);
 
 $(document).ready(function(){
-	if ($.hasTouch) {
+	var agent = navigator.userAgent.toLowerCase();
+	if(agent.indexOf('iphone') >= 0 
+	   || agent.indexOf('ipad') >= 0 
+	   || agent.indexOf('android') >= 0){
+	    hasTouch = true;
+	}
+	if (hasTouch) {
 	    $('#menu')
 		.before('<button id="bouton-dblclick" class="bouton-dblclick">faux double-clic (éditer)</button>');
 	    $('#bouton-dblclick').button(
@@ -351,7 +350,7 @@ function totaux() {
 	} else {
 	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
 	}
-	if ($.hasTouch) {
+	if (hasTouch) {
 	    c.click(function () {
 		    if (nextclickdbl) {
 			load_totaux(c, o);
@@ -834,12 +833,15 @@ function htdpostes(htd) {
     return Math.round(parseFloat(htd)*100/192)/100;
 }
 
-function edit() {
-    if ($(this).hasClass("mutable")) {
-	$(this).removeClass("mutable");
-	var name = $(this).attr('class');
-	L[name].edit($(this));
-	addOk($(this));
+function edit(rcv) {
+    if (rcv == undefined) {
+	rcv = $(this);
+    }
+    if (rcv.hasClass("mutable")) {
+	rcv.removeClass("mutable");
+	var name = rcv.attr('class');
+	L[name].edit(rcv);
+	addOk(rcv);
     }
 }
 
@@ -1792,10 +1794,11 @@ function appendItem(type, prev, o, list) {
 	if (L[name] == null) alert('undefined in line: '+name);
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
-	if ($.hasTouch) {
-	    cell.click(function (c, e) {
+	if (hasTouch) {
+	    cell.click(function () {
 		    if (nextclickdbl) {
-			edit(c,e);
+			alert('ok');
+			edit($(this));
 		    }
 		    canceldoublingnextclick();
 		    return false;
