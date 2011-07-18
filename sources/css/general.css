@@ -970,3 +970,9 @@ border: dotted 2px #F6A828;
 border-left: none;
 float: right;
 }
+
+button.bouton-dblclick {
+    position: fixed;
+    left: 2px;
+    top: 2px;
+}

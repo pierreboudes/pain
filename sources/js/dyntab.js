@@ -21,7 +21,17 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
+var nextclickdbl = false;
 
+function canceldoublingnextclick() {
+    nextclickdbl = false;
+    $('#bouton-dblclick').show();
+}
+function doublingnextclick() {
+    nextclickdbl = true;
+    $('#bouton-dblclick').hide();
+    setTimeout(canceldoublingnextclick, 10000);  /* annulation apres 10s */
+}
 
 (function($){
 // Determine if we are on a touch-based device
@@ -30,33 +40,21 @@
     if(agent.indexOf('iphone') >= 0 || agent.indexOf('ipad') >= 0 || agent.indexOf('android') >= 0){
 	hasTouch = true;
     }
-    $.fn.doubletap = function(onDoubleTapCallback, onTapCallback, delay){
-	var eventName, action;
-	delay = delay == null? 500 : delay;
-	eventName = hasTouch == true? 'touchend' : 'click';
-	this.bind(eventName, function(event){
-		clearTimeout(action);
-		var now = new Date().getTime();
-		var lastTouch = $(this).data('lastTouch') || now + 1 /** the first time this will make delta a negative number */;
-		var delta = now - lastTouch;
-		if(delta<delay && delta>0){
-// After we detct a doubletap, start over
-		    $(this).data('lastTouch', null);
-		    if(onDoubleTapCallback != null && typeof onDoubleTapCallback == 'function'){
-			onDoubleTapCallback(event);
-		    }
-		}else{
-		    $(this).data('lastTouch', now);
-		    action = setTimeout(function(evt){
-			    if(onTapCallback != null && typeof onTapCallback == 'function'){
-				onTapCallback(evt);
-			    }
-			    clearTimeout(action); // clear the timeout
-			}, delay, [event]);
-		}
-	    });
-    };
 })(jQuery);
+
+$(document).ready(function(){
+	if ($.hasTouch) {
+	    $('#menu')
+		.before('<button id="bouton-dblclick" class="bouton-dblclick">faux double-clic (éditer)</button>');
+	    $('#bouton-dblclick').button(
+		{text: false,
+			icons: {
+		    primary: "ui-icon-pencil"
+			    }
+		});
+	    $('#bouton-dblclick').bind('click', doublingnextclick);
+	};
+    });
 
 /* OBJET LIGNE */
 
@@ -353,8 +351,12 @@ function totaux() {
 	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
 	}
 	if ($.hasTouch) {
-	    c.doubletap(function () {
-		    load_totaux(c, o);
+	    c.click(function () {
+		    if (nextclickdbl) {
+			load_totaux(c, o);
+		    }
+		    canceldoublingnextclick();
+		    return false;/* masque le clic */
 		});
 	} else {
 	    c.dblclick(function () {
@@ -1790,7 +1792,13 @@ function appendItem(type, prev, o, list) {
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
 	if ($.hasTouch) {
-	    cell.doubletap(edit);
+	    cell.click(function (c, e) {
+		    if (nextclickdbl) {
+			edit(c,e);
+		    }
+		    canceldoublingnextclick();
+		    return false;
+		});
 	} else {
 	    cell.dblclick(edit);
 	}
