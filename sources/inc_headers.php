@@ -65,7 +65,20 @@ EOD;
 EOD;
 }
 
+function ig_versionsvn() {
+    $xmlstr = `svn log -r BASE --xml`;
+    $xml = new SimpleXMLElement($xmlstr);
+    echo "<pre>";
+    echo "Dernière révision: ".$xml->logentry[0]['revision']."\n";
+    echo "Par: ".$xml->logentry[0]->author."\n";
+    $date = split('T', $xml->logentry[0]->date);
+    echo "Date: ".($date[0])."\n";
+    echo "Message: ".$xml->logentry[0]->msg."\n";
+    echo "</pre>";
+}
+
 function piedpage() {
+//    ig_versionsvn(); trop lent.
     ig_statsmysql();
     echo <<<EOD
 </body>

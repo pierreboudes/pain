@@ -21,6 +21,45 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
+
+
+(function($){
+// Determine if we are on a touch-based device
+    var hasTouch = false;
+    var agent = navigator.userAgent.toLowerCase();
+    if(agent.indexOf('iphone') >= 0 || agent.indexOf('ipad') >= 0 || agent.indexOf('android') >= 0){
+	hasTouch = true;
+    }
+    $.fn.doubletap = function(onDoubleTapCallback, onTapCallback, delay){
+	var eventName, action;
+	delay = delay == null? 500 : delay;
+	eventName = hasTouch == true? 'touchend' : 'click';
+	this.bind(eventName, function(event){
+		clearTimeout(action);
+		var now = new Date().getTime();
+		var lastTouch = $(this).data('lastTouch') || now + 1 /** the first time this will make delta a negative number */;
+		var delta = now - lastTouch;
+		if(delta<delay && delta>0){
+// After we detct a doubletap, start over
+		    $(this).data('lastTouch', null);
+		    if(onDoubleTapCallback != null && typeof onDoubleTapCallback == 'function'){
+			onDoubleTapCallback(event);
+		    }
+		}else{
+		    $(this).data('lastTouch', now);
+		    action = setTimeout(function(evt){
+			    if(onTapCallback != null && typeof onTapCallback == 'function'){
+				onTapCallback(evt);
+			    }
+			    clearTimeout(action); // clear the timeout
+			}, delay, [event]);
+		}
+	    });
+    };
+})(jQuery);
+
+/* OBJET LIGNE */
+
 var L;                  /* variable globale pour l'objet générique ligne */
 
 /* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
@@ -313,9 +352,15 @@ function totaux() {
 	} else {
 	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
 	}
-	c.dblclick(function () {
-		load_totaux(c, o);
-	    });
+	if ($.hasTouch) {
+	    c.doubletap(function () {
+		    load_totaux(c, o);
+		});
+	} else {
+	    c.dblclick(function () {
+		    load_totaux(c, o);
+		});
+	}
     };
 /*    this.edit = function (c) {
 	var oid = parseIdString(c.parent('tr').attr('id'));
@@ -1744,7 +1789,11 @@ function appendItem(type, prev, o, list) {
 	if (L[name] == null) alert('undefined in line: '+name);
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
-	cell.dblclick(edit);
+	if ($.hasTouch) {
+	    cell.doubletap(edit);
+	} else {
+	    cell.dblclick(edit);
+	}
 	line.append(cell);
 	if (list.eq(i).css('display') == 'none') {
 	    cell.fadeOut(0);
