@@ -31,7 +31,7 @@ function canceldoublingnextclick() {
 function doublingnextclick() {
     nextclickdbl = true;
     $('#bouton-dblclick').hide();
-    setTimeout(canceldoublingnextclick, 10000);  /* annulation apres 10s */
+    setTimeout(canceldoublingnextclick, 20000);  /* annulation apres 20s */
     return false;
 }
 
@@ -355,7 +355,7 @@ function totaux() {
 		    if (nextclickdbl) {
 			load_totaux(c, o);
 		    }
-		    canceldoublingnextclick();
+		    /* canceldoublingnextclick(); */
 		    return false;/* masque le clic */
 		});
 	} else {
@@ -1320,13 +1320,11 @@ function dropLine(e,ui) {
 function addReload(td) {
     if (!existsjQuery(td)) return;
     var sid = td.closest('tr').attr('id');
-    // alert(sid);
     var oid = parseIdString(sid);
     var reloadl = jQuery('<button class="reloadl">annuler les modifications</button>');
     reloadl.button({
 	text: false,
 		icons: {
-//	    primary: "ui-icon-arrowrefresh-1-w"
 	    primary: "ui-icon-cancel"
 		    }
 	});
@@ -1463,7 +1461,6 @@ function htdTotaux(annee) {// OK pour le moment
 function htdSuperFormation(id) {
     jQuery.post("act_totauxsuper.php", {id_sformation: id}, function (data) {
 	    if (!contientERREUR(data)) {
-        // DEBUG       alert('htdFormation('+id+') : data = '+data);
 		data = trim(data);
 		$('#imgsformation_'+id).html(data);
 	    } else {
@@ -1569,7 +1566,6 @@ function closeMenuFields(e) {
 }
 
 function toggleColumn(e) {
-//    alert('visible = '+e.data.visible+', classname = '+e.data.css+', type = '+e.data.type);
     closeMenuFields(e);
     if (e.data.visible) {
 	$('tr.'+e.data.type+' > th.'+e.data.css+',tr.'+e.data.type+' >  td.'+e.data.css).fadeOut(0);
@@ -1797,10 +1793,9 @@ function appendItem(type, prev, o, list) {
 	if (hasTouch) {
 	    cell.click(function () {
 		    if (nextclickdbl) {
-			alert('ok');
 			edit($(this));
 		    }
-		    canceldoublingnextclick();
+		    /* canceldoublingnextclick(); */
 		    return false;
 		});
 	} else {
