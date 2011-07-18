@@ -39,6 +39,7 @@ function doublingnextclick() {
     var agent = navigator.userAgent.toLowerCase();
     if(agent.indexOf('iphone') >= 0 || agent.indexOf('ipad') >= 0 || agent.indexOf('android') >= 0){
 	hasTouch = true;
+	alert('hastouch');
     }
 })(jQuery);
 
