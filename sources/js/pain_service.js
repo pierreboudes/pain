@@ -32,4 +32,5 @@ $(document).ready(function(){
 	/* choix */
 	showChoix(); // <-- temporaire (faire actionneur)
 	showPotentiel();
+	showResponsabilite();
 });

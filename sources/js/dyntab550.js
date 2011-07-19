@@ -21,30 +21,6 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
-var hasTouch = false;
-
-$(document).ready(function(){
-	var agent = navigator.userAgent.toLowerCase();
-	if(agent.indexOf('iphone') >= 0 
-	   || agent.indexOf('ipad') >= 0 
-	   || agent.indexOf('android') >= 0){
-	    hasTouch = true;
-	}
-	if (hasTouch) {
-	    $('#menu')
-		.before('<button id="bouton-dblclick" class="bouton-dblclick">faux double-clic (éditer)</button>');
-	    $('#bouton-dblclick').button(
-		{text: false,
-			icons: {
-		    primary: "ui-icon-pencil"
-			    }
-		});
-	    $('#bouton-dblclick').bind('click', doublingnextclick);
-	};
-    });
-
-/* OBJET LIGNE */
-
 var L;                  /* variable globale pour l'objet générique ligne */
 
 /* BLOC ---- CONSTRUCTION DE L'OBJET LIGNE --------------*/
@@ -336,7 +312,7 @@ function totaux() {
 	    load_totaux(c, o);
 	} else {
 	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
-	}	
+	}
 	c.dblclick(function () {
 		load_totaux(c, o);
 	    });
@@ -778,11 +754,6 @@ function ligne() {
     this.choix_htd.name = "choix_htd";
     this.tranche_htd = new immutcell();
     this.tranche_htd.name = "tranche_htd";
-
-    /* responsabilite
-     */
-    this.resp_nom = new immutcell();
-    this.resp_nom.name = "resp_nom";
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -1299,11 +1270,13 @@ function dropLine(e,ui) {
 function addReload(td) {
     if (!existsjQuery(td)) return;
     var sid = td.closest('tr').attr('id');
+    // alert(sid);
     var oid = parseIdString(sid);
     var reloadl = jQuery('<button class="reloadl">annuler les modifications</button>');
     reloadl.button({
 	text: false,
 		icons: {
+//	    primary: "ui-icon-arrowrefresh-1-w"
 	    primary: "ui-icon-cancel"
 		    }
 	});
@@ -1440,6 +1413,7 @@ function htdTotaux(annee) {// OK pour le moment
 function htdSuperFormation(id) {
     jQuery.post("act_totauxsuper.php", {id_sformation: id}, function (data) {
 	    if (!contientERREUR(data)) {
+        // DEBUG       alert('htdFormation('+id+') : data = '+data);
 		data = trim(data);
 		$('#imgsformation_'+id).html(data);
 	    } else {
@@ -1545,6 +1519,7 @@ function closeMenuFields(e) {
 }
 
 function toggleColumn(e) {
+//    alert('visible = '+e.data.visible+', classname = '+e.data.css+', type = '+e.data.type);
     closeMenuFields(e);
     if (e.data.visible) {
 	$('tr.'+e.data.type+' > th.'+e.data.css+',tr.'+e.data.type+' >  td.'+e.data.css).fadeOut(0);
@@ -1652,15 +1627,6 @@ function showPotentiel() { // utilisee dans service.php
     var choix = $("#potentiel");
     var id = $('#formuser > .id').text();
     reloadChoix(choix, id, getAnnee(), "potentiel");
-}
-function showResponsabilite() { // utilisee dans service.php
-    var body = $("#responsabilite");
-    var id = $('#formuser > .id').text();
-    var type ='responsabilite';
-    body.html('');
-    body.append('<div class="responsabilite-conteneur"><table id="table'+type+'" class="'+type+'"><tbody></tbody></table></div>');
-    appendList({type: type, id_parent: id, annee_universitaire: getAnnee()}, 
-	       $('#table'+type+' > tbody'));
 }
 
 function reloadChoix(panier,id, annee, type) {
@@ -1778,7 +1744,7 @@ function appendItem(type, prev, o, list) {
 	if (L[name] == null) alert('undefined in line: '+name);
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
-	cell.dblclick(edit);        
+	cell.dblclick(edit);
 	line.append(cell);
 	if (list.eq(i).css('display') == 'none') {
 	    cell.fadeOut(0);
