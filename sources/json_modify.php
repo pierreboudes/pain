@@ -59,6 +59,10 @@ $champs = array(
 	),
     );
 
+if (1 == $user['su']) {
+    $champs["enseignant"][] = "su";
+    $champs["enseignant"][] = "stats";
+}
 
 //print_r($champs);
 

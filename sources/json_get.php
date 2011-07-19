@@ -225,7 +225,38 @@ group by id_cours) as t2
 order by semestre ASC,
 numero ASC, 
 annee_etude ASC, 
-nom_cours ASC";   
+nom_cours ASC";
+    } else if ($readtype == "responsabilite" and isset($_GET['id_parent'])) {
+	$id_par =  getclean('id_parent');
+	$requete = "(select 
+concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', annee_etude) as resp_nom,
+concat('c', id_cours) as id_responsabilite,
+1 as resp_type_num
+from pain_cours, pain_formation, pain_sformation
+where pain_cours.id_enseignant = ".$id_par."
+and pain_cours.id_formation = pain_formation.id_formation
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and pain_sformation.annee_universitaire = ".$annee."
+) 
+union
+(select 
+concat('année de formation: ', pain_formation.nom, ' ', annee_etude, ' ', pain_formation.parfum) as resp_nom,
+concat('f', id_formation) as id_responsabilite,
+2 as resp_type_num
+from pain_formation, pain_sformation
+where pain_formation.id_enseignant = ".$id_par."
+and pain_formation.id_sformation = pain_sformation.id_sformation
+and pain_sformation.annee_universitaire = ".$annee."
+)  
+union
+(select 
+concat('formation: ', pain_sformation.nom) as resp_nom,
+concat('s', id_sformation) as id_responsabilite,
+3 as resp_type_num
+from pain_sformation
+where pain_sformation.id_enseignant = ".$id_par."
+and pain_sformation.annee_universitaire = ".$annee."
+)";   
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

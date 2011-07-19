@@ -104,5 +104,9 @@ if ($id_enseignant != "") {
     /* Choix et tranches */
     echo "<h2>Bilan des interventions choisies et prévues</h2>";
     echo '<div id="potentiel"></div>';
+
+    /* Cumul des responsabilités */
+    echo "<h2>Responsabilités</h2>";
+    echo '<div id="responsabilite"></div>';
 }
 ?>

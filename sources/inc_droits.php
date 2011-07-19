@@ -119,7 +119,7 @@ function peutsupprimerchoix($id_choix) {
 
 function peutvoirstatsservices() {
     global $user;
-    return ($user["stats"] == 1) or ($user["su"] == 1);
+    return 1 == $user["stats"];
 }
 
 

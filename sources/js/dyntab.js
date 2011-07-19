@@ -22,6 +22,7 @@
 "use strict"; /* From now on, lets pretend we are strict */
 
 var hasTouch = false;
+var clickeditmode = false;
 
 $(document).ready(function(){
 	var agent = navigator.userAgent.toLowerCase();
@@ -30,18 +31,48 @@ $(document).ready(function(){
 	   || agent.indexOf('android') >= 0){
 	    hasTouch = true;
 	}
-	if (hasTouch) {
-	    $('#menu')
-		.before('<button id="bouton-dblclick" class="bouton-dblclick">faux double-clic (éditer)</button>');
-	    $('#bouton-dblclick').button(
-		{text: false,
-			icons: {
-		    primary: "ui-icon-pencil"
-			    }
-		});
-	    $('#bouton-dblclick').bind('click', doublingnextclick);
-	};
+
+
+	(function () {/* espace de nom privé */
+	    var timerid;
+
+	    function clickedit () {
+		var bouton = $('#bouton-clickedit');
+		bouton.button('option','text',true); /* voir le texte... */
+		/* ...mais on doit le forcer en dur est-ce un bug jquery ui ? */
+		bouton.removeClass('ui-button-icon-only').addClass('ui-button-text-icon');
+		if (!clickeditmode) {
+		    bouton.button('option', 'label','édition activée');
+		    bouton.button('option','icons', {primary: 'ui-icon-unlocked'});
+		    bouton.button('refresh');
+		    clickeditmode = true;
+		} else {
+		    bouton.button('option', 'label','édition désactivée');
+		    bouton.button('option','icons', {primary: 'ui-icon-locked'});
+		    bouton.button('refresh');
+		    clickeditmode = false;
+		}
+		window.clearTimeout(timerid);
+		timerid = window.setTimeout(function () {
+			bouton.button('option','text',false);
+		    }, 3000); /* 10s après */
+	    }
+
+	    if (hasTouch) {
+		$('#menu')
+		    .before('<button id="bouton-clickedit" class="bouton-clickedit">édition</button>');
+		$('#bouton-clickedit').button(
+		    {text: true,
+			    icons: {
+			primary: "ui-icon-locked"
+				}
+		    });
+		$('#bouton-clickedit').bind('click', clickedit);
+	    };
+	})();
     });
+
+
 
 /* OBJET LIGNE */
 
@@ -336,7 +367,15 @@ function totaux() {
 	    load_totaux(c, o);
 	} else {
 	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
-	}	
+	}
+	if (hasTouch) {
+	    c.click(function (event) {
+		    if (clickeditmode) {
+			load_totaux(c, o);
+		    }
+		    return false;		
+		});
+	}
 	c.dblclick(function () {
 		load_totaux(c, o);
 	    });
@@ -654,10 +693,10 @@ function ligne() {
     this.responsabilite = new cell();
     this.responsabilite.name = "responsabilite";
     /* peut stats */
-    this.stats = new immutcell();
+    this.stats = new sunumcell();
     this.stats.name = "stats";
     /* su: peut tout ;) */
-    this.su = new immutcell();
+    this.su = new sunumcell();
     this.su.name = "su";
     /* modification */
     this.modification = new immutcell();
@@ -815,12 +854,13 @@ function htdpostes(htd) {
     return Math.round(parseFloat(htd)*100/192)/100;
 }
 
-function edit() {
-    if ($(this).hasClass("mutable")) {
-	$(this).removeClass("mutable");
-	var name = $(this).attr('class');
-	L[name].edit($(this));
-	addOk($(this));
+function edit(event) {
+    var cell = $(event.currentTarget);
+    if (cell.hasClass("mutable")) {
+	cell.removeClass("mutable");
+	var name = cell.attr('class');
+	L[name].edit(cell);
+	addOk(cell);
     }
 }
 
@@ -1098,7 +1138,7 @@ function basculerCours(e) {
 
 function basculerChoix(e) {
    var id = e.data.id;
-   $("#tabletranches_"+id).before('<div class="choix"><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
+   $("#tabletranches_"+id).before('<div class="choix"><div class="caption">Souhaits</div><table class="choix" id="tablechoix_'+id+'"><tbody></tbody></table></div>');
    appendList({type: "choix", id_parent: id},$('#tablechoix_'+id+'> tbody'));
    var legende = $('#legendechoix'+id);
    addMenuFields(legende);
@@ -1778,6 +1818,14 @@ function appendItem(type, prev, o, list) {
 	if (L[name] == null) alert('undefined in line: '+name);
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
+	if (hasTouch) {
+	    cell.click(function (event) {
+		    if (clickeditmode) {
+			edit(event);
+		    }
+		    return false;
+		});
+	}
 	cell.dblclick(edit);        
 	line.append(cell);
 	if (list.eq(i).css('display') == 'none') {

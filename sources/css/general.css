@@ -19,7 +19,7 @@ table.longchoix {
 background-color: white;
 }
 
-table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services, table.potentiel
+table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services, table.potentiel, table.responsabilite
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 tr.sformation {background-color: #6495ed  ;}
@@ -188,14 +188,11 @@ table.stat,table.annuaire {
     margin-top: 10px;
 }
 
-table.longchoix, table.potentiel {
+table.longchoix, table.potentiel, table.responsabilite {
     border-width: 1px;
     border-style: solid;
     border-collapse:collapse; 
     margin:auto;
- /*   margin-right: 40px;
-    margin-left: 10px;
-*/
 }
 
 
@@ -971,8 +968,18 @@ border-left: none;
 float: right;
 }
 
-button.bouton-dblclick {
+button.bouton-clickedit {
     position: fixed;
     left: 2px;
     top: 2px;
+}
+
+div.caption {
+    padding: 2px;
+    text-align: center;
+    font-weight: bold;
+    border: solid 1px  #6495ed;
+    border-bottom: 0px;
+    border-top: 0px;
+    background-color:#EFF6FF;
 }

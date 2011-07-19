@@ -61,6 +61,14 @@ ig_tablecategorie(10,"Anciens enseignants");
 <th class="debut">debut</th>
 <th class="fin">fin</th>
 <th class="categorie">categorie</th>
+<?php
+    if (1 == $user["su"]) {
+?>
+<th class="stats">stats étendues</th>
+<th class="su">admin.</th>
+<?php
+    };
+?>
 <th class="action"><div class="palette"></div></th>
 </tr>
 	    <tr id="_trtableservices_82" class="trservices">
