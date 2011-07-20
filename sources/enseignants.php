@@ -22,7 +22,7 @@ require_once('authentication.php');
 $user = authentication();
 $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("les enseignants","pain_enseignants.js");
+entete("les enseignants","pain_enseignants.js","jquery.tablesorter.min.js","tablesorter-blue/style.css");
 include("menu.php");
 
 function ig_tablecategorie($id, $nom) {

@@ -1336,8 +1336,7 @@ AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $annee
 GROUP BY pain_cours.id_cours
-ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC";
-
+ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC";
    ($result = mysql_query($query)) or die("Échec de la connexion à la base= $query");
     return $result;
 }
@@ -1357,6 +1356,7 @@ function ig_legendeservice() {
     echo '<th class="CM">CM</th>';
     echo '<th class="TD">TD</th>';
     echo '<th class="TP">TP</th>';
+    echo '<th class="alt">alt.</th>';
 /*    echo '<th class="regime">Régime</th>'; */
     echo '</tr>';
 }
@@ -1372,8 +1372,9 @@ function ig_ligneservice($ligne) {
     echo 'S'.$ligne["semestre"];
     echo '</td>';
     echo '<td class="CM">'.$ligne["cm"].'</td>';
-    echo '<td class="TD">'.($ligne["td"] + $ligne["alt"]).'</td>';
+    echo '<td class="TD">'.($ligne["td"]).'</td>';
     echo '<td class="TP">'.$ligne["tp"].'</td>';
+    echo '<td class="alt">'.($ligne["alt"]).'</td>';
 /*    echo '<td class="regime">FI</td>'; */
     echo '</tr>';
 }
@@ -1385,8 +1386,9 @@ function ig_totauxservice($totaux) {
     echo 'TOTAL';
     echo '</td>';
     echo '<td class="CM">'.$totaux["cm"].'</td>';
-    echo '<td class="TD">'.($totaux["td"] + $totaux["alt"]).'</td>';
+    echo '<td class="TD">'.$totaux["td"].'</td>';
     echo '<td class="TP">'.$totaux["tp"].'</td>';
+    echo '<td class="alt">'.$totaux["alt"].'</td>';
 /*    echo '<td class="regime"></td>'; */
     echo '</tr>';
 }

@@ -1154,13 +1154,18 @@ function basculerCategorie(e) {
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
     if (bascule.hasClass('basculeOn')) {
-
 	$('#'+idString({id: id, type: "tablecat"}))
 	    .append('<tr id="trtableens_'+id+'"><td class="nopadding" colspan="3"><table id="tableens_'+id+'" class="enseignants"><tbody></tbody></table>');
-	appendList({type: "enseignant", id_parent: id}, $('#tableens_'+id+'> tbody'));
-	var legende = $('#legendeenseignant'+id);
-	addMenuFields(legende);
-	addAdd(legende.find('th.action'));
+	appendList({type: "enseignant", id_parent: id},
+		   $('#tableens_'+id+'> tbody'),
+		   function () {		       
+		       var legende = $('#legendeenseignant'+id);
+		       addMenuFields(legende);
+		       addAdd(legende.find('th.action'));
+/*                     $('#tableens_'+id+'> tbody').prepend(<thead></thead>);
+		       $('#tableens_'+id+'> thead').append(legende);
+		       $('#tableens_'+id).tablesorter(); */
+		   });
     } else {
 	$("#trtableens_"+id).fadeOut(500).remove();
     }

@@ -42,7 +42,15 @@ function entete() {
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;
     for($i = 1; $i < $narg; $i++){
-	echo "<script type='text/javascript' src='js/".func_get_arg($i)."'></script>";
+	$arg = func_get_arg($i);
+	$extension = substr($arg, -3); /* si $opt = blabla.css alors $extension = css*/
+	if (0 == strcasecmp($extension, "css")) {
+	    echo "<link rel='stylesheet' href='css/".$arg."' type='text/css' media='all'/>\n";
+	} else if (0 == strcasecmp($extension, ".js")) {
+	    echo "<script type='text/javascript' src='js/".$arg."'></script>\n";
+	} else {
+	    echo $opt."\n";
+	};	
     }
 /* ------ tweaks --------
 
