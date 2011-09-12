@@ -191,16 +191,15 @@ ALTER TABLE  `pain_listes` ADD INDEX (  `liste` );
 ALTER TABLE  `pain_listes` ADD INDEX (  `id_enseignant` )
 ALTER TABLE  `pain_listes` ADD INDEX (  `email` );
 
---liste responsables (supprimer manuellement les responsables hors departement) 
+--liste responsables (supprimer manuellement les responsables hors departement)
+DELETE FROM pain_listes WHERE liste = "responsables";
 INSERT INTO pain_listes SELECT "responsables", id_enseignant, email, CONCAT(prenom, " ",nom), NOW() 
 FROM pain_enseignant WHERE email IS NOT NULL AND id_enseignant IN (
-SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010 
+SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2011 
 UNION
-SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation 
-UNION
-SELECT pain_tranche.id_enseignant FROM pain_tranche, pain_cours WHERE id_formation = 48 AND pain_tranche.id_cours = pain_cours.id_cours
- ORDER BY id_enseignant ASC)
-
+SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2011 AND pain_formation.id_sformation = pain_sformation.id_sformation 
+ ORDER BY id_enseignant ASC);
+SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "responsables";
 --Maj droits
 UPDATE pain_enseignant SET stats = 0 WHERE 1;
 UPDATE pain_enseignant, pain_listes SET stats = 1 WHERE pain_enseignant.id_enseignant = pain_listes.id_enseignant AND pain_listes.liste LIKE "responsables"
@@ -241,6 +240,12 @@ AND pain_listes.email <> pain_enseignant.email;
 DELETE FROM pain_listes WHERE liste = "membres";
 INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
+
+/* seulement ajouter les nouveaux et mettre Å‡ jour les mails (pas de sortie des anciens pour le moment) */
+REPLACE INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
+FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3);
+SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres";
+
 
 
 ------Pseudonommage

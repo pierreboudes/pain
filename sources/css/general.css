@@ -582,12 +582,23 @@ a {
 }
 */
 
-a.url > span.url {
-    display: none;
+a.url {
+    text-decoration: none;
+   font-family: monospace;
+ color: white;
+ background-color: black;
+padding-right: 14px;
+ /* white-space: nowrap;
+	width: 50px;
+	overflow: hidden;
+	text-overflow: ellipsis; */
+background: url("img/spip_out.gif") black center right no-repeat;
 }
 
-a.url > span.urlicon:after {
-    content:"lien";
+
+a.url > img.urlicon {
+display: none;
+margin-left: 4px;
 }
 
 /* aide-memoire ---

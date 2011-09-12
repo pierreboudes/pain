@@ -841,7 +841,7 @@ function superuser() {
 }
 
 function addLinks (c) {
-    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"urlicon\"></span><span class=\"url\">$1</span></a>"));
+    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"url\">$1</span><img src=\"css/img/spip_out.gif\" class=\"urlicon\"></img></a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
 }
 
