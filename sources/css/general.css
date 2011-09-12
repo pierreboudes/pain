@@ -587,7 +587,8 @@ a.url {
    font-family: monospace;
  color: white;
  background-color: black;
-padding-right: 14px;
+padding-right: 13px;
+padding-left: 2px;
  /* white-space: nowrap;
 	width: 50px;
 	overflow: hidden;
@@ -595,6 +596,9 @@ padding-right: 14px;
 background: url("img/spip_out.gif") black center right no-repeat;
 }
 
+a.url > span.hiddenurl {
+    display: none;
+}
 
 a.url > img.urlicon {
 display: none;

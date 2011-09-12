@@ -136,6 +136,16 @@ function richcell() {
 	c.html(o[this.name]);
 	addLinks(c);
     }
+
+    this.edit = function (c) {
+	var s;
+	c.find("span.visibleurl").remove();
+        s = c.text();
+	c.html("<textarea>"+s+"</textarea>");
+	c.addClass("edit");
+	c.find('textarea').focus();
+    }
+
 }
 
 richcell.prototype = new cell();
@@ -841,8 +851,15 @@ function superuser() {
 }
 
 function addLinks (c) {
-    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"url\">$1</span><img src=\"css/img/spip_out.gif\" class=\"urlicon\"></img></a>"));
+    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"hiddenurl\">$1</span><span class=\"visibleurl\">$1</span><img src=\"css/img/spip_out.gif\" class=\"urlicon\"></img></a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
+    c.find('span.visibleurl').each(function () {
+	    var s = $(this).text();
+	    var e = /https*:\/\/([\w|-]+)\S+/i;
+	    var r = e.exec(s);
+	    $(this).text(r[1]+'…');
+	});
+
 }
 
 /* custom selector for mustMatch autocomplete */
