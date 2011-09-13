@@ -593,7 +593,7 @@ padding-left: 2px;
 	width: 50px;
 	overflow: hidden;
 	text-overflow: ellipsis; */
-background: url("img/spip_out.gif") black center right no-repeat;
+background: url("img/out.gif") black center right no-repeat;
 }
 
 a.url > span.hiddenurl {
