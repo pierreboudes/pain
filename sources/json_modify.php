@@ -48,20 +48,23 @@ $champs = array(
 	"choix", "htd", "cm", "td", "tp", "alt"
 	),
     "enseignant" => array(
-	"login",
-	"prenom", "nom", "statut", "email", "telephone", "bureau",
-	"service", "categorie", "debut", "fin", "responsabilite"
+	"prenom", "nom", "email", "telephone", "bureau",
+	"debut", "fin", "responsabilite"
 	),
     "service" => array(
-	"annee_universitaire",
-	"categorie",
-	"service_annuel"
 	),
     );
 
 if (1 == $user['su']) {
+    $champs["enseignant"][] = "login";
+    $champs["enseignant"][] = "statut";
+    $champs["enseignant"][] ="service";
+    $champs["enseignant"][] = "categorie";
     $champs["enseignant"][] = "su";
-    $champs["enseignant"][] = "stats";
+    $champs["enseignant"][] = "stats";    
+    $champs["service"][] = "annee_universitaire";
+    $champs["service"][] = "categorie";
+    $champs["service"][] = "service_annuel";
 }
 
 //print_r($champs);
