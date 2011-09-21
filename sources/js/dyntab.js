@@ -358,7 +358,7 @@ function load_totaux(c,o) {
 		    +"</span>"
 		    +"<span class='tot_detail_conteneur'> "
 		    +"<span class='tot_detail'>=&nbsp;"
-		    +htdpostes(o["cm"])
+		    +htdpostes(1.5*o["cm"])
 		    +'&nbsp;CM +&nbsp;'
 		    +htdpostes(o["td"])
 		    +'&nbsp;TD +&nbsp;'
@@ -377,7 +377,7 @@ function load_totaux(c,o) {
 		    +"</span>"
 		    +"<span class='tot_detail_conteneur'> "
 		    +"<span class='tot_detail'>=&nbsp;"
-		    +htdpostes(o["librecm"])
+		    +htdpostes(1.5*o["librecm"])
 		    +'&nbsp;CM +&nbsp;'
 		    +htdpostes(o["libretd"])
 		    +'&nbsp;TD +&nbsp;'
