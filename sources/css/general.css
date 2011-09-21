@@ -1000,19 +1000,23 @@ div.caption {
 }
 
 .tot_complexe {
-    border: thin #333333 dashed;
+    border: thin #999 dashed;
+    padding: 2px;
+    padding-bottom: 0px;
 }
 .tot_detail_conteneur {
     position: relative;
+    top: -3px;
     display: none;
 }
 .tot_detail {
     color: #DDD;
-    background-color:#333333;
+    background-color:#333;
     font-size: 0.8em;
     position: absolute;
-    top: -1.1em;
-    border:  thin #333333 solid;
+    top: 0em;
+    left: -1px;
+    border:  thin #333 solid;
     padding-left: 2px;
     padding-right: 2px;
 }

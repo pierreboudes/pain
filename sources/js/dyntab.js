@@ -353,18 +353,30 @@ function load_totaux(c,o) {
                     +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
                     +htdpostes(o["annule"])+'&nbsp;annulés'
                     +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)'; */
-		s += htdpostes(o["total"])+' postes ';
-		if (1)  {
-		    s += '('+htdpostes(o["cm"])+'&nbsp;CM + '+htdpostes(o["td"])+'&nbsp;TD + '+htdpostes(o["tp"])+'&nbsp;TP + '+htdpostes(o["alt"])+'&nbsp;alt)<br/>';
-		}
+		s += "<span class='tot_complexe'>"
+		    +htdpostes(o["total"])
+		    +"</span>"
+		    +"<span class='tot_detail_conteneur'> "
+		    +"<span class='tot_detail'>=&nbsp;"
+		    +htdpostes(o["cm"])
+		    +'&nbsp;CM +&nbsp;'
+		    +htdpostes(o["td"])
+		    +'&nbsp;TD +&nbsp;'
+		    +htdpostes(o["tp"])
+		    +'&nbsp;TP +&nbsp;'
+		    +htdpostes(o["alt"])
+		    +'&nbsp;alt'
+		    +"</span>"
+		    +"</span>"
+		    +' postes ';
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
 		s += htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;';
 		s += "<span class='tot_complexe'>"
 		    +htdpostes(o["libre"])
 		    +"</span>"
-		    +"<span class='tot_detail_conteneur'>"
-		    +"<span class='tot_detail'>"
+		    +"<span class='tot_detail_conteneur'> "
+		    +"<span class='tot_detail'>=&nbsp;"
 		    +htdpostes(o["librecm"])
 		    +'&nbsp;CM +&nbsp;'
 		    +htdpostes(o["libretd"])
@@ -372,7 +384,7 @@ function load_totaux(c,o) {
 		    +htdpostes(o["libretp"])
 		    +'&nbsp;TP +&nbsp;'
 		    +htdpostes(o["librealt"])
-		    +'&nbsp;Alt'
+		    +'&nbsp;alt'
 		    +"</span>"
 		    +"</span>"
 		    +'&nbsp;à pourvoir +&nbsp;';
