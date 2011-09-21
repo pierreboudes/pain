@@ -347,12 +347,6 @@ function load_totaux(c,o) {
     {id: o["id"], type: o["type"]},
 		function (o) {
 		var s = "";
-/*		s = htdpostes(o["total"]) + ' postes (dont '+htdpostes(o["tp"])+'&nbsp;TP) = '
-                    +htdpostes(o["servi"])+'&nbsp;servis +&nbsp;'
-                    +htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;'
-                    +htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;'
-                    +htdpostes(o["annule"])+'&nbsp;annulés'
-                    +' (dont '+htdpostes(o["permanents"])+'&nbsp;permanents)'; */
 		s += "<span class='tot_complexe'>"
 		    +htdpostes(o["total"])
 		    +"</span>"
@@ -387,9 +381,26 @@ function load_totaux(c,o) {
 		    +'&nbsp;alt'
 		    +"</span>"
 		    +"</span>"
-		    +'&nbsp;à pourvoir +&nbsp;';
+		    +' à pourvoir +&nbsp;';
 		s += htdpostes(o["annule"])+'&nbsp;annulés';
-		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents + '+htdpostes(o["libre"])+'&nbsp;à pourvoir';
+		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents +&nbsp;';
+		s += "<span class='tot_complexe'>"
+		    +htdpostes(o["libre"])
+		    +"</span>"
+		    +"<span class='tot_detail_conteneur'> "
+		    +"<span class='tot_detail'>=&nbsp;"
+		    +htdpostes(1.5*o["librecm"])
+		    +'&nbsp;CM +&nbsp;'
+		    +htdpostes(o["libretd"])
+		    +'&nbsp;TD +&nbsp;'
+		    +htdpostes(o["libretp"])
+		    +'&nbsp;TP +&nbsp;'
+		    +htdpostes(o["librealt"])
+		    +'&nbsp;alt'
+		    +"</span>"
+		    +"</span>"
+		    +' à pourvoir';
+
 		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = '+htdpostes(o["exterieurs"])+" servis + "+htdpostes(o["autre"])+" inconnus";
 		s += '<div style="float: right">['+Math.round(o["etu"])+'h étu.]</div>';
 		c.html(s);
