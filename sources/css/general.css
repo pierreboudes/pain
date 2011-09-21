@@ -998,3 +998,29 @@ div.caption {
     border-top: 0px;
     background-color:#EFF6FF;
 }
+
+.tot_complexe {
+    border: thin #333333 dashed;
+}
+.tot_detail_conteneur {
+    position: relative;
+    display: none;
+}
+.tot_detail {
+    color: #DDD;
+    background-color:#333333;
+    font-size: 0.8em;
+    position: absolute;
+    top: -1.1em;
+    border:  thin #333333 solid;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.tot_complexe:hover {
+    border: thin #333333 solid;
+//    border-right: 5px #333333 solid;
+}
+.tot_complexe:hover + .tot_detail_conteneur {
+    display: inline;
+}

@@ -360,7 +360,22 @@ function load_totaux(c,o) {
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
 		s += htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;';
-		s += htdpostes(o["libre"])+'&nbsp;à pourvoir +&nbsp;';
+		s += "<span class='tot_complexe'>"
+		    +htdpostes(o["libre"])
+		    +"</span>"
+		    +"<span class='tot_detail_conteneur'>"
+		    +"<span class='tot_detail'>"
+		    +htdpostes(o["librecm"])
+		    +'&nbsp;CM +&nbsp;'
+		    +htdpostes(o["libretd"])
+		    +'&nbsp;TD +&nbsp;'
+		    +htdpostes(o["libretp"])
+		    +'&nbsp;TP +&nbsp;'
+		    +htdpostes(o["librealt"])
+		    +'&nbsp;Alt'
+		    +"</span>"
+		    +"</span>"
+		    +'&nbsp;à pourvoir +&nbsp;';
 		s += htdpostes(o["annule"])+'&nbsp;annulés';
 		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents + '+htdpostes(o["libre"])+'&nbsp;à pourvoir';
 		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = '+htdpostes(o["exterieurs"])+" servis + "+htdpostes(o["autre"])+" inconnus";

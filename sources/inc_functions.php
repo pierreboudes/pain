@@ -705,7 +705,7 @@ function htdtotaux($annee = NULL) {
 	$etu = 0;
     }
 
-
+    /* annulations */
     $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = mysql_query($qannule) 
 	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
@@ -716,6 +716,7 @@ function htdtotaux($annee = NULL) {
 	$annule = 0;
     } 
 
+    /* tous CM, TD, TP, alt */
     $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
     $rcomp = mysql_query($qcomp) 
 	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
@@ -737,12 +738,13 @@ function htdtotaux($annee = NULL) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
+    $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0; 
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
     while ($cat = mysql_fetch_assoc($rperm)) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
@@ -757,6 +759,10 @@ function htdtotaux($annee = NULL) {
 	    break;
 	case 23: /* enseignant 'libre' */
 	    $libre += $cat["SUM(htd)"];
+	    $librecm += $cat["SUM(pain_tranche.cm)"];
+	    $libretd += $cat["SUM(pain_tranche.td)"];
+	    $libretp += $cat["SUM(pain_tranche.tp)"];
+	    $librealt += $cat["SUM(pain_tranche.alt)"];
 	    break;
 	case 29: /* enseignant 'autre' (exterieur) */ 
 	    $autre += $cat["SUM(htd)"];
@@ -769,6 +775,10 @@ function htdtotaux($annee = NULL) {
 
     return array("servi"=>$servi, 
 		 "libre"=>$libre,
+		 "librecm"=>$librecm,
+		 "libretd"=>$libretd,
+		 "libretp"=>$libretp,
+		 "librealt"=>$librealt,
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule,
 		 "permanents" => $perm,
@@ -829,12 +839,13 @@ function htdsuper($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
     $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
     while ($cat = mysql_fetch_assoc($rperm)) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
@@ -849,6 +860,10 @@ function htdsuper($id) {
 	    break;
 	case 23: /* enseignant 'libre' */
 	    $libre += $cat["SUM(htd)"];
+	    $librecm += $cat["SUM(pain_tranche.cm)"];
+	    $libretd += $cat["SUM(pain_tranche.td)"];
+	    $libretp += $cat["SUM(pain_tranche.tp)"];
+	    $librealt += $cat["SUM(pain_tranche.alt)"];
 	    break;
 	case 29: /* enseignant 'autre' (exterieur) */ 
 	    $autre += $cat["SUM(htd)"];
@@ -861,6 +876,10 @@ function htdsuper($id) {
 
     return array("servi"=>$servi, 
 		 "libre"=>$libre,
+		 "librecm"=>$librecm,
+		 "libretd"=>$libretd,
+		 "libretp"=>$libretp,
+		 "librealt"=>$librealt,
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule,
 		 "permanents" => $perm,
@@ -919,12 +938,13 @@ function htdformation($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
     $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
     while ($cat = mysql_fetch_assoc($rperm)) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
@@ -939,6 +959,10 @@ function htdformation($id) {
 	    break;
 	case 23: /* enseignant 'libre' */
 	    $libre += $cat["SUM(htd)"];
+	    $librecm += $cat["SUM(pain_tranche.cm)"];
+	    $libretd += $cat["SUM(pain_tranche.td)"];
+	    $libretp += $cat["SUM(pain_tranche.tp)"];
+	    $librealt += $cat["SUM(pain_tranche.alt)"];
 	    break;
 	case 29: /* enseignant 'autre' (exterieur) */ 
 	    $autre += $cat["SUM(htd)"];
@@ -951,6 +975,10 @@ function htdformation($id) {
 
     return array("servi"=>$servi, 
 		 "libre"=>$libre,
+		 "librecm"=>$librecm,
+		 "libretd"=>$libretd,
+		 "libretp"=>$libretp,
+		 "librealt"=>$librealt,
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule,
 		 "permanents" => $perm,
@@ -1009,12 +1037,13 @@ function htdcours($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
     $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
     while ($cat = mysql_fetch_assoc($rperm)) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
@@ -1029,6 +1058,10 @@ function htdcours($id) {
 	    break;
 	case 23: /* enseignant 'libre' */
 	    $libre += $cat["SUM(htd)"];
+	    $librecm += $cat["SUM(pain_tranche.cm)"];
+	    $libretd += $cat["SUM(pain_tranche.td)"];
+	    $libretp += $cat["SUM(pain_tranche.tp)"];
+	    $librealt += $cat["SUM(pain_tranche.alt)"];
 	    break;
 	case 29: /* enseignant 'autre' (exterieur) */ 
 	    $autre += $cat["SUM(htd)"];
@@ -1041,6 +1074,10 @@ function htdcours($id) {
 
     return array("servi"=>$servi, 
 		 "libre"=>$libre,
+		 "librecm"=>$librecm,
+		 "libretd"=>$libretd,
+		 "libretp"=>$libretp,
+		 "librealt"=>$librealt,
 		 "mutualise"=>$mutualise,
 		 "annule"=>$annule,
 		 "permanents" => $perm,
