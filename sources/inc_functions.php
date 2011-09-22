@@ -686,7 +686,95 @@ function stats_sform($idsf) {
     return $tab;
 }
 
-
+function htd_cat2array($rperm) {
+    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
+    $permcm=0; $permtd=0; $permtp=0; $permalt=0;
+    $npermcm=0; $npermtd=0; $npermtp=0; $npermalt=0;
+    $mutualisecm=0; $mutualisetd=0; $mutualisetp=0; $mutualisealt=0;
+    $autrecm=0; $autretd=0; $autretp=0; $autrealt=0;
+    $extcm=0; $exttd=0; $exttp=0; $extalt=0;
+    while ($cat = mysql_fetch_assoc($rperm)) {
+	switch ($cat["categorie"]) {
+	case 1: /* 'annule': decompte specifique */ break;
+	case 2: /* permanents */
+	    $perm += $cat["SUM(htd)"];
+	    $permcm += $cat["SUM(pain_tranche.cm)"];
+	    $permtd += $cat["SUM(pain_tranche.td)"];
+	    $permtp += $cat["SUM(pain_tranche.tp)"];
+	    $permalt += $cat["SUM(pain_tranche.alt)"];
+	    break;
+	case 3: /* non permanents */
+	    $nperm += $cat["SUM(htd)"];
+	    $npermcm += $cat["SUM(pain_tranche.cm)"];
+	    $npermtd += $cat["SUM(pain_tranche.td)"];
+	    $npermtp += $cat["SUM(pain_tranche.tp)"];
+	    $npermalt += $cat["SUM(pain_tranche.alt)"];
+	    break;
+	case 22: /* enseignant 'mutualise' */
+	    $mutualise += $cat["SUM(htd)"];
+	    $mutualisecm += $cat["SUM(pain_tranche.cm)"];
+	    $mutualisetd += $cat["SUM(pain_tranche.td)"];
+	    $mutualisetp += $cat["SUM(pain_tranche.tp)"];
+	    $mutualisealt += $cat["SUM(pain_tranche.alt)"];
+	    break;
+	case 23: /* enseignant 'libre' */
+	    $libre += $cat["SUM(htd)"];
+	    $librecm += $cat["SUM(pain_tranche.cm)"];
+	    $libretd += $cat["SUM(pain_tranche.td)"];
+	    $libretp += $cat["SUM(pain_tranche.tp)"];
+	    $librealt += $cat["SUM(pain_tranche.alt)"];
+	    break;
+	case 29: /* enseignant 'autre' (exterieur) */ 
+	    $autre += $cat["SUM(htd)"];
+	    $autrecm += $cat["SUM(pain_tranche.cm)"];
+	    $autretd += $cat["SUM(pain_tranche.td)"];
+	    $autretp += $cat["SUM(pain_tranche.tp)"];
+	    $autrealt += $cat["SUM(pain_tranche.alt)"];
+	    break;
+	default: /* tout le reste = exterieurs */
+	    $ext += $cat["SUM(htd)"];
+	    $extcm += $cat["SUM(pain_tranche.cm)"];
+	    $exttd += $cat["SUM(pain_tranche.td)"];
+	    $exttp += $cat["SUM(pain_tranche.tp)"];
+	    $extalt += $cat["SUM(pain_tranche.alt)"];
+	}
+    }
+    $servi = $ext + $autre + $perm + $nperm;
+    return array("servi"=>$servi,
+		 "libre"=>$libre,
+		 "librecm"=>$librecm,
+		 "libretd"=>$libretd,
+		 "libretp"=>$libretp,
+		 "librealt"=>$librealt,
+		 "mutualise"=>$mutualise,
+		 "mutualisecm"=>$mutualisecm,
+		 "mutualisetd"=>$mutualisetd,
+		 "mutualisetp"=>$mutualisetp,
+		 "mutualisealt"=>$mutualisealt,
+		 "permanents" => $perm,
+		 "permcm"=>$permcm,
+		 "permtd"=>$permtd,
+		 "permtp"=>$permtp,
+		 "permalt"=>$permalt,
+		 "nonpermanents" => $nperm,
+		 "npermcm"=>$npermcm,
+		 "npermtd"=>$npermtd,
+		 "npermtp"=>$npermtp,
+		 "npermalt"=>$npermalt,
+		 "exterieurs" =>$ext,
+		 "extcm"=>$extcm,
+		 "exttd"=>$exttd,
+		 "exttp"=>$exttp,
+		 "extalt"=>$extalt,
+		 "autre" => $autre,
+		 "autrecm"=>$autrecm,
+		 "autretd"=>$autretd,
+		 "autretp"=>$autretp,
+		 "autrealt"=>$autrealt,
+		 "total"=>$servi+$libre+$mutualise, // ajouter $annule apres retour
+	);
+}
 
 function htdtotaux($annee = NULL) {
     if ($annee == NULL) $annee = annee_courante();
@@ -743,54 +831,17 @@ function htdtotaux($annee = NULL) {
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0; 
-    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
-    while ($cat = mysql_fetch_assoc($rperm)) {
-	switch ($cat["categorie"]) {
-	case 1: /* 'annule': decompte specifique */ break;
-	case 2: /* permanents */
-	    $perm += $cat["SUM(htd)"];
-	    break;
-	case 3: /* non permanents */
-	    $nperm += $cat["SUM(htd)"];
-	    break;
-	case 22: /* enseignant 'mutualise' */
-	    $mutualise += $cat["SUM(htd)"];
-	    break;
-	case 23: /* enseignant 'libre' */
-	    $libre += $cat["SUM(htd)"];
-	    $librecm += $cat["SUM(pain_tranche.cm)"];
-	    $libretd += $cat["SUM(pain_tranche.td)"];
-	    $libretp += $cat["SUM(pain_tranche.tp)"];
-	    $librealt += $cat["SUM(pain_tranche.alt)"];
-	    break;
-	case 29: /* enseignant 'autre' (exterieur) */ 
-	    $autre += $cat["SUM(htd)"];
-	    break;
-	default: /* tout le reste = exterieurs */
-	    $ext += $cat["SUM(htd)"];
-	}
-    }
-    $servi = $ext + $autre + $perm + $nperm;
+    $a = htd_cat2array($rperm);
 
-    return array("servi"=>$servi, 
-		 "libre"=>$libre,
-		 "librecm"=>$librecm,
-		 "libretd"=>$libretd,
-		 "libretp"=>$libretp,
-		 "librealt"=>$librealt,
-		 "mutualise"=>$mutualise,
-		 "annule"=>$annule,
-		 "permanents" => $perm,
-		 "nonpermanents" => $nperm,
-		 "exterieurs" =>$ext,
-		 "autre" => $autre,
-		 "cm"=>$cm,
-		 "td"=>$td,
-		 "tp"=>$tp,
-		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule,
-	         "etu"=>$etu);
+    $a["total"] += $annule;
+    $a["annule"] = $annule;
+    $a["cm"] = $cm;
+    $a["td"] = $td;
+    $a["tp"] = $tp;
+    $a["alt"] = $alt;
+    $a["etu"] = $etu;
+
+    return $a;
 }
 
 function htdsuper($id) {    
@@ -844,54 +895,17 @@ function htdsuper($id) {
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
-    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
-    while ($cat = mysql_fetch_assoc($rperm)) {
-	switch ($cat["categorie"]) {
-	case 1: /* 'annule': decompte specifique */ break;
-	case 2: /* permanents */
-	    $perm += $cat["SUM(htd)"];
-	    break;
-	case 3: /* non permanents */
-	    $nperm += $cat["SUM(htd)"];
-	    break;
-	case 22: /* enseignant 'mutualise' */
-	    $mutualise += $cat["SUM(htd)"];
-	    break;
-	case 23: /* enseignant 'libre' */
-	    $libre += $cat["SUM(htd)"];
-	    $librecm += $cat["SUM(pain_tranche.cm)"];
-	    $libretd += $cat["SUM(pain_tranche.td)"];
-	    $libretp += $cat["SUM(pain_tranche.tp)"];
-	    $librealt += $cat["SUM(pain_tranche.alt)"];
-	    break;
-	case 29: /* enseignant 'autre' (exterieur) */ 
-	    $autre += $cat["SUM(htd)"];
-	    break;
-	default: /* tout le reste = exterieurs */
-	    $ext += $cat["SUM(htd)"];
-	}
-    }
-    $servi = $ext + $autre + $perm + $nperm;
+    $a = htd_cat2array($rperm);
 
-    return array("servi"=>$servi, 
-		 "libre"=>$libre,
-		 "librecm"=>$librecm,
-		 "libretd"=>$libretd,
-		 "libretp"=>$libretp,
-		 "librealt"=>$librealt,
-		 "mutualise"=>$mutualise,
-		 "annule"=>$annule,
-		 "permanents" => $perm,
-		 "nonpermanents" => $nperm,
-		 "exterieurs" =>$ext,
-		 "autre" => $autre,
-		 "cm"=>$cm,
-		 "td"=>$td,
-		 "tp"=>$tp,
-		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule,
-	         "etu"=>$etu);
+    $a["total"] += $annule;
+    $a["annule"] = $annule;
+    $a["cm"] = $cm;
+    $a["td"] = $td;
+    $a["tp"] = $tp;
+    $a["alt"] = $alt;
+    $a["etu"] = $etu;
+
+    return $a;
 }
 
 function htdformation($id) {
@@ -943,54 +957,17 @@ function htdformation($id) {
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
-    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
-    while ($cat = mysql_fetch_assoc($rperm)) {
-	switch ($cat["categorie"]) {
-	case 1: /* 'annule': decompte specifique */ break;
-	case 2: /* permanents */
-	    $perm += $cat["SUM(htd)"];
-	    break;
-	case 3: /* non permanents */
-	    $nperm += $cat["SUM(htd)"];
-	    break;
-	case 22: /* enseignant 'mutualise' */
-	    $mutualise += $cat["SUM(htd)"];
-	    break;
-	case 23: /* enseignant 'libre' */
-	    $libre += $cat["SUM(htd)"];
-	    $librecm += $cat["SUM(pain_tranche.cm)"];
-	    $libretd += $cat["SUM(pain_tranche.td)"];
-	    $libretp += $cat["SUM(pain_tranche.tp)"];
-	    $librealt += $cat["SUM(pain_tranche.alt)"];
-	    break;
-	case 29: /* enseignant 'autre' (exterieur) */ 
-	    $autre += $cat["SUM(htd)"];
-	    break;
-	default: /* tout le reste = exterieurs */
-	    $ext += $cat["SUM(htd)"];
-	}
-    }
-    $servi = $ext + $autre + $perm + $nperm;
+    $a = htd_cat2array($rperm);
 
-    return array("servi"=>$servi, 
-		 "libre"=>$libre,
-		 "librecm"=>$librecm,
-		 "libretd"=>$libretd,
-		 "libretp"=>$libretp,
-		 "librealt"=>$librealt,
-		 "mutualise"=>$mutualise,
-		 "annule"=>$annule,
-		 "permanents" => $perm,
-		 "nonpermanents" => $nperm,
-		 "exterieurs" =>$ext,
-		 "autre" => $autre,
-		 "cm"=>$cm,
-		 "td"=>$td,
-		 "tp"=>$tp,
-		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule,
-	         "etu"=>$etu);
+    $a["total"] += $annule;
+    $a["annule"] = $annule;
+    $a["cm"] = $cm;
+    $a["td"] = $td;
+    $a["tp"] = $tp;
+    $a["alt"] = $alt;
+    $a["etu"] = $etu;
+
+    return $a;
 }
 
 
@@ -1042,58 +1019,21 @@ function htdcours($id) {
     $rperm = mysql_query($qperm) 
 	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
 
-    $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
-    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
-    while ($cat = mysql_fetch_assoc($rperm)) {
-	switch ($cat["categorie"]) {
-	case 1: /* 'annule': decompte specifique */ break;
-	case 2: /* permanents */
-	    $perm += $cat["SUM(htd)"];
-	    break;
-	case 3: /* non permanents */
-	    $nperm += $cat["SUM(htd)"];
-	    break;
-	case 22: /* enseignant 'mutualise' */
-	    $mutualise += $cat["SUM(htd)"];
-	    break;
-	case 23: /* enseignant 'libre' */
-	    $libre += $cat["SUM(htd)"];
-	    $librecm += $cat["SUM(pain_tranche.cm)"];
-	    $libretd += $cat["SUM(pain_tranche.td)"];
-	    $libretp += $cat["SUM(pain_tranche.tp)"];
-	    $librealt += $cat["SUM(pain_tranche.alt)"];
-	    break;
-	case 29: /* enseignant 'autre' (exterieur) */ 
-	    $autre += $cat["SUM(htd)"];
-	    break;
-	default: /* tout le reste = exterieurs */
-	    $ext += $cat["SUM(htd)"];
-	}
-    }
-    $servi = $ext + $autre + $perm + $nperm;
+    $a = htd_cat2array($rperm);
 
-    return array("servi"=>$servi, 
-		 "libre"=>$libre,
-		 "librecm"=>$librecm,
-		 "libretd"=>$libretd,
-		 "libretp"=>$libretp,
-		 "librealt"=>$librealt,
-		 "mutualise"=>$mutualise,
-		 "annule"=>$annule,
-		 "permanents" => $perm,
-		 "nonpermanents" => $nperm,
-		 "exterieurs" =>$ext,
-		 "autre" => $autre,
-		 "cm"=>$cm,
-		 "td"=>$td,
-		 "tp"=>$tp,
-		 "alt"=>$alt,
-		 "total"=>$servi+$libre+$mutualise+$annule,
-	         "etu"=>$etu);
+    $a["total"] += $annule;
+    $a["annule"] = $annule;
+    $a["cm"] = $cm;
+    $a["td"] = $td;
+    $a["tp"] = $tp;
+    $a["alt"] = $alt;
+    $a["etu"] = $etu;
+
+    return $a;
 }
 
 
-function htdcours_old($id) {
+function htdcours_old_TRASHME($id) {
 
     $qservi = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant > 8';
     $rservi = mysql_query($qservi) 

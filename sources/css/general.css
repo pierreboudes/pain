@@ -1007,7 +1007,6 @@ div.caption {
 .tot_detail_conteneur {
     position: relative;
     top: -3px;
-    display: none;
 }
 .tot_detail {
     color: #DDD;
@@ -1019,12 +1018,15 @@ div.caption {
     border:  thin #333 solid;
     padding-left: 2px;
     padding-right: 2px;
+    display: none;
 }
 
 .tot_complexe:hover {
-    border: thin #333333 solid;
-//    border-right: 5px #333333 solid;
+    border: thin #333 solid;
 }
-.tot_complexe:hover + .tot_detail_conteneur {
+.tot_complexe:hover + .tot_detail_conteneur > .tot_detail, .tot_detail:hover {
+    display: inline;
+}
+.forceinline {
     display: inline;
 }

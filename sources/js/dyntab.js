@@ -341,71 +341,60 @@ function intitule() {
 }
 intitule.prototype = new immutcell();
 
+
+function total_complexe(o, nom, prefixe) {
+    var s;
+    s = "<span class='tot_complexe'>"
+	+htdpostes(o[nom])
+	+"</span>"
+	+"<span class='tot_detail_conteneur'> "
+	+"<span class='tot_detail'>=&nbsp;"
+	+htdpostes(1.5*o[prefixe+"cm"])
+	+'&nbsp;CM +&nbsp;'
+	+htdpostes(o[prefixe+"td"])
+	+'&nbsp;TD +&nbsp;'
+	+htdpostes(o[prefixe+"tp"])
+	+'&nbsp;TP +&nbsp;'
+	+htdpostes(o[prefixe+"alt"])
+	+'&nbsp;alt'
+	+"</span>"
+	+"</span>";
+    return s;
+}  
+
 function load_totaux(c,o) {
-	c.text('attente de données '+o["type"]+o["id"]);
-	getjson("json_totaux.php",
-    {id: o["id"], type: o["type"]},
-		function (o) {
+    c.text('attente de données '+o["type"]+o["id"]);
+    getjson("json_totaux.php",
+	    {id: o["id"], type: o["type"]},
+	    function (o) {
 		var s = "";
-		s += "<span class='tot_complexe'>"
-		    +htdpostes(o["total"])
-		    +"</span>"
-		    +"<span class='tot_detail_conteneur'> "
-		    +"<span class='tot_detail'>=&nbsp;"
-		    +htdpostes(1.5*o["cm"])
-		    +'&nbsp;CM +&nbsp;'
-		    +htdpostes(o["td"])
-		    +'&nbsp;TD +&nbsp;'
-		    +htdpostes(o["tp"])
-		    +'&nbsp;TP +&nbsp;'
-		    +htdpostes(o["alt"])
-		    +'&nbsp;alt'
-		    +"</span>"
-		    +"</span>"
-		    +' postes ';
+		s += total_complexe(o, "total", "");
+		s += ' postes ';
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
-		s += htdpostes(o["mutualise"])+'&nbsp;mutualisés +&nbsp;';
-		s += "<span class='tot_complexe'>"
-		    +htdpostes(o["libre"])
-		    +"</span>"
-		    +"<span class='tot_detail_conteneur'> "
-		    +"<span class='tot_detail'>=&nbsp;"
-		    +htdpostes(1.5*o["librecm"])
-		    +'&nbsp;CM +&nbsp;'
-		    +htdpostes(o["libretd"])
-		    +'&nbsp;TD +&nbsp;'
-		    +htdpostes(o["libretp"])
-		    +'&nbsp;TP +&nbsp;'
-		    +htdpostes(o["librealt"])
-		    +'&nbsp;alt'
-		    +"</span>"
-		    +"</span>"
-		    +' à pourvoir +&nbsp;';
+		s += total_complexe(o, "mutualise", "mutualise");
+		s += '&nbsp;mutualisés +&nbsp;';
+		s += total_complexe(o, "libre", "libre");
+		s += ' à pourvoir +&nbsp;';
 		s += htdpostes(o["annule"])+'&nbsp;annulés';
-		s += '<br/>Département: '+htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = '+htdpostes(o["permanents"])+'&nbsp;permanents + '+htdpostes(o["nonpermanents"])+'&nbsp;non-permanents +&nbsp;';
-		s += "<span class='tot_complexe'>"
-		    +htdpostes(o["libre"])
-		    +"</span>"
-		    +"<span class='tot_detail_conteneur'> "
-		    +"<span class='tot_detail'>=&nbsp;"
-		    +htdpostes(1.5*o["librecm"])
-		    +'&nbsp;CM +&nbsp;'
-		    +htdpostes(o["libretd"])
-		    +'&nbsp;TD +&nbsp;'
-		    +htdpostes(o["libretp"])
-		    +'&nbsp;TP +&nbsp;'
-		    +htdpostes(o["librealt"])
-		    +'&nbsp;alt'
-		    +"</span>"
-		    +"</span>"
-		    +' à pourvoir';
-
-		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = '+htdpostes(o["exterieurs"])+" servis + "+htdpostes(o["autre"])+" inconnus";
+		s += '<br/>Département: ';
+		s += htdpostes(parseFloat(o["permanents"]) + parseFloat(o["nonpermanents"]) + parseFloat(o["libre"]))+'  = ';
+		s += total_complexe(o, "permanents", "perm");
+		s += ' permanents +&nbsp;';
+		s += total_complexe(o, "nonpermanents", "nperm");
+		s += ' non permanents +&nbsp;';
+		s += total_complexe(o, "libre", "libre");
+		s += ' à pourvoir';
+		s += '<br/>Extérieurs: '+htdpostes(parseFloat(o["exterieurs"]) + parseFloat(o["autre"]))+' = ';
+		s += total_complexe(o, "exterieurs", "ext");
+		s += ' servis +&nbsp;';
+		s += total_complexe(o, "autre", "autre");
+		s += ' inconnus';
 		s += '<div style="float: right">['+Math.round(o["etu"])+'h étu.]</div>';
 		c.html(s);
+		c.find(".tot_detail").bind('click', function (e) {$(this).toggleClass("forceinline");});
 	    });
-    }
+}
 
 /* constructeur du composite totaux */
 function totaux() {
@@ -889,7 +878,7 @@ function superuser() {
 }
 
 function addLinks (c) {
-    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"hiddenurl\">$1</span><span class=\"visibleurl\">$1</span><img src=\"css/img/spip_out.gif\" class=\"urlicon\"></img></a>"));
+    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"hiddenurl\">$1</span><span class=\"visibleurl\">$1</span><img src=\"css/img/out.gif\" class=\"urlicon\"></img></a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
     c.find('span.visibleurl').each(function () {
 	    var s = $(this).text();
