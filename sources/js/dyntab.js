@@ -373,7 +373,7 @@ function load_totaux(c,o) {
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
 		s += total_complexe(o, "mutualise", "mutualise");
-		s += '&nbsp;mutualisés +&nbsp;';
+		s += ' mutualisés +&nbsp;';
 		s += total_complexe(o, "libre", "libre");
 		s += ' à pourvoir +&nbsp;';
 		s += htdpostes(o["annule"])+'&nbsp;annulés';
