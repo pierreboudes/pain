@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS pain_service (
   service_annuel float unsigned NOT NULL DEFAULT '192',
   service_reel float DEFAULT NULL,
   service_potentiel float DEFAULT NULL,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_enseignant,annee_universitaire),
   KEY id_enseignant (id_enseignant),
   KEY annee_universitaire (annee_universitaire),
