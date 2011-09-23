@@ -65,18 +65,18 @@ if ($id_enseignant != "") {
     echo '</table>';
 
     $totaux = totauxinterventions($id_enseignant);
-    /* Feuille de service */
-    echo "<h2>Déclaration du service d'enseignement</h2>";
+  //   /* Feuille de service */
+//     echo "<h2>Déclaration du service d'enseignement</h2>";
 
  
-    $services = listeservice($id_enseignant);
-    echo '<table class="service">';
-    ig_legendeservice();
-    while ($ligne = mysql_fetch_array($services)) {
-	ig_ligneservice($ligne);
-    }
-    ig_totauxservice($totaux);
-    echo '</table>';
+//     $services = listeservice($id_enseignant);
+//     echo '<table class="service">';
+//     ig_legendeservice();
+//     while ($ligne = mysql_fetch_array($services)) {
+// 	ig_ligneservice($ligne);
+//     }
+//     ig_totauxservice($totaux);
+//     echo '</table>';
    
 
     /* Details (tranche par tranche) */

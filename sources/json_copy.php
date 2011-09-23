@@ -102,13 +102,12 @@ if ($type == "annee") {
 }
 
 $qmajservices = 'REPLACE INTO pain_service
-                 (id_enseignant, annee_universitaire, categorie, service_annuel, tmpnom)
+                 (id_enseignant, annee_universitaire, categorie, service_annuel)
                  SELECT 
                  pain_enseignant.id_enseignant,
                  "'.$annee_cible.'",
                  pain_enseignant.categorie,  
-                 pain_enseignant.service,
-                 CONCAT(nom," ",prenom)
+                 pain_enseignant.service
                  FROM pain_enseignant
                  WHERE  (pain_enseignant.id_enseignant NOT IN (SELECT pain_service.id_enseignant FROM pain_service WHERE pain_service.annee_universitaire = "'.$annee_cible.'")) AND pain_enseignant.id_enseignant IN ';
 

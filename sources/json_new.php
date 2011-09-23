@@ -166,13 +166,33 @@ if (isset($_GET["id_parent"])) {
 	$id = $id_parent.'X'.$an;
     }
     pain_log($query." -- insert_id = $id");
-
     /* logs */
     if (isset($ntype)) {
 	$new =Array("id_".$type => $id,
 		    $par => $id_parent);
 	historique_par_ajout($ntype, $new);
     }
+
+    /* mises à jour annexes */
+    if ($type == "sformation") {
+	/* lorsqu'un sformation est insérée on s'assure que les
+	 * enseignants spéciaux ont un service dans cette année de
+	 * formation (ainsi une nouvelle année aura ces enseignants
+	 * dès la première sformation) */
+	$query = "REPLACE INTO pain_service ".
+	    "(id_enseignant, annee_universitaire, categorie, ".
+	    "service_annuel, service_reel) ".
+	    "SELECT pain_enseignant.id_enseignant, $id_parent, ".
+	    "  pain_enseignant.categorie, ".
+	    "  pain_enseignant.service, ".
+	    "  0 ".
+	    "FROM pain_enseignant ".
+	    "WHERE pain_enseignant.id_enseignant < 10";
+	if (!mysql_query($query)) {
+	    errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+	} 
+    }
+
     /* affichage de la nouvelle entree en json */
     $_GET["id"] = $id;
     unset($_GET["id_parent"]);

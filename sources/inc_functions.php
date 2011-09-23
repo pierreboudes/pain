@@ -1203,24 +1203,23 @@ AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
-ORDER by  pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
-
+ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
     ($result = mysql_query($query)) or die("Échec de la connexion à la base");
     return $result;
 }
 
 function ig_legendeintervention() {
     echo '<th class="formation">formation</th>';
+    echo '<th class="code_geisha">code UE</th>';
     echo '<th class="nom_cours">intitulé</th>';
-    echo '<th class="code_geisha">code geisha</th>';
-    echo '<th class="semestre">semestre</th>';
-    echo '<th class="groupe">Groupe</th>';
+    echo '<th class="semestre">Période</th>';
     echo '<th class="CM">CM</th>';
     echo '<th class="TD">TD</th>';
     echo '<th class="TP">TP</th>';
     echo '<th class="alt">alt.</th>';
     echo '<th class="HTD">htd</th>';
     echo '<th class="remarque">Remarque</th>';
+    echo '<th class="groupe">Groupe</th>';
 }
 
 function ig_intervention($i) {
@@ -1230,25 +1229,22 @@ function ig_intervention($i) {
     echo $i["nom"]." ".$i["annee_etude"]." ";
     echo $i["parfum"];
     echo '</td>';
+    echo '<td class="code_geisha">';
+    echo $i["code_geisha"];
+    echo '</td>';
     echo '<td class="nom_cours">';
     echo $i["nom_cours"];
     echo '</td>';
-    echo '<td class="code_geisha">';
-    echo $i["code_geisha"];
-    echo '</td>';    
     echo '<td class="semestre">';
-    echo $i["semestre"];
+    echo 'S'.$i["semestre"];
     echo '</td>';
-    echo '<td class="groupe">'.$i["groupe"].'</td>';
-/*    echo '<td class="enseignant">';
-    echo ig_responsable($i["pain_tranche.id_enseignant"]);
-    echo '</td>'; */
     echo '<td class="CM">'.$i["cm"].'</td>';
     echo '<td class="TD">'.$i["td"].'</td>';
     echo '<td class="TP">'.$i["tp"].'</td>';
     echo '<td class="alt">'.$i["alt"].'</td>';
     echo '<td class="HTD">'.$i["htd"].'</td>';
     echo '<td class="remarque">'.$i["remarque"].'</td>';
+    echo '<td class="groupe">'.$i["groupe"].'</td>';
 }
 
 function totauxinterventions($id_enseignant) {
@@ -1276,7 +1272,7 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 }
 
 function ig_totauxinterventions($totaux) {
-    echo '<th style="text-align:right;" colspan="5">';
+    echo '<th style="text-align:right;" colspan="4">';
     echo 'totaux';
     echo '</th>';
     echo '<td class="CM">'.$totaux["cm"].'</td>';
@@ -1284,7 +1280,7 @@ function ig_totauxinterventions($totaux) {
     echo '<td class="TP">'.$totaux["tp"].'</td>';
     echo '<td class="alt">'.$totaux["alt"].'</td>';
     echo '<td class="HTD">'.$totaux["htd"].'</td>';
-    echo '<th></th>';
+    echo '<th colspan="2"></th>';
 }
 
 
@@ -1319,7 +1315,7 @@ ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC";
 }
 
 
-function ig_legendeservice() {
+function ig_legendeservice_OLD() {
     echo '<tr class="ligne_service">';
     echo '<th class="code_geisha">';
     echo  "Code UE";
@@ -1337,7 +1333,7 @@ function ig_legendeservice() {
 /*    echo '<th class="regime">Régime</th>'; */
     echo '</tr>';
 }
-function ig_ligneservice($ligne) {
+function ig_ligneservice_OLD($ligne) {
     echo '<tr class="ligne_service">';
     echo '<td class="code_geisha">';
     echo $ligne["code_geisha"];
@@ -1356,7 +1352,7 @@ function ig_ligneservice($ligne) {
     echo '</tr>';
 }
 
-function ig_totauxservice($totaux) {
+function ig_totauxservice_OLD($totaux) {
     echo '<tr class="ligne_service">';
     echo '<td colspan="2"></td>';
     echo '<td>';

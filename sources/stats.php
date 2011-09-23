@@ -32,14 +32,6 @@ include("menu.php");
 /* mise a jour des services  (pain_service) */
 update_servicesreels();
 
-echo "<h2>Totaux pour l'ensemble du département (toutes les formations)</h2>";
-echo "<p>";
-$totaux = htdtotaux($annee);
-ig_htd($totaux);
-echo "</p><p>";
-ig_totauxenpostes($totaux);
-echo "</p>";
-echo "Compter les TP comme du TD coûte : ".enpostes($totaux["tp"]/3)." postes.";
 echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
 echo '<div style="text-align: center; margin: 10px;"><span id="graphCat" style="width: 600px; height: 200px;"></span></div>';
 include("inc_statscategories.php");

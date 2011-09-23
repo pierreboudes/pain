@@ -135,7 +135,6 @@ CREATE TABLE IF NOT EXISTS pain_listes (
   liste varchar(60) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL,
   id_enseignant mediumint(9) NOT NULL,
   email varchar(60) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL,
-  tmpnom varchar(80) CHARACTER SET utf8 COLLATE utf8_swedish_ci DEFAULT NULL,
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (liste,id_enseignant),
   KEY liste (liste),
