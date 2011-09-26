@@ -961,8 +961,21 @@ span.buttonsize {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+#aide div.corps ul {
+    list-style-type: bullet;
+}
+#aide div.corps li {
+    margin-bottom: 1em;
+    margin-right: 2em;
+}
+#aide div.corps em {
+    color: #1C94C4;
+    font-weight: bold;
+}
 
 
+
+/* Panier */
 div.bouton-panier {
     position: fixed;
     top: 2px;

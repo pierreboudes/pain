@@ -35,7 +35,8 @@ function ig_tablecategorie($id, $nom) {
     echo '</table>';
 }
 
-echo "<center><div class=\"infobox\">Les enseignants nouvellement ajoutés sont listés sous le titre <em>en attente de catégorie</em>.</div></center>";
+include("box_enseignants.html");
+
 ig_tablecategorie(2,"Permanents du département");
 ig_tablecategorie(3,"Non permanents du département");
 ig_tablecategorie(4,"Autres enseignants de Galilée");

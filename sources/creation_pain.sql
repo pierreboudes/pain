@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS pain_formation (
   numero smallint(5) unsigned NOT NULL,
   nom varchar(40) COLLATE utf8_swedish_ci NOT NULL,
   annee_etude tinyint(3) unsigned NOT NULL,
-  parfum varchar(40) COLLATE utf8_swedish_ci DEFAULT NULL,
+  parfum varchar(40) COLLATE utf8_swedish_ci NOT NULL,
   id_enseignant smallint(5) unsigned DEFAULT NULL,
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_formation),

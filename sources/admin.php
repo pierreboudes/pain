@@ -25,6 +25,8 @@ require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("gestion des enseignements et des services", "pain_admin.js");
 require_once('utils.php');
 include("menu.php");
+
+include("box_admin.html");
 ?>
 
 <div id="vueadmin">
