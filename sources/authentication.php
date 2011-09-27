@@ -54,24 +54,10 @@ function annee_courante() {
 }
 
 function authentication() {
-    if (isset($_COOKIE['painAnonyme'])) {
-	$login = "anonymous";
-/*
-	if (cookieclean('painAnonyme') == "christian.codognet") {
-	    $login = "christian.codognet";
-	}
-*/
-        $user = array("id_enseignant"=> -1,
-		     "prenom" => "",
-		     "nom" => "Anonyme",
-		     "login" => $login,
-		     "su" => 0,
-		     "stat" => 0
-	    );
-    } else {
-	phpCAS::forceAuthentication();
-	$login = phpCAS::getUser();
-    }
+    
+    phpCAS::forceAuthentication();
+    $login = phpCAS::getUser();
+    
     if ($login != "anonymous") {
 	$query = "SELECT id_enseignant, prenom, nom, login, su, stats 
                  FROM pain_enseignant 
@@ -88,15 +74,13 @@ function authentication() {
 		}
 	    }
 	} else {
-	    die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement d'informatique, vous pouvez envoyer un message avec votre login : $login &agrave; Pierre Boudes. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
+	    die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
 	};
     }
     return $user;
 }
 
 function authrequired() {
-    // return; /* no SHUNT */
-    if (isset($_COOKIE['painAnonyme'])) return;
     if (!(phpCAS::isAuthenticated())) {
 	header("Location: http://perdu.com");
 	die('Die in terror, picnic boy');
@@ -104,11 +88,6 @@ function authrequired() {
 }
 
 function pain_logout() {
-   if (isset($_COOKIE['painAnonyme'])) {
-       setcookie("painAnonyme", "", time()-3600);
-       echo 'Sayonara';
-   } else {
-       phpCAS::logout();
-   }
+    phpCAS::logout();
 }
 ?>
