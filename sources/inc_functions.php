@@ -100,7 +100,7 @@ function lister_enseignantsannee($an)
     return $rens;
 }
 
-function lister_categories($an)
+function lister_categories()
 {
     $qcat = "SELECT id_categorie AS `id`, ".
                     "TRIM(nom_court) AS `label`, ".
@@ -287,120 +287,93 @@ function supprimer_cours($id)
     }
 }
 
+function supprimer_tag($id)
+{    
+    if (peuteditertag($id)) {
+	$qtag = "DELETE FROM pain_tag WHERE `id_tag` = $id LIMIT 1";
+	pain_log("-- supprimer_tag($id)");
 
-function ig_cours($cours,$tag="")
-{
-    $id = $cours["id_cours"];
-    
-    echo '<td class="nom_cours">';
-    debug_show_id($id);
-    echo $cours["nom_cours"];
-    echo '</td>';
-    
-    echo '<td class="semestre">';
-    action_basculercours($id);
-    echo $cours["semestre"];
-    echo '</td>';
-    
-    echo '<td class="credits">';
-    echo $cours["credits"];
-    echo '</td>';
-    
-    echo '<td class="responsable">';
-    ig_responsable($cours["id_enseignant"]); 
-    echo '</td>';
-    
-    echo '<td class="CM">';
-    echo $cours["cm"];
-    echo '</td>';
-    
-    echo '<td class="TD">';
-    echo $cours["td"];
-    echo '</td>';
+        if (mysql_query($qtag)) {
+	    /* on efface les associations a des cours */
+	    pain_log("$qtag");
 
-    echo '<td class="TP">';
-    echo $cours["tp"];
-    echo '</td>';
-    
-    echo '<td class="alt">';
-    echo $cours["alt"];
-    echo '</td>';
-
-    echo '<td class="descriptif">';
-    echo $cours["descriptif"];
-    echo '</td>';
-    
-    echo '<td class="code_geisha">';
-    echo $cours["code_geisha"];
-    echo '</td>';
-   
-    echo '<td class="action" id="cours'.$tag.$id.'">';
-    action_supprimercours($id);
-    echo '<br/>';
-    action_modifiercours($id);
-    echo '</td>';
-}
-
-function ig_formcours($id_formation, $id_cours="", $nom_cours="", $semestre=0, $id_enseignant = NULL, $credits = "", $cm = "", $td="", $tp="", $alt="", $descriptif="", $code_geisha = "")
-{
-    $id = $id_cours;    
-    echo '<table class="formcours"><tr>';
-    echo '<td class="nom_cours">';
-    echo '<input type="text" name="nom_cours" value="'.$nom_cours.'"/></td>';
-    echo '<td class="semestre">';
-    echo '<input value="1" '; 
-    if (1 == $semestre) echo 'checked ';
-    echo 'type="radio" class="semestre" name="semestre"/>1<br/>';
-    echo '<input value="2" ';
-    if (2 == $semestre) echo 'checked ';
-    echo 'type="radio" class="semestre" name="semestre"/>2</td>';
-    echo '<td class="credits"><input type="text" name="credits" value="'.$credits.'" /></td>';
-    echo '<td class="responsable">';
-    echo '<select name="responsable_cours" class="autocomplete">';
-    ig_formselectenseignants($id_enseignant);
-    echo '</select>';
-    echo '</td>';
-    echo '<td class="CM"><input type="text" name="cm" value="'.$cm.'" /></td>';
-    echo '<td class="TD"><input type="text" name="td" value="'.$td.'" /></td>';
-    echo '<td class="TP"><input type="text" name="tp"  value="'.$tp.'" /></td>';
-    echo '<td class="alt"><input type="text" name="alt" value="'.$alt.'" /></td>';
-    echo '<td class="descriptif">';
-    echo '<input type="hidden" name="id_formation" value="'.$id_formation.'"/>';
-echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
-    echo '<textarea name="descriptif" rows="4" cols="10">'.$descriptif.'</textarea></td>';
-    echo '<td class="code_geisha"><input type="text" name="code_geisha" value="'.$code_geisha.'" /></td>';
-    if ($id) {/* modification de cours */
-	echo '<td class="action" id="formmodifcours'.$id.'">';
-        echo '<input type="submit" value="OK"/><br/>';
-	action_annulermodifiercours($id);
+	    $q = "DELETE FROM pain_tagscours WHERE `id_tag` = $id";
+	    
+	    if (mysql_query($q)) {
+		echo '{"ok": "ok"}';
+		pain_log("$q");
+	    } else {
+		errmsg("échec de la requête sur la table tagscours.");
+	    }
+	} else {
+	    errmsg("échec de la requête sur la table tag.");
+	}
     } else {
-	echo '<td class="action"><input type="submit" value="OK"/><br/>';
-	action_annulerajoutercours($id_formation);
+	errmsg("droits insuffisants.");
     }
-    echo '</td></tr></table>'."\n";    
 }
 
-function ig_legendecours($id_formation) {
-    echo '<tr class="legende"><th class="nom_cours">intitulé</th><th class="semestre">semestre</th><th class="credits">crédits</th><th class="responsable">responsable</th><th class="CM">CM</th><th class="TD">TD</th><th class="TP">TP</th><th class="alt">alt.</th><th class="descriptif">remarque</th><th class="code_geisha">code</th>';
-    echo '<th class="action">';
-    action_nouveaucours($id_formation);
-    echo '</th></tr>'."\n";
+function supprimer_tagcours($id, $id_par)
+{    
+    if (peuteditercours($id_par)) {
+	$qtag = "DELETE FROM pain_tagscours WHERE `id_tag` = $id AND `id_cours` = $id_par LIMIT 1";
+	pain_log("-- supprimer_tagcours($id, $id_par)");
 
+        if (mysql_query($qtag)) {
+		echo '{"ok": "ok"}';
+		pain_log("$qtag");
+	} else {
+	    errmsg("échec de la requête sur la table tagscours. $qtag".mysql_error());
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
+}
+
+function supprimer_collection($id)
+{    
+    if (peuteditercollection($id)) {
+	$qcollection = "DELETE FROM pain_collection WHERE `id_collection` = $id LIMIT 1";
+	pain_log("-- supprimer_collection($id)");
+
+        if (mysql_query($qcollection)) {
+	    /* on efface les associations a des cours */
+	    pain_log("$qcollection");
+
+	    $q = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id";
+	    
+	    if (mysql_query($q)) {
+		echo '{"ok": "ok"}';
+		pain_log("$q");
+	    } else {
+		errmsg("échec de la requête sur la table collectionscours.");
+	    }
+	} else {
+	    errmsg("échec de la requête sur la table collection.");
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
+}
+
+function supprimer_collectioncours($id, $id_par)
+{    
+    if (peuteditercours($id_par)) {
+	$qcollection = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id AND `id_cours` = $id_par LIMIT 1";
+	pain_log("-- supprimer_collectioncours($id, $id_par)");
+
+        if (mysql_query($qcollection)) {
+		echo '{"ok": "ok"}';
+		pain_log("$qcollection");
+	} else {
+	    errmsg("échec de la requête sur la table collectionscours. $qcollection".mysql_error());
+	}
+    } else {
+	errmsg("droits insuffisants.");
+    }
 }
 
 
-function ig_legendetranches($id) {
-    echo '<th class="groupe">Groupe</th>';
-    echo '<th class="enseignant">Enseignant</th>';
-    echo '<th class="CM">CM</th>';
-    echo '<th class="TD">TD</th>';
-    echo '<th class="TP">TP</th>';
-    echo '<th class="alt">alt.</th>';
-    echo '<th class="HTD">htd</th>';
-    echo '<th class="remarque">Remarque</th>';
-    echo '<th class="action">';
-    echo '</th>';
-}
 
 function tranchesdecours($id) {
     $qtranches = "SELECT * FROM pain_tranche WHERE `id_cours`=".$id." ORDER BY groupe ASC";
@@ -445,34 +418,6 @@ function selectionner_enseignant($id)
 	echo "Échec de la requête sur la table enseignant. $qens ".mysql_error();
     }
     return $ens;
-}
-
-
-function ig_tranche($t,$tag="") {
-    $id = $t["id_tranche"];
-    echo '<tr class="tranche"';
-    action_dblcmodifiertranche($id);
-    echo '>';
-    echo '<td class="groupe">';
-    debug_show_id($id);    
-    echo  $t["groupe"];    
-    echo '</td>';
-    echo '<td class="enseignant">';
-    echo ig_responsable($t["id_enseignant"]);
-    echo '</td>';
-    echo '<td class="CM">'.$t["cm"].'</td>';
-    echo '<td class="TD">'.$t["td"].'</td>';
-    echo '<td class="TP">'.$t["tp"].'</td>';
-    echo '<td class="alt">'.$t["alt"].'</td>';
-    echo '<td class="HTD">'.$t["htd"].'</td>';
-    echo '<td class="remarque">'.$t["remarque"].'</td>';
-    echo '<td class="action" id="tranche'.$tag.$id.'">';
-    action_supprimertranche($id);
-    echo '<br/>';
-    action_modifiertranche($id);
-    echo '</td>';
-    echo '</tr>';
-    echo "\n";
 }
 
 function ig_listtranches($tranches) {

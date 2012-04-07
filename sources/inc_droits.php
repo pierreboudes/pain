@@ -38,6 +38,8 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "enseignant") return peutediterenseignant($id);
 	if ($type == "service") return peutediterservice($id);
 	if ($type == "choix") return peutediterchoix($id);
+	if ($type == "tag") return peuteditertag($id);
+	if ($type == "collection") return peuteditercollection($id);
     }
     if ($id_parent != NULL) {
 	if ($type == "sformation") return peuteditersformationdelannee($id_parent);
@@ -46,6 +48,10 @@ function peutediter($type, $id, $id_parent) {
 	if ($type == "tranche") return peuteditertrancheducours($id_parent);
 	if ($type == "service") return peutediterservicedeenseignant($id_parent);
 	if ($type == "choix") return peutchoisir();
+	if ($type == "tag") return peuteditertag($id);
+	if ($type == "tagscours") return peuteditercours($id_parent);
+	if ($type == "collection") return peuteditercollection($id);
+	if ($type == "collectionscours") return peuteditercours($id_parent);
     }
     if ($type == "enseignant") return peutproposerenseignant();
     return false;
@@ -288,5 +294,13 @@ function peutproposerenseignant() {
 function peutsupprimerenseignant($id_enseignant = 0) {
     global $user;
     return ($user["su"] == 1);
+}
+
+function peuteditertag($id_tag) {
+    return peuttoutfaire();
+}
+
+function peuteditercollection() {
+    return peuttoutfaire($id_collection);
 }
 ?>

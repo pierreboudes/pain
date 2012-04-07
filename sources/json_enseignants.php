@@ -24,7 +24,7 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-if ($annee == NULL) $annee = annee_courante();
+if ((!isset($annee)) || ($annee == NULL)) $annee = annee_courante();
 
 if (isset($_GET["term"])) {
     $rens = lister_enseignantsannee($annee);

@@ -51,6 +51,12 @@ $champs = array(
 	"prenom", "nom", "email", "telephone", "bureau",
 	"debut", "fin", "responsabilite"
 	),
+    "tag" => array(
+	"nom_tag", "descriptif"
+	),
+    "collection" => array(
+	"nom_collection", "id_sformation", "descriptif"
+	),
     "service" => array(
 	),
     );
@@ -93,6 +99,10 @@ if (isset($_GET["type"])) {
 	$par = "cours";
     } else if ($readtype == "service") {
 	$type = "service";
+    } else if ($readtype == "tag") {
+	$type = "tag";
+    } else if ($readtype == "collection") {
+	$type = "collection";
     } else {
 	errmsg("type indéfini");
     }
@@ -152,7 +162,11 @@ if (isset($_GET["id"])) {
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
+	if ("null" != $val) {
 	    $setsql[] = '`'.$field.'` = "'.$val.'"';
+	} else {
+	    $setsql[] = '`'.$field.'` = NULL';
+	}
     };
     $strset = implode(", ", $setsql);
        

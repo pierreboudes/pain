@@ -48,7 +48,20 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "sformation") {
 	$type = "sformation";
 	$par = "annee_universitaire";
-	$order = "ORDER BY numero ASC";	
+	$order = "ORDER BY numero ASC";
+    } else if ($readtype == "microsformation") {
+	$type = "sformation";
+	$par = "annee_universitaire";
+	if (isset($_GET["id_parent"])) {
+	    $annee = getclean("id_parent");
+	}
+	$requete = "SELECT nom AS nom_sformation,
+                           nom AS label,
+                           id_sformation,
+                           id_sformation AS id
+                    FROM pain_sformation
+                    WHERE annee_universitaire = $annee
+                    ORDER BY numero ASC";
     } else if ($readtype == "formation") {
 	$type = "formation";
 	$par = "id_sformation";
@@ -256,7 +269,94 @@ concat('s', id_sformation) as id_responsabilite,
 from pain_sformation
 where pain_sformation.id_enseignant = ".$id_par."
 and pain_sformation.annee_universitaire = ".$annee."
-)";   
+)"; 
+
+    } else if ($readtype == "tag") {
+	$type = "tag";
+	$requete = "SELECT pain_tag.*,                    
+                    \"$type\" AS type,
+                    id_$type AS id,
+                    (SELECT COUNT(*) FROM pain_tagscours WHERE pain_tagscours.id_tag = pain_tag.id_tag)
+                    AS nb_cours
+                    FROM pain_tag";
+	if (isset($_GET['id_parent'])) {
+	    $requete .= " WHERE 1 ";	    
+        } else if (isset($_GET["id"])) {
+	    $id = $_GET['id'];
+	    $requete .= " WHERE id_tag = $id ";	    
+	}
+	$requete .= "ORDER BY nom_tag ASC";
+    } else if ($readtype == "tags") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "tag";
+	    $id_par =  getclean('id_parent');
+	    $requete = "SELECT pain_tag.*, 
+                        \"$type\" AS type, 
+                        pain_tag.id_$type AS id                 
+                        FROM pain_tag, pain_tagscours";
+	    $requete .= " WHERE  pain_tagscours.id_cours = $id_par 
+                          AND pain_tag.id_tag = pain_tagscours.id_tag";	    
+	    $requete .= " ORDER BY nom_tag ASC";
+        } else {
+	    errmsg("le type tags nécessite un id_parent");
+	}
+    } else if ($readtype == "unusedtags") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "tag";
+	    $id_par =  getclean('id_parent');
+	    $requete = "SELECT nom_$type as label, 
+                        id_$type AS id                 
+                        FROM pain_$type";
+	    $requete .= " WHERE id_$type NOT IN 
+                         (SELECT id_$type FROM pain_tagscours
+                          WHERE id_cours = $id_par)";	    
+	    $requete .= " ORDER BY nom_tag ASC";
+        } else {
+	    errmsg("le type unusedtags nécessite un id_parent");	}
+    } else if ($readtype == "collection") {
+	$type = "collection";
+	$requete = "SELECT pain_collection.*,                    
+                    \"$type\" AS type,
+                    id_$type AS id,                   
+                    (SELECT COUNT(*) FROM pain_collectionscours WHERE pain_collectionscours.id_collection = pain_collection.id_collection) AS nb_cours,
+                    pain_sformation.nom AS nom_sformation
+                    FROM pain_collection LEFT OUTER JOIN pain_sformation
+                    ON pain_collection.id_sformation = pain_sformation.id_sformation";
+	if (isset($_GET['id_parent'])) {
+	    $requete .= " WHERE 1 ";	    
+        } else if (isset($_GET["id"])) {
+	    $id = $_GET['id'];
+	    $requete .= " WHERE id_collection = $id ";	    
+	}
+	$requete .= "ORDER BY nom_sformation, nom_collection ASC";
+    } else if ($readtype == "collections") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "collection";
+	    $id_par =  getclean('id_parent');
+	    $requete = "SELECT pain_collection.*, 
+                        \"$type\" AS type, 
+                        pain_collection.id_$type AS id                 
+                        FROM pain_collection, pain_collectionscours";
+	    $requete .= " WHERE  pain_collectionscours.id_cours = $id_par 
+                          AND pain_collection.id_collection = pain_collectionscours.id_collection";	    
+	    $requete .= " ORDER BY nom_collection ASC";
+        } else {
+	    errmsg("le type collections nécessite un id_parent");
+	}
+    } else if ($readtype == "unusedcollections") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "collection";
+	    $id_par =  getclean('id_parent');
+	    $requete = "SELECT nom_$type as label, 
+                        id_$type AS id                 
+                        FROM pain_$type";
+	    $requete .= " WHERE id_$type NOT IN 
+                         (SELECT id_$type FROM pain_collectionscours
+                          WHERE id_cours = $id_par)";	    
+	    $requete .= " ORDER BY nom_collection ASC";
+        } else {
+	    errmsg("le type unusedcollections nécessite un id_parent");
+	}
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

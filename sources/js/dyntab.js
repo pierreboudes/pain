@@ -151,6 +151,7 @@ function richcell() {
 richcell.prototype = new cell();
 
 function numcell() {
+    this.canbenull = false;
     this.edit = function(c) {
 	var s = c.text();
 	c.html('<input type="text" value="'+s+'"/>');
@@ -160,12 +161,15 @@ function numcell() {
     this.getval = function (c, o) {
 	var s;
 	if (c.hasClass("edit")) {
-	    s = c.find('input').val();
+	    s = c.find('input').val();	    
 	} else {
 	    s = c.text();
 	}
-	
-	o[this.name] = s.replace(" ","").replace(",",".");
+	if ((this.canbenull) && ("" == s)) {
+	    o[this.name] = null;
+	} else {
+	    o[this.name] = s.replace(" ","").replace(",",".");
+	}
     }
 }
 numcell.prototype = new cell();
@@ -329,12 +333,57 @@ function enseignant () {
     }
 }
 enseignant.prototype = new cell();
+
+/* constructeur du composite sformation */
+function microsformation () {
+    this.name = "microsformation";
+    this.mutable = true;
+    this.edit = function (c) {
+	/* sauvegarder l'id actuel */
+	var ensid = c.find('.hiddenvalue').text(); 
+	c.remove('.hiddenvalue');
+	var ensname = $.trim(c.find('span.nomsformation').text());
+	/* installer la zone d'input */
+	c.html('<input type="text" value="'+ensname+'"/><span class="hiddenvalue">'+ensid+'</span>');
+	/* charger une seule fois la liste des sformations */	
+	/* mettre en place l'autocomplete */
+	var ens = c.find("input");
+	getjson("json_get.php",{type: "microsformation", id_parent: getAnnee()}, function (data) {
+		ens.autocomplete({ minLength: 2,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				c.find('.hiddenvalue').html('null');
+				return false;
+			    }
+			    $(this).focus();
+			    ens.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			} 
+		    })});
+	c.addClass("edit");
+	c.find('input').focus();
+    };
+    this.getval = function (c,o) {
+	var sformid = c.find('.hiddenvalue').text();
+	o["id_sformation"] = sformid;
+    }
+    this.setval = function (c,o) {
+	c.html('<span class="nomsformation">'+o["nom_sformation"]+'</span><span class="hiddenvalue">'+o["id_sformation"]+'</span>');
+    }
+}
+microsformation.prototype = new cell();
+
+
 /* constructeur du composite intitule de formation */
 function intitule() {
     this.name = "intitule";
     this.setval = function (c,o) {
 	var s;
-	s = o["nom"]+' '+o['annee_etude'];
+	s = o["nom"];
+	if (o["annee_etude"] != null) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);
     }
@@ -363,6 +412,7 @@ function total_complexe(o, nom, prefixe) {
 }  
 
 function load_totaux(c,o) {
+    c.removeClass('inactive');
     c.text('attente de données '+o["type"]+o["id"]);
     getjson("json_totaux.php",
 	    {id: o["id"], type: o["type"]},
@@ -403,7 +453,8 @@ function totaux() {
 	if (this.autoload) {
 	    load_totaux(c, o);
 	} else {
-	    c.html('<img src="css/img/dblclick.png" title="double-clic pour stats"></img>');	
+	    c.addClass('inactive');
+	    c.html('double-clic');	
 	}
 	if (hasTouch) {
 	    c.click(function (event) {
@@ -427,17 +478,212 @@ function totaux() {
 totaux.prototype = new immutcell();
 
 function totaux_loader() {
-/*    this.setval = function (c, o) {
-	c.html('double-clic pour stats');
-    };
-    this.edit = function (c) {
-	var oid = parseIdString(c.parent('tr').attr('id'));
-	load_totaux(c,oid);
-	}; */
     this.autoload = false;
     this.name = "totaux_loader";  
 };
 totaux_loader.prototype = new totaux();
+
+function load_tags(c,o) {
+    c.removeClass('inactive');
+    c.text('attente de données '+'tags'+o["id"]);
+    var id_cours = o["id"];
+    getjson("json_get.php",
+	    {id_parent: id_cours, type: "tags"},
+	    function (o) {
+		var n = o.length;
+		var i = 0;
+		c.html('');
+		for (i = n - 1; i >= 0; i--) {
+		    var s;
+		    s = '<span class="tag">'+o[i].nom_tag+' <button id="tagcours_'+o[i].id_tag+'_'+id_cours+'" class="button-enlever_tag" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
+		    c.append(s);
+		    $('#tagcours_'+o[i].id_tag+'_'+id_cours).bind('click', {id_tag: o[i].id_tag, id_cours: id_cours}, function (e) {
+			    getjson("json_rm.php",
+				    {id:e.data.id_tag, id_parent: e.data.id_cours, type: "tagcours"}, 
+				    function () {
+					/* si succès: on retire de la vue */
+					$('#tagcours_'+e.data.id_tag+'_'+e.data.id_cours).parent().remove();
+				    });
+			    return false;
+			});
+		}
+		c.append('<span class="tag"><button id="ajoutertagcours_'+id_cours+'"class="button-ajouter_tag" role="button" aria-disabled="false" title="ajouter"><span class="icon">&nbsp;</span></button></span>');
+		$('#ajoutertagcours_'+id_cours).bind('click',{id_cours: id_cours}, ajouter_tagcours);
+	    });
+}
+	    
+function ajouter_tagcours(e) {
+    var id_cours = e.data.id_cours;
+    var c = $('#ajoutertagcours_'+id_cours).parent();
+    if (existsjQuery(c.find('input.taginput'))) return false;
+    /* installer la zone d'input et le bouton d'envoi */
+    c.append('<input class="taginput" type="text" value=""/><span class="hiddenvalue"></span>');
+    c.append('<button id="envoyertagcours_'+id_cours+'"class="button-envoyer_tag" role="button" aria-disabled="false" title="envoyer"><span class="icon">&nbsp;</span></button>');
+    $('#envoyertagcours_'+id_cours).bind('click', {id_cours: id_cours}, envoyer_tagcours);
+    /* mettre en place l'autocomplete */
+    var inp = c.find("input");
+    getjson("json_get.php",{id_parent: id_cours, type: 'unusedtags'}, 
+	    function (data) {
+		inp.autocomplete({ 
+		    minLength: 2,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				return false;
+			    }
+			    $(this).focus();
+			    inp.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			}
+		    })});
+    inp.focus();
+    $('#ajoutertagcours_'+id_cours).remove();
+    return false;
+}
+
+function envoyer_tagcours(e) {
+    var id_cours = e.data.id_cours;
+    var id_tag = $('#envoyertagcours_'+id_cours).prev('.hiddenvalue').text();
+    if (id_tag.length == 0) return false;
+    getjson("json_new.php", {id_cours: id_cours, id_tag: id_tag, type: 'tagscours'}, 
+	    function () {
+		var c = $('#cours_'+id_cours+' > td.tags');		
+		load_tags(c, {id: id_cours});
+	});
+    return false;
+}
+
+
+
+/* construction du composite interactif tags */
+function tags() {
+    this.setval = function (c, o) {
+	    c.addClass('inactive');
+	    c.html('double-clic');
+	    if (hasTouch) {
+	    c.click(function (event) {
+		    if (clickeditmode) {
+			load_tags(c, o);
+		    }
+		    return false;		
+		});
+	}
+	c.dblclick(function () {
+		load_tags(c, o);
+	    });
+    };
+    this.edit = function (c) {
+	var oid = parseIdString(c.parent('tr').attr('id'));
+	load_tags(c, oid);
+    };
+    this.autoload = false;
+    this.name = "tags";  
+};
+tags.prototype = new immutcell();
+
+
+/* collections */
+function load_collections(c,o) {
+    c.removeClass('inactive');
+    c.text('attente de données '+'collections'+o["id"]);
+    var id_cours = o["id"];
+    getjson("json_get.php",
+	    {id_parent: id_cours, type: "collections"},
+	    function (o) {
+		var n = o.length;
+		var i = 0;
+		c.html('');
+		for (i = n - 1; i >= 0; i--) {
+		    var s;
+		    s = '<span class="collection">'+o[i].nom_collection+' <button id="collectioncours_'+o[i].id_collection+'_'+id_cours+'" class="button-enlever_collection" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
+		    c.append(s);
+		    $('#collectioncours_'+o[i].id_collection+'_'+id_cours).bind('click', {id_collection: o[i].id_collection, id_cours: id_cours}, function (e) {
+			    getjson("json_rm.php",
+				    {id:e.data.id_collection, id_parent: e.data.id_cours, type: "collectioncours"}, 
+				    function () {
+					/* si succès: on retire de la vue */
+					$('#collectioncours_'+e.data.id_collection+'_'+e.data.id_cours).parent().remove();
+				    });
+			    return false;
+			});
+		}
+		c.append('<span class="collection"><button id="ajoutercollectioncours_'+id_cours+'"class="button-ajouter_collection" role="button" aria-disabled="false" title="ajouter"><span class="icon">&nbsp;</span></button></span>');
+		$('#ajoutercollectioncours_'+id_cours).bind('click',{id_cours: id_cours}, ajouter_collectioncours);
+	    });
+}
+	    
+function ajouter_collectioncours(e) {
+    var id_cours = e.data.id_cours;
+    var c = $('#ajoutercollectioncours_'+id_cours).parent();
+    if (existsjQuery(c.find('input.collectioninput'))) return false;
+    /* installer la zone d'input et le bouton d'envoi */
+    c.append('<input class="collectioninput" type="text" value=""/><span class="hiddenvalue"></span>');
+    c.append('<button id="envoyercollectioncours_'+id_cours+'"class="button-envoyer_collection" role="button" aria-disabled="false" title="envoyer"><span class="icon">&nbsp;</span></button>');
+    $('#envoyercollectioncours_'+id_cours).bind('click', {id_cours: id_cours}, envoyer_collectioncours);
+    /* mettre en place l'autocomplete */
+    var inp = c.find("input");
+    getjson("json_get.php",{id_parent: id_cours, type: 'unusedcollections'}, 
+	    function (data) {
+		inp.autocomplete({ 
+		    minLength: 2,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				return false;
+			    }
+			    $(this).focus();
+			    inp.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			}
+		    })});
+    inp.focus();
+    $('#ajoutercollectioncours_'+id_cours).remove();
+    return false;
+}
+
+function envoyer_collectioncours(e) {
+    var id_cours = e.data.id_cours;
+    var id_collection = $('#envoyercollectioncours_'+id_cours).prev('.hiddenvalue').text();
+    if (id_collection.length == 0) return false;
+    getjson("json_new.php", {id_cours: id_cours, id_collection: id_collection, type: 'collectionscours'}, 
+	    function () {
+		var c = $('#cours_'+id_cours+' > td.collections');		
+		load_collections(c, {id: id_cours});
+	});
+    return false;
+}
+
+/* construction du composite interactif collections */
+function collections() {
+    this.setval = function (c, o) {
+	    c.addClass('inactive');
+	    c.html('double-clic');
+	    if (hasTouch) {
+	    c.click(function (event) {
+		    if (clickeditmode) {
+			load_collections(c, o);
+		    }
+		    return false;		
+		});
+	}
+	c.dblclick(function () {
+		load_collections(c, o);
+	    });
+    };
+    this.edit = function (c) {
+	var oid = parseIdString(c.parent('tr').attr('id'));
+	load_collections(c, oid);
+    };
+    this.autoload = false;
+    this.name = "collections";  
+};
+collections.prototype = new immutcell();
+
+
 
 /* constructeur du composite nature de l'intervention */
 function nature() {
@@ -800,7 +1046,11 @@ function ligne() {
     this.laction.setval = function(c,o) {
 	if (0 == c.find('div.palette').length) c.append('<div class="palette"/>');
     }
-    this.laction.name = "laction";    
+    this.laction.name = "laction";   
+    /* tags */
+    this.tags = new tags();
+    /* colllections */
+    this.collections = new collections(); 
 
     /* pain_tranche
      */
@@ -844,6 +1094,7 @@ function ligne() {
     /* annee_etude */
     this.annee_etude = new numcell();
     this.annee_etude.name = "annee_etude";
+    this.annee_etude.canbenull = true;
     /* parfum */
     this.parfum = new cell();
     this.parfum.name = "parfum";
@@ -859,6 +1110,25 @@ function ligne() {
      */
     this.resp_nom = new immutcell();
     this.resp_nom.name = "resp_nom";
+
+    /* tags
+     */
+    /* nom_tag */
+    this.nom_tag = new cell();
+    this.nom_tag.name = "nom_tag";
+    /* nb_cours */
+    this.nb_cours = new immutcell();
+    this.nb_cours.name = "nb_cours";
+    /* collections
+     */
+    /* nom_collection */
+    this.nom_collection = new cell();
+    this.nom_collection.name = "nom_collection";
+    /* microsformation */
+    this.microsformation = new microsformation();
+    /* nb_cours */
+    this.nb_cours = new immutcell();
+    this.nb_cours.name = "nb_cours";
 }
 /*--------  FIN OBJET LIGNE --------------*/
 
@@ -974,9 +1244,8 @@ function largeurligne(dansligne) {
     var ligne = dansligne.parentsUntil('tbody');
     if (existsjQuery(ligne)) {
 	return ligne.children('td, th').length;
-        /* TODO: compter les colspan > 1 */
-    }
-    return 1;
+    }    
+    return dansligne.children('td, th').length;
 }
 
 /* ----- FIN UTILITAIRES ----- */
@@ -1230,7 +1499,6 @@ function basculerEnseignant(e) {
 	var legende = $('#legendeservice'+id);
 	addMenuFields(legende);
 	addServiceAdd(legende);
-
 //	addAdd(legende.find('th.action'));
 	    });
     } else {
@@ -1238,6 +1506,42 @@ function basculerEnseignant(e) {
     }
 
     return false;
+}
+
+
+
+function basculerTags() {
+    var bascule = $('#basculetags');
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+
+    if (bascule.hasClass('basculeOn')) {
+	$("#vuetags > tbody").append('<tr id="trlestags"><td colspan=2><table class="lestags" id="lestags"><tbody></tbody></table></td></tr>');
+	var id = 'all';
+	appendList({type: "tag", id_parent: id},$('#lestags > tbody'));
+	var legende = $('#legendetag'+id);
+	addAdd(legende.find('th.action'));
+    } else {
+	$('#trlestags').remove();
+    }
+   return false;
+}
+
+function basculerCollections() {
+    var bascule = $('#basculecollections');
+    bascule.toggleClass('basculeOff');
+    bascule.toggleClass('basculeOn');
+
+    if (bascule.hasClass('basculeOn')) {
+	$("#vuecollections > tbody").append('<tr id="trlescollections"><td colspan=2><table class="lescollections" id="lescollections"><tbody></tbody></table></td></tr>');
+	var id = 'all';
+	appendList({type: "collection", id_parent: id},$('#lescollections > tbody'));
+	var legende = $('#legendecollection'+id);
+	addAdd(legende.find('th.action'));
+    } else {
+	$('#trlescollections').remove();
+    }
+   return false;
 }
 
 /* bloc --- fin des bascules --- */
@@ -1447,6 +1751,7 @@ function addMenuFields(tr) {
 	       openMenuFields);
     return false;
 }
+
 function removeMenuFields(td) {
     td.find('button.menufields').remove();
 }
@@ -1837,7 +2142,7 @@ function recalculatePanier(type) {
 
 
 /* BLOC ------- REMPLISSAGE DES TABLEAUX ---------*/
-function  appendList(data, body, do_it_last) {
+function appendList(data, body, do_it_last) {
     var legende = $("#skel"+data.type);
     var list = legende.children('th');
     legende.clone(true).attr('id','legende'+data.type+data.id_parent).appendTo(body);
@@ -1886,7 +2191,7 @@ function appendItem(type, prev, o, list) {
 	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	addHandle(line.children('td.laction'), "cours");
-	var colspan = largeurligne(line);
+	var colspan = largeurligne($("#skelcours"));
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
     }
     if (type == "annee") {
@@ -1920,7 +2225,7 @@ function appendItem(type, prev, o, list) {
 	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
 	/* */
-	var colspan = largeurligne(line);
+	var colspan = largeurligne($("#skelformation"));
 	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
     }
     if (type == "tranche") {
@@ -2044,8 +2349,12 @@ function replaceLine(tabo) {
 	    var td = $(this);
 	    var nom;
 	    td.removeClass('edit');
+	    td.removeClass('inactive');
 	    td.removeClass('mutable');
 	    nom = td.attr('class');
+	    if (typeof(L[nom]) == 'undefined') {
+		alert (nom+ +' indéfini dans la ligne.');
+	    }
 	    L[nom].setval(td, o);
 //	    if ("editable" in o) {
 	    L[nom].showmutable(td);

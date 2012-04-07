@@ -46,7 +46,19 @@ $champs = array(
     "enseignant" => array(
 	"prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie"
 	),
-   "service" => array()
+   "service" => array(),
+    "tag" => array(
+	"nom_tag", "descriptif"
+	),
+   "tagscours" => array(
+       "id_tag", "id_cours"
+       ),
+   "collection" => array(
+	"nom_collection", "descriptif"
+	),
+   "collectionscours" => array(
+       "id_collection", "id_cours"
+       )
     );
 
 //print_r($champs);
@@ -80,6 +92,20 @@ if (isset($_GET["type"])) {
 	$type = "service";
 	$par = "id_enseignant";
 	$ntype = 5;
+    } else if ($readtype == "tag") {
+	$type = "tag";
+	$par = "descriptif";
+	$_GET["id_parent"] = "descriptif ?";
+    } else if ($readtype == "tagscours") {
+	$type = "tagscours";
+	$_GET["id_parent"] = getclean("id_cours");
+    } else if ($readtype == "collection") {
+	$type = "collection";
+	$par = "descriptif";
+	$_GET["id_parent"] = "descriptif ?";
+    } else if ($readtype == "collectionscours") {
+	$type = "collectionscours";
+	$_GET["id_parent"] = getclean("id_cours");
     } else {
 	errmsg("type indéfini");
     }
@@ -94,19 +120,26 @@ if (isset($_GET["id_parent"])) {
 	errmsg("droits insuffisants.");
     }
     $set = array();
-
-    if ($type != "enseignant") {
-	$set[$par] = $id_parent;
-    } else {
-	$set["categorie"] = $id_parent;
-	$set["debut"] = date('Y-m-d');
+    if (($type != "tagscours") && ($type != "collectionscours"))  {
+	if ($type != "enseignant") {
+	    $set[$par] = $id_parent;
+	} else {
+	    $set["categorie"] = $id_parent;
+	    $set["debut"] = date('Y-m-d');
+	}
     }
-
+    
     if (!isset($_GET["nom_cours"])) {
 	$_GET["nom_cours"] = 'Nom du cours ?';
     }
     if (!isset($_GET["nom"])) {
 	$_GET["nom"] = 'Nom ?';
+    }
+    if (!isset($_GET["nom_tag"])) {
+	$_GET["nom_tag"] = 'Tag ?';
+    }
+    if (!isset($_GET["nom_collection"])) {
+	$_GET["nom_collection"] = 'nom du groupe de cours ?';
     }
     foreach ($champs[$type] as $field) {
 	if (isset($_GET[$field])) {
@@ -119,7 +152,12 @@ if (isset($_GET["id_parent"])) {
     }
 
     /* Champs particuliers a controler */
-    if (($type != "enseignant") && !isset($set["id_enseignant"])) {
+    if (($type != "enseignant") 
+	&& ($type != "tag")
+	&& ($type != "tagscours")
+	&& ($type != "collection") 
+	&& ($type != "collectionscours") 
+	&& !isset($set["id_enseignant"])) {
 	$set["id_enseignant"] = $user["id_enseignant"];
     }
 
@@ -139,6 +177,7 @@ if (isset($_GET["id_parent"])) {
 	    $setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
+
     if ($type == "service") {
 	if (isset($_GET["annee"])) {
 	    $an = $_GET["annee"];	    
@@ -161,7 +200,13 @@ if (isset($_GET["id_parent"])) {
 
     if (!mysql_query($query)) {
 	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
-    } 
+    }
+
+    if (($type == "tagscours") || ($type == "collectionscours")) {
+	echo '{"ok": "ok"}';
+	die();
+    }
+
     $id = mysql_insert_id();
     if ($type == "service") {
 	$id = $id_parent.'X'.$an;

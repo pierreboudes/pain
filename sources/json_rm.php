@@ -49,6 +49,16 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "service") {
 	list($id_ens,$an) = split('X',$id);
 	supprimer_service($id_ens, $an);
+    } else if ($readtype == "tag") {
+	supprimer_tag($id);
+    } else if ($readtype == "tagcours") {
+	$id_par = getclean("id_parent");
+	supprimer_tagcours($id, $id_par);
+    } else if ($readtype == "collection") {
+	supprimer_collection($id);
+    } else if ($readtype == "collectioncours") {
+	$id_par = getclean("id_parent");
+	supprimer_collectioncours($id, $id_par);
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

@@ -32,6 +32,14 @@ $(document).ready(function(){
 		      return false;
 		  });
 
+       $("#vueadmin").append('<table class="vuetags" id="vuetags"><tbody> <td class=laction><div class="basculeOff" id="basculetags"></div></td><th>Liste des tags</th></tbody></table>');
+
+       $('#basculetags').bind('click', basculerTags);
+
+       $("#vueadmin").append('<table class="vuecollections" id="vuecollections"><tbody> <td class=laction><div class="basculeOff" id="basculecollections"></div></td><th>Liste des collections</th></tbody></table>');
+
+       $('#basculecollections').bind('click', basculerCollections);
+
 
 /* dialogues */
 	$("#dialog-attendre").dialog({

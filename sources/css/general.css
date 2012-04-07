@@ -19,7 +19,7 @@ table.longchoix {
 background-color: white;
 }
 
-table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services, table.potentiel, table.responsabilite
+table.categorie, table.enseignants, table.tranches, table.choix, table.longchoix, table.services, table.potentiel, table.responsabilite, table.vuetags, table.vuecollections
 {border-color: #6495ed;} /* cornflowerblue */
 tr.super, div.handle {background-color:#3771c8;} /* ~ royalblue ~ SteelBlue */
 tr.sformation {background-color: #6495ed  ;}
@@ -166,7 +166,7 @@ table.cours {
     margin-top:-2px;    
 }
 
-table.super {
+table.super, table.vuetags, table.vuecollections {
     border-width: 2px;
     border-style: solid;
     border-collapse:collapse; 
@@ -279,13 +279,16 @@ table.conteneur, tr.conteneur, td.conteneur, table.tablesupers, table.tableforma
     border-width: 0px;
     border-collapse: none;
 }
-table.tablesupers, table.tableformations {
+table.tablesupers {
     margin-left: -1px;
-/*    margin: 0px -1px; */
+}
+
+table.tableformations {
+    margin-left: -1px;
 }
 
 /* autres dimensions */
-table.categorie, table.super {
+table.categorie, table.super, table.vuetags, table.vuecollections {
     width:879px;
     max-width:879px;
 }
@@ -314,19 +317,25 @@ table.cours {
     width: 80px;
 }
 
-tr.super > .intitule, tr.formation > .intitule {
-    width: 150px;
-    border-right: 0px;    
+tr.super > .intitule, tr.sformation > .nom, tr.formation > .intitule {
+    width: 150px;    
     border-left: 0px;
 }
 
-tr.super > .enseignant, tr.formation > .enseignant {
+tr.formation > .intitule {
+    border-right: 0px;
+}
+
+tr.super > .enseignant,  tr.sformation > .enseignant,  tr.formation > .enseignant {
     min-width: 150px;
-    border-right: 0px;    
     border-left: 0px;
 }
 
-tr.super > .totaux, tr.formation > .totaux {
+tr.formation > .enseignant {
+    border-right: 0px;    
+}
+
+tr.super > .totaux, tr.sformation > .totaux, tr.formation > .totaux {
     min-width: 500px;
     width: 500px;
     border-right: 0px;    
@@ -1043,3 +1052,90 @@ div.caption {
 .forceinline {
     display: inline;
 }
+
+td.inactive {
+    background-color: #EFF6FF;
+    background-image: url("img/hachure2.png");
+    cursor: pointer;
+    font-weight: bolder;
+    text-align: center;
+    color: darkgrey;
+    font-size: 1.2em;
+}
+
+td.tags, td.collections {
+  line-height: 1.5em;
+  min-width: 100px;
+}
+span.tag, span.collection  {
+background-color: lightgrey;
+  -moz-border-radius: 9px;
+  border-radius: 9px; 
+  padding: 2px 4px;
+  margin: 2px;
+}
+
+span.collection  {
+    background-color: lightgreen;
+}
+
+.button-enlever_tag, .button-ajouter_tag, .button-envoyer_tag,
+.button-enlever_collection, .button-ajouter_collection, .button-envoyer_collection {
+width: 18px;
+cursor: pointer;
+display: inline-block;
+background-color: transparent;
+margin-right: -8px;
+margin-left: -4px; 
+overflow: visible;
+padding: 0;
+border: 0;
+text-decoration: none !important;
+}
+.button-ajouter_tag, .button-envoyer_tag,
+.button-ajouter_collection, .button-envoyer_collection, {
+margin-right: -4px;
+margin-left: -3px; 
+}
+
+
+.button-enlever_tag > .icon, .button-ajouter_tag > .icon, .button-envoyer_tag > .icon,
+.button-enlever_collection > .icon, .button-ajouter_collection > .icon, .button-envoyer_collection > .icon {
+background-image: url("custom-theme/images/ui-icons_222222_256x240.png");
+background-repeat: no-repeat;
+height: 16px;
+width: 16px;
+display: block;
+}
+
+.button-enlever_tag:hover > .icon, .button-ajouter_tag:hover > .icon,
+.button-enlever_collection:hover > .icon, .button-ajouter_collection:hover > .icon {
+background-image: url("custom-theme/images/ui-icons_ef8c08_256x240.png");
+}
+
+.button-enlever_tag::-moz-focus-inner, .button-ajouter_tag::-moz-focus-inner,
+.button-enlever_collection::-moz-focus-inner, .button-ajouter_collection::-moz-focus-inner {
+    padding: 0 !important;
+    border: 0 none !important;
+}
+
+.button-enlever_tag > .icon, .button-enlever_collection > .icon {
+background-position: -32px -193px;
+}
+
+.button-envoyer_tag > .icon, .button-envoyer_collection > .icon {
+    background-position: -64px -145px;
+    background-image: url("custom-theme/images/ui-icons_ef8c08_256x240.png");
+}
+
+.button-ajouter_tag > .icon, .button-ajouter_collection > .icon {
+ background-position: -16px -130px;
+}
+
+.tag > .taginput, .collection > .collectioninput {
+ width: 60%;
+ border: none;
+ background: transparent;
+}
+
+

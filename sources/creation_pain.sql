@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS pain_categorie (
   nom_long varchar(80) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL,
   descriptif text CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL,
   PRIMARY KEY (id_categorie)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 
 
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS pain_choix (
   id_choix mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   id_cours mediumint(8) unsigned NOT NULL,
   id_enseignant mediumint(8) unsigned NOT NULL DEFAULT '3',
-  choix varchar(80) COLLATE utf8_swedish_ci DEFAULT NULL,
+  choix varchar(256) COLLATE utf8_swedish_ci DEFAULT NULL,
   cm double unsigned NOT NULL DEFAULT '0',
   td double unsigned NOT NULL DEFAULT '0',
   tp double unsigned NOT NULL DEFAULT '0',
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS pain_cours (
   id_cours_prev mediumint(8) unsigned DEFAULT NULL,
   id_formation mediumint(8) unsigned NOT NULL,
   semestre tinyint(3) unsigned NOT NULL,
-  nom_cours varchar(80) COLLATE utf8_swedish_ci NOT NULL,
+  nom_cours varchar(256) COLLATE utf8_swedish_ci NOT NULL,
   credits tinyint(3) unsigned DEFAULT NULL,
   id_enseignant mediumint(8) unsigned NOT NULL,
   cm double unsigned DEFAULT NULL,
@@ -60,14 +60,6 @@ CREATE TABLE IF NOT EXISTS pain_cours (
 
 
 
-CREATE TABLE IF NOT EXISTS pain_edt (
-  id_edt mediumint(9) NOT NULL AUTO_INCREMENT,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  edt_html text COLLATE utf8_swedish_ci NOT NULL,
-  login varchar(40) COLLATE utf8_swedish_ci NOT NULL,
-  message text COLLATE utf8_swedish_ci NOT NULL,
-  PRIMARY KEY (id_edt)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 
 
@@ -100,7 +92,7 @@ CREATE TABLE IF NOT EXISTS pain_formation (
   id_formation_prev mediumint(8) unsigned DEFAULT NULL,
   id_sformation mediumint(8) unsigned NOT NULL,
   numero smallint(5) unsigned NOT NULL,
-  nom varchar(40) COLLATE utf8_swedish_ci NOT NULL,
+  nom varchar(256) COLLATE utf8_swedish_ci NOT NULL,
   annee_etude tinyint(3) unsigned NOT NULL,
   parfum varchar(40) COLLATE utf8_swedish_ci NOT NULL,
   id_enseignant smallint(5) unsigned DEFAULT NULL,
@@ -140,7 +132,7 @@ CREATE TABLE IF NOT EXISTS pain_listes (
   KEY liste (liste),
   KEY id_enseignant (id_enseignant),
   KEY email (email)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 
 
@@ -157,7 +149,7 @@ CREATE TABLE IF NOT EXISTS pain_service (
   KEY id_enseignant (id_enseignant),
   KEY annee_universitaire (annee_universitaire),
   KEY categorie (categorie)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 
 
@@ -165,7 +157,7 @@ CREATE TABLE IF NOT EXISTS pain_sformation (
   id_sformation mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   id_sformation_prev mediumint(8) unsigned DEFAULT NULL,
   id_enseignant mediumint(8) unsigned NOT NULL,
-  nom varchar(40) COLLATE utf8_swedish_ci NOT NULL,
+  nom varchar(256) COLLATE utf8_swedish_ci NOT NULL,
   annee_universitaire year(4) DEFAULT NULL,
   numero smallint(5) unsigned NOT NULL,
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -197,3 +189,60 @@ CREATE TABLE IF NOT EXISTS pain_tranche (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 
+CREATE TABLE IF NOT EXISTS pain_tags (
+  id_tag mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
+  nom_tag varchar(80) COLLATE utf8_swedish_ci NOT NULL,
+  descriptif text COLLATE utf8_swedish_ci,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_tag),
+  KEY nom_tag (nom_tag)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+
+CREATE TABLE IF NOT EXISTS pain_tagscours (
+  id_cours mediumint(8) unsigned NOT NULL,
+  id_tag mediumint(8) unsigned NOT NULL,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_cours, id_tag),
+  KEY id_cours (id_cours),
+  KEY id_tag (id_tag)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS pain_tag (
+  id_tag mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
+  nom_tag varchar(80) COLLATE utf8_swedish_ci NOT NULL,
+  descriptif text COLLATE utf8_swedish_ci,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_tag),
+  KEY nom_tag (nom_tag)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+
+CREATE TABLE IF NOT EXISTS pain_tagscours (
+  id_cours mediumint(8) unsigned NOT NULL,
+  id_tag mediumint(8) unsigned NOT NULL,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_cours, id_tag),
+  KEY id_cours (id_cours),
+  KEY id_tag (id_tag)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS pain_collection (
+  id_collection mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
+  id_sformation mediumint(8) unsigned DEFAULT NULL,
+  nom_collection varchar(128) COLLATE utf8_swedish_ci NOT NULL,
+  descriptif text COLLATE utf8_swedish_ci,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_collection),
+  KEY nom_collection (nom_collection)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+
+CREATE TABLE IF NOT EXISTS pain_collectionscours (
+  id_cours mediumint(8) unsigned NOT NULL,
+  id_collection mediumint(8) unsigned NOT NULL,
+  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_cours, id_collection),
+  KEY id_cours (id_cours),
+  KEY id_collection (id_collection)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
