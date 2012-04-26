@@ -624,7 +624,7 @@ function ajouter_collectioncours(e) {
     $('#envoyercollectioncours_'+id_cours).bind('click', {id_cours: id_cours}, envoyer_collectioncours);
     /* mettre en place l'autocomplete */
     var inp = c.find("input");
-    getjson("json_get.php",{id_parent: id_cours, type: 'unusedcollections'}, 
+    getjson("json_get.php",{id_parent: id_cours, type: 'unusedcollections', annee_universitaire: getAnnee()}, 
 	    function (data) {
 		inp.autocomplete({ 
 		    minLength: 2,
@@ -1119,6 +1119,9 @@ function ligne() {
     /* nb_cours */
     this.nb_cours = new immutcell();
     this.nb_cours.name = "nb_cours";
+    /* nb_cours */
+    this.nb_tous_cours = new immutcell();
+    this.nb_tous_cours.name = "nb_tous_cours";
     /* collections
      */
     /* nom_collection */

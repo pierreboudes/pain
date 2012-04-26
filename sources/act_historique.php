@@ -36,13 +36,16 @@ if (isset($_POST["timestamp"])) {
     $timestamp = getclean("timestamp");
 }
 
-$liste = historique_de_formation($id, $timestamp);
+function act_historique_php($id, $timestamp) {
+    $liste = historique_de_formation($id, $timestamp);
 
-while ($h = mysql_fetch_assoc($liste)) {
-    echo '<div class="historique">';
-    ig_historique($h);
-    echo '<div class="clear"></div>';
-    echo '</div>';
+    while ($h = mysql_fetch_assoc($liste)) {
+	echo '<div class="historique">';
+	ig_historique($h);
+	echo '<div class="clear"></div>';
+	echo '</div>';
+    }
 }
-echo '</ul>';
+
+act_historique_php($id, $timestamp);
 ?>

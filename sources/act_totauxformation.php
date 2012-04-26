@@ -24,17 +24,16 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-$id = 2;
+/**
+ affiche un <img src="acte_barre.php"> avec les stats de la formation.
+*/
+function act_totauxformation_php($id) {
+    $r = htdformation($id);
+    ig_htdbarre($r);
+}
 
 if (isset($_POST["id_formation"])) {
     $id = postclean("id_formation");
-} 
-
-$r=htdformation($id);
-$servi = $r["servi"];
-$mutualise = $r["mutualise"];
-$libre = $r["libre"];
-$annule = $r["annule"];
-$tp = $r["tp"];
+    act_totauxformation_php($id);
+}
 ?>
-<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&mutualise=<?=$mutualise?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php ig_htd($r); ?>"/>

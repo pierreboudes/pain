@@ -30,11 +30,10 @@ if (isset($_POST["id_sformation"])) {
     $id = postclean("id_sformation");
 } 
 
-$r=htdsuper($id);
-$servi = $r["servi"];
-$mutualise = $r["mutualise"];
-$libre = $r["libre"];
-$annule = $r["annule"];
-$tp = $r["tp"];
+function act_totauxsuper_php($id) {
+    $r=htdsuper($id);
+    ig_htdbarre($r);
+}
+
+act_totauxsuper_php($id);
 ?>
-<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&mutualise=<?=$mutualise?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php ig_htd($r); ?>"/>

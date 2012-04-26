@@ -20,7 +20,10 @@
  */
 header('Content-type: image/png');
 
-
+/**
+produit une image png de taille environ 875x1 representant le taux de satisfaction des besoins en heures enseignants, tel que fourni par HTTP/GET.
+ */
+function act_barre_php() {
 $servi = 0;
 $libre = 0;
 $annule = 0;
@@ -108,4 +111,7 @@ endif; /* on renvoie l'image */
 
 imagepng($im);
 imagedestroy($im);
+}
+
+act_barre_php();
 ?>

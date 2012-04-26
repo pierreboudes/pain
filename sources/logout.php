@@ -1,4 +1,8 @@
 <?php
 require_once('authentication.php'); 
-pain_logout();
+function logout_php() {
+    pain_logout();
+}
+
+logout_php();
 ?>

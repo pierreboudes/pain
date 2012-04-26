@@ -23,52 +23,10 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("utils.php");
 
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
-    if ($readtype == "annee") {	
-	$type = "annee";
-	$par = "annee";
-    } else if ($readtype == "sformation") {	
-	$type = "sformation";
-	$par = "annee";
-    } else if ($readtype == "formation") {	
-	$type = "formation";
-	$par = "sformation";	
-    } else if ($readtype == "cours") {	
-	$type = "cours";
-	$par = "formation";
-    } else if ($readtype == "tranche") {
-	$type = "tranche";
-	$par  = "cours";
-    } else if ($readtype == "enseignant") {
-	$type = "enseignant";
-    } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
-	$type = "choix";
-	$par = "cours";
-    } else if ($readtype == "service") {
-	$type = "service";
-    } else {
-	errmsg("type indéfini");
-    }
-} else {
-    errmsg('erreur du script (type manquant).');
-}
-if (isset($_GET["id"])) {
-    $id = getclean("id");
-} else {
-    errmsg('erreur du script (id source manquant).');    
-}
-if (isset($_GET["id_cible"])) {
-    $id_cible = getclean("id_cible");
-} else {
-    errmsg('erreur du script (id_cible manquant).');    
-}
-if (isset($_GET["profondeur"])) {
-    $profondeur = getclean("profondeur");
-} else {
-    errmsg('erreur du script (profondeur de copie manquante).');    
-}
 
+/** Copie récursivement un élément de type $type et d'id $id, sous un élément d'id $id_cible
+ */
+function json_copy($type, $id, $id_cible, $profondeur) {
 /* récupérer l'année cible (pour les services) */
 if ($type == "annee") {
     $annee_cible = $id_cible;
@@ -78,25 +36,14 @@ if ($type == "annee") {
     if (!($r = mysql_query($q))) {
 	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
     }
-    if (!($ligne = mysql_fetch_array($r))) {
-	errmsg("cible non existante !");
-    }
+//     if (!($ligne = mysql_fetch_array($r))) {
+// 	errmsg("cible non existante !");
+//     }
     if ($ligne["tot"] > 0) {
 	errmsg("l'annee ciblée ne doit pas contenir de formations");
     }
 } else if ($type == "sformation") {
     $annee_cible = $id_cible;
-
-/*
-    $q = "SELECT annee_universitaire FROM pain_sformation WHERE id_sformation = ".$id_cible; 
-    if (!($r = mysql_query($q))) {
-	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
-    }
-    if (!($ligne = mysql_fetch_array($r))) {
-	errmsg("cible non existante !");
-    }
-    $annee_cible = $ligne["annee_universitaire"];
-*/
 } else {
     errmsg("type non géré");
 }
@@ -148,9 +95,13 @@ if ($profondeur > 0) {
     if ($type == "annee") {
 	$cond = "annee_universitaire =  ".$annee_cible."  AND 
                  pain_formation.id_sformation  = id_sformation_prev ";
+	$cocond = "pain_sformation.annee_universitaire =  ".$annee_cible."  AND 
+                  pain_collection.id_sformation = id_sformation_prev";
     } else if ($type == "sformation") {
 	$cond = "pain_sformation.id_sformation = ".$id_new."
                  AND pain_formation.id_sformation  = id_sformation_prev";
+	$cocond = "pain_sformation.id_sformation = ".$id_new."
+                 AND pain_collection.id_sformation  = id_sformation_prev";
     }
 
     /* mise à jour des services des responsables de formations */
@@ -164,7 +115,19 @@ if ($profondeur > 0) {
 
     if (!mysql_query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
-    }    
+    }
+    /* insertion des collections associées aux sformations */
+    $q = 'INSERT INTO pain_collection (id_collection_prev, id_sformation, annee_universitaire, nom_collection, descriptif) SELECT pain_collection.id_collection, pain_sformation.id_sformation, pain_sformation.annee_universitaire, nom_collection, descriptif FROM pain_collection, pain_sformation WHERE '.$cocond;
+    if (!mysql_query($q)) {
+	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+    }
+    if ($type == "annee") {
+	/* insertion des collections de l'année non associées aux sformations */
+	$q = 'INSERT INTO pain_collection (id_collection_prev, id_sformation, annee_universitaire, nom_collection, descriptif) SELECT id_collection, id_sformation, '.$annee_cible.', nom_collection, descriptif FROM pain_collection WHERE id_sformation IS NULL AND pain_collection.annee_universitaire = '.$id;
+	if (!mysql_query($q)) {
+	    errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+	}
+    }
     $profondeur -= 1;    
 }
 
@@ -201,6 +164,19 @@ pain_cours.nom_cours, pain_cours.credits, pain_cours.id_enseignant,
 pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt,
 pain_cours.descriptif, pain_cours.code_geisha FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
+
+    if (!mysql_query($q)) {
+	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+    }    
+    /* insertion des associations tagscours */
+    $q = 'INSERT IGNORE INTO pain_tagscours (id_tag, id_cours) SELECT pain_tagscours.id_tag, pain_cours.id_cours FROM pain_tagscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_tagscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.")";
+
+    if (!mysql_query($q)) {
+	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+    }    
+
+/* insertion des associations collectionscours */
+    $q = 'INSERT IGNORE INTO pain_collectionscours (id_collection, id_cours) SELECT pain_collection.id_collection, pain_cours.id_cours FROM pain_collection, pain_collectionscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_collectionscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.') AND pain_collection.id_collection_prev = pain_collectionscours.id_collection AND pain_collection.annee_universitaire = '.$annee_cible;
 
     if (!mysql_query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
@@ -285,6 +261,30 @@ pain_formation, pain_sformation WHERE '.$cond;
     }    
     $profondeur -= 1;    
 }
+}
+
+
+if (isset($_GET["type"])) {
+    $type = getclean("type");
+} else {
+    errmsg('erreur du script (type manquant).');
+}
+if (isset($_GET["id"])) {
+    $id = getclean("id");
+} else {
+    errmsg('erreur du script (id source manquant).');    
+}
+if (isset($_GET["id_cible"])) {
+    $id_cible = getclean("id_cible");
+} else {
+    errmsg('erreur du script (id_cible manquant).');    
+}
+if (isset($_GET["profondeur"])) {
+    $profondeur = getclean("profondeur");
+} else {
+    errmsg('erreur du script (profondeur de copie manquante).');    
+}
+json_copy($type, $id, $id_cible, $profondeur);
 
 echo '{"ok": "ok"}';
 ?>

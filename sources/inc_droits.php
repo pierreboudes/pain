@@ -300,7 +300,7 @@ function peuteditertag($id_tag) {
     return peuttoutfaire();
 }
 
-function peuteditercollection() {
-    return peuttoutfaire($id_collection);
+function peuteditercollection($id_collection) {
+    return peuttoutfaire();
 }
 ?>

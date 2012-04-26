@@ -23,63 +23,13 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
-
-$champs = array(
-    "sformation" => array(
-	"id_enseignant", "nom", "numero"
-	),
-    "formation" => array(
-	"id_enseignant", "nom", "annee_etude", "parfum", "numero"
-	),
-    "cours"=> array(
-	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_geisha",
-	"debut", "fin", "inscrits", "presents", "tirage", "mcc"
-	/* modification */
-	),
-    "tranche"=> array(
-	"id_enseignant", "groupe", "cm", "td", "tp",
-	"alt", "type_conversion", "remarque", "htd", "descriptif"
-	),
-    "choix" => array(
-	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
-	),
-    "longchoix" => array(
-	"choix", "htd", "cm", "td", "tp", "alt"
-	),
-    "enseignant" => array(
-	"prenom", "nom", "email", "telephone", "bureau",
-	"debut", "fin", "responsabilite"
-	),
-    "tag" => array(
-	"nom_tag", "descriptif"
-	),
-    "collection" => array(
-	"nom_collection", "id_sformation", "descriptif"
-	),
-    "service" => array(
-	),
-    );
-
-if (1 == $user['su']) {
-    $champs["enseignant"][] = "login";
-    $champs["enseignant"][] = "statut";
-    $champs["enseignant"][] ="service";
-    $champs["enseignant"][] = "categorie";
-    $champs["enseignant"][] = "su";
-    $champs["enseignant"][] = "stats";    
-    $champs["service"][] = "annee_universitaire";
-    $champs["service"][] = "categorie";
-    $champs["service"][] = "service_annuel";
-}
-
-//print_r($champs);
-
-//print_r($_GET);
+$annee = annee_courante();
 
 
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
+/** Modifie une entrée à partir des nouvelles données reçues dans le contexte HTTP/GET.
+ */ 
+function json_modify_php($annee, $readtype, $id) {
+    global $user;
     if ($readtype == "sformation") {	
 	$type = "sformation";
 	$par = "annee";
@@ -106,12 +56,56 @@ if (isset($_GET["type"])) {
     } else {
 	errmsg("type indéfini");
     }
-} else {
-    errmsg('erreur du script (type manquant).');
-}
 
-if (isset($_GET["id"])) {
-    $id = getclean("id");
+    $champs = array(
+	"sformation" => array(
+	    "id_enseignant", "nom", "numero"
+	    ),
+	"formation" => array(
+	    "id_enseignant", "nom", "annee_etude", "parfum", "numero"
+	    ),
+	"cours"=> array(
+	    "semestre", "nom_cours", "credits", "id_enseignant",
+	    "cm", "td", "tp", "alt", "descriptif", "code_geisha",
+	    "debut", "fin", "inscrits", "presents", "tirage", "mcc"
+	    ),
+	"tranche"=> array(
+	    "id_enseignant", "groupe", "cm", "td", "tp",
+	    "alt", "type_conversion", "remarque", "htd", "descriptif"
+	    ),
+	"choix" => array(
+	    "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	    ),
+	"longchoix" => array(
+	    "choix", "htd", "cm", "td", "tp", "alt"
+	    ),
+	"enseignant" => array(
+	    "prenom", "nom", "email", "telephone", "bureau",
+	    "debut", "fin", "responsabilite"
+	    ),
+	"tag" => array(
+	    "nom_tag", "descriptif"
+	    ),
+	"collection" => array(
+	    "nom_collection", "id_sformation", "descriptif"
+	    ),
+	"service" => array(
+	    )
+	);
+
+    if (peuttoutfaire()) {
+	$champs["enseignant"][] = "login";
+	$champs["enseignant"][] = "statut";
+	$champs["enseignant"][] ="service";
+	$champs["enseignant"][] = "categorie";
+	$champs["enseignant"][] = "su";
+	$champs["enseignant"][] = "stats";    
+	$champs["service"][] = "annee_universitaire";
+	$champs["service"][] = "categorie";
+	$champs["service"][] = "service_annuel";
+    }
+
+
     if (!peutediter($type,$id,NULL)) {
 	if (($type == "cours") && peutmajcours($id)) {
 	    /* on restreint l'edition */
@@ -142,6 +136,15 @@ if (isset($_GET["id"])) {
     }
     if ($type == "choix") {
 	$old = selectionner_choix($id);
+    }
+    if (($type == "collection") && (isset($set["id_sformation"]))) {
+	$q = "SELECT annee_universitaire FROM pain_sformation WHERE id_sformation = ".$set["id_sformation"];
+	$r = mysql_query($q);
+	if (!$r) {
+	    errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+	}
+	$rr = mysql_fetch_assoc($r);
+	$set["annee_universitaire"] = $rr["annee_universitaire"];
     }
     /* calcul de l'équivalent TD, nul admis */
     if (($type == "tranche") || ($type == "choix")) {
@@ -200,6 +203,19 @@ if (isset($_GET["id"])) {
 	    historique_par_cmp(3, $old, $choixnew);	        
 	}   
     }
+} 
+
+if (isset($_GET["type"])) {
+    $readtype = getclean("type");
+} else {
+    errmsg('erreur du script (type manquant).');
+}
+
+if (isset($_GET["id"])) {
+    $id = getclean("id");
+
+    json_modify_php($annee, $readtype, $id);
+
     /* affichage de la nouvelle entree en json */
     unset($_GET["id_parent"]);
     include("json_get.php");

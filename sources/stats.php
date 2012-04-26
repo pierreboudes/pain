@@ -22,31 +22,38 @@ require_once('authentication.php');
 $user = authentication();
 $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("statistiques","jquery.gchart.js","pain_stats.js");
 require_once('utils.php');
-require_once("inc_connect.php");
 require_once('inc_droits.php');
 require_once('inc_functions.php');
 require_once('inc_statsfunc.php');
-include("menu.php");
-/* mise a jour des services  (pain_service) */
-update_servicesreels();
 
-echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
-echo '<div style="text-align: center; margin: 10px;"><span id="graphCat" style="width: 600px; height: 200px;"></span></div>';
-include("inc_statscategories.php");
-echo "<h2>Services réels par catégorie d'enseignant et par formation (en postes)</h2>";
-echo '<div style="text-align: center; margin: 10px;"><span id="graphCatForm" style="width: 860px; height: 200px;"></span></div>';
-include("inc_statscategoriesformations.php");
+/**
+génére le code HTML de la page stats
+ */
+function stats_php() {
+    entete("statistiques","jquery.gchart.js","pain_stats.js");
+    include("menu.php");
+/* mise a jour des services  (pain_service) */
+    update_servicesreels();
+
+    echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
+    echo '<div style="text-align: center; margin: 10px;"><span id="graphCat" style="width: 600px; height: 200px;"></span></div>';
+    include("inc_statscategories.php");
+    echo "<h2>Services réels par catégorie d'enseignant et par formation (en postes)</h2>";
+    echo '<div style="text-align: center; margin: 10px;"><span id="graphCatForm" style="width: 860px; height: 200px;"></span></div>';
+    include("inc_statscategoriesformations.php");
 //echo "<h2>Graphiques par formation</h2>";
 //include("inc_statsformations.php");
-if (peutvoirstatsservices()) {
-    include("inc_statsservices.php");
-}
+    if (peutvoirstatsservices()) {
+	include("inc_statsservices.php");
+    }
 
 /*
 echo "<h2>Graphiques par enseignant</h2>";
 include("inc_statsenseignants.php");
 */
-piedpage();
+    piedpage();
+}
+
+stats_php();
 ?>

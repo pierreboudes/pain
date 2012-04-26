@@ -20,7 +20,7 @@
  */
 
 /* inclusion du fichier realisant la connexion avec les donnees sensibles en dur : */
-require_once("../secret/pconnect.php"); 
+require_once("../pconnect.php"); 
 /* ce fichier contient quelque chose comme :
 <?php
 @mysql_pconnect("localhost", "utilisateur", "mot de passe") or die("Échec de la connexion au serveur de la base de données.");

@@ -24,12 +24,20 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-if (isset($_GET["term"])) {
+/**
+ */
+function json_categories_php() {
     $rens = lister_categories();
     $arr = array();
     while ($ens = mysql_fetch_object($rens)) {
 	$arr[] = $ens;
     }
+    return $arr;
+}
+
+
+if (isset($_GET["term"])) {
+    $arr = json_categories_php();
     print json_encode($arr);
 }
 ?>

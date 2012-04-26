@@ -19,12 +19,21 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
+require_once("inc_annuairefunc.php");
+
 $user = authentication();
 $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("Annuaire des formations");
 include("menu.php");
-include("inc_annuaire.php");
+
+/* identifiant de formation en provenance du formulaire */
+list($id_formation, $semestre) = annuaire_php_form();
+
+if ($id_formation != 0) {
+    annuaire_php($id_formation, $semestre);
+}
+
 piedpage();
 ?>
 

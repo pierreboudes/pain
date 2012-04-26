@@ -25,29 +25,29 @@ require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
 
-$id = 2;
-
-if (isset($_GET["id"])) {
-    $id = getclean("id");
-}
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
-}
-if ($readtype == "annee") {
-    $r = htdtotaux($id);
-}
-if ($readtype == "sformation") {
-    $r = htdsuper($id);
-}
-if ($readtype == "formation") {
-    $r = htdformation($id);
-}
-if ($readtype == "annee") {
-    $r = htdtotaux($id);
-}
-if ($readtype == "cours") {
-    $r = htdcours($id);
+if (isset($_GET["id"]) && isset($_GET["type"])) {
+    $r = json_totaux_php(getclean("type"),  getclean("id"));
+    print json_encode($r);
+} else {
+    errmsg("Donner un type et un id");
 }
 
-print json_encode($r);
+function json_totaux_php($readtype, $id) {
+    if ($readtype == "annee") {
+	$r = htdtotaux($id);
+    }
+    if ($readtype == "sformation") {
+	$r = htdsuper($id);
+    }
+    if ($readtype == "formation") {
+	$r = htdformation($id);
+    }
+    if ($readtype == "annee") {
+	$r = htdtotaux($id);
+    }
+    if ($readtype == "cours") {
+	$r = htdcours($id);
+    }
+    return $r;
+}
 ?>

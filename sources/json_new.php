@@ -24,6 +24,12 @@ require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
 
+
+/** réalise l'insertion d'un nouvel élément fourni par le contexte HTTP/GET 
+    et renvoie son id.
+ */
+function json_new_php($annee) {
+    global $user;
 $champs = array(
    "sformation" => array(
 	"id_enseignant", "nom", "numero"
@@ -171,6 +177,10 @@ if (isset($_GET["id_parent"])) {
 	$set["numero"] = $sl["num"];
     }
 
+    if ($type == "collection")  {
+	$set["annee_universitaire"] = $annee;
+    }
+
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
@@ -203,8 +213,7 @@ if (isset($_GET["id_parent"])) {
     }
 
     if (($type == "tagscours") || ($type == "collectionscours")) {
-	echo '{"ok": "ok"}';
-	die();
+	return NULL;
     }
 
     $id = mysql_insert_id();
@@ -239,6 +248,20 @@ if (isset($_GET["id_parent"])) {
 	} 
     }
 
+    return $id;
+}
+}
+
+$annee = annee_courante();
+if (isset($_GET["annee_universitaire"])) {
+    $annee = getclean("annee_universitaire");
+}
+
+$id = json_new_php($annee);
+
+if (NULL == $id) {
+    echo '{"ok": "ok"}';
+} else {
     /* affichage de la nouvelle entree en json */
     $_GET["id"] = $id;
     unset($_GET["id_parent"]);

@@ -22,25 +22,20 @@ require_once('authentication.php');
 $user = authentication();
 $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("gestion des enseignements et des services", "pain_admin.js");
 require_once('utils.php');
-include("menu.php");
 
-include("box_admin.html");
-?>
+/**
+crée tout le code html initial de la page admin.
+ */
+function admin_php() {
+    entete("gestion des enseignements et des services", "pain_admin.js");
+    include("menu.php");
+    include("box_admin.html");
+    echo '<div id="vueadmin"></div>';
+    include("skel_admin.html");
+    piedpage();
+}
 
-<div id="vueadmin">
-</div>
-
-<?php
-include("skel_admin.html");
-/* include("inc_aide.php"); */
-?>
-<p>
-<a href="http://validator.w3.org/check?uri=referer"><img
-    src="http://www.w3.org/Icons/valid-xhtml10-blue"
-    alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    </p>
-<?php
-piedpage();
+/* génération de la page */
+admin_php();
 ?>

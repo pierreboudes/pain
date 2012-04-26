@@ -188,26 +188,6 @@ CREATE TABLE IF NOT EXISTS pain_tranche (
   KEY id_enseignant (id_enseignant)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
-
-CREATE TABLE IF NOT EXISTS pain_tags (
-  id_tag mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
-  nom_tag varchar(80) COLLATE utf8_swedish_ci NOT NULL,
-  descriptif text COLLATE utf8_swedish_ci,
-  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id_tag),
-  KEY nom_tag (nom_tag)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
-
-
-CREATE TABLE IF NOT EXISTS pain_tagscours (
-  id_cours mediumint(8) unsigned NOT NULL,
-  id_tag mediumint(8) unsigned NOT NULL,
-  modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id_cours, id_tag),
-  KEY id_cours (id_cours),
-  KEY id_tag (id_tag)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
-
 CREATE TABLE IF NOT EXISTS pain_tag (
   id_tag mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
   nom_tag varchar(80) COLLATE utf8_swedish_ci NOT NULL,
@@ -229,11 +209,14 @@ CREATE TABLE IF NOT EXISTS pain_tagscours (
 
 CREATE TABLE IF NOT EXISTS pain_collection (
   id_collection mediumint(8) unsigned  NOT NULL AUTO_INCREMENT,
+  id_collection_prev mediumint(8) unsigned NULL DEFAULT NULL,
   id_sformation mediumint(8) unsigned DEFAULT NULL,
+  annee_universitaire YEAR(4) NULL DEFAULT NULL,
   nom_collection varchar(128) COLLATE utf8_swedish_ci NOT NULL,
   descriptif text COLLATE utf8_swedish_ci,
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_collection),
+  KEY id_collection_prev (id_collection_prev),
   KEY nom_collection (nom_collection)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 

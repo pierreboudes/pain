@@ -24,7 +24,13 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-$id = 2;
+/**
+ affiche un <img src="acte_barre.php"> avec les stats de l'année.
+*/
+function act_totaux_php($annee) {
+    $r=htdtotaux($annee);
+    ig_htdbarre($r);
+}
 
 if (isset($_POST["annee_universitaire"])) {
     $annee = postclean("annee_universitaire");
@@ -32,13 +38,7 @@ if (isset($_POST["annee_universitaire"])) {
     $annee = annee_courante();
 }
 
-$r=htdtotaux($annee);
 
-$servi = $r["servi"];
-$mutualise = $r["mutualise"];
-$libre = $r["libre"];
-$annule = $r["annule"];
-$tp = $r["tp"];
+act_totaux_php($annee);
 ?>
-<img class="imgbarre" src="act_barre.php?servi=<?=$servi?>&mutualise=<?=$mutualise?>&libre=<?=$libre?>&annule=<?=$annule?>" title="<?php ig_htd($r); ?>"/>
 

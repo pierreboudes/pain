@@ -53,31 +53,42 @@ function annee_courante() {
     return $annee;
 }
 
-function authentication() {
-    
-    phpCAS::forceAuthentication();
+function pain_getuser() {
     $login = phpCAS::getUser();
     
-    if ($login != "anonymous") {
-	$query = "SELECT id_enseignant, prenom, nom, login, su, stats 
+    $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
                  FROM pain_enseignant 
                  WHERE login LIKE '$login' LIMIT 1";
-	$result = mysql_query($query);
-	if ($user = mysql_fetch_array($result)) {
-	    if ( (1 == $user["su"]) && isset($_COOKIE['painFakeId']) ){
-		$query = "SELECT id_enseignant 
+    $result = mysql_query($query);
+    if ($user = mysql_fetch_array($result)) {
+	if ( (1 == $user["su"]) && isset($_COOKIE['painFakeId']) ){
+	    $query = "SELECT id_enseignant 
                           FROM pain_enseignant 
                           WHERE id_enseignant = ".$user["id"]." LIMIT 1";
-		$result = mysql_query($query);
-		if (mysql_fetch_array($result)) {
-		    $user["id"] = cookieclean('painFakeId');
-		}
+	    $result = mysql_query($query);
+	    if (mysql_fetch_array($result)) {
+		$user["id"] = cookieclean('painFakeId');
 	    }
-	} else {
-	    die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
-	};
+	}
+	return $user;
+    } else {
+	return NULL;
+    }
+}
+
+function authentication() {    
+    phpCAS::forceAuthentication();
+    $user = pain_getuser();
+    if (NULL == $user) {
+	$login = phpCAS::getUser();
+	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
     }
     return $user;
+}
+
+function weak_auth() {
+    phpCAS::forceAuthentication();
+    return pain_getuser();
 }
 
 function authrequired() {

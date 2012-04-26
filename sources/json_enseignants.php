@@ -24,14 +24,18 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-if ((!isset($annee)) || ($annee == NULL)) $annee = annee_courante();
-
-if (isset($_GET["term"])) {
+function json_enseignants_php($annee) {
     $rens = lister_enseignantsannee($annee);
     $arr = array();
     while ($ens = mysql_fetch_object($rens)) {
 	$arr[] = $ens;
     }
     print json_encode($arr);
+}
+
+if ((!isset($annee)) || ($annee == NULL)) $annee = annee_courante();
+
+if (isset($_GET["term"])) {
+    json_enseignants_php($annee);
 }
 ?>

@@ -24,39 +24,18 @@ require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
 
-$champs = array(
-    "cours"=> array(
-	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_geisha"
-	/* modification */
-	),
-    "tranche"=> array(
-	"id_cours","id_enseignant", "groupe", "cm", "td", "tp",
-	"alt", "type_conversion", "remarque", "htd", "descriptif"
-	),
-    "choix" => array(
-	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
-	)
-    );
+/**
+duplique l'entrée $id de type $type en incrémentant le champs (numéro de) groupe,
+et retourne l'id de la nouvelle entrée.
+*/
+function json_duplicate_php($type, $id) {
+    $champs = array(
+	"tranche"=> array(
+	    "id_cours","id_enseignant", "groupe", "cm", "td", "tp",
+	    "alt", "type_conversion", "remarque", "htd", "descriptif"
+	    )
+	);
 
-//print_r($champs);
-//print_r($_GET);
-
-
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
-    if ($readtype == "tranche") {
-	$type = "tranche";
-	$par  = "cours";
-    } else {
-	errmsg("type indéfini");
-    }
-} else {
-    errmsg('erreur du script (type manquant).');
-}
-
-if (isset($_GET["id"])) {
-    $id = getclean("id");
     if (!peutediter($type,$id,NULL)) { 
 	errmsg("droits insuffisants.");
     }
@@ -74,10 +53,28 @@ if (isset($_GET["id"])) {
 
     if (!mysql_query($query)) {
 	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
-    } 
+    }
     
+    return mysql_insert_id();
+}
+
+if (isset($_GET["type"])) {
+    $readtype = getclean("type");
+    if ($readtype == "tranche") {
+	$type = "tranche";
+    } else {
+	errmsg("type indéfini");
+    }
+} else {
+    errmsg('erreur du script (type manquant).');
+}
+
+if (isset($_GET["id"])) {
+    $id = getclean("id");
+    
+    $_GET["id"] = json_duplicate_php($type, $id);
+
     /* affichage de la nouvelle entree en json */
-    $_GET["id"] = mysql_insert_id();
     unset($_GET["id_parent"]);
     include("json_get.php");
 } else {

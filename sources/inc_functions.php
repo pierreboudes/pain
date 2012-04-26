@@ -32,20 +32,6 @@ require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
 
-function ig_typeconversion($type)
-{
-    switch ($type) {
-    case 0:
-	echo "auto";
-	break;
-    case 1:
-	echo "manuel";
-	break;
-    default:
-	echo "inconnu"; /* jamais atteint */
-    }
-}
-
 function ig_responsable($id)
 {
     if ($id < 0) {
@@ -113,44 +99,6 @@ function lister_categories()
     return $rcat;
 }
 
-
-function list_superformations($annee = NULL)
-{
-    if ($annee == NULL) $annee = annee_courante();
-    $qsformation = "SELECT * FROM pain_sformation 
-                   WHERE `annee_universitaire` = ".$annee."
-                   ORDER BY numero ASC";
-
-    $rsformation = mysql_query($qsformation) 
-	or die("Échec de la requête sur la table formation");
-
-    return $rsformation;
-}
-
-function list_formations($id_sformation)
-{
-    $qformation = "SELECT * FROM pain_formation 
-                   WHERE `id_sformation` = ".$id_sformation."
-                   ORDER BY numero ASC";    
-
-    $rformation = mysql_query($qformation) 
-	or die("Échec de la requête sur la table formation");
-
-    return $rformation;
-}
-
-function list_cours($id)
-{
-      $qcours = "SELECT * FROM pain_cours WHERE `id_formation` = $id
-                 ORDER BY semestre, nom_cours ASC";
-
-    $rcours = mysql_query($qcours) or 
-	die("Échec de la requête sur la table cours");
-
-    return $rcours;
-}
-
-
 function selectionner_cours($id)
 {
     $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = $id";
@@ -188,6 +136,24 @@ function supprimer_sformation($id)
 	errmsg("échec de la requête $q : ".mysql_error());
     }
     pain_log($q);
+    
+    $q = "DELETE pain_collectionscours FROM pain_collectionscours, pain_cours, pain_formation 
+          WHERE pain_formation.id_sformation = $id 
+          AND pain_cours.id_formation = pain_formation.id_formation
+          AND pain_collectionscours.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_tagscours FROM pain_tagscours, pain_cours, pain_formation 
+          WHERE pain_formation.id_sformation = $id 
+          AND pain_cours.id_formation = pain_formation.id_formation
+          AND pain_tagscours.id_cours = pain_cours.id_cours";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
 
     $q = "DELETE pain_cours FROM pain_cours, pain_formation 
           WHERE pain_formation.id_sformation = $id
@@ -199,6 +165,21 @@ function supprimer_sformation($id)
 
     $q = "DELETE pain_formation FROM pain_formation 
           WHERE pain_formation.id_sformation = $id";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    /* collections */
+    $q = "DELETE pain_collectionscours FROM pain_collection, pain_collectionscours 
+          WHERE pain_collection.id_sformation = $id AND pain_collectionscours.id_collection = pain_collection.id_collection";
+    if (!mysql_query($q)) {
+	errmsg("échec de la requête $q : ".mysql_error());
+    }
+    pain_log($q);
+
+    $q = "DELETE pain_collection FROM pain_collection 
+          WHERE pain_collection.id_sformation = $id";
     if (!mysql_query($q)) {
 	errmsg("échec de la requête $q : ".mysql_error());
     }
@@ -373,8 +354,6 @@ function supprimer_collectioncours($id, $id_par)
     }
 }
 
-
-
 function tranchesdecours($id) {
     $qtranches = "SELECT * FROM pain_tranche WHERE `id_cours`=".$id." ORDER BY groupe ASC";
 
@@ -419,59 +398,6 @@ function selectionner_enseignant($id)
     }
     return $ens;
 }
-
-function ig_listtranches($tranches) {
-
-    while ($tranche = mysql_fetch_array($tranches))
-    {
-	ig_tranche($tranche);
-    }
-}
-
-
-function ig_formtranche($id_cours, $id_tranche = NULL, $cm = 0, $td= 0, $tp= 0, $alt= 0, $id_enseignant = -1, $groupe = 0, $remarque = "")
-{    
-    echo '<tr class="formtranche">';
-    echo '<td class="groupe">';
-    echo '<input type="text" name="groupe" value="'.$groupe.'" />';
-    echo '</td>';
-    echo '<td class="enseignant">';
-    echo '<select name="id_enseignant" class="autocomplete">';
-    ig_formselectenseignants($id_enseignant);
-    echo '</select>';
-    echo '</td>';
-    echo '<td class="CM">';
-    echo '<input type="text" name="cm" value="'.$cm.'" />';
-    echo '</td>';
-    echo '<td class="TD">'; 
-    echo '<input type="text" name="td" value="'.$td.'" />';
-    echo '</td>';
-    echo '<td class="TP">'; 
-    echo '<input type="text" name="tp" value="'.$tp.'" />';
-    echo '</td>';
-    echo '<td class="alt">';
-    echo '<input type="text" name="alt" value="'.$alt.'" />';
-    echo '</td>';
-    echo '<td class="HTD">';
-    echo '</td>';
-    echo '<td class="remarque">';
-    echo '<input type="hidden" name="id_cours" value="'.$id_cours.'"/>';
-    if ($id_tranche != NULL) {
-	echo '<input type="hidden" name="id_tranche" value="'.$id_tranche.'"/>';
-    }
-    echo '<textarea name="remarque" rows="2" cols="10">';
-    echo $remarque;
-    echo '</textarea></td>';
-    echo '<td class="action">';
-    action_envoyertrancheducours($id_cours, $id_tranche);
-    if ($id_tranche != NULL) {
-	action_annulermodifiertranche($id_tranche);
-    }
-    echo '<br/>';
-    echo '</td>';
-    echo '</tr>';
-}
-
 
 function supprimer_tranche($id)
 {
@@ -977,6 +903,18 @@ function htdcours($id) {
     return $a;
 }
 
+function ig_htdbarre($r) {
+
+    $servi = $r["servi"];
+    $mutualise = $r["mutualise"];
+    $libre = $r["libre"];
+    $annule = $r["annule"];
+    $tp = $r["tp"];
+
+    echo '<img class="imgbarre" src="act_barre.php?servi='.$servi.'&mutualise='.$mutualise.'&libre='.$libre.'&annule'.$annule.'" title="';
+    ig_htd($r);
+    echo '"/>';
+}
 
 function htdcours_old_TRASHME($id) {
 
@@ -1260,57 +1198,11 @@ ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC";
 }
 
 
-function ig_legendeservice_OLD() {
-    echo '<tr class="ligne_service">';
-    echo '<th class="code_geisha">';
-    echo  "Code UE";
-    echo '</th>';
-    echo '<th class="nom_cours">';
-    echo "Libellé de l'UE";
-    echo '</th>';
-    echo '<th class="semestre">';
-    echo "Période";
-    echo '</th>';
-    echo '<th class="CM">CM</th>';
-    echo '<th class="TD">TD</th>';
-    echo '<th class="TP">TP</th>';
-    echo '<th class="alt">alt.</th>';
-/*    echo '<th class="regime">Régime</th>'; */
-    echo '</tr>';
-}
-function ig_ligneservice_OLD($ligne) {
-    echo '<tr class="ligne_service">';
-    echo '<td class="code_geisha">';
-    echo $ligne["code_geisha"];
-    echo '</td>';
-    echo '<td class="nom_cours">';
-    echo $ligne["nom_cours"];
-    echo '</td>';
-    echo '<td class="semestre">';
-    echo 'S'.$ligne["semestre"];
-    echo '</td>';
-    echo '<td class="CM">'.$ligne["cm"].'</td>';
-    echo '<td class="TD">'.($ligne["td"]).'</td>';
-    echo '<td class="TP">'.$ligne["tp"].'</td>';
-    echo '<td class="alt">'.($ligne["alt"]).'</td>';
-/*    echo '<td class="regime">FI</td>'; */
-    echo '</tr>';
-}
 
-function ig_totauxservice_OLD($totaux) {
-    echo '<tr class="ligne_service">';
-    echo '<td colspan="2"></td>';
-    echo '<td>';
-    echo 'TOTAL';
-    echo '</td>';
-    echo '<td class="CM">'.$totaux["cm"].'</td>';
-    echo '<td class="TD">'.$totaux["td"].'</td>';
-    echo '<td class="TP">'.$totaux["tp"].'</td>';
-    echo '<td class="alt">'.$totaux["alt"].'</td>';
-/*    echo '<td class="regime"></td>'; */
-    echo '</tr>';
-}
+/** Met à jour la table pain_service en recalculant les service_reel de l'année.
 
+@param $id_ens si non NULL on ne recalcule que le service l'enseignant ayant cet id.
+ */
 function update_servicesreels($id_ens = NULL) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
@@ -1334,6 +1226,10 @@ function update_servicesreels($id_ens = NULL) {
 	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
 }
 
+/** Met à jour la table pain_service en recalculant les service_potentiel de l'année.
+
+@param $id_ens si non NULL on ne recalcule que le service l'enseignant ayant cet id.
+ */
 function update_servicespotentiels($id_ens = NULL) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
@@ -1364,6 +1260,10 @@ and tid.id_formation = pain_formation.id_formation
 	or die("erreur update_servicespotentiels : $qupdate: ".mysql_error());
 }
 
+/** retourne la liste des enseignants appartennants à une catégorie.
+
+@param $categorie l'identifiant d'une la catégorie.
+ */
 function liste_enseignantscategorie($categorie) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
@@ -1441,7 +1341,9 @@ function historique_par_ajout($type, $new) {
     $id = 0;
     $id_formation = 0;
     $id_cours = 0;
-    $timestamp = $new["modification"];
+    /* /todo élimier race condition en récupérant le timestamp réel
+     $timestamp = $new["modification"]; 
+    */
     $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
     $s .= '<div class="diff">';
     if (1 == $type) {
@@ -1461,7 +1363,7 @@ function historique_par_ajout($type, $new) {
     $s .= "création";
     $s .= '</div>';    
     $q = "INSERT INTO pain_hist 
-          (type, id, id_formation, id_cours, message, timestamp) 
+          (type, id, id_formation, id_cours, message, modification) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', 
                   '".$id_cours."', '".$s."', NOW())";
     mysql_query($q) or die("$q ".mysql_error());

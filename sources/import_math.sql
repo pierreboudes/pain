@@ -260,13 +260,25 @@ pain_enseignant.nom = "a donner"
 and pain_tranche.id_enseignant = pain_enseignant.id_enseignant
 
 
--- pour comprendre la double structure (formations)
-SELECT 
-(select sum(equiv_TD) from LesCTD 
-where LesCTD.codeUV = LesUV.codeUV) as htd,
-matiere, nomCursus, nomf
-FROM LesUV,  `Formation-UV` , LesCursus, LesFormations
-WHERE  `Formation-UV`.uv = LesUV.codeUV
-AND  `Formation-UV`.formation = LesFormations.num
-AND LesUV.codeCursus = LesCursus.codeCursus
-ORDER BY matiere ASC 
+--- Les collections pour récupérer les formations (sauf les périodes)
+INSERT INTO pain_collection (id_collection, id_sformation, annee_universitaire, nom_collection)
+SELECT LesFormations.num, LesCycles.num, "2011", nomf FROM LesFormations, LesCycles 
+WHERE  LesFormations.cycle = LesCycles.cycle
+
+
+--- Probleme d'unicite de cle :
+--INSERT INTO pain_collectionscours (id_cours, id_collection)
+--SELECT uv, formation FROM `Formation-UV` WHERE 1
+
+-- Solution 1
+--- On insere en premier les associations sans probleme d'unicite.
+--- INSERT INTO pain_collectionscours (id_cours, id_collection)
+--- SELECT formation, uv FROM `Formation-UV` AS t1 WHERE (SELECT DISTINCT count(num) FROM `Formation-UV` AS t2 WHERE t1.formation = t2.formation AND t1.uv = t2.uv) = 1 ORDER BY formation, uv
+--- On insere ensuite les associations fautives en un seul exemplaire
+--- INSERT INTO pain_collectionscours (id_cours, id_collection)
+--- SELECT DISTINCT formation, uv FROM `Formation-UV` AS t1 WHERE (SELECT DISTINCT count(num) FROM `Formation-UV` AS t2 WHERE t1.formation = t2.formation AND t1.uv = t2.uv) > 1 ORDER BY formation, uv
+-- Solution 2
+INSERT INTO pain_collectionscours (id_cours, id_collection)
+SELECT DISTINCT uv, formation FROM `Formation-UV` WHERE 1
+
+

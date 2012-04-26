@@ -25,27 +25,14 @@ $annee = annee_courante();
 require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php"); // pour update_servicesreels($id_par);
-if (isset($_GET["annee_universitaire"])) {
-    $annee = getclean("annee_universitaire");
-}
 
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
-    if ($readtype == "cetteannee") {
+/**
+retourne des entrées de type $readtype, prises dans la base, sélectionnées par le contexte d'une requête HTTP/GET.
 
-    } else if ($readtype == "annee") {
-	if (isset($_GET["cetteannee"])) {
-	    print "[{\"annee_universitaire\": \"$annee\",\"id\": \"$annee\", \"id_annee\": \"$annee\", \"type\":\"annee\"}]";
-	    exit(0);
-	}
-
-	print "[";
-	for ($i = $annee - 3; $i < $annee + 3; $i += 1) {
-	    print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"},";
-	}
-	print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"}]";
-	exit(0);
-    } else if ($readtype == "sformation") {
+Les entrées sont éventuellement calculées par jointures et aggrégats. La sélection dépend soit de l'identifiant de l'entrée fourni par le contexte d'une requête HTTP/GET, ou bien d'un identifiant de groupe d'entrées ou bien de l'année courante. 
+ */
+function json_get_php($annee, $readtype) {
+   if ($readtype == "sformation") {
 	$type = "sformation";
 	$par = "annee_universitaire";
 	$order = "ORDER BY numero ASC";
@@ -277,6 +264,14 @@ and pain_sformation.annee_universitaire = ".$annee."
                     \"$type\" AS type,
                     id_$type AS id,
                     (SELECT COUNT(*) FROM pain_tagscours WHERE pain_tagscours.id_tag = pain_tag.id_tag)
+                    AS nb_tous_cours,
+                    (SELECT COUNT(pain_tagscours.id_cours) 
+                     FROM pain_tagscours, pain_cours, pain_formation, pain_sformation 
+                     WHERE pain_tagscours.id_tag = pain_tag.id_tag
+                     AND pain_tagscours.id_cours = pain_cours.id_cours
+                     AND pain_formation.id_formation = pain_cours.id_formation
+                     AND pain_sformation.id_sformation = pain_formation.id_sformation
+                     AND pain_sformation.annee_universitaire = $annee)
                     AS nb_cours
                     FROM pain_tag";
 	if (isset($_GET['id_parent'])) {
@@ -323,7 +318,7 @@ and pain_sformation.annee_universitaire = ".$annee."
                     FROM pain_collection LEFT OUTER JOIN pain_sformation
                     ON pain_collection.id_sformation = pain_sformation.id_sformation";
 	if (isset($_GET['id_parent'])) {
-	    $requete .= " WHERE 1 ";	    
+	    $requete .= " WHERE pain_collection.annee_universitaire = $annee ";	    
         } else if (isset($_GET["id"])) {
 	    $id = $_GET['id'];
 	    $requete .= " WHERE id_collection = $id ";	    
@@ -351,8 +346,14 @@ and pain_sformation.annee_universitaire = ".$annee."
                         id_$type AS id                 
                         FROM pain_$type";
 	    $requete .= " WHERE id_$type NOT IN 
-                         (SELECT id_$type FROM pain_collectionscours
-                          WHERE id_cours = $id_par)";	    
+                          (SELECT id_$type FROM pain_collectionscours
+                          WHERE id_cours = $id_par)
+                          AND annee_universitaire = 
+                          (SELECT annee_universitaire 
+                          FROM pain_sformation, pain_formation, pain_cours
+                          WHERE id_cours = $id_par
+                          AND pain_cours.id_formation = pain_formation.id_formation
+                          AND pain_formation.id_sformation = pain_formation.id_sformation)";	    
 	    $requete .= " ORDER BY nom_collection ASC";
         } else {
 	    errmsg("le type unusedcollections nécessite un id_parent");
@@ -360,14 +361,11 @@ and pain_sformation.annee_universitaire = ".$annee."
     } else {
 	errmsg("erreur de script (type inconnu)");
     }
-} else {
-    errmsg("erreur de script (type non renseigné)");
-}
 
-if (isset($_GET["id_parent"])) {
-    $id_par = getclean("id_parent");
-    if (!isset($requete)) {
-	$requete = "SELECT 
+   if (isset($_GET["id_parent"])) {
+       $id_par = getclean("id_parent");
+       if (!isset($requete)) {
+	   $requete = "SELECT 
                       pain_$type.*,
                        \"$type\" AS type, 
                       id_$type AS id,
@@ -377,18 +375,18 @@ if (isset($_GET["id_parent"])) {
              WHERE `$par` = $id_par
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant
              $order";
-    }
-    $resultat = mysql_query($requete) 
-	or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
-    $arr = array();
-    while ($element = mysql_fetch_object($resultat)) {
-	$arr[] = $element;
-    }
-    print json_encode($arr);
-} else if (isset($_GET["id"])) {
-    $id = getclean("id");
-    if (!isset($requete)) {
-	$requete = "SELECT \"$type\" AS type,
+       }
+       $resultat = mysql_query($requete) 
+	   or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
+       $arr = array();
+       while ($element = mysql_fetch_object($resultat)) {
+	   $arr[] = $element;
+       }
+       return $arr;
+   } else if (isset($_GET["id"])) {
+       $id = getclean("id");
+       if (!isset($requete)) {
+	   $requete = "SELECT \"$type\" AS type,
                       $id AS id,
                       pain_$type.*,
                       pain_enseignant.prenom AS prenom_enseignant,
@@ -396,15 +394,45 @@ if (isset($_GET["id_parent"])) {
              FROM pain_$type, pain_enseignant 
              WHERE `id_$type` = $id
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant";
-    }
-    $resultat = mysql_query($requete) 
-	or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
-    $arr = array();
-    while ($element = mysql_fetch_object($resultat)) {
-	$arr[] = $element;
-    }
-    print json_encode($arr);
-} else {
-    errmsg("Erreur de script client (ni id ni parent)");
+       }
+       $resultat = mysql_query($requete) 
+	   or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
+       $arr = array();
+       while ($element = mysql_fetch_object($resultat)) {
+	   $arr[] = $element;
+       }
+       return $arr;
+
+   } else {
+       errmsg("Erreur de script client (ni id ni parent)");
+   }
 }
+
+
+
+if (isset($_GET["annee_universitaire"])) {
+    $annee = getclean("annee_universitaire");
+}
+
+if (isset($_GET["type"])) {
+    $readtype = getclean("type");
+     
+    if ($readtype == "annee") {
+	if (isset($_GET["cetteannee"])) {
+	    print "[{\"annee_universitaire\": \"$annee\",\"id\": \"$annee\", \"id_annee\": \"$annee\", \"type\":\"annee\"}]";
+	} else {
+	    print "[";
+	    for ($i = $annee - 3; $i < $annee + 3; $i += 1) {
+		print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"},";
+	    }
+	    print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"}]";
+	}
+    } else {
+	$out = json_get_php($annee, $readtype);
+	print json_encode($out);
+    }
+} else {
+    errmsg("erreur de script (type non renseigné)");
+}
+
 ?>
