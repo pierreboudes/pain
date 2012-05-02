@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -45,6 +46,8 @@ function stats_php() {
 //echo "<h2>Graphiques par formation</h2>";
 //include("inc_statsformations.php");
     if (peutvoirstatsservices()) {
+	/* mise a jour des services potientiels */
+	update_servicespotentiels();
 	include("inc_statsservices.php");
     }
 

@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*- */
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -18,6 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/** @file inc_functions.php
+ Les fonctions générales
+ */
+
 $debug_show_id = false; /* afficher les id */
 function debug_show_id($s) {
     global $debug_show_id;
@@ -32,26 +38,6 @@ require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
 
-function ig_responsable($id)
-{
-    if ($id < 0) {
-	echo "Libre"; /* jamais atteint */
-    }
-    if ($id == 0) {
-	echo "Autre"; /* jamais atteint */
-    }
-    if ($id > 0) {
-	$qresponsable = "SELECT * FROM pain_enseignant WHERE `id_enseignant` = $id";
-	$rresponsable = mysql_query($qresponsable) 
-	    or die("Échec de la requête sur la table enseignant");
-	$responsable = mysql_fetch_array($rresponsable);
-	debug_show_id($id);    
-	echo '<a class="enseignant" href="service.php?id_enseignant='.$id.'">';
-	echo $responsable["prenom"]." ";
-	echo $responsable["nom"];
-	echo '</a>';
-    }
-}
 
 function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_service */
 {
@@ -110,258 +96,6 @@ function selectionner_cours($id)
     }
     return $cours;
 }
-/* supprimer sformation */
-function supprimer_sformation($id)
-{    
-    if (!peutsupprimersformation($id)) {
-	errmsg("droits insuffisants.");
-    }
-
-    pain_log("-- supprimer_sformation($id)");
-
-    $q = "DELETE pain_choix FROM pain_choix, pain_cours, pain_formation 
-          WHERE pain_formation.id_sformation = $id
-          AND  pain_cours.id_formation = pain_formation.id_formation
-          AND  pain_choix.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_tranche FROM pain_tranche, pain_cours, pain_formation
-          WHERE pain_formation.id_sformation = $id
-          AND  pain_cours.id_formation = pain_formation.id_formation
-          AND  pain_tranche.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-    
-    $q = "DELETE pain_collectionscours FROM pain_collectionscours, pain_cours, pain_formation 
-          WHERE pain_formation.id_sformation = $id 
-          AND pain_cours.id_formation = pain_formation.id_formation
-          AND pain_collectionscours.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_tagscours FROM pain_tagscours, pain_cours, pain_formation 
-          WHERE pain_formation.id_sformation = $id 
-          AND pain_cours.id_formation = pain_formation.id_formation
-          AND pain_tagscours.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_cours FROM pain_cours, pain_formation 
-          WHERE pain_formation.id_sformation = $id
-          AND  pain_cours.id_formation = pain_formation.id_formation";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_formation FROM pain_formation 
-          WHERE pain_formation.id_sformation = $id";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    /* collections */
-    $q = "DELETE pain_collectionscours FROM pain_collection, pain_collectionscours 
-          WHERE pain_collection.id_sformation = $id AND pain_collectionscours.id_collection = pain_collection.id_collection";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_collection FROM pain_collection 
-          WHERE pain_collection.id_sformation = $id";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    /* sformation */
-    $q = "DELETE FROM pain_sformation WHERE `id_sformation` = $id LIMIT 1";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    echo '{"ok": "ok"}';
-}
-
-/* supprimer formation */
-function supprimer_formation($id)
-{    
-    if (!peutsupprimerformation($id)) {
-	errmsg("droits insuffisants.");
-    }
-
-    pain_log("-- supprimer_formation($id)");
-
-    $q = "DELETE pain_choix FROM pain_choix, pain_cours 
-          WHERE pain_cours.id_formation = $id
-          AND  pain_choix.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_tranche FROM pain_tranche, pain_cours 
-          WHERE pain_cours.id_formation = $id
-          AND  pain_tranche.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    $q = "DELETE pain_cours FROM pain_cours 
-          WHERE pain_cours.id_formation = $id ";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    /* formation */
-    $q = "DELETE FROM pain_formation WHERE `id_formation` = $id LIMIT 1";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
-    }
-    pain_log($q);
-
-    echo '{"ok": "ok"}';
-}
-
-
-/* a conserver */
-function supprimer_cours($id)
-{    
-    if (peuteditercours($id)) {
-	$cours = selectionner_cours($id);
-
-	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
-	pain_log("-- supprimer_cours($id)");
-
-        if (mysql_query($qcours)) {
-	    /* on efface les tranches associées */
-	    pain_log("$qcours");
-	    historique_par_suppression(1, $cours);
-
-	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";
-	    
-	    if (mysql_query($qtranches)) {
-		echo '{"ok": "ok"}';
-		pain_log("$qtranches");
-	    } else {
-		errmsg("échec de la requête sur la table tranches.");
-	    }
-	} else {
-	    errmsg("échec de la requête sur la table cours.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_tag($id)
-{    
-    if (peuteditertag($id)) {
-	$qtag = "DELETE FROM pain_tag WHERE `id_tag` = $id LIMIT 1";
-	pain_log("-- supprimer_tag($id)");
-
-        if (mysql_query($qtag)) {
-	    /* on efface les associations a des cours */
-	    pain_log("$qtag");
-
-	    $q = "DELETE FROM pain_tagscours WHERE `id_tag` = $id";
-	    
-	    if (mysql_query($q)) {
-		echo '{"ok": "ok"}';
-		pain_log("$q");
-	    } else {
-		errmsg("échec de la requête sur la table tagscours.");
-	    }
-	} else {
-	    errmsg("échec de la requête sur la table tag.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_tagcours($id, $id_par)
-{    
-    if (peuteditercours($id_par)) {
-	$qtag = "DELETE FROM pain_tagscours WHERE `id_tag` = $id AND `id_cours` = $id_par LIMIT 1";
-	pain_log("-- supprimer_tagcours($id, $id_par)");
-
-        if (mysql_query($qtag)) {
-		echo '{"ok": "ok"}';
-		pain_log("$qtag");
-	} else {
-	    errmsg("échec de la requête sur la table tagscours. $qtag".mysql_error());
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_collection($id)
-{    
-    if (peuteditercollection($id)) {
-	$qcollection = "DELETE FROM pain_collection WHERE `id_collection` = $id LIMIT 1";
-	pain_log("-- supprimer_collection($id)");
-
-        if (mysql_query($qcollection)) {
-	    /* on efface les associations a des cours */
-	    pain_log("$qcollection");
-
-	    $q = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id";
-	    
-	    if (mysql_query($q)) {
-		echo '{"ok": "ok"}';
-		pain_log("$q");
-	    } else {
-		errmsg("échec de la requête sur la table collectionscours.");
-	    }
-	} else {
-	    errmsg("échec de la requête sur la table collection.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_collectioncours($id, $id_par)
-{    
-    if (peuteditercours($id_par)) {
-	$qcollection = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id AND `id_cours` = $id_par LIMIT 1";
-	pain_log("-- supprimer_collectioncours($id, $id_par)");
-
-        if (mysql_query($qcollection)) {
-		echo '{"ok": "ok"}';
-		pain_log("$qcollection");
-	} else {
-	    errmsg("échec de la requête sur la table collectionscours. $qcollection".mysql_error());
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function tranchesdecours($id) {
-    $qtranches = "SELECT * FROM pain_tranche WHERE `id_cours`=".$id." ORDER BY groupe ASC";
-
-    $rtranches = mysql_query($qtranches) or 
-	die(mysql_error());
-
-    return $rtranches;
-}
 
 function selectionner_tranche($id)
 {
@@ -399,94 +133,6 @@ function selectionner_enseignant($id)
     return $ens;
 }
 
-function supprimer_tranche($id)
-{
-    if (peuteditertranche($id)) {
-	$tranche = selectionner_tranche($id);
-	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
-                 LIMIT 1";
-	
-	if (mysql_query($qtranche)) {
-	    historique_par_suppression(2, $tranche);
-	    pain_log("$qtranche -- supprimer_tranche($id)");
-	    echo '{"ok": "ok"}';
-	} else {
-	    errmsg("échec de la requête sur la table tranche.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-
-function supprimer_enseignant($id) {
-    if (peutsupprimerenseignant($id)) {
-	if (estintervenant($id) 
-	    || estresponsablecours($id)
-	    || estresponsableformation($id)
-	    || estresponsablesformation($id)) {
-	    errmsg("suppression impossible. Cet enseignant a au moins une intervention ou une responsabilité renseignée dans la base.");
-	    return;
-	}
-
-	$ens = selectionner_enseignant($id);
-	$qens = "DELETE FROM pain_enseignant WHERE `id_enseignant` = $id LIMIT 1";
-	
-	if (mysql_query($qens)) {
-	    historique_par_suppression(4, $ens);
-	    pain_log("$qens -- supprimer_ens($id)");
-	    $q = "DELETE FROM pain_service WHERE `id_enseignant` = $id";
-	    mysql_query($q) or ($q .= " -- ".mysql_error());
-	    pain_log("$q");
-	    $q = "DELETE FROM pain_choix WHERE `id_enseignant` = $id";
-	    mysql_query($q) or ($q .= " -- ".mysql_error());
-	    pain_log("$q");
-	    echo '{"ok": "ok"}';
-	} else {
-	    errmsg("échec de la requête sur la table enseignant.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_choix($id) {
-    if (peutsupprimerchoix($id)) {
-	$choix = selectionner_choix($id);
-	$qchoix = "DELETE FROM pain_choix WHERE `id_choix` = $id
-                 LIMIT 1";
-	
-	if (mysql_query($qchoix)) {
-	    historique_par_suppression(3, $choix);
-	    pain_log("$qchoix -- supprimer_choix($id)");
-	    echo '{"ok": "ok"}';
-	} else {
-	    errmsg("échec de la requête sur la table choix.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
-
-function supprimer_service($id_enseignant, $an) {
-    if (peutsupprimerservice($id_enseignant, $an)) { 
-	if (serviceestvide($id_enseignant, $an)) {	    
-	    $qservice = "DELETE FROM pain_service WHERE `id_enseignant` = $id_enseignant AND `annee_universitaire` = $an LIMIT 1";
-	
-	    if (mysql_query($qservice)) {
-//		historique_par_suppression(3, $choix);
-		pain_log("$qservice -- supprimer_service($id_enseignant, $an)");
-		echo '{"ok": "ok"}';
-	    } else {
-		errmsg("échec de la requête sur la table choix.");
-	    }
-	} else {
-		errmsg("Il y a des interventions associées à ce service.");
-	}
-    } else {
-	errmsg("droits insuffisants.");
-    }
-}
 
 function formation_du_cours($id)
 {
@@ -498,7 +144,6 @@ function formation_du_cours($id)
     }
     return $f["id_formation"];
 }
-
 
 
 function ig_legendeenseignant() {
@@ -916,70 +561,6 @@ function ig_htdbarre($r) {
     echo '"/>';
 }
 
-function htdcours_old_TRASHME($id) {
-
-    $qservi = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant > 8';
-    $rservi = mysql_query($qservi) 
-	or die("erreur d'acces a la table tranche : $qservi erreur:".mysql_error());
-
-    $servi = mysql_fetch_assoc($rservi);
-    $servi = $servi["SUM(htd)"];
-    if ($servi == "") {
-	$servi = 0;
-    } 
-
-    $qmutualise = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant = 2';
-    $rmutualise = mysql_query($qmutualise) 
-	or die("erreur d'acces a la table tranche : $qmutualise erreur:".mysql_error());
-    
-    $mutualise = mysql_fetch_assoc($rmutualise);
-    $mutualise = $mutualise["SUM(htd)"];
-    if ($mutualise == "") {
-	$mutualise = 0;
-    }
-
-    $qlibre = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant = 3';
-    $rlibre = mysql_query($qlibre) 
-	or die("erreur d'acces a la table tranche : $qlibre erreur:".mysql_error());
-
-    $libre = mysql_fetch_assoc($rlibre);
-    $libre = $libre["SUM(htd)"];
-    if ($libre == "") {
-	$libre = 0;
-    }
-
-    $qannule = 'SELECT SUM(htd) FROM pain_tranche WHERE id_cours = '.$id.' AND id_enseignant = 1';
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
-    
-    $annule = mysql_fetch_assoc($rannule);
-    $annule = $annule["SUM(htd)"];
-    if ($annule == "") {
-	$annule = 0;
-    }
-
-    $qtp = 'SELECT SUM(tp) FROM pain_tranche WHERE id_cours = '.$id;
-    $rtp = mysql_query($qtp) 
-	or die("erreur d'acces a la table tranche : $qtp erreur:".mysql_error());
-    
-    $tp = mysql_fetch_assoc($rtp);
-    $tp = $tp["SUM(tp)"];
-    if ($tp == "") {
-	$tp = 0;
-    }
-
-    if (responsableducours($id) == 1) {/* cours annulé */
-	$annule += $servi + $libre + $mutualise;
-	$servi = $libre = $mutualise = 0;
-    }
-
-    return array("servi"=>$servi, 
-		 "libre"=>$libre, 
-		 "annule"=>$annule, 
-		 "mutualise"=>$mutualise,
-		 "tp"=>$tp);
-}
-
 function ig_htd($totaux) {
     $total = $totaux["servi"] + $totaux["mutualise"] + $totaux["libre"] + $totaux["annule"];
     echo $total.'H ';
@@ -993,20 +574,6 @@ function ig_htd($totaux) {
 
 function enpostes($htd) {
     return round($htd / 192.0, 2);
-}
-
-function ig_totauxenpostes($totaux) {
-    echo enpostes($totaux["total"]).' postes ';
-    if (1) {
-	echo '('.enpostes($totaux["cm"]).'&nbsp;CM + '.enpostes($totaux["td"]).'&nbsp;TD + '.enpostes($totaux["tp"]).'&nbsp;TP + '.enpostes($totaux["alt"]).'&nbsp;alt)<br/>';
-    }
-    echo '=&nbsp;';
-    echo enpostes($totaux["servi"]).'&nbsp;servis +&nbsp;';
-    echo enpostes($totaux["mutualise"]).'&nbsp;mutualisés +&nbsp;';
-    echo enpostes($totaux["libre"]).'&nbsp;à pourvoir +&nbsp;';
-    echo enpostes($totaux["annule"]).'&nbsp;annulés';
-    echo '<br/>Département: '.enpostes($totaux["permanents"] + $totaux["nonpermanents"] + $totaux["libre"]).'  = '.enpostes($totaux["permanents"]).'&nbsp;permanents + '.enpostes($totaux["nonpermanents"]).'&nbsp;non-permanents + '.enpostes($totaux["libre"]).'&nbsp;à pourvoir';
-    echo '<br/>Extérieurs: '.enpostes($totaux["exterieurs"] + $totaux["autre"]).' = '.enpostes($totaux["exterieurs"])." servis + ".enpostes($totaux["autre"])." inconnus";
 }
 
 function responsableducours($id) {
@@ -1165,39 +732,6 @@ function ig_totauxinterventions($totaux) {
     echo '<td class="HTD">'.$totaux["htd"].'</td>';
     echo '<th colspan="2"></th>';
 }
-
-
-
-function listeservice($id_enseignant) {
-    global $annee;
-    if ($annee == NULL) $annee = annee_courante();
-$query = "SELECT 
-pain_formation.nom,
-pain_formation.annee_etude,
-pain_formation.parfum,
-pain_cours.semestre,
-pain_cours.nom_cours,
-pain_cours.code_geisha,
-pain_cours.id_cours AS id_cours,
-SUM(pain_tranche.cm) AS cm,
-SUM(pain_tranche.td) AS td,
-SUM(pain_tranche.tp) AS tp,
-SUM(pain_tranche.alt) AS alt
-FROM pain_tranche, pain_cours, pain_formation, pain_sformation
-WHERE ".(($id_enseignant == 1)?
-	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
-	 :"pain_tranche.id_enseignant =".$id_enseignant." AND pain_cours.id_enseignant <> 1")."
-AND pain_tranche.id_cours = pain_cours.id_cours
-AND pain_cours.id_formation = pain_formation.id_formation
-AND pain_formation.id_sformation = pain_sformation.id_sformation
-AND pain_sformation.annee_universitaire = $annee
-GROUP BY pain_cours.id_cours
-ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC";
-   ($result = mysql_query($query)) or die("Échec de la connexion à la base= $query");
-    return $result;
-}
-
-
 
 /** Met à jour la table pain_service en recalculant les service_reel de l'année.
 
@@ -1370,47 +904,14 @@ function historique_par_ajout($type, $new) {
     pain_log($q);
 }
 
-function historique_par_suppression($type, $old) {
-    global $user;
-    $id = 0;
-    $id_formation = 0;
-    $id_cours = 0;
-    $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
-    $s .= '<div class="diff">';
-    if (1 == $type) {
-	$id_cours = $id = $old["id_cours"];
-	$id_formation = $old["id_formation"];
-    } else if (2 == $type) {
-	$id = $old["id_tranche"];
-	$id_cours = $old["id_cours"];
-	$id_formation = formation_du_cours($old["id_cours"]);
-    } else if (3 == $type) {
-	$id = $old["id_choix"];
-	$id_cours = $old["id_cours"];
-	$id_formation = formation_du_cours($old["id_cours"]);
-    } else if (4 == $type) {
-	$id = $old["id_enseignant"];
-	$s .= $old["prenom"]." ".$old["nom"]." : ";
-    } else {
-	$s .= "BUG ";
-    }
-    $s .= "suppression";
-    $s .= '</div>';
-    $q = "INSERT INTO pain_hist (type, id, id_formation, id_cours, message) 
-          VALUES ('".$type."', '".$id."', '".$id_formation."', '".$id_cours."',
-                  '".$s."')";
-    mysql_query($q) or die("$q ".mysql_error());
-    pain_log($q);
-}
-
-function historique_de_formation($id,$timestamp = NULL) {
+function historique_de_formation($id, $offset, $timestamp = NULL) {
     $q = "SELECT * from pain_hist 
           WHERE id_formation = $id
           AND (type = 1 OR type = 2 OR type = 3)";
     if ($timestamp != NULL) {
 	$q .= " AND timestamp <= \"$timestamp\" ";
     }
-    $q .= "ORDER BY timestamp DESC LIMIT 51";
+    $q .= "ORDER BY timestamp DESC LIMIT ".($offset + 1).", 20";
     $r = mysql_query($q) 
 	or die("historique_de_formation($id), $q ".mysql_error());
     return $r;

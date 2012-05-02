@@ -1,7 +1,8 @@
 <?php  /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -18,16 +19,43 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/** @file act_historique.php
+ code HTML de l'historique des modifications d'une formation, chargé en ajax.
+ */
+
 require_once('authentication.php'); 
 $user = authentication();
-
 require_once("inc_connect.php");
 require_once("inc_functions.php");
+
+/**
+ produit le code HTML de l'historique de la formation.
+ */
+function act_historique_php($id, $offset, $timestamp) {
+    $liste = historique_de_formation($id, $offset, $timestamp);
+    while ($h = mysql_fetch_assoc($liste)) {
+	++$offset;
+	echo '<div class="historique">';
+	ig_historique($h);
+	echo '<div class="clear"></div>';
+	echo '</div>';
+    }
+    echo '<div class="hiddenvalue">'.$offset.'</class>';
+}
 
 if (isset($_POST["id_formation"])) {
     $id = postclean("id_formation");
 } else if (isset($_GET["id_formation"])) {
     $id = getclean("id_formation");
+}  else {
+    die("pas de id_formation ?");
+}
+$offset = 0;
+if (isset($_POST["offset"])) {
+    $offset = postclean("offset");
+} else if (isset($_GET["offset"])) {
+    $offset = getclean("offset");
 }
 $timestamp = NULL;
 if (isset($_POST["timestamp"])) {
@@ -36,16 +64,6 @@ if (isset($_POST["timestamp"])) {
     $timestamp = getclean("timestamp");
 }
 
-function act_historique_php($id, $timestamp) {
-    $liste = historique_de_formation($id, $timestamp);
 
-    while ($h = mysql_fetch_assoc($liste)) {
-	echo '<div class="historique">';
-	ig_historique($h);
-	echo '<div class="clear"></div>';
-	echo '</div>';
-    }
-}
-
-act_historique_php($id, $timestamp);
+act_historique_php($id, $offset, $timestamp);
 ?>

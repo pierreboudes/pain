@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -26,7 +27,6 @@ entete("gestion des enseignements et des services", "pain_index.js");
 require_once('utils.php');
 include("menu.php");
 include("inc_infobox.php");
-//include("inc_listcours.php");
 
 echo '<div id="vuecourante"></div>';
 

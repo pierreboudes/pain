@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -20,11 +21,8 @@
  */
 require_once('authentication.php'); 
 authrequired();
-
 require_once("inc_connect.php");
 require_once("inc_functions.php");
-
-update_servicespotentiels();
 
 function ig_depassementparcategorie($categorie) {
     $r = liste_enseignantscategorie($categorie);

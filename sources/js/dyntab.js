@@ -1856,25 +1856,57 @@ function logsFormation(e) {
     bascule.toggleClass('logOn');
     if (bascule.hasClass('logOn')) {
 	var titre = 'Logs '+$('#formation_'+id+'> td.intitule').text();
-	jQuery.post("act_historique.php", {id_formation: id}, function (data) {
-	    if (!contientERREUR(data)) {
-		$('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id+'">'+data+'</div>');
-		$('#logF'+id).dialog({autopen: true, 
-			    draggable: true, 
-			    resizable: true, 
-			    width: 700,
-			    height: 300,
-			    close: function (event,ui) {logsFormation(e);},
-			    title: titre
-			    });
-	    } else {
-		alert(data);
-	    }
-	    return false;
-	}, 'html');
+	// charger une première page de log
+	jQuery.post("act_historique.php", 
+		    {id_formation: id}, 
+		    function (data) {
+			if (!contientERREUR(data)) {
+			    $('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id
+                                                                       +'">'+data+'</div>');
+			    $('#logF'+id).dialog({autopen: true, 
+					draggable: true, 
+					resizable: true, 
+					width: 700,
+					height: 300,
+					close: function (event,ui) {logsFormation(e);},
+					title: titre
+					});
+			    if ( existsjQuery($('#logF'+id+'> .historique')) ) { // le log n'est pas vide
+                                // on place un bouton de chargement
+				$("#logF"+id).append('<button id=morelogF'+id+
+                                                      ' class="more">remonter plus loin dans les logs</button>');
+				var button = $("#morelogF"+id).button({
+				    text: true,
+					    icons: {
+					primary: "ui-icon-arrowreturnthick-1-e"
+						}
+				    });
+				button.bind('click', function () {
+					var offset = button.prev('.hiddenvalue').text();
+					if (button.prev().prev().hasClass('hiddenvalue')) {// plus rien à charger dans les logs
+					    button.button('disable');
+					} else {// charger une autre "page" de logs
+					    jQuery.post("act_historique.php", 
+							{id_formation: id, offset: offset},					     
+							function (data) {
+							    if (!contientERREUR(data)) {
+								$("#morelogF"+id).before(data);
+							    }
+							});
+					}
+				    });				
+			    } 
+			    else {
+				$('#logF'+id).prepend("logs vide");
+			    }
+			} else {
+			    alert(data);
+			}
+			return false;
+		    }, 'html');
     }  else {
 	$('#logF'+id).dialog('destroy');
-	$('#logF'+id).remove();	
+	$('#logF'+id).remove();
     }
     return false;
 }

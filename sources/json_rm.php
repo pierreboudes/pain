@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -24,16 +25,9 @@ $user = authentication();
 require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
+require_once("inc_functions_rm.php");
 
-
-if (isset($_GET["id"])) {
-    $id = getclean("id");
-} else {
-    errmsg("erreur de script (id non renseigné)");
-}
-
-if (isset($_GET["type"])) {
-    $readtype = getclean("type");
+function json_rm_php($id, $readtype) {
     if ($readtype == "sformation") {
 	supprimer_sformation($id);
     } else if ($readtype == "formation") {
@@ -62,7 +56,19 @@ if (isset($_GET["type"])) {
     } else {
 	errmsg("erreur de script (type inconnu)");
     }
+}
+
+if (isset($_GET["id"])) {
+    $id = getclean("id");
+} else {
+    errmsg("erreur de script (id non renseigné)");
+}
+
+if (isset($_GET["type"])) {
+    $readtype = getclean("type");
 } else {
     errmsg("erreur de script (type non renseigné)");
 }
+
+json_rm_php($id, $readtype);
 ?>

@@ -1,7 +1,8 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement        
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2012 Pierre Boudes,
+ * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -18,10 +19,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+/** @file act_barre.php
+ un graphe barre en png paramétré par HTTP/GET.
+ */
+
+
 header('Content-type: image/png');
 
-/**
-produit une image png de taille environ 875x1 representant le taux de satisfaction des besoins en heures enseignants, tel que fourni par HTTP/GET.
+/** produit une image png de taille environ 875x1 representant le taux
+de satisfaction des besoins en heures enseignants, tel que fourni par
+HTTP/GET.
  */
 function act_barre_php() {
 $servi = 0;

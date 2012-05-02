@@ -40,7 +40,6 @@ service
 from LesProfs Where 1 ;
 
 -- formations --
-
 insert into pain_sformation
 (id_sformation,
 id_enseignant,
@@ -259,6 +258,12 @@ update pain_tranche, pain_enseignant set pain_tranche.id_enseignant = 3 where
 pain_enseignant.nom = "a donner"
 and pain_tranche.id_enseignant = pain_enseignant.id_enseignant
 
+-- quelques responsables de cours evidents 
+UPDATE pain_cours, (SELECT MAX( pain_tranche.cm ), id_enseignant, id_cours 
+                    FROM pain_tranche
+                    WHERE pain_tranche.cm > 0 GROUP BY pain_tranche.id_cours) AS t1  
+SET pain_cours.id_enseignant = t1.id_enseignant WHERE pain_cours.id_cours = t1.id_cours
+
 
 --- Les collections pour récupérer les formations (sauf les périodes)
 INSERT INTO pain_collection (id_collection, id_sformation, annee_universitaire, nom_collection)
@@ -277,7 +282,7 @@ WHERE  LesFormations.cycle = LesCycles.cycle
 --- On insere ensuite les associations fautives en un seul exemplaire
 --- INSERT INTO pain_collectionscours (id_cours, id_collection)
 --- SELECT DISTINCT formation, uv FROM `Formation-UV` AS t1 WHERE (SELECT DISTINCT count(num) FROM `Formation-UV` AS t2 WHERE t1.formation = t2.formation AND t1.uv = t2.uv) > 1 ORDER BY formation, uv
--- Solution 2
+-- Solution 2 (plus simple !)
 INSERT INTO pain_collectionscours (id_cours, id_collection)
 SELECT DISTINCT uv, formation FROM `Formation-UV` WHERE 1
 
