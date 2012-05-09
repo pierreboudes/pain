@@ -25,6 +25,8 @@ require_once("inc_functions.php");
 
 function ig_formselectformation($id_formation, $annee = NULL)
 {
+    global $link;
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT id_formation, 
                  pain_formation.nom AS nom, 
@@ -34,9 +36,9 @@ function ig_formselectformation($id_formation, $annee = NULL)
           WHERE pain_formation.id_sformation = pain_sformation.id_sformation
           AND pain_sformation.annee_universitaire = $annee
           ORDER BY pain_formation.numero ASC";
-    $r = mysql_query($q) 
-	or die("</select></form>Échec de la requête sur la table formation: ".mysql_error());
-    while ($form = mysql_fetch_array($r)) {
+    $r = $link->query($q) 
+	or die("</select></form>Échec de la requête sur la table formation: ".$link->error());
+    while ($form = $r->fetch_array()) {
 	echo '<option ';
 	if ($form["id_formation"] == $id_formation) {
 	    echo 'selected="selected" ';
@@ -70,6 +72,7 @@ function ig_responsable_du_cours($cours) {
 }
 
 function ig_intervenants_du_cours($cours) {
+    global $link;
     $id_cours = $cours["id_cours"];
     $q = "SELECT 
                  GROUP_CONCAT(DISTINCT pain_tranche.groupe
@@ -90,9 +93,9 @@ function ig_intervenants_du_cours($cours) {
           AND pain_enseignant.id_enseignant = pain_tranche.id_enseignant
           GROUP BY pain_enseignant.id_enseignant
           ORDER BY groupe ASC, nom ASC";
-    ($r = mysql_query($q)) 
-        or die("Échec de la connexion à la base $q<br>".mysql_error());
-    while ($e = mysql_fetch_array($r)) {
+    ($r = $link->query($q)) 
+        or die("Échec de la connexion à la base $q<br>".$link->error());
+    while ($e = $r->fetch_array()) {
 	if (strcmp($e["groupes"], "0") != 0) {
 	    $groupes = str_replace("0, G", "", $e["groupes"]);
 	    $groupes = "G".$groupes;	    
@@ -128,6 +131,7 @@ function ig_pied_du_cours($cours) {
 
 
 function liste_emails($type, $annee = NULL) {
+    global $link;
     if ($annee == NULL) $annee = annee_courante();
 
     if ($type == "rsformation") {
@@ -198,6 +202,7 @@ return array($id_formation, $semestre);
 affiche l'annuaire de la formation $id_formation, éventuellement restreint au semestre $semestre.
 */
 function annuaire_php($id_formation, $semestre = 0) {
+    global $link;
     /* annuaire */
     echo "<h2>Annuaire de la formation</h2>";
 
@@ -216,9 +221,9 @@ function annuaire_php($id_formation, $semestre = 0) {
     if ($semestre) $q .=" AND semestre = $semestre ";
     $q .=" AND pain_enseignant.id_enseignant = pain_cours.id_enseignant ";
     $q .=" ORDER BY semestre ASC, nom_cours ASC";
-    ($r = mysql_query($q)) 
-	or die("Échec de la connexion à la base $q<br>".mysql_error());
-    while ($cours = mysql_fetch_array($r)) {
+    ($r = $link->query($q)) 
+	or die("Échec de la connexion à la base $q<br>".$link->error());
+    while ($cours = $r->fetch_array()) {
 	ig_entete_du_cours($cours);
 	ig_responsable_du_cours($cours);
 	ig_intervenants_du_cours($cours);

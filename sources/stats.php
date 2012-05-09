@@ -32,6 +32,9 @@ require_once('inc_statsfunc.php');
 génére le code HTML de la page stats
  */
 function stats_php() {
+    global $link;
+    global $user;
+    global $annee;
     entete("statistiques","jquery.gchart.js","pain_stats.js");
     include("menu.php");
 /* mise a jour des services  (pain_service) */
@@ -51,10 +54,6 @@ function stats_php() {
 	include("inc_statsservices.php");
     }
 
-/*
-echo "<h2>Graphiques par enseignant</h2>";
-include("inc_statsenseignants.php");
-*/
     piedpage();
 }
 

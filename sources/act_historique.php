@@ -34,7 +34,7 @@ require_once("inc_functions.php");
  */
 function act_historique_php($id, $offset, $timestamp) {
     $liste = historique_de_formation($id, $offset, $timestamp);
-    while ($h = mysql_fetch_assoc($liste)) {
+    while ($h = $liste->fetch_assoc()) {
 	++$offset;
 	echo '<div class="historique">';
 	ig_historique($h);
@@ -63,7 +63,6 @@ if (isset($_POST["timestamp"])) {
 } else if (isset($_GET["timestamp"])) {
     $timestamp = getclean("timestamp");
 }
-
 
 act_historique_php($id, $offset, $timestamp);
 ?>

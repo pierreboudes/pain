@@ -31,6 +31,7 @@ $annee = annee_courante();
  */ 
 function json_modify_php($annee, $readtype, $id) {
     global $user;
+    global $link;
     if ($readtype == "sformation") {	
 	$type = "sformation";
 	$par = "annee";
@@ -140,11 +141,11 @@ function json_modify_php($annee, $readtype, $id) {
     }
     if (($type == "collection") && (isset($set["id_sformation"]))) {
 	$q = "SELECT annee_universitaire FROM pain_sformation WHERE id_sformation = ".$set["id_sformation"];
-	$r = mysql_query($q);
+	$r = $link->query($q);
 	if (!$r) {
-	    errmsg("erreur avec la requete :\n".$q."\n".mysql_error());
+	    errmsg("erreur avec la requete :\n".$q."\n".$link->error());
 	}
-	$rr = mysql_fetch_assoc($r);
+	$rr = $r->fetch_assoc();
 	$set["annee_universitaire"] = $rr["annee_universitaire"];
     }
     /* calcul de l'équivalent TD, nul admis */
@@ -187,8 +188,8 @@ function json_modify_php($annee, $readtype, $id) {
     
 	/* log et requete a moderniser (loguer le json) TODO */
 
-	if (!mysql_query($query)) {
-	    errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+	if (!$link->query($query)) {
+	    errmsg("erreur avec la requete :\n".$query."\n"$link->error());
 	}
 	pain_log($query); // LOG DE LA REQUETE !
 	if ($type == "cours") {

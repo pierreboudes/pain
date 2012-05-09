@@ -41,14 +41,15 @@ require_once("inc_droits.php");
 
 function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_service */
 {
+    global $link;
 /*    global $annee;
     if ($annee == NULL) $annee = annee_courante();
 */
     $qens = "SELECT `id_enseignant`, `prenom`, `nom` 
              FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
-    $rens = mysql_query($qens) 
+    $rens = $link->query($qens) 
 	  or die("Échec de la requête sur la table enseignant");
-    while ($ens = mysql_fetch_array($rens)) {
+    while ($ens = $rens->fetch_array()) {
 	echo '<option ';
 	if ($ens["id_enseignant"] == $id_enseignant) {
 	    echo 'selected="selected" ';
@@ -61,74 +62,80 @@ function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_serv
 
 function lister_enseignantsannee($an)
 {
+    global $link;
     $qens = "SELECT pain_enseignant.id_enseignant AS `id`, ".
                     "TRIM(CONCAT(prenom, ' ',nom)) AS `label` ".
              "FROM pain_enseignant, pain_service ".
              "WHERE pain_service.annee_universitaire = $an ".
 	     "AND pain_service.id_enseignant = pain_enseignant.id_enseignant ".
 	     "ORDER BY nom, prenom ASC";
-    $rens = mysql_query($qens) 
-	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".mysql_error());
+    $rens = $link->query($qens) 
+	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".$link->error());
     return $rens;
 }
 
 function lister_categories()
 {
+    global $link;
     $qcat = "SELECT id_categorie AS `id`, ".
                     "TRIM(nom_court) AS `label`, ".
 	            "nom_long, descriptif ".
 	"FROM pain_categorie ".
 	"WHERE descriptif <> \"\" ". /* <- debile, TODO : trouver la bonne structure */
 	"ORDER BY id_categorie ASC";
-    $rcat = mysql_query($qcat) 
-	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".mysql_error());
+    $rcat = $link->query($qcat) 
+	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".$link->error());
     return $rcat;
 }
 
 function selectionner_cours($id)
 {
+    global $link;
     $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = $id";
     $cours = NULL;
-    if ($rcours = mysql_query($qcours)) {
-	$cours = mysql_fetch_assoc($rcours);
+    if ($rcours = $link->query($qcours)) {
+	$cours = $rcours->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table cours. $qcours ".mysql_error();
+	echo "Échec de la requête sur la table cours. $qcours ".$link->error();
     }
     return $cours;
 }
 
 function selectionner_tranche($id)
 {
+    global $link;
     $qtranche = "SELECT * FROM pain_tranche WHERE `id_tranche` = $id";
     $tranche = NULL;
-    if ($rtranche = mysql_query($qtranche)) {
-	$tranche = mysql_fetch_assoc($rtranche);
+    if ($rtranche = $link->query($qtranche)) {
+	$tranche = $rtranche->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table tranche. $qtranche ".mysql_error();
+	echo "Échec de la requête sur la table tranche. $qtranche ".$link->error();
     }
     return $tranche;
 }
 
 function selectionner_choix($id)
 {
+    global $link;
     $qchoix = "SELECT * FROM pain_choix WHERE `id_choix` = $id";
     $choix = NULL;
-    if ($rchoix = mysql_query($qchoix)) {
-	$choix = mysql_fetch_assoc($rchoix);
+    if ($rchoix = $link->query($qchoix)) {
+	$choix = $rchoix->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table choix. $qchoix ".mysql_error();
+	echo "Échec de la requête sur la table choix. $qchoix ".$link->error();
     }
     return $choix;
 }
 
 function selectionner_enseignant($id)
 {
+    global $link;
     $qens = "SELECT * FROM pain_enseignant WHERE `id_enseignant` = $id";
     $ens = NULL;
-    if ($rens = mysql_query($qens)) {
-	$ens = mysql_fetch_assoc($rens);
+    if ($rens = $link->query($qens)) {
+	$ens = $rens->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table enseignant. $qens ".mysql_error();
+	echo "Échec de la requête sur la table enseignant. $qens ".$link->error();
     }
     return $ens;
 }
@@ -136,11 +143,12 @@ function selectionner_enseignant($id)
 
 function formation_du_cours($id)
 {
+    global $link;
     $q = "SELECT id_formation FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
-    if ($r = mysql_query($q)) {
-	$f = mysql_fetch_assoc($r);
+    if ($r = $link->query($q)) {
+	$f = $r->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table cours. $q ".mysql_error();
+	echo "Échec de la requête sur la table cours. $q ".$link->error();
     }
     return $f["id_formation"];
 }
@@ -179,6 +187,7 @@ function ig_enseignant($t) {
 }
 
 function stats_sform($idsf) {
+    global $link;
     $q = "SELECT pain_service.categorie AS categorie, SUM(pain_tranche.htd) as somme
           FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service
           WHERE pain_tranche.id_cours = pain_cours.id_cours
@@ -192,10 +201,10 @@ function stats_sform($idsf) {
                AND pain_service.categorie = 1))
           AND pain_service.annee_universitaire = pain_sformation.annee_universitaire
           GROUP BY pain_service.categorie";
-    $r = mysql_query($q) or die("erreur d'acces aux tables: $q erreur: ".mysqlerror());
+    $r = $link->query($q) or die("erreur d'acces aux tables: $q erreur: ".mysqlerror());
     $tab = array();
 
-    while ($a = mysql_fetch_assoc($r)) {
+    while ($a = $r->fetch_assoc()) {
 	$tab[$a["categorie"]] = $a["somme"];
     }
 
@@ -203,6 +212,7 @@ function stats_sform($idsf) {
 }
 
 function htd_cat2array($rperm) {
+    global $link;
     $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
     $librecm=0; $libretd=0; $libretp=0; $librealt=0;
     $permcm=0; $permtd=0; $permtp=0; $permalt=0;
@@ -210,7 +220,7 @@ function htd_cat2array($rperm) {
     $mutualisecm=0; $mutualisetd=0; $mutualisetp=0; $mutualisealt=0;
     $autrecm=0; $autretd=0; $autretp=0; $autrealt=0;
     $extcm=0; $exttd=0; $exttp=0; $extalt=0;
-    while ($cat = mysql_fetch_assoc($rperm)) {
+    while ($cat =$rperm->fetch_assoc()) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
 	case 2: /* permanents */
@@ -288,11 +298,13 @@ function htd_cat2array($rperm) {
 		 "autretd"=>$autretd,
 		 "autretp"=>$autretp,
 		 "autrealt"=>$autrealt,
-		 "total"=>$servi+$libre+$mutualise, // ajouter $annule apres retour
+		 "total"=>$servi+$libre+$mutualise // ajouter $annule apres retour
 	);
 }
 
 function htdtotaux($annee = NULL) {
+    global $link;
+
     if ($annee == NULL) $annee = annee_courante();
 
     /* heures etudiants */
@@ -301,9 +313,9 @@ function htdtotaux($annee = NULL) {
              WHERE  pain_formation.id_formation = pain_cours.id_formation 
              AND pain_sformation.id_sformation = pain_formation.id_sformation  
              AND annee_universitaire = $annee";
-    $retu = mysql_query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
-    $letu = mysql_fetch_assoc($retu);    
+    $retu = $link->query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+    $letu =$retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
 	$etu = 0;
@@ -311,10 +323,10 @@ function htdtotaux($annee = NULL) {
 
     /* annulations */
     $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
+    $rannule = $link->query($qannule) 
+	or die("erreur d'acces aux tables : $qannule erreur:".$link->error());
 
-    $annule = mysql_fetch_assoc($rannule);
+    $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
     if ($annule == "") {
 	$annule = 0;
@@ -322,10 +334,10 @@ function htdtotaux($annee = NULL) {
 
     /* tous CM, TD, TP, alt */
     $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
-    $rcomp = mysql_query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+    $rcomp = $link->query($qcomp) 
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
 
-    $comp = mysql_fetch_assoc($rcomp);
+    $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
     if ($cm == "") {
 	$cm = 0;
@@ -344,8 +356,8 @@ function htdtotaux($annee = NULL) {
     }
     $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
 
-    $rperm = mysql_query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+    $rperm = $link->query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
 
     $a = htd_cat2array($rperm);
 
@@ -360,15 +372,16 @@ function htdtotaux($annee = NULL) {
     return $a;
 }
 
-function htdsuper($id) {    
+function htdsuper($id) {
+    global $link;    
     /* heures etudiants */
     $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
              FROM pain_formation, pain_cours
              WHERE pain_formation.id_sformation  = $id 
              AND pain_cours.id_formation = pain_formation.id_formation";
-    $retu = mysql_query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
-    $letu = mysql_fetch_assoc($retu);    
+    $retu = $link->query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+    $letu = $retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
 	$etu = 0;
@@ -376,20 +389,20 @@ function htdsuper($id) {
 
 
     $qannule ="SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces aux tables : $qannule erreur:".mysql_error());
+    $rannule = $link->query($qannule) 
+	or die("erreur d'acces aux tables : $qannule erreur:".$link->error());
 
-    $annule = mysql_fetch_assoc($rannule);
+    $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
     if ($annule == "") {
 	$annule = 0;
     } 
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_formation, pain_cours, pain_tranche WHERE pain_formation.id_sformation = $id AND pain_formation.id_formation = pain_cours.id_formation AND pain_tranche.id_cours = pain_cours.id_cours";
-    $rcomp = mysql_query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+    $rcomp = $link->query($qcomp) 
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
 
-    $comp = mysql_fetch_assoc($rcomp);
+    $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
     if ($cm == "") {
 	$cm = 0;
@@ -408,8 +421,8 @@ function htdsuper($id) {
     }
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
-    $rperm = mysql_query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+    $rperm = $link->query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
 
     $a = htd_cat2array($rperm);
 
@@ -425,33 +438,34 @@ function htdsuper($id) {
 }
 
 function htdformation($id) {
+    global $link;
     /* heures etudiants */
     $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
              FROM pain_cours WHERE id_formation = $id";
-    $retu = mysql_query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
-    $letu = mysql_fetch_assoc($retu);    
+    $retu = $link->query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+    $letu = $retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
 	$etu = 0;
     }
 
-/* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est compté deux fois dans le total des annulation, à vérifier ! */
+/* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est comptée deux fois dans le total des annulation, à vérifier ! */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+    $rannule = $link->query($qannule) 
+	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error());
 
-    $annule = mysql_fetch_assoc($rannule);
+    $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
     if ($annule == "") {
 	$annule = 0;
     }
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
-    $rcomp = mysql_query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+    $rcomp = $link->query($qcomp) 
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
 
-    $comp = mysql_fetch_assoc($rcomp);
+    $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
     if ($cm == "") {
 	$cm = 0;
@@ -470,8 +484,8 @@ function htdformation($id) {
     }
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
-    $rperm = mysql_query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+    $rperm = $link->query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
 
     $a = htd_cat2array($rperm);
 
@@ -488,32 +502,33 @@ function htdformation($id) {
 
 
 function htdcours($id) {
+    global $link;
     /* heures etudiants */
     $qetu = "SELECT (cm + td + tp + alt) * presents as etu
              FROM pain_cours WHERE id_cours = $id";
-    $retu = mysql_query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".mysql_error());
-    $letu = mysql_fetch_assoc($retu);    
+    $retu = $link->query($qetu) 
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+    $letu = $retu->fetch_assoc(); 
     $etu = $letu["etu"];
     if ($etu == "") {
 	$etu = 0;
     }
 
     $qannule = "SELECT SUM(htd) FROM pain_tranche WHERE pain_tranche.id_cours = $id AND pain_tranche.id_enseignant = 1";
-    $rannule = mysql_query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".mysql_error());
+    $rannule = $link->query($qannule) 
+	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error());
 
-    $annule = mysql_fetch_assoc($rannule);
+    $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
     if ($annule == "") {
 	$annule = 0;
     }
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_tranche WHERE pain_tranche.id_cours = $id";
-    $rcomp = mysql_query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".mysql_error());
+    $rcomp = $link->query($qcomp)
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
 
-    $comp = mysql_fetch_assoc($rcomp);
+    $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
     if ($cm == "") {
 	$cm = 0;
@@ -532,8 +547,8 @@ function htdcours($id) {
     }
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
-    $rperm = mysql_query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".mysql_error());
+    $rperm = $link->query($qperm) 
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
 
     $a = htd_cat2array($rperm);
 
@@ -549,7 +564,6 @@ function htdcours($id) {
 }
 
 function ig_htdbarre($r) {
-
     $servi = $r["servi"];
     $mutualise = $r["mutualise"];
     $libre = $r["libre"];
@@ -577,51 +591,57 @@ function enpostes($htd) {
 }
 
 function responsableducours($id) {
+    global $link;
     $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id;
-    $rresponsable = mysql_query($qresponsable)
-	or die("erreur d'acces a la table cours : $qresponsable erreur:".mysql_error());
-    $responsable = mysql_fetch_assoc($rresponsable);
-    return $responsable["id_enseignant"];    
+    $rresponsable = $link->query($qresponsable)
+	or die("erreur d'acces a la table cours : $qresponsable erreur:".$link->error());
+    $responsable = $rresponsable->fetch_assoc();
+    return $responsable["id_enseignant"];
 }
 
 function estintervenant($id_enseignant)
 {
+    global $link;
     $q = "SELECT 1 FROM pain_tranche WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = mysql_query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".mysql_error());
-    return mysql_num_rows($r);
+    $r = $link->query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    return $r->num_rows();
 }
 
 function estresponsablecours($id_enseignant)
 {
+    global $link;
     $q = "SELECT 1 FROM pain_cours WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = mysql_query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".mysql_error());
-    return mysql_num_rows($r);
+    $r = $link->query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    return $r->num_rows();
 }
 
 function estresponsableformation($id_enseignant)
 {
+    global $link;
     $q = "SELECT 1 FROM pain_formation WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = mysql_query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
-    return mysql_num_rows($r);
+    $r = $link->query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    return $r->num_rows();
 }
 
 function estresponsablesformation($id_enseignant)
 {
+    global $link;
     $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = mysql_query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".mysql_error());
-    return mysql_num_rows($r);
+    $r = $link->query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    return $r->num_rows();
 }
 
 function serviceestvide($id_enseignant, $an) {
-    $res =  listeinterventions($id_enseignant, $an);
-    if (mysql_fetch_array($res)) {
+    $res = listeinterventions($id_enseignant, $an);
+    if ($res->fetch_array()) {
 	return false;
     } else {
 	return true;
     }
 }
 
-function listeinterventions($id_enseignant, $an = NULL) {    
+function listeinterventions($id_enseignant, $an = NULL) {
+    global $link;
     global $annee;
     if ($an == NULL) {
 	if ($annee == NULL) {
@@ -654,7 +674,7 @@ AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
 ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
-    ($result = mysql_query($query)) or die("Échec de la connexion à la base");
+    ($result = $link->query($query)) or die("Échec de la connexion à la base");
     return $result;
 }
 
@@ -698,6 +718,7 @@ function ig_intervention($i) {
 }
 
 function totauxinterventions($id_enseignant) {
+    global $link;
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT 
@@ -716,8 +737,8 @@ AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $annee
 ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 
-    ($result = mysql_query($query)) or die("Échec de la connexion à la base enseignant");
-    $totaux = mysql_fetch_array($result);
+    ($result = $link->query($query)) or die("Échec de la connexion à la base enseignant");
+    $totaux = $result->fetch_array();
     return $totaux;
 }
 
@@ -738,6 +759,7 @@ function ig_totauxinterventions($totaux) {
 @param $id_ens si non NULL on ne recalcule que le service l'enseignant ayant cet id.
  */
 function update_servicesreels($id_ens = NULL) {
+    global $link;
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
@@ -756,8 +778,8 @@ function update_servicesreels($id_ens = NULL) {
     if (NULL != $id_ens) {
 	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
     }
-    mysql_query($qupdate)
-	or die("erreur update_servicesreels : $qupdate: ".mysql_error());
+    $link->query($qupdate)
+	or die("erreur update_servicesreels : $qupdate: ".$link->error());
 }
 
 /** Met à jour la table pain_service en recalculant les service_potentiel de l'année.
@@ -765,6 +787,7 @@ function update_servicesreels($id_ens = NULL) {
 @param $id_ens si non NULL on ne recalcule que le service l'enseignant ayant cet id.
  */
 function update_servicespotentiels($id_ens = NULL) {
+    global $link;
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
@@ -790,8 +813,8 @@ and tid.id_formation = pain_formation.id_formation
     if (NULL != $id_ens) {
 	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
     }
-    mysql_query($qupdate)
-	or die("erreur update_servicespotentiels : $qupdate: ".mysql_error());
+    $link->query($qupdate)
+	or die("erreur update_servicespotentiels : $qupdate: ".$link->error());
 }
 
 /** retourne la liste des enseignants appartennants à une catégorie.
@@ -799,6 +822,7 @@ and tid.id_formation = pain_formation.id_formation
 @param $categorie l'identifiant d'une la catégorie.
  */
 function liste_enseignantscategorie($categorie) {
+    global $link;
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $q = "SELECT pain_enseignant.id_enseignant AS id_enseignant,
@@ -813,12 +837,13 @@ function liste_enseignantscategorie($categorie) {
             AND pain_service.id_enseignant = pain_enseignant.id_enseignant
             AND pain_service.annee_universitaire = $annee
           ORDER by nom,prenom ASC";
-    ($r = mysql_query($q)) or die("Échec de la connexion à la base enseignant");
+    ($r = $link->query($q)) or die("erreur liste_enseignantscategorie : $q: ".$link->error());
     return $r;
 }
 
 
 function historique_par_cmp($type, $before, $after) {
+    global $link;
     global $user;
     $id = 0;
     $id_formation = 0;
@@ -866,11 +891,12 @@ function historique_par_cmp($type, $before, $after) {
           (type, id, id_formation, id_cours, message, timestamp) 
           VALUES ('".$type."', '".$id."', '".$id_formation."',
                   '".$id_cours."', '".$s."', '".$timestamp."')";
-    mysql_query($q) or die("$q ".mysql_error());
+    $link->query($q) or die("$q ".$link->error());
     pain_log($q);
 }
 
 function historique_par_ajout($type, $new) {
+    global $link;
     global $user;
     $id = 0;
     $id_formation = 0;
@@ -900,11 +926,12 @@ function historique_par_ajout($type, $new) {
           (type, id, id_formation, id_cours, message, modification) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', 
                   '".$id_cours."', '".$s."', NOW())";
-    mysql_query($q) or die("$q ".mysql_error());
+    $link->query($q) or die("$q ".$link->error());
     pain_log($q);
 }
 
 function historique_de_formation($id, $offset, $timestamp = NULL) {
+    global $link;
     $q = "SELECT * from pain_hist 
           WHERE id_formation = $id
           AND (type = 1 OR type = 2 OR type = 3)";
@@ -912,8 +939,8 @@ function historique_de_formation($id, $offset, $timestamp = NULL) {
 	$q .= " AND timestamp <= \"$timestamp\" ";
     }
     $q .= "ORDER BY timestamp DESC LIMIT ".($offset + 1).", 20";
-    $r = mysql_query($q) 
-	or die("historique_de_formation($id), $q ".mysql_error());
+    $r = $link->query($q) 
+	or die("historique_de_formation($id), $q ".$link->error());
     return $r;
 }
 

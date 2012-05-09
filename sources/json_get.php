@@ -33,7 +33,8 @@ retourne des entrées de type $readtype, prises dans la base, sélectionnées pa
 Les entrées sont éventuellement calculées par jointures et aggrégats. La sélection dépend soit de l'identifiant de l'entrée fourni par le contexte d'une requête HTTP/GET, ou bien d'un identifiant de groupe d'entrées ou bien de l'année courante. 
  */
 function json_get_php($annee, $readtype) {
-   if ($readtype == "sformation") {
+    global $link;
+    if ($readtype == "sformation") {
 	$type = "sformation";
 	$par = "annee_universitaire";
 	$order = "ORDER BY numero ASC";
@@ -377,10 +378,10 @@ and pain_sformation.annee_universitaire = ".$annee."
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant
              $order";
        }
-       $resultat = mysql_query($requete) 
-	   or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
+       $resultat = $link->query($requete) 
+	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error());
        $arr = array();
-       while ($element = mysql_fetch_object($resultat)) {
+       while ($element = $resultat->fetch_object()) {
 	   $arr[] = $element;
        }
        return $arr;
@@ -396,10 +397,10 @@ and pain_sformation.annee_universitaire = ".$annee."
              WHERE `id_$type` = $id
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant";
        }
-       $resultat = mysql_query($requete) 
-	   or die("Échec de la requête sur la table $type".$requete."\n".mysql_error());
+       $resultat = $link->query($requete) 
+	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error());
        $arr = array();
-       while ($element = mysql_fetch_object($resultat)) {
+       while ($element = $resultat->fetch_object()) {
 	   $arr[] = $element;
        }
        return $arr;

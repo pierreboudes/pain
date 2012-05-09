@@ -29,24 +29,26 @@ function microsecoffset() {
 microsecoffset(); /* armee */
 
 function postclean($s) {
+    global $link;
     if (isset($_POST[$s])) {
 	if(get_magic_quotes_gpc()) {
-	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string(stripslashes(($_POST[$s]))), ENT_QUOTES));
 	}
 	else {
-	    return trim(htmlspecialchars(mysql_real_escape_string($_POST[$s]), ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string($_POST[$s]), ENT_QUOTES));
 	}
     }
     else return NULL;
 }
 
 function getclean($s) {
+    global $link;
     if (isset($_GET[$s])) {
 	if(get_magic_quotes_gpc()) {
-	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_GET[$s]))), ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string(stripslashes(($_GET[$s]))), ENT_QUOTES));
 	}
 	else {
-	    return trim(htmlspecialchars(mysql_real_escape_string($_GET[$s]), ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string($_GET[$s]), ENT_QUOTES));
 	}
     }
     else return NULL;
@@ -55,10 +57,10 @@ function getclean($s) {
 function cookieclean($s) {
     if (isset($_COOKIE[$s])) {
 	if(get_magic_quotes_gpc()) {
-	    return trim(htmlspecialchars(mysql_real_escape_string(stripslashes(($_COOKIE[$s]))), ENT_QUOTES));
+	    return trim(htmlspecialchars(stripslashes(($_COOKIE[$s])), ENT_QUOTES));
 	}
 	else {
-	    return trim(htmlspecialchars(mysql_real_escape_string($_COOKIE[$s]), ENT_QUOTES));
+	    return trim(htmlspecialchars($_COOKIE[$s], ENT_QUOTES));
 	}
     }
     else return NULL;
@@ -114,8 +116,9 @@ function pain_log($message, $logname='pain') {
 }
 
 function ig_statsmysql() {
+    global $link;
     echo '<div><pre>';
-    $status = implode("\n",explode('  ', mysql_stat()));
+    $status = implode("\n",explode('  ', $link->stat()));
     echo "MYSQL\n";
     echo $status;
     $us = round(microsecoffset() * 1000);

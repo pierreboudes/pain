@@ -22,11 +22,12 @@
 require_once('inc_connect.php');
 function ig_formselectannee($annee)
 {
+    global $link;
     $qans = "SELECT DISTINCT `annee_universitaire` 
              FROM pain_sformation WHERE 1 ORDER BY `annee_universitaire` ASC";
-    $rans = mysql_query($qans) 
+    $rans = $link->query($qans) 
 	  or die("Échec de la requête sur la table sformation");
-    while ($an = mysql_fetch_array($rans)) {
+    while ($an =$rans->fetch_array()) {
 	echo '<option ';
 	if ($an["annee_universitaire"] == $annee) {
 	    echo 'selected="selected" ';

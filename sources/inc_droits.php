@@ -60,17 +60,19 @@ function peutediter($type, $id, $id_parent) {
 
 function peutchoisir() {
     global $user;
+    global $link;
     $query = "SELECT id_enseignant 
               FROM pain_enseignant 
               WHERE id_enseignant = ".$user["id_enseignant"]." LIMIT 1";
-    $result = mysql_query($query) or die("ERREUR peutchoisir(): $query ".mysql_error());
-    if (mysql_fetch_array($result)) {
+    $result = $link->query($query) or die("ERREUR peutchoisir(): $query ".$link->error());
+    if ($result->fetch_array()) {
 	return true;
     }
     return false;
 }
 
 function selectenseignantschoix($id_choix) {
+    global $link;
     $query = "SELECT pain_choix.id_enseignant AS enseignant, 
                      pain_cours.id_enseignant AS respcours, 
                      pain_formation.id_enseignant AS respannee,
@@ -81,8 +83,8 @@ function selectenseignantschoix($id_choix) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR selectenseignantschoix($id_choix): ".mysql_error());
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR selectenseignantschoix($id_choix): ".$link->error());
+    $r = $res->fetch_array();
     return $r;
 }
 
@@ -90,10 +92,10 @@ function peutediterchoix($id_choix) {
     global $user;
     if ($user["su"]) return true;
     $r = selectenseignantschoix($id_choix);
-    /* l'intervenant ne peut pas editer sa propre intervention :
+    /* l'intervenant peut editer sa propre intervention :
     if ($user["id_enseignant"] == $r["enseignant"]) return true;
     */
-    /* le responsable du cours ne peut pas editer :
+    /* le responsable du cours peut editer :
     if ($user["id_enseignant"] == $r["respcours"]) return true;
     */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
@@ -131,6 +133,7 @@ function peutvoirstatsservices() {
 
 
 function peuteditercours($id_cours) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT pain_cours.id_enseignant AS respcours, 
@@ -141,8 +144,8 @@ function peuteditercours($id_cours) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peuteditercours($id_cours)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peuteditercours($id_cours)");
+    $r = $res->fetch_array();
 /* le responsable du cours ne peut plus !    
     if ($user["id_enseignant"] == $r["respcours"]) return true; */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
@@ -152,6 +155,7 @@ function peuteditercours($id_cours) {
 
 
 function peutmajcours($id_cours) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT pain_cours.id_enseignant AS respcours, 
@@ -162,8 +166,8 @@ function peutmajcours($id_cours) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutmajcours($id_cours)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peutmajcours($id_cours)");
+    $r = $res->fetch_array();
     if ($user["id_enseignant"] == $r["respcours"]) return true; 
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
@@ -172,6 +176,7 @@ function peutmajcours($id_cours) {
 
 
 function peutediterformationducours($id_cours) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT pain_formation.id_enseignant AS respannee,
@@ -181,8 +186,8 @@ function peutediterformationducours($id_cours) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutediterformationducours($idcours)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peutediterformationducours($idcours)");
+    $r = $res->fetch_array();
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
@@ -193,6 +198,7 @@ function peuteditercoursdelaformation($id_formation) {
 }
 
 function peuteditertranche($id_tranche) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT pain_tranche.id_enseignant AS enseignant, 
@@ -205,8 +211,8 @@ function peuteditertranche($id_tranche) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peuteditertranche($id_tranche)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peuteditertranche($id_tranche)");
+    $r = $res->fetch_array();
     /*  if ($user["id_enseignant"] == $r["enseignant"]) return false;
      if ($user["id_enseignant"] == $r["respcours"]) return false; */
     if ($user["id_enseignant"] == $r["respannee"]) return true;
@@ -228,6 +234,7 @@ function peuteditersformationdelannee($annee) {
 
 
 function peutediterformation($id_formation) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT pain_formation.id_enseignant AS respannee,
@@ -236,21 +243,22 @@ function peutediterformation($id_formation) {
               WHERE pain_formation.id_formation = $id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutediterformation($id_formation)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peutediterformation($id_formation)");
+    $r = $res->fetch_array();
     if ($user["id_enseignant"] == $r["respannee"]) return true;
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
 }
 
 function peutediterformationdelasformation($id_sformation) {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $query = "SELECT  pain_sformation.id_enseignant AS respformation
               FROM pain_sformation
               WHERE pain_sformation.id_sformation = $id_sformation";
-    $res = mysql_query($query) or die("ERREUR peutediterformationdelasformation($id_sformation)");
-    $r = mysql_fetch_array($res);
+    $res = $link->query($query) or die("ERREUR peutediterformationdelasformation($id_sformation)");
+    $r = $res->fetch_array();
     if ($user["id_enseignant"] == $r["respformation"]) return true;
     return false;
 }
@@ -277,6 +285,7 @@ function peutediterservicedeenseignant($id_enseignant) {
 }
 
 function peutproposerenseignant() {
+    global $link;
     global $user;
     if ($user["su"]) return true;
     $id = $user["id_enseignant"];
@@ -288,7 +297,7 @@ function peutproposerenseignant() {
           (SELECT COUNT(id_sformation) FROM pain_sformation
                  WHERE id_enseignant = $id)) AS resp";
     $res = mysql_result($q) or ("ERREUR peutproposerenseignant()");
-    $r = mysql_fetch_array($res);
+    $r = $res->fetch_array();
     return 0 < $r["resp"];
 }
 

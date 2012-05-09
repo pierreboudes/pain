@@ -30,6 +30,7 @@ require_once("inc_functions.php");
     et renvoie son id.
  */
 function json_new_php($annee) {
+    global $link;
     global $user;
 $champs = array(
    "sformation" => array(
@@ -171,10 +172,10 @@ if (isset($_GET["id_parent"])) {
     if ( ("formation" == $type) || ("sformation" == $type)) {
 	$sq = "SELECT MAX(numero) + 1 as num 
                FROM pain_$type WHERE $par = $id_parent";
-	if (!($sr = mysql_query($sq))) {
-	    errmsg("erreur avec la requete :\n".$sq."\n".mysql_error());
+	if (!($sr = $link->query($sq))) {
+	    errmsg("erreur avec la requete :\n".$sq."\n".$link->error());
 	}
-        $sl = mysql_fetch_assoc($sr);
+        $sl = $sr->fetch_assoc();
 	$set["numero"] = $sl["num"];
     }
 
@@ -209,15 +210,15 @@ if (isset($_GET["id_parent"])) {
     }
     /* requete */
 
-    if (!mysql_query($query)) {
-	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+    if (!$link->query($query)) {
+	errmsg("erreur avec la requete :\n".$query."\n".$link->error());
     }
 
     if (($type == "tagscours") || ($type == "collectionscours")) {
 	return NULL;
     }
 
-    $id = mysql_insert_id();
+    $id = $link->insert_id();
     if ($type == "service") {
 	$id = $id_parent.'X'.$an;
     }
@@ -244,8 +245,8 @@ if (isset($_GET["id_parent"])) {
 	    "  0 ".
 	    "FROM pain_enseignant ".
 	    "WHERE pain_enseignant.id_enseignant < 10";
-	if (!mysql_query($query)) {
-	    errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+	if (!$link->query($query)) {
+	    errmsg("erreur avec la requete :\n".$query."\n".$link->error());
 	} 
     }
 

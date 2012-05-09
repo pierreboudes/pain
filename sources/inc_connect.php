@@ -21,14 +21,13 @@
  */
 
 /* inclusion du fichier realisant la connexion avec les donnees sensibles en dur : */
-require_once("../pconnect.php"); 
+require_once("iconnect.php"); 
 /* ce fichier contient quelque chose comme :
 <?php
-@mysql_pconnect("localhost", "utilisateur", "mot de passe") or die("Échec de la connexion au serveur de la base de données.");
-@mysql_selectdb("pain") or die("Échec de sélection de la base de données.");
+$link = new mysqli("localhost", "utilisateur", "mot de passe", "base");
 ?>
 */
-mysql_query("SET NAMES 'utf8'");
+$link->query("SET NAMES 'utf8'");
 
 require_once('utils.php');
 

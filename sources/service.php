@@ -29,6 +29,7 @@ require_once("inc_functions.php");
 require_once("inc_statsfunc.php");
 
 function service_php($id) {
+    global $link;
 /* par defaut on sert la feuille de l'utilisateur */
     $id_enseignant = $id; 
 /* mais si on a un identifiant dans l'url on utilise plutot celui-ci */
@@ -61,9 +62,9 @@ function service_php($id) {
 	ig_legendeenseignant();
 	$q = "SELECT * from pain_enseignant 
           WHERE id_enseignant = $id_enseignant";
-	($r = mysql_query($q)) 
+	($r = $link->query($q)) 
 	    or die("Échec de la connexion à la base enseignant");
-	if ($ens = mysql_fetch_array($r)) {
+	if ($ens = $r->fetch_array()) {
 	    ig_enseignant($ens);
 	}
 	echo '</table>';
@@ -77,7 +78,7 @@ function service_php($id) {
 	echo '<tr>';
 	ig_legendeintervention();
 	echo '</tr>';
-	while ($service = mysql_fetch_array($services)) {
+	while ($service = $services->fetch_array()) {
 	    echo '<tr class="intervention">';
 	    ig_intervention($service);
 	    echo '</tr>';

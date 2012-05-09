@@ -34,7 +34,8 @@ require_once("inc_droits.php");
 /** supprimer une sformation et sa descendance, en informant les logs.
  */
 function supprimer_sformation($id)
-{    
+{
+    global $link;
     if (!peutsupprimersformation($id)) {
 	errmsg("droits insuffisants.");
     }
@@ -45,8 +46,8 @@ function supprimer_sformation($id)
           WHERE pain_formation.id_sformation = $id
           AND  pain_cours.id_formation = pain_formation.id_formation
           AND  pain_choix.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
@@ -54,8 +55,8 @@ function supprimer_sformation($id)
           WHERE pain_formation.id_sformation = $id
           AND  pain_cours.id_formation = pain_formation.id_formation
           AND  pain_tranche.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
     
@@ -63,8 +64,8 @@ function supprimer_sformation($id)
           WHERE pain_formation.id_sformation = $id 
           AND pain_cours.id_formation = pain_formation.id_formation
           AND pain_collectionscours.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
@@ -72,45 +73,45 @@ function supprimer_sformation($id)
           WHERE pain_formation.id_sformation = $id 
           AND pain_cours.id_formation = pain_formation.id_formation
           AND pain_tagscours.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     $q = "DELETE pain_cours FROM pain_cours, pain_formation 
           WHERE pain_formation.id_sformation = $id
           AND  pain_cours.id_formation = pain_formation.id_formation";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     $q = "DELETE pain_formation FROM pain_formation 
           WHERE pain_formation.id_sformation = $id";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     /* collections */
     $q = "DELETE pain_collectionscours FROM pain_collection, pain_collectionscours 
           WHERE pain_collection.id_sformation = $id AND pain_collectionscours.id_collection = pain_collection.id_collection";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     $q = "DELETE pain_collection FROM pain_collection 
           WHERE pain_collection.id_sformation = $id";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     /* sformation */
     $q = "DELETE FROM pain_sformation WHERE `id_sformation` = $id LIMIT 1";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
@@ -120,7 +121,8 @@ function supprimer_sformation($id)
 /** supprimer une formation et sa descendance, en informant les logs.
  */
 function supprimer_formation($id)
-{    
+{
+    global $link;
     if (!peutsupprimerformation($id)) {
 	errmsg("droits insuffisants.");
     }
@@ -130,30 +132,30 @@ function supprimer_formation($id)
     $q = "DELETE pain_choix FROM pain_choix, pain_cours 
           WHERE pain_cours.id_formation = $id
           AND  pain_choix.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     $q = "DELETE pain_tranche FROM pain_tranche, pain_cours 
           WHERE pain_cours.id_formation = $id
           AND  pain_tranche.id_cours = pain_cours.id_cours";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     $q = "DELETE pain_cours FROM pain_cours 
           WHERE pain_cours.id_formation = $id ";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
     /* formation */
     $q = "DELETE FROM pain_formation WHERE `id_formation` = $id LIMIT 1";
-    if (!mysql_query($q)) {
-	errmsg("échec de la requête $q : ".mysql_error());
+    if (!$link->query($q)) {
+	errmsg("échec de la requête $q : ".$link->error());
     }
     pain_log($q);
 
@@ -164,21 +166,22 @@ function supprimer_formation($id)
 /** supprimer un cours et sa descendance, en informant les logs.
  */
 function supprimer_cours($id)
-{    
+{
+    global $link;
     if (peuteditercours($id)) {
 	$cours = selectionner_cours($id);
 
 	$qcours = "DELETE FROM pain_cours WHERE `id_cours` = $id LIMIT 1";
 	pain_log("-- supprimer_cours($id)");
 
-        if (mysql_query($qcours)) {
+        if ($link->query($qcours)) {
 	    /* on efface les tranches associées */
 	    pain_log("$qcours");
 	    historique_par_suppression(1, $cours);
 
 	    $qtranches = "DELETE FROM pain_tranche WHERE `id_cours` = $id";
 	    
-	    if (mysql_query($qtranches)) {
+	    if ($link->query($qtranches)) {
 		echo '{"ok": "ok"}';
 		pain_log("$qtranches");
 	    } else {
@@ -195,18 +198,19 @@ function supprimer_cours($id)
 /** supprimer un tag et ses associations à des cours, en informant les logs.
  */
 function supprimer_tag($id)
-{    
+{
+    global $link;
     if (peuteditertag($id)) {
 	$qtag = "DELETE FROM pain_tag WHERE `id_tag` = $id LIMIT 1";
 	pain_log("-- supprimer_tag($id)");
 
-        if (mysql_query($qtag)) {
+        if ($link->query($qtag)) {
 	    /* on efface les associations a des cours */
 	    pain_log("$qtag");
 
 	    $q = "DELETE FROM pain_tagscours WHERE `id_tag` = $id";
 	    
-	    if (mysql_query($q)) {
+	    if ($link->query($q)) {
 		echo '{"ok": "ok"}';
 		pain_log("$q");
 	    } else {
@@ -223,16 +227,17 @@ function supprimer_tag($id)
 /** supprimer une association entre un tag et un cours, en informant les logs.
  */
 function supprimer_tagcours($id, $id_par)
-{    
+{
+    global $link;
     if (peuteditercours($id_par)) {
 	$qtag = "DELETE FROM pain_tagscours WHERE `id_tag` = $id AND `id_cours` = $id_par LIMIT 1";
 	pain_log("-- supprimer_tagcours($id, $id_par)");
 
-        if (mysql_query($qtag)) {
+        if ($link->query($qtag)) {
 		echo '{"ok": "ok"}';
 		pain_log("$qtag");
 	} else {
-	    errmsg("échec de la requête sur la table tagscours. $qtag".mysql_error());
+	    errmsg("échec de la requête sur la table tagscours. $qtag".$link->error());
 	}
     } else {
 	errmsg("droits insuffisants.");
@@ -242,18 +247,19 @@ function supprimer_tagcours($id, $id_par)
 /** supprimer une collection et ses associations à des cours, en informant les logs.
  */
 function supprimer_collection($id)
-{    
+{
+    global $link;
     if (peuteditercollection($id)) {
 	$qcollection = "DELETE FROM pain_collection WHERE `id_collection` = $id LIMIT 1";
 	pain_log("-- supprimer_collection($id)");
 
-        if (mysql_query($qcollection)) {
+        if ($link->query($qcollection)) {
 	    /* on efface les associations a des cours */
 	    pain_log("$qcollection");
 
 	    $q = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id";
 	    
-	    if (mysql_query($q)) {
+	    if ($link->query($q)) {
 		echo '{"ok": "ok"}';
 		pain_log("$q");
 	    } else {
@@ -270,16 +276,17 @@ function supprimer_collection($id)
 /** supprimer une association entre une collection et un cours, en informant les logs.
  */
 function supprimer_collectioncours($id, $id_par)
-{    
+{
+    global $link; 
     if (peuteditercours($id_par)) {
 	$qcollection = "DELETE FROM pain_collectionscours WHERE `id_collection` = $id AND `id_cours` = $id_par LIMIT 1";
 	pain_log("-- supprimer_collectioncours($id, $id_par)");
 
-        if (mysql_query($qcollection)) {
+        if ($link->query($qcollection)) {
 		echo '{"ok": "ok"}';
 		pain_log("$qcollection");
 	} else {
-	    errmsg("échec de la requête sur la table collectionscours. $qcollection".mysql_error());
+	    errmsg("échec de la requête sur la table collectionscours. $qcollection".$link->error());
 	}
     } else {
 	errmsg("droits insuffisants.");
@@ -289,14 +296,15 @@ function supprimer_collectioncours($id, $id_par)
 
 /** supprimer une tranche, en informant les logs.
  */
-function supprimer_tranche($id)
+function supprimer_tranche($id) 
 {
+    global $link;
     if (peuteditertranche($id)) {
 	$tranche = selectionner_tranche($id);
 	$qtranche = "DELETE FROM pain_tranche WHERE `id_tranche` = $id
                  LIMIT 1";
 	
-	if (mysql_query($qtranche)) {
+	if ($link->query($qtranche)) {
 	    historique_par_suppression(2, $tranche);
 	    pain_log("$qtranche -- supprimer_tranche($id)");
 	    echo '{"ok": "ok"}';
@@ -312,6 +320,7 @@ function supprimer_tranche($id)
 /** supprimer un enseignant, en informant les logs.
  */
 function supprimer_enseignant($id) {
+    global $link;
     if (peutsupprimerenseignant($id)) {
 	if (estintervenant($id) 
 	    || estresponsablecours($id)
@@ -324,14 +333,14 @@ function supprimer_enseignant($id) {
 	$ens = selectionner_enseignant($id);
 	$qens = "DELETE FROM pain_enseignant WHERE `id_enseignant` = $id LIMIT 1";
 	
-	if (mysql_query($qens)) {
+	if ($link->query($qens)) {
 	    historique_par_suppression(4, $ens);
 	    pain_log("$qens -- supprimer_ens($id)");
 	    $q = "DELETE FROM pain_service WHERE `id_enseignant` = $id";
-	    mysql_query($q) or ($q .= " -- ".mysql_error());
+	    $link->query($q) or ($q .= " -- ".$link->error());
 	    pain_log("$q");
 	    $q = "DELETE FROM pain_choix WHERE `id_enseignant` = $id";
-	    mysql_query($q) or ($q .= " -- ".mysql_error());
+	    $link->query($q) or ($q .= " -- ".$link->error());
 	    pain_log("$q");
 	    echo '{"ok": "ok"}';
 	} else {
@@ -345,12 +354,13 @@ function supprimer_enseignant($id) {
 /** supprimer un choix, en informant les logs.
  */
 function supprimer_choix($id) {
+    global $link;
     if (peutsupprimerchoix($id)) {
 	$choix = selectionner_choix($id);
 	$qchoix = "DELETE FROM pain_choix WHERE `id_choix` = $id
                  LIMIT 1";
 	
-	if (mysql_query($qchoix)) {
+	if ($link->query($qchoix)) {
 	    historique_par_suppression(3, $choix);
 	    pain_log("$qchoix -- supprimer_choix($id)");
 	    echo '{"ok": "ok"}';
@@ -365,11 +375,12 @@ function supprimer_choix($id) {
 /** supprimer un service d'un enseignant dans une année, en informant les logs.
  */
 function supprimer_service($id_enseignant, $an) {
+    global $link;
     if (peutsupprimerservice($id_enseignant, $an)) { 
 	if (serviceestvide($id_enseignant, $an)) {	    
 	    $qservice = "DELETE FROM pain_service WHERE `id_enseignant` = $id_enseignant AND `annee_universitaire` = $an LIMIT 1";
 	
-	    if (mysql_query($qservice)) {
+	    if ($link->query($qservice)) {
 		pain_log("$qservice -- supprimer_service($id_enseignant, $an)");
 		echo '{"ok": "ok"}';
 	    } else {
@@ -386,6 +397,7 @@ function supprimer_service($id_enseignant, $an) {
 /** informer l'historique (table pain_hist) de la suppression d'un élément.
  */
 function historique_par_suppression($type, $old) {
+    global $link;
     global $user;
     $id = 0;
     $id_formation = 0;
@@ -414,7 +426,7 @@ function historique_par_suppression($type, $old) {
     $q = "INSERT INTO pain_hist (type, id, id_formation, id_cours, message) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', '".$id_cours."',
                   '".$s."')";
-    mysql_query($q) or die("$q ".mysql_error());
+    $link->query($q) or die("$q ".$link->error());
     pain_log($q);
 }
 ?>

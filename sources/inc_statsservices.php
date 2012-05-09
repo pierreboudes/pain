@@ -28,7 +28,7 @@ function ig_depassementparcategorie($categorie) {
     $r = liste_enseignantscategorie($categorie);
     $negtot = $postot = $pottot = 0;
     echo '<div style="margin-top: 10px;">';
-    while ($e = mysql_fetch_assoc($r)) {
+    while ($e = $r->fetch_assoc()) {
 	echo "<div style='border-right: 1px black solid; border-bottom: 1px black dotted; border-top: 0px; border-left: 0px; width: 400px; height: 18px; padding-top:2px; clear: both;'>";
 	echo '<a href="service.php?id_enseignant='.$e["id_enseignant"].'">';
 	echo $e["prenom"]." ".$e["nom"];

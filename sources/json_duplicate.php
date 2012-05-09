@@ -30,6 +30,7 @@ duplique l'entrée $id de type $type en incrémentant le champs (numéro de) gro
 et retourne l'id de la nouvelle entrée.
 */
 function json_duplicate_php($type, $id) {
+    global $link;
     $champs = array(
 	"tranche"=> array(
 	    "id_cours","id_enseignant", "groupe", "cm", "td", "tp",
@@ -52,11 +53,11 @@ function json_duplicate_php($type, $id) {
     
     /* requete */
 
-    if (!mysql_query($query)) {
-	errmsg("erreur avec la requete :\n".$query."\n".mysql_error());
+    if (!$link->query($query)) {
+	errmsg("erreur avec la requete :\n".$query."\n".$link->error());
     }
     
-    return mysql_insert_id();
+    return $link->insert_id();
 }
 
 if (isset($_GET["type"])) {

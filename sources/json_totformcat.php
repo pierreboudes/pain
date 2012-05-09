@@ -28,10 +28,10 @@ require_once("inc_functions.php");
 if (isset($_GET["annee"])) {
     $annee = getclean("annee");
     $query = "SELECT id_sformation, nom, id_prev FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
-    $res = mysql_query($query) or die("BD Impossible d'effectuer la requête: $query");
+    $res = link->query($query) or die("BD Impossible d'effectuer la requête: $query");
 
     $arr = array();
-    while ($formation = mysql_fetch_assoc($res)) {
+    while ($formation = $res->fetch_assoc()) {
 	$form = array();
 	$sfid = $formation['id_sformation'];
 	$form['id_prev'] = $formation['id_prev'];

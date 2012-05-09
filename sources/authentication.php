@@ -55,19 +55,20 @@ function annee_courante() {
 }
 
 function pain_getuser() {
+    global $link;
     $login = phpCAS::getUser();
     
     $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
                  FROM pain_enseignant 
                  WHERE login LIKE '$login' LIMIT 1";
-    $result = mysql_query($query);
-    if ($user = mysql_fetch_array($result)) {
+    $result = $link->query($query);
+    if ($user = $result->fetch_array()) {
 	if ( (1 == $user["su"]) && isset($_COOKIE['painFakeId']) ){
 	    $query = "SELECT id_enseignant 
                           FROM pain_enseignant 
                           WHERE id_enseignant = ".$user["id"]." LIMIT 1";
-	    $result = mysql_query($query);
-	    if (mysql_fetch_array($result)) {
+	    $result =$link->query($query);
+	    if ($result->fetch_array()) {
 		$user["id"] = cookieclean('painFakeId');
 	    }
 	}

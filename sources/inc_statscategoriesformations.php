@@ -26,10 +26,10 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 $query = "SELECT id_sformation, nom FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
-$res = mysql_query($query) or die("BD Impossible d'effectuer la requête: $query");
-$formation = mysql_fetch_assoc($res);
+$res = $link->query($query) or die("BD Impossible d'effectuer la requête: $query");
+$formation = $res->fetch_assoc();
 
-/* TODO : mettre les catégorie et leurs légendes (longue, courte, détaillée) dans une table. passer la catégorie 29 à 5. */
+/* \TODO : mettre les catégorie et leurs légendes (longue, courte, détaillée) dans une table. passer la catégorie 29 à 5. DANGER "categories" en dur */
 
 $tab = array(
     array("Catégorie"),
@@ -44,10 +44,10 @@ $tab = array(
     array("Aidés")
     );
 
-mysql_data_seek($res,0);
+$res->data_seek(0);
 $i = 1;
 
-while ($formation = mysql_fetch_assoc($res)) {
+while ($formation = $res->fetch_assoc()) {
     $tab[0][$i] = $formation["nom"]; /* nom de la super formation */
     $sfid = $formation["id_sformation"];
 

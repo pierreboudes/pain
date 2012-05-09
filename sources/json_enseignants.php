@@ -28,7 +28,7 @@ require_once("inc_functions.php");
 function json_enseignants_php($annee) {
     $rens = lister_enseignantsannee($annee);
     $arr = array();
-    while ($ens = mysql_fetch_object($rens)) {
+    while ($ens = $rens->fetch_object()) {
 	$arr[] = $ens;
     }
     print json_encode($arr);

@@ -30,7 +30,7 @@ require_once("inc_functions.php");
 function json_categories_php() {
     $rens = lister_categories();
     $arr = array();
-    while ($ens = mysql_fetch_object($rens)) {
+    while ($ens = $rens->fetch_object()) {
 	$arr[] = $ens;
     }
     return $arr;
