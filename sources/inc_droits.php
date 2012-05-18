@@ -64,7 +64,7 @@ function peutchoisir() {
     $query = "SELECT id_enseignant 
               FROM pain_enseignant 
               WHERE id_enseignant = ".$user["id_enseignant"]." LIMIT 1";
-    $result = $link->query($query) or die("ERREUR peutchoisir(): $query ".$link->error());
+    $result = $link->query($query) or die("ERREUR peutchoisir(): $query ".$link->error);
     if ($result->fetch_array()) {
 	return true;
     }
@@ -83,7 +83,7 @@ function selectenseignantschoix($id_choix) {
               AND pain_formation.id_formation = pain_cours.id_formation
               AND pain_sformation.id_sformation = 
                   pain_formation.id_sformation";
-    $res = $link->query($query) or die("ERREUR selectenseignantschoix($id_choix): ".$link->error());
+    $res = $link->query($query) or die("ERREUR selectenseignantschoix($id_choix): ".$link->error);
     $r = $res->fetch_array();
     return $r;
 }
@@ -312,5 +312,11 @@ function peuteditertag($id_tag) {
 
 function peuteditercollection($id_collection) {
     return peuttoutfaire();
+}
+
+
+function peuttransmettredeclarations($ids) {
+    global $user;
+    return ($user["su"] == 1);
 }
 ?>

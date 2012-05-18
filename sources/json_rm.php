@@ -46,12 +46,12 @@ function json_rm_php($id, $readtype) {
     } else if ($readtype == "tag") {
 	supprimer_tag($id);
     } else if ($readtype == "tagcours") {
-	$id_par = getclean("id_parent");
+	$id_par = getnumeric("id_parent");
 	supprimer_tagcours($id, $id_par);
     } else if ($readtype == "collection") {
 	supprimer_collection($id);
     } else if ($readtype == "collectioncours") {
-	$id_par = getclean("id_parent");
+	$id_par = getnumeric("id_parent");
 	supprimer_collectioncours($id, $id_par);
     } else {
 	errmsg("erreur de script (type inconnu)");
@@ -59,7 +59,7 @@ function json_rm_php($id, $readtype) {
 }
 
 if (isset($_GET["id"])) {
-    $id = getclean("id");
+    $id = getnumeric("id");
 } else {
     errmsg("erreur de script (id non renseigné)");
 }

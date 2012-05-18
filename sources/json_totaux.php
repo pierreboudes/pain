@@ -27,7 +27,7 @@ require_once("utils.php");
 require_once("inc_functions.php");
 
 if (isset($_GET["id"]) && isset($_GET["type"])) {
-    $r = json_totaux_php(getclean("type"),  getclean("id"));
+    $r = json_totaux_php(getclean("type"),  getnumeric("id"));
     print json_encode($r);
 } else {
     errmsg("Donner un type et un id");

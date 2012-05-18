@@ -37,7 +37,7 @@ function ig_formselectformation($id_formation, $annee = NULL)
           AND pain_sformation.annee_universitaire = $annee
           ORDER BY pain_formation.numero ASC";
     $r = $link->query($q) 
-	or die("</select></form>Échec de la requête sur la table formation: ".$link->error());
+	or die("</select></form>Échec de la requête sur la table formation: ".$link->error);
     while ($form = $r->fetch_array()) {
 	echo '<option ';
 	if ($form["id_formation"] == $id_formation) {
@@ -94,7 +94,7 @@ function ig_intervenants_du_cours($cours) {
           GROUP BY pain_enseignant.id_enseignant
           ORDER BY groupe ASC, nom ASC";
     ($r = $link->query($q)) 
-        or die("Échec de la connexion à la base $q<br>".$link->error());
+        or die("Échec de la connexion à la base $q<br>".$link->error);
     while ($e = $r->fetch_array()) {
 	if (strcmp($e["groupes"], "0") != 0) {
 	    $groupes = str_replace("0, G", "", $e["groupes"]);
@@ -222,7 +222,7 @@ function annuaire_php($id_formation, $semestre = 0) {
     $q .=" AND pain_enseignant.id_enseignant = pain_cours.id_enseignant ";
     $q .=" ORDER BY semestre ASC, nom_cours ASC";
     ($r = $link->query($q)) 
-	or die("Échec de la connexion à la base $q<br>".$link->error());
+	or die("Échec de la connexion à la base $q<br>".$link->error);
     while ($cours = $r->fetch_array()) {
 	ig_entete_du_cours($cours);
 	ig_responsable_du_cours($cours);

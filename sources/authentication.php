@@ -41,7 +41,7 @@ function default_year() {
 function annee_courante() {
 /* On a reçu une annee dans l'URL */
     if (isset($_GET['annee'])) {
-	$annee = getclean('annee');
+	$annee = getnumeric("annee");
     }
 /* Mise a jour de l'annee par le formulaire du menu */
     else if (isset($_POST['annee'])) {
@@ -57,7 +57,6 @@ function annee_courante() {
 function pain_getuser() {
     global $link;
     $login = phpCAS::getUser();
-    
     $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
                  FROM pain_enseignant 
                  WHERE login LIKE '$login' LIMIT 1";
@@ -78,7 +77,7 @@ function pain_getuser() {
     }
 }
 
-function authentication() {    
+function authentication() {
     phpCAS::forceAuthentication();
     $user = pain_getuser();
     if (NULL == $user) {

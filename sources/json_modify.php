@@ -143,7 +143,7 @@ function json_modify_php($annee, $readtype, $id) {
 	$q = "SELECT annee_universitaire FROM pain_sformation WHERE id_sformation = ".$set["id_sformation"];
 	$r = $link->query($q);
 	if (!$r) {
-	    errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	    errmsg("erreur avec la requete :\n".$q."\n".$link->error);
 	}
 	$rr = $r->fetch_assoc();
 	$set["annee_universitaire"] = $rr["annee_universitaire"];
@@ -189,7 +189,7 @@ function json_modify_php($annee, $readtype, $id) {
 	/* log et requete a moderniser (loguer le json) TODO */
 
 	if (!$link->query($query)) {
-	    errmsg("erreur avec la requete :\n".$query."\n"$link->error());
+	    errmsg("erreur avec la requete :\n".$query."\n"$link->error);
 	}
 	pain_log($query); // LOG DE LA REQUETE !
 	if ($type == "cours") {
@@ -214,7 +214,7 @@ if (isset($_GET["type"])) {
 }
 
 if (isset($_GET["id"])) {
-    $id = getclean("id");
+    $id = getnumeric("id");
 
     json_modify_php($annee, $readtype, $id);
 

@@ -26,7 +26,7 @@ require_once("inc_connect.php");
 require_once("inc_functions.php");
 
 if (isset($_GET["annee"])) {
-    $annee = getclean("annee");
+    $annee = getnumeric("annee");
     $query = "SELECT id_sformation, nom, id_prev FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
     $res = link->query($query) or die("BD Impossible d'effectuer la requête: $query");
 

@@ -335,7 +335,8 @@ tr.formation > .enseignant {
     border-right: 0px;    
 }
 
-tr.super > .totaux, tr.sformation > .totaux, tr.formation > .totaux {
+tr.super > .totaux, tr.sformation > .totaux, tr.formation > .totaux, 
+tr.super > .totaux_loader, tr.sformation > .totaux_loader, tr.formation > .totaux_loader {
     min-width: 500px;
     width: 500px;
     border-right: 0px;    
@@ -1054,13 +1055,21 @@ div.caption {
 }
 
 td.inactive {
-    background-color: #EFF6FF;
+/*    background-color: #EFF6FF; */
     background-image: url("img/hachure2.png");
     cursor: pointer;
     font-weight: bolder;
     text-align: center;
+   text-shadow:
+       1px 1px 0 #FFF,
+     -1px -1px 0 #FFF,
+      1px -1px 0 #FFF,
+      -1px 1px 0 #FFF,
+       1px 1px 0 #FFF;
+//  text-transform: uppercase; 
+//    color: grey;
     color: darkgrey;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 
 td.tags, td.collections {

@@ -54,7 +54,7 @@ function json_duplicate_php($type, $id) {
     /* requete */
 
     if (!$link->query($query)) {
-	errmsg("erreur avec la requete :\n".$query."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$query."\n".$link->error);
     }
     
     return $link->insert_id();
@@ -72,7 +72,7 @@ if (isset($_GET["type"])) {
 }
 
 if (isset($_GET["id"])) {
-    $id = getclean("id");
+    $id = getnumeric("id");
     
     $_GET["id"] = json_duplicate_php($type, $id);
 

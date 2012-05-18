@@ -26,7 +26,7 @@ function stats($valeur,$ou) {
     global $link;
     $qstat = 'SELECT '.$valeur.' FROM '.$ou;
     $rstat = $link->query($qstat) 
-	or die("erreur".$link->error());
+	or die("erreur".$link->error);
     
     $stat = $rstat->fetch_assoc();
     $stat = $stat["$valeur"];

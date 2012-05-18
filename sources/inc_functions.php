@@ -70,7 +70,7 @@ function lister_enseignantsannee($an)
 	     "AND pain_service.id_enseignant = pain_enseignant.id_enseignant ".
 	     "ORDER BY nom, prenom ASC";
     $rens = $link->query($qens) 
-	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".$link->error());
+	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".$link->error);
     return $rens;
 }
 
@@ -84,7 +84,7 @@ function lister_categories()
 	"WHERE descriptif <> \"\" ". /* <- debile, TODO : trouver la bonne structure */
 	"ORDER BY id_categorie ASC";
     $rcat = $link->query($qcat) 
-	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".$link->error());
+	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".$link->error);
     return $rcat;
 }
 
@@ -96,7 +96,7 @@ function selectionner_cours($id)
     if ($rcours = $link->query($qcours)) {
 	$cours = $rcours->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table cours. $qcours ".$link->error();
+	echo "Échec de la requête sur la table cours. $qcours ".$link->error;
     }
     return $cours;
 }
@@ -109,7 +109,7 @@ function selectionner_tranche($id)
     if ($rtranche = $link->query($qtranche)) {
 	$tranche = $rtranche->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table tranche. $qtranche ".$link->error();
+	echo "Échec de la requête sur la table tranche. $qtranche ".$link->error;
     }
     return $tranche;
 }
@@ -122,7 +122,7 @@ function selectionner_choix($id)
     if ($rchoix = $link->query($qchoix)) {
 	$choix = $rchoix->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table choix. $qchoix ".$link->error();
+	echo "Échec de la requête sur la table choix. $qchoix ".$link->error;
     }
     return $choix;
 }
@@ -135,7 +135,7 @@ function selectionner_enseignant($id)
     if ($rens = $link->query($qens)) {
 	$ens = $rens->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table enseignant. $qens ".$link->error();
+	echo "Échec de la requête sur la table enseignant. $qens ".$link->error;
     }
     return $ens;
 }
@@ -148,7 +148,7 @@ function formation_du_cours($id)
     if ($r = $link->query($q)) {
 	$f = $r->fetch_assoc();
     } else {
-	echo "Échec de la requête sur la table cours. $q ".$link->error();
+	echo "Échec de la requête sur la table cours. $q ".$link->error;
     }
     return $f["id_formation"];
 }
@@ -314,7 +314,7 @@ function htdtotaux($annee = NULL) {
              AND pain_sformation.id_sformation = pain_formation.id_sformation  
              AND annee_universitaire = $annee";
     $retu = $link->query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
     $letu =$retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
@@ -324,7 +324,7 @@ function htdtotaux($annee = NULL) {
     /* annulations */
     $qannule ='SELECT SUM(htd) FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation  AND annee_universitaire = '.$annee.' AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)';
     $rannule = $link->query($qannule) 
-	or die("erreur d'acces aux tables : $qannule erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qannule erreur:".$link->error);
 
     $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
@@ -335,7 +335,7 @@ function htdtotaux($annee = NULL) {
     /* tous CM, TD, TP, alt */
     $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
     $rcomp = $link->query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
     $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
@@ -357,7 +357,7 @@ function htdtotaux($annee = NULL) {
     $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
 
     $rperm = $link->query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
 
     $a = htd_cat2array($rperm);
 
@@ -380,7 +380,7 @@ function htdsuper($id) {
              WHERE pain_formation.id_sformation  = $id 
              AND pain_cours.id_formation = pain_formation.id_formation";
     $retu = $link->query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
     $letu = $retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
@@ -390,7 +390,7 @@ function htdsuper($id) {
 
     $qannule ="SELECT SUM(htd) FROM pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = $link->query($qannule) 
-	or die("erreur d'acces aux tables : $qannule erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qannule erreur:".$link->error);
 
     $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
@@ -400,7 +400,7 @@ function htdsuper($id) {
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_formation, pain_cours, pain_tranche WHERE pain_formation.id_sformation = $id AND pain_formation.id_formation = pain_cours.id_formation AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = $link->query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
     $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
@@ -422,7 +422,7 @@ function htdsuper($id) {
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
 
     $a = htd_cat2array($rperm);
 
@@ -443,7 +443,7 @@ function htdformation($id) {
     $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
              FROM pain_cours WHERE id_formation = $id";
     $retu = $link->query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
     $letu = $retu->fetch_assoc();
     $etu = $letu["etu"];
     if ($etu == "") {
@@ -453,7 +453,7 @@ function htdformation($id) {
 /* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est comptée deux fois dans le total des annulation, à vérifier ! */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = $link->query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error);
 
     $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
@@ -463,7 +463,7 @@ function htdformation($id) {
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = $link->query($qcomp) 
-	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
     $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
@@ -485,7 +485,7 @@ function htdformation($id) {
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
 
     $a = htd_cat2array($rperm);
 
@@ -507,7 +507,7 @@ function htdcours($id) {
     $qetu = "SELECT (cm + td + tp + alt) * presents as etu
              FROM pain_cours WHERE id_cours = $id";
     $retu = $link->query($qetu) 
-	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
     $letu = $retu->fetch_assoc(); 
     $etu = $letu["etu"];
     if ($etu == "") {
@@ -516,7 +516,7 @@ function htdcours($id) {
 
     $qannule = "SELECT SUM(htd) FROM pain_tranche WHERE pain_tranche.id_cours = $id AND pain_tranche.id_enseignant = 1";
     $rannule = $link->query($qannule) 
-	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error());
+	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error);
 
     $annule = $rannule->fetch_assoc();
     $annule = $annule["SUM(htd)"];
@@ -526,7 +526,7 @@ function htdcours($id) {
 
     $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_tranche WHERE pain_tranche.id_cours = $id";
     $rcomp = $link->query($qcomp)
-	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
     $comp = $rcomp->fetch_assoc();
     $cm = $comp["cm"];
@@ -548,7 +548,7 @@ function htdcours($id) {
     $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm) 
-	or die("erreur d'acces aux tables : $qperm erreur:".$link->error());
+	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
 
     $a = htd_cat2array($rperm);
 
@@ -594,7 +594,7 @@ function responsableducours($id) {
     global $link;
     $qresponsable = 'SELECT id_enseignant FROM pain_cours WHERE id_cours = '.$id;
     $rresponsable = $link->query($qresponsable)
-	or die("erreur d'acces a la table cours : $qresponsable erreur:".$link->error());
+	or die("erreur d'acces a la table cours : $qresponsable erreur:".$link->error);
     $responsable = $rresponsable->fetch_assoc();
     return $responsable["id_enseignant"];
 }
@@ -603,7 +603,7 @@ function estintervenant($id_enseignant)
 {
     global $link;
     $q = "SELECT 1 FROM pain_tranche WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = $link->query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    $r = $link->query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".$link->error);
     return $r->num_rows();
 }
 
@@ -611,7 +611,7 @@ function estresponsablecours($id_enseignant)
 {
     global $link;
     $q = "SELECT 1 FROM pain_cours WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = $link->query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    $r = $link->query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".$link->error);
     return $r->num_rows();
 }
 
@@ -619,7 +619,7 @@ function estresponsableformation($id_enseignant)
 {
     global $link;
     $q = "SELECT 1 FROM pain_formation WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = $link->query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    $r = $link->query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".$link->error);
     return $r->num_rows();
 }
 
@@ -627,7 +627,7 @@ function estresponsablesformation($id_enseignant)
 {
     global $link;
     $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
-    $r = $link->query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".$link->error());
+    $r = $link->query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".$link->error);
     return $r->num_rows();
 }
 
@@ -638,6 +638,51 @@ function serviceestvide($id_enseignant, $an) {
     } else {
 	return true;
     }
+}
+
+function listedeclarations($ids_enseignants, $an = NULL) {
+    global $link;
+    global $annee;
+    if ($an == NULL) {
+	if ($annee == NULL) {
+	    $annee = annee_courante();
+	}
+	$an = $annee;
+    }
+    
+    $enseignants = $ids_enseignants;
+
+    $query = "SELECT 
+pain_enseignant.login,
+pain_enseignant.prenom,
+pain_enseignant.nom,
+pain_enseignant.id_enseignant,
+pain_formation.nom,
+pain_formation.annee_etude,
+pain_formation.parfum,
+pain_cours.semestre,
+pain_cours.nom_cours,
+pain_cours.code_geisha,
+pain_cours.id_cours AS id_cours,
+SUM(pain_tranche.cm) AS cm,
+SUM(pain_tranche.td) AS td,
+SUM(pain_tranche.tp) AS tp,
+SUM(pain_tranche.alt) AS alt,
+SUM(pain_tranche.htd) AS htd
+FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant
+WHERE pain_enseignant.id_enseignant IN (".$enseignants.") 
+AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant
+AND pain_cours.id_enseignant <> 1
+AND pain_tranche.id_cours = pain_cours.id_cours
+AND pain_cours.id_formation = pain_formation.id_formation
+AND pain_formation.id_sformation = pain_sformation.id_sformation
+AND pain_sformation.annee_universitaire = $an
+GROUP BY id_cours, pain_enseignant.id_enseignant
+ORDER BY pain_enseignant.nom ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
+    ($result = $link->query($query)) or die("Échec de la requête ".$query."\n".$link->error);
+    echo $query;
+
+    return $result;
 }
 
 function listeinterventions($id_enseignant, $an = NULL) {
@@ -674,7 +719,8 @@ AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
 ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
-    ($result = $link->query($query)) or die("Échec de la connexion à la base");
+    ($result = $link->query($query)) or die("Échec de la requête ".$requete."\n".$link->error);
+
     return $result;
 }
 
@@ -779,7 +825,7 @@ function update_servicesreels($id_ens = NULL) {
 	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
     }
     $link->query($qupdate)
-	or die("erreur update_servicesreels : $qupdate: ".$link->error());
+	or die("erreur update_servicesreels : $qupdate: ".$link->error);
 }
 
 /** Met à jour la table pain_service en recalculant les service_potentiel de l'année.
@@ -814,7 +860,7 @@ and tid.id_formation = pain_formation.id_formation
 	$qupdate .= " AND pain_service.id_enseignant = ".$id_ens;
     }
     $link->query($qupdate)
-	or die("erreur update_servicespotentiels : $qupdate: ".$link->error());
+	or die("erreur update_servicespotentiels : $qupdate: ".$link->error);
 }
 
 /** retourne la liste des enseignants appartennants à une catégorie.
@@ -837,7 +883,7 @@ function liste_enseignantscategorie($categorie) {
             AND pain_service.id_enseignant = pain_enseignant.id_enseignant
             AND pain_service.annee_universitaire = $annee
           ORDER by nom,prenom ASC";
-    ($r = $link->query($q)) or die("erreur liste_enseignantscategorie : $q: ".$link->error());
+    ($r = $link->query($q)) or die("erreur liste_enseignantscategorie : $q: ".$link->error);
     return $r;
 }
 
@@ -891,7 +937,7 @@ function historique_par_cmp($type, $before, $after) {
           (type, id, id_formation, id_cours, message, timestamp) 
           VALUES ('".$type."', '".$id."', '".$id_formation."',
                   '".$id_cours."', '".$s."', '".$timestamp."')";
-    $link->query($q) or die("$q ".$link->error());
+    $link->query($q) or die("$q ".$link->error);
     pain_log($q);
 }
 
@@ -926,7 +972,7 @@ function historique_par_ajout($type, $new) {
           (type, id, id_formation, id_cours, message, modification) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', 
                   '".$id_cours."', '".$s."', NOW())";
-    $link->query($q) or die("$q ".$link->error());
+    $link->query($q) or die("$q ".$link->error);
     pain_log($q);
 }
 
@@ -940,7 +986,7 @@ function historique_de_formation($id, $offset, $timestamp = NULL) {
     }
     $q .= "ORDER BY timestamp DESC LIMIT ".($offset + 1).", 20";
     $r = $link->query($q) 
-	or die("historique_de_formation($id), $q ".$link->error());
+	or die("historique_de_formation($id), $q ".$link->error);
     return $r;
 }
 

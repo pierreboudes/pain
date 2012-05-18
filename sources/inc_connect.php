@@ -25,6 +25,10 @@ require_once("iconnect.php");
 /* ce fichier contient quelque chose comme :
 <?php
 $link = new mysqli("localhost", "utilisateur", "mot de passe", "base");
+if ($link->connect_errno) {
+    printf("Échec de la connexion : %s\n", $mysqli->connect_error);
+    die();
+}
 ?>
 */
 $link->query("SET NAMES 'utf8'");

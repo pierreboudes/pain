@@ -36,7 +36,7 @@ if ($type == "annee") {
     /* verifions toutefois que l'annee est bien vide */
     $q = "SELECT COUNT(*) AS tot FROM pain_sformation WHERE annee_universitaire = ".$id_cible; 
     if (!($r = $link->query($q))) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 //     if (!($ligne = $r->fetch_array())) {
 // 	errmsg("cible non existante !");
@@ -74,7 +74,7 @@ if ($profondeur > 0) {
 
     $q = $qmajservices." (SELECT DISTINCT id_enseignant FROM pain_sformation WHERE ". $cond.') ';
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 
 
@@ -82,7 +82,7 @@ if ($profondeur > 0) {
     $q = 'INSERT INTO pain_sformation (id_sformation_prev, annee_universitaire, id_enseignant, nom, numero) SELECT `id_sformation` as id_sformation_prev, "'.$annee_cible.'", `id_enseignant`, `nom`, `numero` FROM pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 
     if ($type == "sformation") {
@@ -109,25 +109,25 @@ if ($profondeur > 0) {
     /* mise à jour des services des responsables de formations */
     $q = $qmajservices." (SELECT DISTINCT pain_formation.id_enseignant FROM  pain_sformation, pain_formation WHERE ". $cond.') ';
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 
     /* insertion de la ou des nouvelles formation */
     $q = 'INSERT INTO pain_formation (id_formation_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant) SELECT pain_formation.id_formation as id_formation_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
     /* insertion des collections associées aux sformations */
     $q = 'INSERT INTO pain_collection (id_collection_prev, id_sformation, annee_universitaire, nom_collection, descriptif) SELECT pain_collection.id_collection, pain_sformation.id_sformation, pain_sformation.annee_universitaire, nom_collection, descriptif FROM pain_collection, pain_sformation WHERE '.$cocond;
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
     if ($type == "annee") {
 	/* insertion des collections de l'année non associées aux sformations */
 	$q = 'INSERT INTO pain_collection (id_collection_prev, id_sformation, annee_universitaire, nom_collection, descriptif) SELECT id_collection, id_sformation, '.$annee_cible.', nom_collection, descriptif FROM pain_collection WHERE id_sformation IS NULL AND pain_collection.annee_universitaire = '.$id;
 	if (!$link->query($q)) {
-	    errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	    errmsg("erreur avec la requete :\n".$q."\n".$link->error);
 	}
     }
     $profondeur -= 1;    
@@ -155,7 +155,7 @@ if ($profondeur > 0) {
 
     $q = $qmajservices." (SELECT DISTINCT pain_cours.id_enseignant FROM pain_sformation, pain_formation, pain_cours WHERE ". $cond.') ';
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 
     /* insertion des nouveaux cours */
@@ -168,20 +168,20 @@ pain_cours.descriptif, pain_cours.code_geisha FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }    
     /* insertion des associations tagscours */
     $q = 'INSERT IGNORE INTO pain_tagscours (id_tag, id_cours) SELECT pain_tagscours.id_tag, pain_cours.id_cours FROM pain_tagscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_tagscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.")";
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }    
 
 /* insertion des associations collectionscours */
     $q = 'INSERT IGNORE INTO pain_collectionscours (id_collection, id_cours) SELECT pain_collection.id_collection, pain_cours.id_cours FROM pain_collection, pain_collectionscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_collectionscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.') AND pain_collection.id_collection_prev = pain_collectionscours.id_collection AND pain_collection.annee_universitaire = '.$annee_cible;
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }    
     $profondeur -= 1;    
 }
@@ -219,7 +219,7 @@ pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }    
 }
 
@@ -249,7 +249,7 @@ if ($profondeur == 2) {
 
     $q = $qmajservices." (SELECT DISTINCT pain_tranche.id_enseignant FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE ". $cond.') ';
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
 
     /* insertion de nouvelles tranches */
@@ -259,7 +259,7 @@ pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
     if (!$link->query($q)) {
-	errmsg("erreur avec la requete :\n".$q."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }    
     $profondeur -= 1;    
 }
@@ -272,17 +272,17 @@ if (isset($_GET["type"])) {
     errmsg('erreur du script (type manquant).');
 }
 if (isset($_GET["id"])) {
-    $id = getclean("id");
+    $id = getnumeric("id");
 } else {
     errmsg('erreur du script (id source manquant).');    
 }
 if (isset($_GET["id_cible"])) {
-    $id_cible = getclean("id_cible");
+    $id_cible = getnumeric("id_cible");
 } else {
     errmsg('erreur du script (id_cible manquant).');    
 }
 if (isset($_GET["profondeur"])) {
-    $profondeur = getclean("profondeur");
+    $profondeur = getnumeric("profondeur");
 } else {
     errmsg('erreur du script (profondeur de copie manquante).');    
 }

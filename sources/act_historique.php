@@ -47,7 +47,7 @@ function act_historique_php($id, $offset, $timestamp) {
 if (isset($_POST["id_formation"])) {
     $id = postclean("id_formation");
 } else if (isset($_GET["id_formation"])) {
-    $id = getclean("id_formation");
+    $id = getnumeric("id_formation");
 }  else {
     die("pas de id_formation ?");
 }
@@ -55,7 +55,7 @@ $offset = 0;
 if (isset($_POST["offset"])) {
     $offset = postclean("offset");
 } else if (isset($_GET["offset"])) {
-    $offset = getclean("offset");
+    $offset = getnumeric("offset");
 }
 $timestamp = NULL;
 if (isset($_POST["timestamp"])) {

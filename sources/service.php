@@ -34,7 +34,7 @@ function service_php($id) {
     $id_enseignant = $id; 
 /* mais si on a un identifiant dans l'url on utilise plutot celui-ci */
     if (isset($_GET['id_enseignant'])) {
-	$id_enseignant = getclean('id_enseignant');
+	$id_enseignant = getnumeric("id_enseignant");
     }
 /* et si l'identifiant provient du formulaire, c'est plutot celui-la */
     if (isset($_POST['id_enseignant'])) {

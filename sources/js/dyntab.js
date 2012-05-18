@@ -454,24 +454,16 @@ function totaux() {
 	    load_totaux(c, o);
 	} else {
 	    c.addClass('inactive');
-	    c.html('double-clic');	
+	    c.html('voir');	
 	}
-	if (hasTouch) {
-	    c.click(function (event) {
-		    if (clickeditmode) {
-			load_totaux(c, o);
-		    }
-		    return false;		
-		});
-	}
-	c.dblclick(function () {
+	c.click(function () {
+	    c.unbind('click');
+	    load_totaux(c, o);
+	    c.dblclick(function () {
 		load_totaux(c, o);
 	    });
+	});
     };
-/*    this.edit = function (c) {
-	var oid = parseIdString(c.parent('tr').attr('id'));
-	load_totaux(c,oid);
-	}; */
     this.mutable = false;
     this.name = "totaux";
 }
@@ -560,19 +552,17 @@ function envoyer_tagcours(e) {
 /* construction du composite interactif tags */
 function tags() {
     this.setval = function (c, o) {
-	    c.addClass('inactive');
-	    c.html('double-clic');
-	    if (hasTouch) {
-	    c.click(function (event) {
-		    if (clickeditmode) {
-			load_tags(c, o);
-		    }
-		    return false;		
-		});
-	}
-	c.dblclick(function () {
+	c.addClass('inactive');
+	c.html('voir');
+	c.click(function () {
+	    c.unbind('click');
+	    load_tags(c, o);
+	    c.dblclick(function () {
 		load_tags(c, o);
+		return false;
 	    });
+	    return false;
+	});
     };
     this.edit = function (c) {
 	var oid = parseIdString(c.parent('tr').attr('id'));
@@ -660,19 +650,17 @@ function envoyer_collectioncours(e) {
 /* construction du composite interactif collections */
 function collections() {
     this.setval = function (c, o) {
-	    c.addClass('inactive');
-	    c.html('double-clic');
-	    if (hasTouch) {
-	    c.click(function (event) {
-		    if (clickeditmode) {
-			load_collections(c, o);
-		    }
-		    return false;		
-		});
-	}
-	c.dblclick(function () {
+	c.addClass('inactive');
+	c.html('voir');	   
+	c.click(function () {
+	    c.unbind('click');
+	    load_collections(c, o);
+	    c.dblclick(function () {
 		load_collections(c, o);
+		return false;
 	    });
+	    return false;
+	});
     };
     this.edit = function (c) {
 	var oid = parseIdString(c.parent('tr').attr('id'));

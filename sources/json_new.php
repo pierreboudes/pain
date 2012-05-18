@@ -106,14 +106,14 @@ if (isset($_GET["type"])) {
 	$_GET["id_parent"] = "descriptif ?";
     } else if ($readtype == "tagscours") {
 	$type = "tagscours";
-	$_GET["id_parent"] = getclean("id_cours");
+	$_GET["id_parent"] = getnumeric("id_cours");
     } else if ($readtype == "collection") {
 	$type = "collection";
 	$par = "descriptif";
 	$_GET["id_parent"] = "descriptif ?";
     } else if ($readtype == "collectionscours") {
 	$type = "collectionscours";
-	$_GET["id_parent"] = getclean("id_cours");
+	$_GET["id_parent"] = getnumeric("id_cours");
     } else {
 	errmsg("type indéfini");
     }
@@ -122,7 +122,7 @@ if (isset($_GET["type"])) {
 }
 
 if (isset($_GET["id_parent"])) {
-    $id_parent = getclean("id_parent");
+    $id_parent = getnumeric("id_parent");
 
     if (!peutediter($type,NULL,$id_parent)) {
 	errmsg("droits insuffisants.");
@@ -173,7 +173,7 @@ if (isset($_GET["id_parent"])) {
 	$sq = "SELECT MAX(numero) + 1 as num 
                FROM pain_$type WHERE $par = $id_parent";
 	if (!($sr = $link->query($sq))) {
-	    errmsg("erreur avec la requete :\n".$sq."\n".$link->error());
+	    errmsg("erreur avec la requete :\n".$sq."\n".$link->error);
 	}
         $sl = $sr->fetch_assoc();
 	$set["numero"] = $sl["num"];
@@ -186,7 +186,7 @@ if (isset($_GET["id_parent"])) {
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
-	    $setsql[] = '`'.$field.'` = "'.$val.'"';
+	$setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
 
@@ -211,7 +211,7 @@ if (isset($_GET["id_parent"])) {
     /* requete */
 
     if (!$link->query($query)) {
-	errmsg("erreur avec la requete :\n".$query."\n".$link->error());
+	errmsg("erreur avec la requete :\n".$query."\n".$link->error);
     }
 
     if (($type == "tagscours") || ($type == "collectionscours")) {
@@ -246,7 +246,7 @@ if (isset($_GET["id_parent"])) {
 	    "FROM pain_enseignant ".
 	    "WHERE pain_enseignant.id_enseignant < 10";
 	if (!$link->query($query)) {
-	    errmsg("erreur avec la requete :\n".$query."\n".$link->error());
+	    errmsg("erreur avec la requete :\n".$query."\n".$link->error);
 	} 
     }
 
@@ -256,7 +256,7 @@ if (isset($_GET["id_parent"])) {
 
 $annee = annee_courante();
 if (isset($_GET["annee_universitaire"])) {
-    $annee = getclean("annee_universitaire");
+    $annee = getnumeric("annee_universitaire");
 }
 
 $id = json_new_php($annee);

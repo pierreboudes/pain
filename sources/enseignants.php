@@ -46,7 +46,7 @@ function enseignants_php() {
 
     /* affichage des catégories */
     $r = lister_categories();
-    while ($cat = mysqli_fetch_assoc($r)) {
+    while ($cat = $r->fetch_assoc()) {
 	ig_tablecategorie($cat["id"], $cat["nom_long"]);
     }
 

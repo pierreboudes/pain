@@ -41,6 +41,8 @@ function postclean($s) {
     else return NULL;
 }
 
+/** recupere une chaine passee en HTTP/GET
+ */
 function getclean($s) {
     global $link;
     if (isset($_GET[$s])) {
@@ -54,13 +56,39 @@ function getclean($s) {
     else return NULL;
 }
 
+/** recupere un nombre passee en HTTP/GET
+ */
+function getnumeric($s) {
+    global $link;
+    if (isset($_GET[$s]) && is_numeric($_GET[$s])) {
+	return $_GET[$s];
+    }
+    else return NULL;
+}
+
+/** recupere une liste de nombre passee en HTTP/GET
+ */
+function getlistnumeric($s) {
+    global $link;
+    if (isset($_GET[$s])) {
+	$a = explode(',',$_GET[$s]);
+	foreach ($a as $id) {
+	    if (!is_numeric(trim($id))) return NULL;
+	}
+	return $_GET[$s];
+    }
+    else return NULL;
+}
+
+
 function cookieclean($s) {
+    global $link;
     if (isset($_COOKIE[$s])) {
 	if(get_magic_quotes_gpc()) {
-	    return trim(htmlspecialchars(stripslashes(($_COOKIE[$s])), ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string(stripslashes(($_COOKIE[$s]))), ENT_QUOTES));
 	}
 	else {
-	    return trim(htmlspecialchars($_COOKIE[$s], ENT_QUOTES));
+	    return trim(htmlspecialchars($link->real_escape_string($_COOKIE[$s]), ENT_QUOTES));
 	}
     }
     else return NULL;
@@ -76,43 +104,42 @@ function ip_client() {
     return $IP;
 }
 
-
 function postnumclean($s) {
     return str_replace(',','.',str_replace(' ', '',postclean($s)));
 }
 
 function pain_log($message, $logname='pain') {
     global $user;
-        /* vu qu'on écrit un fichier on ne veut pas de process appelant qui boucle... */
-	static $compteur;
-	if ($compteur++ > 10) return;
+    /* vu qu'on écrit un fichier on ne veut pas de process appelant qui boucle... */
+    static $compteur;
+    if ($compteur++ > 10) return;
 
 //	$pid = '(pid '.@getmypid().')';
-	$message = preg_replace("/\n+/", " ", $message);
+    $message = preg_replace("/\n+/", " ", $message);
 //	$message = preg_replace("/\n*$/", "\n", $message);
-	$message .= ' -- '.date("M d H:i:s").' '.$user['login']. "\n";
-        $logfile = dirname($_SERVER['SCRIPT_FILENAME'])."/painlogs/".$logname .'.log';
+    $message .= ' -- '.date("M d H:i:s").' '.$user['login']. "\n";
+    $logfile = dirname($_SERVER['SCRIPT_FILENAME'])."/painlogs/".$logname .'.log';
 /*	echo $logfile;
 		if (@is_readable($logfile)) echo "readable";
 */
-	if (@is_readable($logfile)
+    if (@is_readable($logfile)
 	AND (!$s = @filesize($logfile) OR $s > 100*1024)) {
-		$rotate = true;
-		$message .= "-- [ rotate ]\n";
-	} else $rotate = '';
-	$f = @fopen($logfile, "ab");
-	if ($f) {
-		fputs($f, htmlspecialchars($message));
-		fclose($f);
+	$rotate = true;
+	$message .= "-- [ rotate ]\n";
+    } else $rotate = '';
+    $f = @fopen($logfile, "ab");
+    if ($f) {
+	fputs($f, htmlspecialchars($message));
+	fclose($f);
+    }
+    if ($rotate) {
+	$nb = 50;
+	@unlink($logfile.".$i");
+	for ($i = $nb; $i > 1; --$i) {
+	    @rename($logfile.".".($i - 1),$logfile.".$i");
 	}
-	if ($rotate) {
-	    $nb = 50;
-	    @unlink($logfile.".$i");
-	    for ($i = $nb; $i > 1; --$i) {
-		@rename($logfile.".".($i - 1),$logfile.".$i");
-	    }
-	    @rename($logfile,$logfile.'.1');		
-	}
+	@rename($logfile,$logfile.'.1');		
+    }
 }
 
 function ig_statsmysql() {

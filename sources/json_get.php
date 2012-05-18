@@ -42,7 +42,7 @@ function json_get_php($annee, $readtype) {
 	$type = "sformation";
 	$par = "annee_universitaire";
 	if (isset($_GET["id_parent"])) {
-	    $annee = getclean("id_parent");
+	    $annee = getnumeric("id_parent");
 	}
 	$requete = "SELECT nom AS nom_sformation,
                            nom AS label,
@@ -125,10 +125,10 @@ function json_get_php($annee, $readtype) {
                            \"long$type\" AS type
                      FROM pain_tranche, pain_cours, pain_formation, pain_sformation ";
 	if (isset($_GET['id_parent'])) {
-	    $id_par = getclean('id_parent');
+	    $id_par = getnumeric("id_parent");
 	    $requete .= " WHERE pain_tranche.id_enseignant = $id_par ";	    
         } else if (isset($_GET["id"])) {
-	    $id = getclean('id');
+	    $id = getnumeric("id");
 	    $requete .= " WHERE pain_tranche.id_tranche = $id ";	    
 	}
 	$requete .="AND pain_cours.id_cours = pain_tranche.id_cours
@@ -146,11 +146,11 @@ function json_get_php($annee, $readtype) {
                     FROM pain_service, pain_categorie
                     WHERE ";
 	if (isset($_GET['id_parent'])) {
-	    $id_par = getclean('id_parent');
+	    $id_par = getnumeric("id_parent");
 	    update_servicesreels($id_par);
 	    $requete .= " pain_service.id_enseignant = $id_par ";
         } else if (isset($_GET["id"])) {
-	    $id = getclean('id');
+	    $id = getnumeric("id");
 	    list($id_ens,$an) = split('X',$id);
 	    update_servicesreels($id_ens);
 	    $requete .= " id_enseignant = $id_ens AND annee_universitaire = $an ";
@@ -160,7 +160,7 @@ function json_get_php($annee, $readtype) {
        $requete .= "AND id_categorie = categorie 
                     ORDER BY annee_universitaire ASC";
     } else if ($readtype == "potentiel" and isset($_GET['id_parent'])) {
-	$id_par =  getclean('id_parent');
+	$id_par =  getnumeric("id_parent");
 	$requete = "select *,
 id_cours as id_potentiel,
 greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
@@ -229,7 +229,7 @@ numero ASC,
 annee_etude ASC, 
 nom_cours ASC";
     } else if ($readtype == "responsabilite" and isset($_GET['id_parent'])) {
-	$id_par =  getclean('id_parent');
+	$id_par =  getnumeric("id_parent");
 	$requete = "(select 
 concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', annee_etude) as resp_nom,
 concat('c', id_cours) as id_responsabilite,
@@ -286,7 +286,7 @@ and pain_sformation.annee_universitaire = ".$annee."
     } else if ($readtype == "tags") {
 	if (isset($_GET['id_parent'])) {
 	    $type = "tag";
-	    $id_par =  getclean('id_parent');
+	    $id_par =  getnumeric("id_parent");
 	    $requete = "SELECT pain_tag.*, 
                         \"$type\" AS type, 
                         pain_tag.id_$type AS id                 
@@ -300,7 +300,7 @@ and pain_sformation.annee_universitaire = ".$annee."
     } else if ($readtype == "unusedtags") {
 	if (isset($_GET['id_parent'])) {
 	    $type = "tag";
-	    $id_par =  getclean('id_parent');
+	    $id_par =  getnumeric("id_parent");
 	    $requete = "SELECT nom_$type as label, 
                         id_$type AS id                 
                         FROM pain_$type";
@@ -329,7 +329,7 @@ and pain_sformation.annee_universitaire = ".$annee."
     } else if ($readtype == "collections") {
 	if (isset($_GET['id_parent'])) {
 	    $type = "collection";
-	    $id_par =  getclean('id_parent');
+	    $id_par =  getnumeric("id_parent");
 	    $requete = "SELECT pain_collection.*, 
                         \"$type\" AS type, 
                         pain_collection.id_$type AS id                 
@@ -343,7 +343,7 @@ and pain_sformation.annee_universitaire = ".$annee."
     } else if ($readtype == "unusedcollections") {
 	if (isset($_GET['id_parent'])) {
 	    $type = "collection";
-	    $id_par =  getclean('id_parent');
+	    $id_par =  getnumeric("id_parent");
 	    $requete = "SELECT nom_$type as label, 
                         id_$type AS id                 
                         FROM pain_$type";
@@ -365,7 +365,7 @@ and pain_sformation.annee_universitaire = ".$annee."
     }
 
    if (isset($_GET["id_parent"])) {
-       $id_par = getclean("id_parent");
+       $id_par = getnumeric("id_parent");
        if (!isset($requete)) {
 	   $requete = "SELECT 
                       pain_$type.*,
@@ -379,14 +379,14 @@ and pain_sformation.annee_universitaire = ".$annee."
              $order";
        }
        $resultat = $link->query($requete) 
-	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error());
+	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);
        $arr = array();
        while ($element = $resultat->fetch_object()) {
 	   $arr[] = $element;
        }
        return $arr;
    } else if (isset($_GET["id"])) {
-       $id = getclean("id");
+       $id = getnumeric("id");
        if (!isset($requete)) {
 	   $requete = "SELECT \"$type\" AS type,
                       $id AS id,
@@ -398,7 +398,7 @@ and pain_sformation.annee_universitaire = ".$annee."
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant";
        }
        $resultat = $link->query($requete) 
-	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error());
+	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);
        $arr = array();
        while ($element = $resultat->fetch_object()) {
 	   $arr[] = $element;
@@ -413,7 +413,7 @@ and pain_sformation.annee_universitaire = ".$annee."
 
 
 if (isset($_GET["annee_universitaire"])) {
-    $annee = getclean("annee_universitaire");
+    $annee = getnumeric("annee_universitaire");
 }
 
 if (isset($_GET["type"])) {
@@ -429,6 +429,17 @@ if (isset($_GET["type"])) {
 	    }
 	    print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"}]";
 	}
+    } else if ($readtype == "declarations") {
+	$ids = getlistnumeric("ids");
+	if (!peuttransmettredeclarations($ids)) {
+	    errmsg("opération non autorisée");
+	}
+	$resultat = listedeclarations($ids, $annee);
+	$arr = array();
+	while ($element = $resultat->fetch_object()) {
+	    $arr[] = $element;
+	}
+	print json_encode($arr);
     } else {
 	$out = json_get_php($annee, $readtype);
 	print json_encode($out);
