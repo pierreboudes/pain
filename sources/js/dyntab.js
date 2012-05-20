@@ -98,6 +98,7 @@ getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 function cell() {
     this.name ="cell";
     this.mutable = true;
+    this.oneclickedit = false;
 
     /* passer la cellule en mode edition */
     this.edit = function (c) {
@@ -129,6 +130,67 @@ function cell() {
 	}
     }
 }
+
+
+function checkcell() {
+    this.name ="checkcell";
+    this.mutable = true;
+    this.oneclickedit = true;
+
+    /* mode edition direct */
+    this.edit = function (c) {
+	if (this.mutable) {	    
+	    if (!c.hasClass('edit')) {
+		c.addClass('edit');
+	    }
+	    var yesno = c.find('.yesno');
+	    yesno.togglevalue = function () {
+		yesno.toggleClass('yes');
+		yesno.toggleClass('no');
+		if (yesno.hasClass('yes')) {
+		    yesno.text('oui');		    
+		}
+		else {
+		    yesno.text('non');
+		}
+	    };
+	    yesno.togglevalue();
+	    yesno.click(yesno.togglevalue);
+	    return false;
+	}
+    }
+
+    /* recuperer la valeur de la cellule (en mode edition) */
+    this.getval = function (c, o) {
+	var s;
+	var res = 0;
+	s = c.find('.yesno').text();
+	if (s == "oui") {
+	    res = 1;
+	}
+	o[this.name] = res;
+    }
+    /* fixer la valeur de la cellule et permet son edition directe */
+    this.setval = function (c, o) {
+	c.removeClass("edit");
+	c.html('<div class="yesno"><span>');
+	var yesno = c.find('.yesno');
+	if (1 == o[this.name]) {
+	    yesno.addClass('yes');
+	    yesno.text('oui');
+	} else {
+	    yesno.addClass('no');
+	    yesno.text('non');
+	}
+    }    
+    /* rajoute mutable */
+    this.showmutable = function (c) {
+	if(!c.hasClass("mutable")) {
+	    c.addClass("mutable");
+	}
+    }
+}
+
 
 function richcell() {
     this.setval = function (c, o) {
@@ -265,6 +327,19 @@ function sunumcell () {
     }
 }
 sunumcell.prototype = new numcell();
+
+/* constructeur de cellule num modifiable uniquement par super-user */
+function sucheckcell () {
+    this.mutable = superuser(); /* valeur calculee au demarrage */
+    this.showmutable = function (c) {
+	if (superuser()) {
+	    if(!c.hasClass("mutable")) {
+		c.addClass("mutable");
+	    }
+	}
+    }
+}
+sucheckcell.prototype = new checkcell();
 
 
 /* constructeur de cellule non modifiable et sans valeur */
@@ -964,10 +1039,10 @@ function ligne() {
     this.responsabilite = new cell();
     this.responsabilite.name = "responsabilite";
     /* peut stats */
-    this.stats = new sunumcell();
+    this.stats = new sucheckcell();
     this.stats.name = "stats";
     /* su: peut tout ;) */
-    this.su = new sunumcell();
+    this.su = new sucheckcell();
     this.su.name = "su";
     /* modification */
     this.modification = new immutcell();
@@ -2202,8 +2277,13 @@ function appendItem(type, prev, o, list) {
 		    }
 		    return false;
 		});
+	} else {
+	    if(L[name].oneclickedit) {
+		cell.click(edit);
+	    } else {
+		cell.dblclick(edit);
+	    }
 	}
-	cell.dblclick(edit);        
 	line.append(cell);
 	if (list.eq(i).css('display') == 'none') {
 	    cell.fadeOut(0);

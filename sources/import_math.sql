@@ -2,7 +2,7 @@
 
 ALTER TABLE  `LesProfs` CHANGE  `numProf`  `numProf` INT( 11 ) NOT NULL;
 ALTER TABLE  `LesProfs` DROP PRIMARY KEY;
-ALTER TABLE LesProfs AUTO_INCREMENT = 10;
+ALTER TABLE LesProfs AUTO_INCREMENT = 11;
 ALTER TABLE  `LesProfs` ADD  `id_enseignant` MEDIUMINT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT AFTER  `numProf` ,
 ADD  `categorie` TINYINT( 3 ) UNSIGNED NOT NULL DEFAULT  '5' AFTER  `id_enseignant` ,
 ADD  `service` FLOAT UNSIGNED NOT NULL DEFAULT  '192' AFTER  `categorie` ,
@@ -18,10 +18,6 @@ and (fonction = "ATER" or fonction = "ATER 1/2" or fonction = "moniteur");
 
 update LesProfs, LesFonctions set service = volume - `décharge` where categorie < 5 and statut = fonction; 
 update LesProfs set service = 1 where categorie = 5; 
-
-
-update pain_enseignant set id_enseignant = (select max(LesProfs.id_enseignant) + 1 from LesProfs where 1), service = 0, categorie = 0
-where id_enseignant = 10;
 
 insert into pain_enseignant 
 (id_enseignant,

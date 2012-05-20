@@ -1148,3 +1148,22 @@ background-position: -32px -193px;
 }
 
 
+div.yesno {
+ text-align: center;
+ font-weight: bold;
+ cursor: pointer;
+ width: 30px;
+  -moz-border-radius: 9px;
+  border-radius: 9px; 
+  padding: 2px 10px;
+  margin: 2px;
+}
+
+div.yes {
+    background-color: #9F9;
+    border: 2px green solid;
+}
+div.no {
+    background-color: #F99;
+    border: 2px red solid;
+}

@@ -27,7 +27,7 @@ authrequired();
 <p>Bonjour <?php echo $user["prenom"]." ".$user["nom"]; ?></p>
 <p>En cas de problème d'affichage : recharger la page.</p>
 
-<p>Vous utilisez actuellement la version <a href="https://www-lipn.univ-paris13.fr/projects/licences/milestone/Campagne" title="développement de Campagne">Campagne</a>, de pain. La version suivante sera <a href="https://www-lipn.univ-paris13.fr/projects/licences/milestone/Doré" title="développement de pain doré">pain doré</a>.  Merci de <b>signaler les erreurs</b> ou faire vos demandes d'amélioration, en émettant un ticket : vérifier que le bug n'est pas <a href="https://www-lipn.univ-paris13.fr/projects/licences/query?group=status&amp;milestone=Doré" title="liste de tous les tickets pour Campagne">déjà signalé dans un ticket</a> avant de <a href="https://www-lipn.univ-paris13.fr/projects/licences/newticket?milestone=Doré" title="Créer un ticket pour le jalon Doré">créer un nouveau ticket</a>.</p>
+<p>Vous utilisez actuellement pain <a href="https://www-lipn.univ-paris13.fr/projects/licences/milestone/Doré" title="développement de Doré">doré</a>.  Merci de <b>signaler les erreurs</b> ou faire vos demandes d'amélioration, en émettant un ticket : vérifier que le bug n'est pas <a href="https://www-lipn.univ-paris13.fr/projects/licences/query?group=status&amp;milestone=Doré" title="liste de tous les tickets pour Doré">déjà signalé dans un ticket</a> avant de <a href="https://www-lipn.univ-paris13.fr/projects/licences/newticket?milestone=Doré" title="Créer un ticket pour le jalon Doré">créer un nouveau ticket</a>.</p>
 <!--
 <p>La  <a href="https://www-lipn.univ-paris13.fr/projects/licences/wiki/AccueilPain" title="Accueil pain">page web de pain</a> contient des informations complémentaires.</p>
 -->
