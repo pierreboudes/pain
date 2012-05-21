@@ -969,7 +969,7 @@ function historique_par_ajout($type, $new) {
     $s .= "création";
     $s .= '</div>';    
     $q = "INSERT INTO pain_hist 
-          (type, id, id_formation, id_cours, message, modification) 
+          (type, id, id_formation, id_cours, message, timestamp) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', 
                   '".$id_cours."', '".$s."', NOW())";
     $link->query($q) or die("$q ".$link->error);

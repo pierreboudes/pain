@@ -218,7 +218,7 @@ if (isset($_GET["id_parent"])) {
 	return NULL;
     }
 
-    $id = $link->insert_id();
+    $id = $link->insert_id;
     if ($type == "service") {
 	$id = $id_parent.'X'.$an;
     }

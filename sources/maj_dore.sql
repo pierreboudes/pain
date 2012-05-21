@@ -8,6 +8,7 @@ ALTER TABLE  `pain_choix` CHANGE  `choix`  `choix` VARCHAR( 256 ) CHARACTER SET 
 ALTER TABLE  `pain_cours` CHANGE  `nom_cours`  `nom_cours` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL;
 DROP TABLE IF EXISTS pain_edt;
 ALTER TABLE  `pain_formation` CHANGE  `nom`  `nom` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL;
+ALTER TABLE  `pain_formation` CHANGE  `id_enseignant`  `id_enseignant` mediumint(8) unsigned DEFAULT NULL;
 ALTER TABLE  `pain_sformation` CHANGE  `nom`  `nom` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL;
 
 -- pain_formation.annee_etude peut desormais etre NULL

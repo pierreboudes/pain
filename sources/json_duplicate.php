@@ -57,7 +57,7 @@ function json_duplicate_php($type, $id) {
 	errmsg("erreur avec la requete :\n".$query."\n".$link->error);
     }
     
-    return $link->insert_id();
+    return $link->insert_id;
 }
 
 if (isset($_GET["type"])) {

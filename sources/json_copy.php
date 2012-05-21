@@ -86,7 +86,7 @@ if ($profondeur > 0) {
     }
 
     if ($type == "sformation") {
-	$id_new = $link->insert_id();
+	$id_new = $link->insert_id;
     }
     $profondeur -= 1;    
 }
