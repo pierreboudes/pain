@@ -181,7 +181,7 @@ function json_modify_php($annee, $readtype, $id) {
 	    "WHERE `id_$type`=".$id;
 
 	if ($type == "service") {
-	    list($id_enseignant,$an) = explode('X', getnumeric("id"));
+	    list($id_enseignant,$an) = explode('X', $id);
 
 	    $query = "UPDATE pain_service SET $strset ". 
 		"WHERE id_enseignant = $id_enseignant AND annee_universitaire = $an";
