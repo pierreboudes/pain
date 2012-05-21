@@ -653,13 +653,13 @@ function listedeclarations($ids_enseignants, $an = NULL) {
     $enseignants = $ids_enseignants;
 
     $query = "SELECT 
-pain_enseignant.login,
-pain_enseignant.prenom,
-pain_enseignant.nom,
-pain_enseignant.id_enseignant,
-pain_formation.nom,
-pain_formation.annee_etude,
-pain_formation.parfum,
+pain_enseignant.login AS login,
+pain_enseignant.prenom AS prenom,
+pain_enseignant.nom AS nom,
+pain_enseignant.id_enseignant AS id_enseignant,
+pain_formation.nom AS nom_formation,
+pain_formation.annee_etude AS annee_etude,
+pain_formation.parfum AS parfum,
 pain_cours.semestre,
 pain_cours.nom_cours,
 pain_cours.code_geisha,
@@ -679,8 +679,8 @@ AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
 GROUP BY id_cours, pain_enseignant.id_enseignant
 ORDER BY pain_enseignant.nom ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
-    ($result = $link->query($query)) or die("Échec de la requête ".$query."\n".$link->error);
-    echo $query;
+
+    ($result = $link->query($query)) or errmsg("Échec de la requête ".$query."\n".$link->error);
 
     return $result;
 }
