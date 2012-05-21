@@ -604,7 +604,7 @@ function estintervenant($id_enseignant)
     global $link;
     $q = "SELECT 1 FROM pain_tranche WHERE id_enseignant = $id_enseignant LIMIT 1";
     $r = $link->query($q) or die("erreur estintervenant($id_enseignant): $q<br>mysql a repondu ".$link->error);
-    return $r->num_rows();
+    return $r->num_rows;
 }
 
 function estresponsablecours($id_enseignant)
@@ -612,7 +612,7 @@ function estresponsablecours($id_enseignant)
     global $link;
     $q = "SELECT 1 FROM pain_cours WHERE id_enseignant = $id_enseignant LIMIT 1";
     $r = $link->query($q) or die("erreur estresponsablecours($id_enseignant): $q<br>mysql a repondu ".$link->error);
-    return $r->num_rows();
+    return $r->num_rows;
 }
 
 function estresponsableformation($id_enseignant)
@@ -620,7 +620,7 @@ function estresponsableformation($id_enseignant)
     global $link;
     $q = "SELECT 1 FROM pain_formation WHERE id_enseignant = $id_enseignant LIMIT 1";
     $r = $link->query($q) or die("erreur estresponsableformation($id_enseignant): $q<br>mysql a repondu ".$link->error);
-    return $r->num_rows();
+    return $r->num_rows;
 }
 
 function estresponsablesformation($id_enseignant)
@@ -628,7 +628,7 @@ function estresponsablesformation($id_enseignant)
     global $link;
     $q = "SELECT 1 FROM pain_sformation WHERE id_enseignant = $id_enseignant LIMIT 1";
     $r = $link->query($q) or die("erreur estresponsablesformation($id_enseignant): $q<br>mysql a repondu ".$link->error);
-    return $r->num_rows();
+    return $r->num_rows;
 }
 
 function serviceestvide($id_enseignant, $an) {
@@ -719,7 +719,7 @@ AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
 ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
-    ($result = $link->query($query)) or die("Échec de la requête ".$requete."\n".$link->error);
+    ($result = $link->query($query)) or die("Échec de la requête ".$query."\n".$link->error);
 
     return $result;
 }
@@ -962,7 +962,11 @@ function historique_par_ajout($type, $new) {
     } else if (3 == $type) {
 	$id = $new["id_choix"];
 	$id_cours = $new["id_cours"];
-	$id_formation = formation_du_cours($new["id_cours"]);   
+	$id_formation = formation_du_cours($new["id_cours"]);
+    } else if (4 == $type) {
+	$id = $new["id_enseignant"];
+	$id_cours = $new["categorie"]; // TODO revoir la structure BD
+	$id_formation = $new["categorie"];
     } else {
 	$s .= ' BUG ';	
     }

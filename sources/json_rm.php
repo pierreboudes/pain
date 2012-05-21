@@ -41,7 +41,7 @@ function json_rm_php($id, $readtype) {
     } else if ( ($readtype == "choix") || ($readtype == "longchoix")) {
 	supprimer_choix($id);
     } else if ($readtype == "service") {
-	list($id_ens,$an) = split('X',$id);
+	list($id_ens,$an) = explode('X',$id);
 	supprimer_service($id_ens, $an);
     } else if ($readtype == "tag") {
 	supprimer_tag($id);

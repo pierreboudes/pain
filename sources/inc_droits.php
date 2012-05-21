@@ -270,7 +270,7 @@ function peutediterenseignant($id_enseignant = 0) {
 
 function peutediterservice($id_serv = 0X0) {
     global $user;
-    list($id_enseignant,$an) = split('X',$id_serv);
+    list($id_enseignant,$an) = explode('X', getnumeric("id"));
     return ($user["su"] == 1) or ($id_enseignant == $user["id_enseignant"]);
 }
 

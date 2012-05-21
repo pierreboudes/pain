@@ -163,6 +163,7 @@ pain_enseignant.id_enseignant = pain_sformation.id_enseignant
 formulaire de sélection d'une formation de l'année et d'un semestre.
 */
 function annuaire_php_form() {
+    global $annee;
 $id_formation = 0;
 if (isset($_POST['id_formation'])) {
     $id_formation = postclean('id_formation');

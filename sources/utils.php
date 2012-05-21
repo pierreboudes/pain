@@ -56,17 +56,22 @@ function getclean($s) {
     else return NULL;
 }
 
-/** recupere un nombre passee en HTTP/GET
+/** recupere un nombre passee en HTTP/GET (ou une liste de nombres separes par des X)
  */
 function getnumeric($s) {
     global $link;
-    if (isset($_GET[$s]) && is_numeric($_GET[$s])) {
+    if (isset($_GET[$s])) {
+	$a = explode('X',$_GET[$s]);
+	foreach ($a as $id) {
+	    if (!is_numeric($id)) return NULL;
+	}
 	return $_GET[$s];
     }
-    else return NULL;
+    return NULL;
 }
 
-/** recupere une liste de nombre passee en HTTP/GET
+
+/** recupere une liste de nombres separes par des virgules passee en HTTP/GET
  */
 function getlistnumeric($s) {
     global $link;

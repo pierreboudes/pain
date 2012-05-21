@@ -25,12 +25,13 @@ $annee = annee_courante();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once('utils.php');
 
+entete("gestion des enseignements et des services", "pain_admin.js");
+include("menu.php");
+
 /**
 crée tout le code html initial de la page admin.
  */
 function admin_php() {
-    entete("gestion des enseignements et des services", "pain_admin.js");
-    include("menu.php");
     include("box_admin.html");
     echo '<div id="vueadmin"></div>';
     include("skel_admin.html");
