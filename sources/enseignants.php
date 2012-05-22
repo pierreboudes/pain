@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once("inc_connect.php");
+$user = authentication();
+$annee = annee_courante();
 require_once('authentication.php'); 
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once("inc_functions.php");
@@ -37,9 +40,10 @@ function ig_tablecategorie($id, $nom) {
 crée tout le code html initial de la page enseignants.
 */
 function enseignants_php() {
-    $user = authentication();
-    $annee = annee_courante();
-    
+    global $user;
+    global $annee;
+    global $link;
+
     entete("les enseignants","pain_enseignants.js");
     include("menu.php");
     include("box_enseignants.html");
@@ -53,6 +57,7 @@ function enseignants_php() {
     include("skel_enseignants.html");
     piedpage();
 }
+    
 
 enseignants_php();
 ?>
