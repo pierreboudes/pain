@@ -31,6 +31,8 @@ function set_year($annee) {
     setcookie("painAnnee", $annee, time()+3600);
 }
 
+date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
+
 function default_year() {
     if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
 	return $_COOKIE["painAnnee"];
