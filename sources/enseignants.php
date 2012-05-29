@@ -20,9 +20,9 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once("inc_connect.php");
+require_once('authentication.php'); 
 $user = authentication();
 $annee = annee_courante();
-require_once('authentication.php'); 
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once("inc_functions.php");
 
