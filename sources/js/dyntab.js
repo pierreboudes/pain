@@ -21,7 +21,7 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
-var config_choisir_tout_cours = true; /* faire un vrai systeme de configuration ! */
+var config_choisir_tout_cours = false; /* faire un vrai systeme de configuration ! */
 var hasTouch = false;
 var clickeditmode = false;
 
