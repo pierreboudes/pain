@@ -21,11 +21,11 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-
+$annee = annee_courante();
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 
-function json_enseignants_php($annee) {
+function json_enseignants_php($annee, $categorie) {
     $rens = lister_enseignantsannee($annee);
     $arr = array();
     while ($ens = $rens->fetch_object()) {
@@ -37,6 +37,6 @@ function json_enseignants_php($annee) {
 if ((!isset($annee)) || ($annee == NULL)) $annee = annee_courante();
 
 if (isset($_GET["term"])) {
-    json_enseignants_php($annee);
+    json_enseignants_php($annee, $annee);
 }
 ?>

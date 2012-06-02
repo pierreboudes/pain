@@ -23,7 +23,7 @@ require_once('authentication.php');
 require_once("inc_annuairefunc.php");
 
 $user = authentication();
-$annee = annee_courante();
+$annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("Annuaire des formations");
 include("menu.php");

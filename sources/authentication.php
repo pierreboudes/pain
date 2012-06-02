@@ -37,23 +37,31 @@ function default_year() {
     if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
 	return $_COOKIE["painAnnee"];
     }
-    return date('Y', strtotime('-5 month -15 days'));
+    return date('Y', strtotime('-5 month'));
 }
 
-function annee_courante() {
-/* On a reçu une annee dans l'URL */
-    if (isset($_GET['annee'])) {
-	$annee = getnumeric("annee");
+function get_and_set_annee_menu() {
+    $annee = getnumeric("annee_menu"); /* annee fixee par le menu en POST */    
+    if (NULL != $annee) {
+	set_year($annee); /* change le cookie */
+	return $anneee;
     }
-/* Mise a jour de l'annee par le formulaire du menu */
-    else if (isset($_POST['annee'])) {
-	$annee = postclean('annee');
-	set_year($annee);
-    } else { 
-/* par défaut on sert l'année courante */
+    /* pas d'annee par le menu */
+    $annee = getnumeric("annee"); /* annee reçue une variable d'annee en get ou post */
+    if (NULL == $annee) {
 	$annee = default_year();
     }
     return $annee;
+}
+
+function annee_courante() {
+    $annee = getnumeric("annee");
+    if (NULL != $annee) {
+	/* On a reçu une année dans en post ou GET */
+	return $annee;
+    }
+    /* par défaut on sert l'année courante */
+    return default_year();
 }
 
 function pain_getuser() {

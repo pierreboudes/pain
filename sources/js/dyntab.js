@@ -21,6 +21,7 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
+var config_choisir_tout_cours = true; /* faire un vrai systeme de configuration ! */
 var hasTouch = false;
 var clickeditmode = false;
 
@@ -364,7 +365,12 @@ function enseignant () {
 	/* charger une seule fois la liste des enseignants */	
 	/* mettre en place l'autocomplete */
 	var ens = c.find("input");
-	getjson("json_enseignants.php",{term: ""}, function (data) {
+	var param = {term: ""};
+	var annee = getAnnee(c); /* essayons de trouver l'annee */
+	if (annee != null) {
+	    param.annee = annee;
+	}
+	getjson("json_enseignants.php",param, function (data) {
 		ens.autocomplete({ minLength: 2,
 			    source: data,
 /* USELESS (FAIL)			    mustMatch: true,
@@ -2119,7 +2125,13 @@ function   nouveauService(e) {
 
 /* ---------- FIN MENU AJOUT SERVICE ---------*/
 
-function getAnnee() {
+function getAnnee(c) {
+    if ((arguments.length > 0) && existsjQuery(c)) {/* trouver l'annee dans la branche du dom */
+	var ids = c.closest('table.tablesupers').attr('id'); 
+	/* TODO remplacer tr.annee par quelque chose comme id^=annee_ */
+	var oid = parseIdString(ids);
+	return oid.id;
+    }/* sinon on fait comme si on pouvait trouver ça dans le menu */
     return $('#choixannee option:selected').attr('value');
 }
 
@@ -2333,8 +2345,8 @@ function appendItem(type, prev, o, list) {
     }
     if (type == "tranche") {
 	addMult(line.children('td.action')); 
-	if (o["id_enseignant"] == 3) {
-	    addChoisir(line.children('td.laction')); 	    
+	if ( (o["id_enseignant"] == 3) || config_choisir_tout_cours) {
+	    addChoisir(line.children('td.laction'));  
 	} else {
 	    removeChoisir(line.children('td.laction'));
 	}

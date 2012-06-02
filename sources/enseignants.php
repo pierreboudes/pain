@@ -22,7 +22,7 @@
 require_once("inc_connect.php");
 require_once('authentication.php'); 
 $user = authentication();
-$annee = annee_courante();
+$annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once("inc_functions.php");
 

@@ -21,7 +21,7 @@
  */
 require_once('authentication.php'); 
 $user = authentication();
-$annee = annee_courante();
+$annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 entete("gestion des enseignements et des services", "pain_index.js");
 require_once('utils.php');
