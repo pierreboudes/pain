@@ -661,6 +661,9 @@ pain_enseignant.login AS login,
 pain_enseignant.prenom AS prenom,
 pain_enseignant.nom AS nom,
 pain_enseignant.id_enseignant AS id_enseignant,
+pain_enseignant.statut AS statut,
+pain_service.service_annuel AS service,
+pain_enseignant.email AS email,
 pain_formation.nom AS nom_formation,
 pain_formation.annee_etude AS annee_etude,
 pain_formation.parfum AS parfum,
@@ -673,8 +676,9 @@ SUM(pain_tranche.td) AS td,
 SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd
-FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant
-WHERE pain_enseignant.id_enseignant IN (".$enseignants.") 
+FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant, pain_service
+WHERE pain_enseignant.id_enseignant IN (".$enseignants.")
+AND pain_service.id_enseignant = pain_enseignant.id_enseignant
 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant
 AND pain_cours.id_enseignant <> 1
 AND pain_tranche.id_cours = pain_cours.id_cours
