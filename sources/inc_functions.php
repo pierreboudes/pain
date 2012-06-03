@@ -60,15 +60,19 @@ function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_serv
     }
 }
 
-function lister_enseignantsannee($an)
+function lister_enseignantsannee($an, $categorie = NULL)
 {
     global $link;
     $qens = "SELECT pain_enseignant.id_enseignant AS `id`, ".
-                    "TRIM(CONCAT(prenom, ' ',nom)) AS `label` ".
+                   "TRIM(CONCAT(prenom, ' ',nom)) AS `label` ".
+                   "pain_service.service_annuel as service ".
              "FROM pain_enseignant, pain_service ".
              "WHERE pain_service.annee_universitaire = $an ".
-	     "AND pain_service.id_enseignant = pain_enseignant.id_enseignant ".
-	     "ORDER BY nom, prenom ASC";
+             "AND pain_service.id_enseignant = pain_enseignant.id_enseignant ";
+    if (NULL != $categorie) {
+	$qens .= "AND pain_service.categorie = $categorie ";
+    }
+    $qens .= "ORDER BY nom, prenom ASC";
     $rens = $link->query($qens) 
 	or die("Échec de la requête sur la table enseignant: $qens mysql a repondu: ".$link->error);
     return $rens;
