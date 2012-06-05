@@ -64,7 +64,7 @@ function lister_enseignantsannee($an, $categorie = NULL)
 {
     global $link;
     $qens = "SELECT pain_enseignant.id_enseignant AS `id`, ".
-                   "TRIM(CONCAT(prenom, ' ',nom)) AS `label` ".
+                   "TRIM(CONCAT(prenom, ' ',nom)) AS `label`, ".
                    "pain_service.service_annuel as service ".
              "FROM pain_enseignant, pain_service ".
              "WHERE pain_service.annee_universitaire = $an ".

@@ -38,6 +38,7 @@ require_once('utils.php');
 function bkp_base($force = false) {
     $output = "";
     $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
+    if (!@file_exists("$dir/../secret/painbkp.sh")) return "pas de script de sauvegarde"; 
     $s = @stat($dir.'/bkp/void_bkp.txt');
     if  (time() > ($s[9] + 604800) || $force) /* weekly */
     {
