@@ -442,8 +442,21 @@ div.basculeOff, div.basculeOn {
     cursor: pointer;
     width: 20px;
     height: 20px;
+    background-repeat: no-repeat;
 }
-
+div.basculeOff > div.nbbasc, div.basculeOn > div.nbbasc {
+    float: left;
+    width: 20px;
+    color: cornflowerblue;
+    margin-left: -21px;
+    height: 20px;
+    text-align: right;
+    font-size: 9pt;
+    padding-top: 4px;
+}
+div.basculeZero> div.nbbasc {
+    color: red;
+}
 div.basculeOff {
     background-image: url(img/triangleLR.png);
 }

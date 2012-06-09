@@ -63,7 +63,8 @@ function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_serv
 function lister_enseignantsannee($an, $categorie = NULL)
 {
     global $link;
-    $qens = "SELECT pain_enseignant.id_enseignant AS `id`, ".
+    $qens = "SELECT pain_enseignant.id_enseignant AS `id_enseignant`, ".
+	           "pain_enseignant.id_enseignant AS `id`, ".
                    "TRIM(CONCAT(prenom, ' ',nom)) AS `label`, ".
                    "pain_service.service_annuel as service ".
              "FROM pain_enseignant, pain_service ".
@@ -81,9 +82,10 @@ function lister_enseignantsannee($an, $categorie = NULL)
 function lister_categories()
 {
     global $link;
-    $qcat = "SELECT id_categorie AS `id`, ".
-                    "TRIM(nom_court) AS `label`, ".
-	            "nom_long, descriptif ".
+    $qcat = "SELECT id_categorie,".
+                   "id_categorie AS `id`, ".
+                   "TRIM(nom_court) AS `label`, ".
+	           "nom_long, descriptif ".
 	"FROM pain_categorie ".
 	"WHERE descriptif <> \"\" ". /* <- debile, TODO : trouver la bonne structure */
 	"ORDER BY id_categorie ASC";
@@ -653,9 +655,6 @@ function listedeclarations($ids_enseignants, $an = NULL) {
 	}
 	$an = $annee;
     }
-    
-    $enseignants = $ids_enseignants;
-
     $query = "SELECT 
 pain_enseignant.login AS login,
 pain_enseignant.prenom AS prenom,
@@ -677,7 +676,7 @@ SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant, pain_service
-WHERE pain_enseignant.id_enseignant IN (".$enseignants.")
+WHERE pain_enseignant.id_enseignant IN (".$ids_enseignants.")
 AND pain_service.id_enseignant = pain_enseignant.id_enseignant
 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant
 AND pain_cours.id_enseignant <> 1

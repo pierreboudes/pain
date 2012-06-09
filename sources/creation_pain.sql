@@ -3,6 +3,11 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 
+CREATE TABLE IF NOT EXISTS pain_annee (
+  annee_universitaire YEAR(4) NOT NULL,
+  PRIMARY KEY (annee_universitaire)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
 CREATE TABLE IF NOT EXISTS pain_categorie (
   id_categorie mediumint(9) NOT NULL,
   nom_court varchar(40) CHARACTER SET utf8 COLLATE utf8_swedish_ci NOT NULL,

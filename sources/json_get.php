@@ -34,8 +34,36 @@ Les entrées sont éventuellement calculées par jointures et aggrégats. La sé
  */
 function json_get_php($annee, $readtype) {
     global $link;
-    if ($readtype == "sformation") {
+    if ($readtype == "annee") {
+	if (isset($_GET["cetteannee"])) {
+	    $requete = "SELECT annee_universitaire, 
+                             annee_universitaire as id, 
+                             annee_universitaire as id_annee,
+                             'annee' as type,
+                             count(id_sformation) as nb_sformation
+                      FROM pain_annee NATURAL LEFT JOIN pain_sformation
+                      WHERE annee_universitaire = $annee
+                      GROUP BY annee_universitaire ";
+	    $_GET["id"] = 0; /* pour passer dans le if plus bas... */
+	} else {
+	    $listannees = Array();
+	    for ($i = $annee - 3; $i < $annee + 3; $i += 1) {
+		$listannees[] = $i;
+	    }
+	    $requete = "SELECT annee_universitaire, 
+                             annee_universitaire as id, 
+                             annee_universitaire as id_annee,
+                             'annee' as type,
+                             count(id_sformation) as nb_sformation
+                      FROM pain_annee NATURAL LEFT JOIN pain_sformation
+                      WHERE annee_universitaire BETWEEN $annee - 3 AND $annee + 3
+                      GROUP BY annee_universitaire
+                      ORDER BY annee_universitaire ASC ";
+	    $_GET["id_parent"] = 0; /* pour passer dans le if plus bas... */
+	}
+    } else if ($readtype == "sformation") {
 	$type = "sformation";
+	$counttype = "formation";
 	$par = "annee_universitaire";
 	$order = "ORDER BY numero ASC";
     } else if ($readtype == "microsformation") {
@@ -53,10 +81,12 @@ function json_get_php($annee, $readtype) {
                     ORDER BY numero ASC";
     } else if ($readtype == "formation") {
 	$type = "formation";
+	$counttype = "cours";
 	$par = "id_sformation";
 	$order = "ORDER BY numero ASC";
     } else if ($readtype == "cours") {
 	$type = "cours";
+	$counttype = "tranche";
 	$par = "id_formation";
 	$order = "ORDER BY semestre, nom_cours ASC";
     } else if ($readtype == "tranche") {
@@ -69,21 +99,26 @@ function json_get_php($annee, $readtype) {
 	$order = "ORDER by modification ASC";
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
+	$counttype = "service";
 	$par = "id_categorie";
 	$requete = "SELECT pain_enseignant.*,
                     pain_categorie.nom_court,
                     \"$type\" AS type,
-                    id_$type AS id
-                    FROM pain_enseignant, pain_categorie";
+                    pain_$type.id_$type AS id,
+                    COUNT(annee_universitaire) as nb_service
+                    FROM pain_enseignant LEFT JOIN pain_service 
+                           ON pain_enseignant.id_enseignant = pain_service.id_enseignant, 
+                         pain_categorie";
 	if (isset($_GET['id_parent'])) {
 	    $id_par = $_GET['id_parent'];
-	    $requete .= " WHERE categorie = $id_par ";	    
+	    $requete .= " WHERE pain_enseignant.categorie = $id_par ";	    
         } else if (isset($_GET["id"])) {
 	    $id = $_GET['id'];
 	    $requete .= " WHERE id_enseignant = $id ";	    
 	}
-	$requete .= " AND id_categorie = categorie ";
-	$requete .= "ORDER BY nom, prenom ASC";
+	$requete .= " AND pain_enseignant.categorie = id_categorie 
+                      GROUP BY pain_enseignant.id_enseignant 
+                      ORDER BY nom, prenom ASC";
     } else if ($readtype == "longchoix") {
 	$type = "choix";
 	$requete = "SELECT pain_choix.*,
@@ -369,13 +404,23 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   $requete = "SELECT 
                       pain_$type.*,
                        \"$type\" AS type, 
-                      id_$type AS id,
-                      pain_enseignant.prenom AS prenom_enseignant,
+                      pain_$type.id_$type AS id,";
+	   if (isset($counttype)) {
+	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
+	   }
+	   $requete .= "pain_enseignant.prenom AS prenom_enseignant,
                       pain_enseignant.nom AS nom_enseignant
-             FROM pain_$type, pain_enseignant 
-             WHERE `$par` = $id_par
-             AND pain_$type.id_enseignant = pain_enseignant.id_enseignant
-             $order";
+             FROM pain_$type";
+	   if (isset($counttype)) {
+	       $requete .= " LEFT JOIN pain_$counttype ON pain_$counttype.id_$type = pain_$type.id_$type";
+	   }
+	   $requete .= ", pain_enseignant 
+             WHERE pain_$type.$par = $id_par
+             AND pain_$type.id_enseignant = pain_enseignant.id_enseignant ";
+	   if (isset($counttype)) {
+	       $requete .= "GROUP BY id_$type ";
+	   }
+             $requete .= $order;
        }
        $resultat = $link->query($requete) 
 	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);
@@ -388,13 +433,23 @@ and pain_sformation.annee_universitaire = ".$annee."
        $id = getnumeric("id");
        if (!isset($requete)) {
 	   $requete = "SELECT \"$type\" AS type,
-                      $id AS id,
-                      pain_$type.*,
-                      pain_enseignant.prenom AS prenom_enseignant,
+                       $id AS id,
+                      pain_$type.*,";
+	   if (isset($counttype)) {
+	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
+	   }
+	   $requete .="pain_enseignant.prenom AS prenom_enseignant,
                       pain_enseignant.nom AS nom_enseignant
-             FROM pain_$type, pain_enseignant 
-             WHERE `id_$type` = $id
-             AND pain_$type.id_enseignant = pain_enseignant.id_enseignant";
+             FROM pain_$type";
+	   if (isset($counttype)) {
+	       $requete .= " LEFT JOIN pain_$counttype ON pain_$counttype.id_$type = pain_$type.id_$type";
+	   }
+	   $requete .= ", pain_enseignant 
+             WHERE pain_$type.id_$type = $id
+             AND pain_$type.id_enseignant = pain_enseignant.id_enseignant ";
+	   if (isset($counttype)) {
+	       $requete .= "GROUP BY id_$type";
+	   }
        }
        $resultat = $link->query($requete) 
 	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);
@@ -418,17 +473,7 @@ if (isset($_GET["annee_universitaire"])) {
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
      
-    if ($readtype == "annee") {
-	if (isset($_GET["cetteannee"])) {
-	    print "[{\"annee_universitaire\": \"$annee\",\"id\": \"$annee\", \"id_annee\": \"$annee\", \"type\":\"annee\"}]";
-	} else {
-	    print "[";
-	    for ($i = $annee - 3; $i < $annee + 3; $i += 1) {
-		print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"},";
-	    }
-	    print "{\"annee_universitaire\": \"$i\",\"id\": \"$i\", \"id_annee\": \"$i\", \"type\":\"annee\"}]";
-	}
-    } else if ($readtype == "declarations") {
+    if ($readtype == "declarations") {
 	$ids = getlistnumeric("ids");
 	if (!peuttransmettredeclarations($ids)) {
 	    errmsg("opération non autorisée");

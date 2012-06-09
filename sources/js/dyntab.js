@@ -2302,8 +2302,11 @@ function appendItem(type, prev, o, list) {
 	}
     }
     if (type == "cours") {
+	var nbbasc = o["nb_tranche"];
+	var classzero = "";
+	if (0 == nbbasc) classzero = " basculeZero";
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculecours_'+o["id_cours"]+'" />')
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculecours_'+o["id_cours"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
 	    .bind('click',{id: o["id_cours"]},basculerCours);
 	addHandle(line.children('td.laction'), "cours");
 	var colspan = largeurligne($("#skelcours"));
@@ -2311,24 +2314,33 @@ function appendItem(type, prev, o, list) {
     }
     if (type == "annee") {
 	var idannee = o["id"];
+	var nbbasc = o["nb_sformation"];
+	var classzero = "";
+	if (0 == nbbasc) classzero = " basculeZero";
 	/* bascule d'annee */
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculeannee'+idannee+'" />');
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculeannee'+idannee+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculeannee'+idannee).bind('click',{id: idannee},basculerAnnee);
 	addHandle(line.children('td.laction'), "annee");
 	$('#basculeannee'+idannee).droppable({accept:'div.handle', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
     }
     if (type == "sformation") {
 	var idsf = o["id_sformation"];
+	var nbbasc = o["nb_formation"];
+	var classzero = "";
+	if (0 == nbbasc) classzero = " basculeZero";
 	/* bascule de sformation */
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculesformation_'+idsf+'" />');
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculesformation_'+idsf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculesformation_'+idsf).bind('click',{id: idsf},basculerSuperFormation);
 	addHandle(line.children('td.laction'), "sformation");
 	$('#basculesformation_'+idsf).droppable({accept:'div.handle.formation', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
     }
     if (type == "formation") {
 	var idf = o["id_formation"];
+	var nbbasc = o["nb_cours"];
+	var classzero = "";
+	if (0 == nbbasc) classzero = " basculeZero";
 	/* histogrammes et logs */
 	line.children('td.laction')
 	    .prepend('<div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'+idf+'"></div><div class="logOff" id="logsFormation'+idf+'"></div></div>');
@@ -2336,7 +2348,7 @@ function appendItem(type, prev, o, list) {
 	$('#logsFormation'+idf).bind('click',{id: idf},logsFormation);
 	/* bascule de formation */
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculeformation_'+idf+'" />');
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculeformation_'+idf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
 	/* */
@@ -2352,8 +2364,11 @@ function appendItem(type, prev, o, list) {
 	}
     }
     if (type == "enseignant") {
+	var nbbasc = o["nb_service"];
+	var classzero = "";
+	if (0 == nbbasc) classzero = " basculeZero";
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff" id="basculeenseignant_'+o["id_enseignant"]+'" />')
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculeenseignant_'+o["id_enseignant"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
 	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
     }
     addRm(line.find('td.action')); 
