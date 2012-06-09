@@ -27,22 +27,27 @@ require_once("inc_functions.php");
 
 $query = "SELECT id_sformation, nom FROM pain_sformation WHERE annee_universitaire = $annee ORDER BY numero";
 $res = $link->query($query) or die("BD Impossible d'effectuer la requête: $query");
-$formation = $res->fetch_assoc();
 
-/* \TODO : mettre les catégorie et leurs légendes (longue, courte, détaillée) dans une table. passer la catégorie 29 à 5. DANGER "categories" en dur */
+/* \TODO : mettre les catégorie et leurs légendes (longue, courte, détaillée) dans une table FAIT. passer la catégorie 29 à 5 (en fait non ça ferait apparaitre "autre" comme un enseignant normal). DANGER "categories" en dur. galere, je bricole en attendant de trouver la bonne structure de donnee (peut-etre traiter les sous-totaux par du js basé sur des skel). */
 
-$tab = array(
-    array("Catégorie"),
-    array("Permanents"),
-    array("Non-permanents"),
-    array("Galilée"),
-    array("Paris&nbsp;13"),
-    array("Autres"),
-    array("Vacants"),
-    array("ss totaux"),
-    array("Annulés"),
-    array("Aidés")
-    );
+$query = "SELECT id_categorie, nom_court FROM pain_categorie WHERE id_categorie IN (2,3,4,6,5,23,1,22)";
+$r = $link->query($query) or die("BD Impossible d'effectuer la requête: $query");
+
+$cat =Array();
+
+while ($categorie = $r->fetch_assoc()) {
+    $cat[$categorie["id_categorie"]] = $categorie["nom_court"];
+}
+$tab = array(array("Catégorie"));
+$tab[] = array($cat[2]);
+$tab[] = array($cat[3]);
+$tab[] = array($cat[4]);
+$tab[] = array($cat[6]);
+$tab[] = array($cat[5]);
+$tab[] = array($cat[23]);
+$tab[] = array("ss totaux");
+$tab[] = array($cat[1]);
+$tab[] = array($cat[22]);
 
 $res->data_seek(0);
 $i = 1;

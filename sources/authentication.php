@@ -44,7 +44,7 @@ function get_and_set_annee_menu() {
     $annee = getnumeric("annee_menu"); /* annee fixee par le menu en POST */    
     if (NULL != $annee) {
 	set_year($annee); /* change le cookie */
-	return $anneee;
+	return $annee;
     }
     /* pas d'annee par le menu */
     $annee = getnumeric("annee"); /* annee reçue une variable d'annee en get ou post */

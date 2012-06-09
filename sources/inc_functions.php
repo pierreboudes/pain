@@ -87,7 +87,7 @@ function lister_categories()
                    "TRIM(nom_court) AS `label`, ".
 	           "nom_long, descriptif ".
 	"FROM pain_categorie ".
-	"WHERE descriptif <> \"\" ". /* <- debile, TODO : trouver la bonne structure */
+	"WHERE descriptif <> \"\" ". /* <- debile, \TODO : trouver la bonne structure */
 	"ORDER BY id_categorie ASC";
     $rcat = $link->query($qcat) 
 	or die("Échec de la requête sur la table categorie: $qens mysql a repondu: ".$link->error);

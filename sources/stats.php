@@ -23,7 +23,9 @@ require_once('authentication.php');
 $user = authentication();
 $annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
+entete("statistiques","jquery.gchart.js","pain_stats.js");
 require_once('utils.php');
+include("menu.php");
 require_once('inc_droits.php');
 require_once('inc_functions.php');
 require_once('inc_statsfunc.php');
@@ -35,8 +37,6 @@ function stats_php() {
     global $link;
     global $user;
     global $annee;
-    entete("statistiques","jquery.gchart.js","pain_stats.js");
-    include("menu.php");
 /* mise a jour des services  (pain_service) */
     update_servicesreels();
 

@@ -55,7 +55,6 @@ function ig_formselectannee($annee)
 
 echo '<form method="post" id="choixannee" class="formcours" name="annee" action="#" style="display:inline;">';
 echo '<select name="annee_menu" style="display:inline; width:100px;">';
-$anneecivile = date('Y', time());
 ig_formselectannee($annee);
 echo '</select>';
 echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
