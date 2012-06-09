@@ -56,7 +56,9 @@ function json_get_php($annee, $readtype) {
                              'annee' as type,
                              count(id_sformation) as nb_sformation
                       FROM pain_annee NATURAL LEFT JOIN pain_sformation
-                      WHERE annee_universitaire BETWEEN $annee - 3 AND $annee + 3
+                      WHERE annee_universitaire BETWEEN 
+                            (select coalesce(min(t.annee_universitaire),$annee) from pain_sformation as t) - 1 
+                            AND (select coalesce(max(t.annee_universitaire),$annee) from pain_sformation as t) + 2
                       GROUP BY annee_universitaire
                       ORDER BY annee_universitaire ASC ";
 	    $_GET["id_parent"] = 0; /* pour passer dans le if plus bas... */
