@@ -887,20 +887,24 @@ function moveup(e) {
 	bascule.trigger('click'); /* on peut proceder a l'echange pendant la fermeture */
     }
 
-    if (!trprev.hasClass(trid["type"])) {
+    if (trprev.hasClass("img"+trid["type"])) {/* il y a une seconde ligne auxilliaire (img) qui accompagne nos tr */
 	traux = trprev;
 	trprev = trprev.prev();
 	trprevaux = trprev.prev();
 	if ( (!trprev.hasClass(trid["type"]))
 	     || (!traux.hasClass("img"+trid["type"]))
 	     || (!trprevaux.hasClass("img"+trid["type"]))
-	    ) return false;
+	    ) return false;/* quelque chose se passe mal: abandon */
+    }
+
+    if (parseIdString(trprev.attr('id')).type != trid.type) {/* on n'a pas trouvé la seconde ligne à echanger: abandon */
+	return false;
     }
 
     bascule = trprev.find('td.laction > div.basculeOn');
     if (existsjQuery(bascule)) {
 	bascule.trigger('click');
-	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule */
+	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule: abandon */
 	return false;
     }
 
@@ -950,17 +954,21 @@ function movedown(e) {
     var bascule = tr.find('td.laction > div.basculeOn');
     if (existsjQuery(bascule)) {
 	bascule.trigger('click');
-	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule */
+	/* on ne procede pas a l'echange, il faut laisser le temps de fermer la bascule: abandon */
 	return false;
     }
-    if (!trnext.hasClass(trid["type"])) {
+    if (trnext.hasClass('img'+trid["type"])) {
 	trnextaux = trnext;
 	trnext = trnext.next();
 	traux = tr.prev();
 	if ((!trnext.hasClass(trid["type"]) )
 	    || (!trnextaux.hasClass("img"+trid["type"]))
-	    || (!traux.hasClass("img"+trid["type"]))
-	    ) return false;
+	    || (!traux.hasClass("img"+trid["type"])) 
+	    ) return false; /* quelque chose se passe mal: abandon */
+    }
+
+    if (parseIdString(trnext.attr('id')).type != trid.type) {/* on n'a pas trouvé la seconde ligne à echanger: abandon */
+	return false;
     }
 
     bascule = trnext.find('td.laction > div.basculeOn');
