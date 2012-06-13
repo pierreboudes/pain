@@ -33,11 +33,18 @@ function set_year($annee) {
 
 date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
 
+/**  a partir du mois de mai : l'annee universitaire suivante, s'il n'y existe pas de sformation l'annee la plus recente
+ */
 function default_year() {
+    global $link;
     if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
 	return $_COOKIE["painAnnee"];
     }
-    return date('Y', strtotime('-5 month'));
+    $an = date('Y', strtotime('-5 month'));
+    $q = "SELECT coalesce($an - min($an - annee_universitaire), $an) as annee FROM pain_sformation";
+    $r = $link->query($q);
+    $res = $r->fetch_array();
+    return $res["annee"];    
 }
 
 function get_and_set_annee_menu() {

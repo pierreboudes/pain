@@ -116,7 +116,7 @@ function json_get_php($annee, $readtype) {
 	    $requete .= " WHERE pain_enseignant.categorie = $id_par ";	    
         } else if (isset($_GET["id"])) {
 	    $id = $_GET['id'];
-	    $requete .= " WHERE id_enseignant = $id ";	    
+	    $requete .= " WHERE pain_enseignant.id_enseignant = $id ";	    
 	}
 	$requete .= " AND pain_enseignant.categorie = id_categorie 
                       GROUP BY pain_enseignant.id_enseignant 
