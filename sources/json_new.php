@@ -104,14 +104,14 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "tag") {
 	$type = "tag";
 	$par = "descriptif";
-	$_GET["id_parent"] = "descriptif ?";
+	$_GET["id_parent"] = 1; /* faux parent */
     } else if ($readtype == "tagscours") {
 	$type = "tagscours";
 	$_GET["id_parent"] = getnumeric("id_cours");
     } else if ($readtype == "collection") {
 	$type = "collection";
 	$par = "descriptif";
-	$_GET["id_parent"] = "descriptif ?";
+	$_GET["id_parent"] = 1; /* faux parent */
     } else if ($readtype == "collectionscours") {
 	$type = "collectionscours";
 	$_GET["id_parent"] = getnumeric("id_cours");
@@ -129,12 +129,16 @@ if (isset($_GET["id_parent"])) {
 	errmsg("droits insuffisants.");
     }
     $set = array();
+    /* champs spéciaux et rattachement au parent si nécessaire */
     if (($type != "tagscours") && ($type != "collectionscours"))  {
-	if ($type != "enseignant") {
-	    $set[$par] = $id_parent;
-	} else {
+	if ( ($type == "tag") || ($type == "collection") ) {
+	    $set["descriptif"] = "Descriptif ?";
+	}
+	else if ($type == "enseignant") {
 	    $set["categorie"] = $id_parent;
 	    $set["debut"] = date('Y-m-d');
+	} else {
+	    $set[$par] = $id_parent; 
 	}
     }
     

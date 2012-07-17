@@ -145,7 +145,7 @@ function postnumclean($s) {
 function pain_log($message, $logname='pain') {
     global $user;
     /* vu qu'on écrit un fichier on ne veut pas de process appelant qui boucle... */
-    static $compteur;
+    static $compteur = 0;
     if ($compteur++ > 10) return;
 
 //	$pid = '(pid '.@getmypid().')';
@@ -168,7 +168,7 @@ function pain_log($message, $logname='pain') {
     }
     if ($rotate) {
 	$nb = 50;
-	@unlink($logfile.".$i");
+	@unlink($logfile.".$nb");
 	for ($i = $nb; $i > 1; --$i) {
 	    @rename($logfile.".".($i - 1),$logfile.".$i");
 	}

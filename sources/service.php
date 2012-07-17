@@ -32,13 +32,15 @@ function service_php($id) {
     global $link;
 /* par defaut on sert la feuille de l'utilisateur */
     $id_enseignant = $id; 
-/* mais si on a un identifiant dans l'url on utilise plutot celui-ci */
-    if (isset($_GET['id_enseignant'])) {
+
+    /* un identifiant a été transmis (formulaire ou url) on utilise celui là */
+    if (isset($_GET['id_enseignant']) || isset($_POST['id_enseignant'])) {	
+	if (isset($_POST['id_enseignant'])) {
+            /* on a un identifiant provenant du formulaire, on oublie celui
+             * provenant de l'url */
+	    unset($_GET['id_enseignant']);
+	}
 	$id_enseignant = getnumeric("id_enseignant");
-    }
-/* et si l'identifiant provient du formulaire, c'est plutot celui-la */
-    if (isset($_POST['id_enseignant'])) {
-	$id_enseignant = postclean('id_enseignant');
     }
     
 /* le formulaire */

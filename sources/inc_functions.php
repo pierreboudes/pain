@@ -314,7 +314,7 @@ function htdtotaux($annee = NULL) {
     if ($annee == NULL) $annee = annee_courante();
 
     /* heures etudiants */
-    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
              FROM pain_sformation, pain_formation, pain_cours 
              WHERE  pain_formation.id_formation = pain_cours.id_formation 
              AND pain_sformation.id_sformation = pain_formation.id_sformation  
@@ -381,7 +381,7 @@ function htdtotaux($annee = NULL) {
 function htdsuper($id) {
     global $link;    
     /* heures etudiants */
-    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
              FROM pain_formation, pain_cours
              WHERE pain_formation.id_sformation  = $id 
              AND pain_cours.id_formation = pain_formation.id_formation";
@@ -446,7 +446,7 @@ function htdsuper($id) {
 function htdformation($id) {
     global $link;
     /* heures etudiants */
-    $qetu = "SELECT SUM((cm + td + tp + alt) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
              FROM pain_cours WHERE id_formation = $id";
     $retu = $link->query($qetu) 
 	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
@@ -510,7 +510,7 @@ function htdformation($id) {
 function htdcours($id) {
     global $link;
     /* heures etudiants */
-    $qetu = "SELECT (cm + td + tp + alt) * presents as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
              FROM pain_cours WHERE id_cours = $id";
     $retu = $link->query($qetu) 
 	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);

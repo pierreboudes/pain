@@ -35,42 +35,138 @@ $link->query("SET NAMES 'utf8'");
 
 require_once('utils.php');
 
+/**
+   Sauvegarde la base à intervalles réguliers (chaque quinzaine), avec rotation des fichiers.
+   @param $force forcer la backup et la rotation courte.
+ */
 function bkp_base($force = false) {
-    $output = "";
+
+    $nbl = 3; /* nombre de sauvegardes long terme (8w) */
+    $nb = 4; /* nombre de sauvegardes court terme (2w) */
+
+    /* vu qu'on écrit un fichier on ne veut pas de process appelant qui boucle... */
+    static $compteur = 0;
+    if (++$compteur > 1) return;
+
     $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
-    if (!@file_exists("$dir/../secret/painbkp.sh")) return "pas de script de sauvegarde"; 
     $s = @stat($dir.'/bkp/void_bkp.txt');
-    if  (time() > ($s[9] + 604800) || $force) /* weekly */
-    {
-	@touch($dir.'/bkp/void_bkp.txt');
-	pain_log("-- backup base start");	
-	$output = shell_exec("$dir/../secret/painbkp.sh $dir");
-	if (0 == strlen($output)) {
-	   pain_log("-- Warning: backup problem (no script output)");
+
+    /* faut-il faire la backup ? */
+    if  ((time() < ($s[9] + 1209600)) && !$force) return false; 
+    @touch($dir.'/bkp/void_bkp.txt');
+
+    $filename = $dir."/bkp/bkp.sql.gz";
+
+    /* Faut-il faire la rotation des fichiers long terme ? */
+    $longrotate = false;
+    if (!@file_exists($filename.".L1")) {
+	$longrotate = true;
+    } else {
+	$s = @stat($filename.".L1");
+	if  (time() > ($s[9] + 4838400)) { /* L1 a plus de huit semaines */
+	    $longrotate = true;
 	}
-	pain_log("-- backup base end");
     }
-    return $output;
+
+    if ($longrotate) { /* rotation des sauvegardes long terme */ 	    
+	@unlink($filename.".L$nbl");
+	for ($i = $nbl; $i > 1; --$i) {
+	    if (@file_exists($filename.".L".($i - 1))) {
+		@rename($filename.".L".($i - 1), $filename.".L$i");
+	    }
+	}
+	if (@file_exists($filename.".$nb")) {
+	    @rename($filename.".$nb", $filename.'.L1');
+	    @touch($filename.'.L1');
+
+	}
+    } else {
+	@unlink($filename.".$nb");
+    }
+    
+    /* rotation court terme */
+    for ($i = $nb; $i > 1; --$i) {
+	@rename($filename.".".($i - 1), $filename.".$i");
+    }
+    @rename($filename, $filename.'.1');	
+    
+    /* sauvegarde fraiche */
+    pain_log("-- backup base : ".$dir."/bkp/bkp.sql.gz");	
+    $done = dump($filename, false);
+    if (!$done) {
+	pain_log("-- warning: backup problem (incomplete output)");
+    } else {
+	pain_log("-- backup complete");
+    }
+    return $done;
 }
-/* le script painbkp.sh contient :
-mkdir -p ${1}/bkp/;
-cd ${1}/bkp/;
-touch tata;
-if [ -f "pain.2.sql.gz" ]; 
-then rm pain.2.sql.gz; 
-echo "rm  2"; 
-fi
-if [ -f "pain.1.sql.gz" ];
-then mv pain.1.sql.gz pain.2.sql.gz;
-echo "rotate 1->2";
-fi
-if [ -f "pain.sql.gz" ]; 
-then mv pain.sql.gz pain.1.sql.gz; 
-echo "rotate 0->1";
-fi
-mysqldump -p'PASS' -u'USER' BASE pain_cours pain_enseignant pain_tranche pain_formation pain_sformation pain_edt | gzip - > pain.sql.gz;
-echo "backuped";
-*/
-/* BACKUP */
+
+/**
+   Enregistre le contenu de la base dans un fichier sql.gz
+   @param $filename nom du fichier à créer.
+   @param $echoes faut-il activer une sortie écran pour contrôle ?
+ */
+function dump($filename, $echoes = false) {
+/* source: http://www.lyxia.org/blog/developpement/script-php-de-sauvegarde-mysql-571 */
+    global $link;
+
+    /* fichier de sortie gzippé */
+    $fp = gzopen($filename, 'w');
+
+    /* liste des tables de la base */
+    $query = 'SHOW TABLES ';
+    if (!($tables = $link->query($query))) {
+	if ($echoes) errmsg("erreur avec la requete :\n".$query."\n".$link->error);
+	return false;
+    }
+
+    while ($donnees = $tables->fetch_array())     /* Pour chaque table */
+    {
+	$table = $donnees[0];
+	if ($echoes) echo "<p>".$table;
+       
+	/* Creation de la table (structure de la table) */
+	$query = 'SHOW CREATE TABLE '.$table;
+	if (!($tres = $link->query($query))) {
+	    if ($echoes) errmsg("erreur avec la requete :\n".$query."\n".$link->error);
+	    return false;
+	}	    
+	$tableau = $tres->fetch_array();
+	$tableau[1] .= ";\n";
+	$insertions = $tableau[1];
+	gzwrite($fp, $insertions);
+	$tres->free();
+
+
+	/* Remplissage de la table */
+	$query = 'SELECT * FROM '.$table;
+	if (!($tres = $link->query($query))) {
+	    if ($echoes) errmsg("erreur avec la requete :\n".$query."\n".$link->error);
+	    return false;
+	}
+
+	$nbr_champs = $tres->field_count;
+	while ($ligne = $tres->fetch_array())
+	{
+	    if ($echoes) echo '. ';
+	    $insertions = 'INSERT INTO '.$table.' VALUES (';
+	    for ($i=0; $i<$nbr_champs; $i++)
+	    {
+		$insertions .= '\'' . $link->real_escape_string($ligne[$i]) . '\', ';
+	    }
+	    $insertions = substr($insertions, 0, -2);
+	    $insertions .= ");\n";
+	    gzwrite($fp, $insertions);
+	}
+	if ($echoes) echo "(".$tres->num_rows.")</p>";
+	$tres->free(); 
+    }
+    gzclose($fp);
+    if ($echoes) echo "<p>Done.</p>";
+    return true;
+}
+
+
+/* appel du controle de backup */
 bkp_base();
 ?>

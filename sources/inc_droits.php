@@ -314,7 +314,6 @@ function peuteditercollection($id_collection) {
     return peuttoutfaire();
 }
 
-
 function peuttransmettredeclarations($ids) {
     global $user;
     return ($user["su"] == 1);

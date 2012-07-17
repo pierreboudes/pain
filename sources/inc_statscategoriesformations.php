@@ -21,7 +21,6 @@
  */
 require_once('authentication.php'); 
 authrequired();
-
 require_once("inc_connect.php");
 require_once("inc_functions.php");
 

@@ -29,7 +29,6 @@ include("menu.php");
 require_once('inc_droits.php');
 require_once('inc_functions.php');
 require_once('inc_statsfunc.php');
-
 /**
 génére le code HTML de la page stats
  */
@@ -56,6 +55,5 @@ function stats_php() {
 
     piedpage();
 }
-
 stats_php();
 ?>
