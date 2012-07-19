@@ -99,9 +99,16 @@ function authentication() {
     $user = pain_getuser();
     if (NULL == $user) {
 	$login = phpCAS::getUser();
-	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eactue;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
+	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eacute;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
     }
     return $user;
+}
+
+function no_auth() {
+    if (phpCAS::isAuthenticated()) {
+	return pain_getuser();
+    }
+    return NULL;
 }
 
 function weak_auth() {

@@ -69,7 +69,7 @@ function getnumeric($s) {
 }
 
 
-/** recupere une liste de nombres separes par des virgules passee en HTTP/GET ou POST
+/** recupere une liste de nombres csv ou tableau passee en HTTP/GET ou POST et la retourne en csv.
  */
 function getlistnumeric($s) {
     global $link;
@@ -80,11 +80,15 @@ function getlistnumeric($s) {
     } else {
 	return NULL;
     }
-    $a = explode(',',$source);
+    if (!is_array($source)) {
+	$a = explode(',',$source);
+    } else {
+	$a = $source;
+    }
     foreach ($a as $id) {
 	if (!is_numeric(trim($id))) return NULL;
     }
-    return $source;
+    return implode(',',$a);
 }
 
 /** recupere un tableau de tableau associatif passé par HTTP/GET ou POST en json

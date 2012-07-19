@@ -20,20 +20,26 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
+// $user = no_auth(); /* pas d'authentification */
+$user = weak_auth(); /* accès sans autorisation */
+$annee = get_and_set_annee_menu();
+
+require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once("inc_annuairefunc.php");
 
-$user = authentication();
-$annee = get_and_set_annee_menu();
-require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("Annuaire des formations");
-include("menu.php");
+entete("Annuaire des formations","pain_annuaire.js");
+if ($user != NULL) {
+    include("menu.php");
+} else {
+    echo '<ul id="menu" style="text-align:right;"><li><a href="logout.php">logout</a></li></ul>';
+    echo '<h1>Annuaire public de Pain</h1>';
+}
 
 /* identifiant de formation en provenance du formulaire */
 list($id_formation, $semestre) = annuaire_php_form();
 
-if ($id_formation != 0) {
-    annuaire_php($id_formation, $semestre);
-}
+/* affichage des tableaux des cours */
+annuaire_php();
 
 piedpage();
 ?>

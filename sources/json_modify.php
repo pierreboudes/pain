@@ -167,10 +167,12 @@ function json_modify_php($annee, $readtype, $id) {
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
-	if ("null" != $val) {
-	    $setsql[] = '`'.$field.'` = "'.$val.'"';
-	} else {
+	if ("null" == $val) {
 	    $setsql[] = '`'.$field.'` = NULL';
+	}else if ("default" == $val) {
+	    $setsql[] = '`'.$field.'` = NULL';
+	} else {
+	    $setsql[] = '`'.$field.'` = "'.$val.'"';
 	}
     };
     $strset = implode(", ", $setsql);

@@ -1180,3 +1180,30 @@ div.no {
     background-color: #F99;
     border: 2px red solid;
 }
+
+/* style du formulaire annuaire */
+#formannuaire {
+width:400px;
+}
+#formannuaire input {
+    width: 10px;
+    margin-left: 20px; 
+}
+#formannuaire fieldset {
+    border:2px solid #6495ed;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;	
+    border-radius:8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#formannuaire legend {
+    font-weight: bold;
+}
+#formannuaire ul {
+    margin-top: 2px;
+    margin-bottom: 5px;
+    list-style: none;
+}
+table.annuaire div.formation {
+};

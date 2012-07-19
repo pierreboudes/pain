@@ -20,41 +20,47 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('authentication.php'); 
-authrequired();
-require_once("inc_functions.php");
+// $user = no_auth(); /* pas d'authentification */
+$user = weak_auth(); /* accès sans autorisation */
+$annee = get_and_set_annee_menu();
 
-function ig_formselectformation($id_formation, $annee = NULL)
+/** 
+un select de formulaire pour choisir les sformations de l'année
+*/
+function ig_formselectsformation($id_sformation)
 {
     global $link;
     global $annee;
-    if ($annee == NULL) $annee = annee_courante();
-    $q = "SELECT id_formation, 
-                 pain_formation.nom AS nom, 
-                 pain_formation.parfum AS parfum, 
-                 pain_formation.annee_etude AS annee_etude 
-          FROM pain_formation, pain_sformation          
-          WHERE pain_formation.id_sformation = pain_sformation.id_sformation
-          AND pain_sformation.annee_universitaire = $annee
-          ORDER BY pain_formation.numero ASC";
+    $q = "SELECT id_sformation, 
+                 nom 
+          FROM pain_sformation          
+          WHERE annee_universitaire = $annee
+          ORDER BY numero ASC";
     $r = $link->query($q) 
-	or die("</select></form>Échec de la requête sur la table formation: ".$link->error);
+	or die("</select></form>Échec de la requête sur la table sformation: ".$link->error);
+    if (NULL == $id_sformation) {
+	echo '<option disabled="disabled">Choisir un cycle</option>';
+    };
     while ($form = $r->fetch_array()) {
 	echo '<option ';
-	if ($form["id_formation"] == $id_formation) {
+	if ($form["id_sformation"] == $id_sformation) {
 	    echo 'selected="selected" ';
 	}
-	echo  'value="'.$form["id_formation"].'">';
-	echo $form["nom"]." ";
-	if ($form["parfum"] != "") echo $form["parfum"]." ";
-	if ($form["annee_etude"] != 0) echo $form["annee_etude"];
+	echo  'value="'.$form["id_sformation"].'">';
+	echo $form["nom"];
 	echo '</option>';
     }
 }
 
+/**
+affiche la première ligne du tableau annuaire d'un cours
+ */
 function ig_entete_du_cours($cours) {
     echo '<table class="annuaire">';
     echo '<tr><th colspan="5">';
-    echo $cours["nom_cours"].", S".$cours["semestre"].", ".$cours["credits"]." ects";
+    echo $cours["nom_cours"];
+    echo "<div class=\"formation\">".$cours["nom_formation"]." ".$cours["annee_etude"].($cours["parfum"]?" ".$cours["parfum"]:"")
+	." (semestre ".$cours["semestre"].($cours["credits"]?", ".$cours["credits"]." ects":"").")</div>";
     echo '</th></tr>';
     /* legende */
     echo '<tr><th>role</th>';
@@ -63,14 +69,23 @@ function ig_entete_du_cours($cours) {
     echo '<th>tel</th>';
     echo '<th>bureau</th></tr>';
 }
+
+/**
+affiche une ligne de tableau sur le responsable du cours et retourne son id 
+*/
 function ig_responsable_du_cours($cours) {
     echo '<tr><td>responsable</td>';
     echo '<td>'.$cours["prenom"].' '.$cours["nom"].'</td>';
     echo '<td>'.$cours["email"].'</td>';
     echo '<td>'.$cours["tel"].'</td>';
     echo '<td>'.$cours["bureau"].'</td></tr>';
+    return $cours["id_enseignant"];
 }
 
+/**
+affiche la liste des intervenants du cours sous forme de lignes de tableau et retourne
+la liste csv des ids de ces intervenants.
+*/
 function ig_intervenants_du_cours($cours) {
     global $link;
     $id_cours = $cours["id_cours"];
@@ -94,7 +109,8 @@ function ig_intervenants_du_cours($cours) {
           GROUP BY pain_enseignant.id_enseignant
           ORDER BY groupe ASC, nom ASC";
     ($r = $link->query($q)) 
-        or die("Échec de la connexion à la base $q<br>".$link->error);
+        or die("Échec de la requête $q<br>".$link->error);
+    $ids = Array();
     while ($e = $r->fetch_array()) {
 	if (strcmp($e["groupes"], "0") != 0) {
 	    $groupes = str_replace("0, G", "", $e["groupes"]);
@@ -120,10 +136,35 @@ function ig_intervenants_du_cours($cours) {
 	echo '<td class="enseignant">'.$e["prenom"].' '.$e["nom"].'</td>';
 	echo '<td class="email">'.$e["email"].'</td>';
 	echo '<td class="tel">'.$e["tel"].'</td>';
-	echo '<td class="bureau">'.$e["bureau"].'</td></tr>';	
+	echo '<td class="bureau">'.$e["bureau"].'</td></tr>';
+	$ids[] = $e["id_enseignant"];
     }
+    return join(",",$ids);
 }
 
+function ig_emails($ids, $categories) {
+    global $link;
+    global $annee; /* pour filtre categories */
+
+    $a = Array(); /* liste des emails */
+    
+    if ($ids != "") {/* il y a des ids dont on veut les emails */
+	/* nota: lorsqu'on filtrera par categories il faudra faire la jointure avec pain_service */
+	$q = "SELECT distinct email
+              FROM pain_enseignant WHERE id_enseignant IN ($ids) ORDER BY email ASC"; 
+        /* rem: GROUP_CONCAT(DISTINCT email ORDER BY email ASC SEPARATOR ', ') limité à 1024 */
+	($r = $link->query($q)) 
+	    or die("Échec de la requête $q<br>".$link->error);
+	while ($e = $r->fetch_array()) {
+	    if ($e["email"] != "") {/* tester ici si email valide (regexp) */
+		$a[] = $e["email"];
+	    }
+	}
+    }
+    $rows = count($a)/3 + 1;    
+    echo '<tr><td colspan="5" style="width: 800px"><textarea dir="ltr" rows="'.$rows.'" cols="40">'.join(', ', $a)
+        .'</textarea></td></tr>';
+}
 
 function ig_pied_du_cours($cours) {
     echo '</table>';
@@ -160,75 +201,159 @@ pain_enseignant.id_enseignant = pain_sformation.id_enseignant
 
 
 /** 
-formulaire de sélection d'une formation de l'année et d'un semestre.
+formulaire de sélection de formations et filtres.
 */
 function annuaire_php_form() {
     global $annee;
-$id_formation = 0;
-if (isset($_POST['id_formation'])) {
-    $id_formation = postclean('id_formation');
-}
-$semestre = 0;
-if (isset($_POST['semestre'])) {
-    $semestre = postclean('semestre');
+    $sformation = getlistnumeric("sformations");
+    $formations = getlistnumeric("formations");
+    $semestres = getlistnumeric("semestres");
+    $collections = getlistnumeric("collections");
+    $categories = getlistnumeric("categories");
+    $listemails = getlistnumeric("listemails");
+    $toutesformations = getlistnumeric("toutesformations");
+    $toutescollections = getlistnumeric("toutescollections");
+    $toussemestres = getlistnumeric("toussemestres");
+    echo '<div id="formannuairevalues" class="hiddenvalue">';
+    if (NULL != $sformation) echo "<span class=\"sformations\">$sformation</span>";
+    if (NULL != $formations) echo "<span class=\"formations\">$formations</span>";
+    if (NULL != $semestres) echo "<span class=\"semestres\">$semestres</span>";
+    if (NULL != $collections) echo "<span class=\"collections\">$collections</span>";
+    if (NULL != $categories) echo "<span class=\"categories\">$categories</span>";
+    if (NULL != $listemails) echo "<span class=\"listemails\">$listemails</span>";
+    if (NULL != $toutesformations) echo "<span class=\"toutesformations\">$toutesformations</span>";
+    if (NULL != $toutescollections) echo "<span class=\"toutescollections\">$toutescollections</span>";
+    if (NULL != $toussemestres) echo "<span class=\"toussemestres\">$toussemestres</span>";
+    echo '</div>';
+
+    echo <<<EOD
+<center><div class="infobox" id="formannuaire">
+    <form method="GET" class="formcours" name="enseignant" action="#">
+    <fieldset>
+    <legend>Formation</legend>
+    <label>Cycle</label>
+    <select id="sformations" name="sformations" style="width:150px;">
+EOD;
+    ig_formselectsformation($sformation);
+
+    echo <<<EOD
+    </select><br />
+    <label>Années</label>
+    <input type="checkbox" id="cbtoutesformations" name="toutesformations" checked="checked" disabled="disabled" value="1" />
+    <label for="cbtoutesformations">toutes</label>
+    <div id="choix_formations"></div>
+    <br />
+    </fieldset>
+    <fieldset>
+    <legend>Filtres</legend>
+    <label>Parcours</label>
+    <input type="checkbox" id="cbtoutescollections" name="toutescollections" checked="checked" disabled="disabled" value="1" />
+    <label for="cbtoutescollections">aucun filtre (tous les cours)</label>
+    <div id="choix_collections"></div>
+     <br />
+    <label>Semestres</label>
+    <input type="checkbox" id="cbtoussemestres" name="toussemestres" checked="checked" disabled="disabled" value="1" />
+    <label for="cbtoussemestes">aucun filtre (tous les cours)</label>
+    <div id="choix_semestres"></div>
+     <br />
+    </fieldset>
+    <fieldset>
+    <legend>Afficher</legend>
+    <label for="listemails">Lister les adresses mail ?</label>
+EOD;
+    if ($listemails != NULL && $listemails == 0) {
+	echo '<input type="radio" name="listemails" value="1" /> oui';
+	echo '<input type="radio" name="listemails" checked="checked" value="0" /> non';
+    } else {
+	echo '<input type="radio" name="listemails" checked="checked" value="1" /> oui';
+	echo '<input type="radio" name="listemails" value="0" /> non';
+    }
+    echo <<<EOD
+    <input type="submit" value="OK" style="width:40px;"/>
+    </form>
+    </fieldset>
+     </div></center>
+EOD;
+//return array($id_formation, $semestre);
 }
 
-echo '<center><div class="infobox" style="width:290px;">';
-echo '<form method="post" id="choixformation" class="formcours" name="enseignant" action="#">';
-echo '<select name="id_formation" style="display:inline; width:150px;">';
-ig_formselectformation($id_formation, $annee);
-echo '</select>';
-echo '<select name="semestre" style="display: inline; width: 100px;">';
-echo '<option value="0" ';
-if ($semestre == 0) echo 'selected="selected"';
-echo '>semestre</option>';
-for ($i = 1; $i <= 2; $i++) {
-	echo '<option ';
-	if ($i == $semestre) {
-	    echo 'selected="selected" ';
-	}
-	echo  'value="'.$i.'">';
-	echo 'S'.$i;
-	echo '</option>';
-}
-echo '</select>';
-echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
-echo '</form>'."\n";
-echo '</div></center>';
-return array($id_formation, $semestre);
-}
+/**
+
+ */
+
 
 
 /**
-affiche l'annuaire de la formation $id_formation, éventuellement restreint au semestre $semestre.
+affiche l'annuaire des cours en fonction des paramètres GET.
 */
-function annuaire_php($id_formation, $semestre = 0) {
+function annuaire_php() {
     global $link;
-    /* annuaire */
-    echo "<h2>Annuaire de la formation</h2>";
 
+    $sformations = getlistnumeric("sformations");
+    if (NULL == $sformations) return;
+    if (NULL == getlistnumeric("toutesannees")) {
+	$formations = getlistnumeric("formations");
+    } else $formations = NULL;
+    if (NULL == getlistnumeric("toussemestres")) {
+	$semestres = getlistnumeric("semestres");
+    } else $semestres = NULL;
+    if (NULL == getlistnumeric("toutescollections")) {
+	$collections = getlistnumeric("collections");
+    } else $collections = NULL;
+    $categories = getlistnumeric("categories"); /* pour plus tard */
+    $listemails = getlistnumeric("listemails");
+    $lmails = true;
+    if ($listemails != NULL && $listemails == 0) {
+	$lmails = false;
+    }
+    /* annuaire */
+    echo "<h2>Les intervenants dans les cours sélectionnés</h2>";
+    /* selection des cours à afficher */
     $q = "SELECT id_cours, 
                  nom_cours,
                  credits,
                  semestre,
+                 pain_formation.nom as nom_formation,
+                 pain_formation.annee_etude as annee_etude,
+                 pain_formation.parfum as parfum,
                  pain_cours.id_enseignant as id_enseignant,
                  pain_enseignant.prenom AS prenom, 
                  pain_enseignant.nom AS nom,
                  pain_enseignant.email AS email,
                  pain_enseignant.telephone AS tel,
                  pain_enseignant.bureau AS bureau
-          FROM pain_cours, pain_enseignant
-          WHERE pain_cours.id_formation = $id_formation "; 
-    if ($semestre) $q .=" AND semestre = $semestre ";
-    $q .=" AND pain_enseignant.id_enseignant = pain_cours.id_enseignant ";
-    $q .=" ORDER BY semestre ASC, nom_cours ASC";
+          FROM pain_cours, pain_enseignant, pain_formation
+          WHERE pain_cours.id_formation = pain_formation.id_formation 
+          AND pain_formation.id_sformation IN ($sformations)
+          AND pain_enseignant.id_enseignant = pain_cours.id_enseignant ";
+    /* filtre par annee de formation */
+    if ($formations != NULL) {
+	$q.=" AND pain_cours.id_formation IN ($formations) ";
+    }
+    /* filtre par semestre */
+    if ($semestres != NULL) $q .=" AND semestre IN ($semestres) ";
+    /* filtre par collections */
+    if ($collections != NULL) {
+	$q.=" AND id_cours IN (SELECT distinct id_cours from pain_collectionscours 
+                               WHERE id_collection IN ($collections)) ";
+    }
+    $q .=" ORDER BY pain_formation.numero ASC, semestre ASC, nom_cours ASC";
     ($r = $link->query($q)) 
-	or die("Échec de la connexion à la base $q<br>".$link->error);
+	or die("Échec de la requête $q<br>".$link->error);
+    $allids = Array();
     while ($cours = $r->fetch_array()) {
 	ig_entete_du_cours($cours);
-	ig_responsable_du_cours($cours);
-	ig_intervenants_du_cours($cours);
+	$ids = ig_responsable_du_cours($cours);
+	$idsinterv = ig_intervenants_du_cours($cours);
+	if ($idsinterv != "") $ids = $ids.",".$idsinterv;
+	if ($lmails) ig_emails($ids, $categories);
 	ig_pied_du_cours($cours);
+	$allids[] = $ids;
+    }
+    if ($lmails) {
+	echo '<table class="annuaire"><tr><th colspan="5">Tous les emails</th></tr>';
+	ig_emails(join(',',$allids), $categories);
+	echo '</table>';
     }
 }
 ?>

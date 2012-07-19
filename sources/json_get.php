@@ -396,6 +396,18 @@ and pain_sformation.annee_universitaire = ".$annee."
         } else {
 	    errmsg("le type unusedcollections nécessite un id_parent");
 	}
+    } else if ($readtype == "semestre") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "semestre";
+	    $id_par =  getnumeric("id_parent");
+	    $requete = "SELECT distinct pain_cours.semestre as semestre
+                        FROM pain_cours, pain_formation";
+	    $requete .= " WHERE pain_formation.id_sformation = $id_par
+                          AND pain_cours.id_formation = pain_formation.id_formation";	    
+	    $requete .= " ORDER BY semestre ASC";
+        } else {
+	    errmsg("le type semestre nécessite un id_parent");
+	}
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

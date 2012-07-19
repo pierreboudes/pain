@@ -230,6 +230,8 @@ function numcell() {
 	}
 	if ((this.canbenull) && ("" == s)) {
 	    o[this.name] = null;
+	} else if  ("" == s) {
+	    o[this.name] = "default";	    
 	} else {
 	    o[this.name] = s.replace(" ","").replace(",",".");
 	}
@@ -452,7 +454,9 @@ function microsformation () {
 	o["id_sformation"] = sformid;
     }
     this.setval = function (c,o) {
-	c.html('<span class="nomsformation">'+o["nom_sformation"]+'</span><span class="hiddenvalue">'+o["id_sformation"]+'</span>');
+	var nom = o["nom_sformation"];	
+	if (nom == null) nom = "nom du cycle ?";
+	c.html('<span class="nomsformation">'+nom+'</span><span class="hiddenvalue">'+o["id_sformation"]+'</span>');
     }
 }
 microsformation.prototype = new cell();
@@ -2264,6 +2268,9 @@ function appendList(data, body, do_it_last) {
     var legende = $("#skel"+data.type);
     var list = legende.children('th');
     legende.clone(true).attr('id','legende'+data.type+data.id_parent).appendTo(body);
+    var colspan = list.length;
+    var loading = jQuery('<tr><td colspan="'+colspan+'"><img src="css/img/ajax-loader.gif" /></td></tr>');
+    body.append(loading);
     legende = $('#legende'+data.type+data.id_parent);
     getjson("json_get.php",data, function (o) {
 	    var n = o.length;
@@ -2274,6 +2281,7 @@ function appendList(data, body, do_it_last) {
 	    if (do_it_last != undefined) {// comment tester si fonction ?
 		do_it_last(o); 
 	    }
+	loading.remove();
 	});
 }
 
@@ -2660,23 +2668,66 @@ function responsables(jq) {
 
 /*------- FIN GESTION DE DROITS --------*/
 
+function keypresscell (event) {
+    var target = $(event.target).closest('td');
+    
+}
+
 
 
 /* ----- DEMARRAGE DU DOCUMENT ---------*/
 
 
 $(document).ready(function () {
-	$.datepicker.setDefaults($.datepicker.regional['fr']); 
-	L = new ligne(); // <-- var globale
+    $.datepicker.setDefaults($.datepicker.regional['fr']); 
+    L = new ligne(); // <-- var globale
+    
+    /* infobox: liens externes */
+    $("div.infobox a").click(function(){window.open(this.href);return false;});
 
-	/* infobox: liens externes */
-	$("div.infobox a").click(function(){window.open(this.href);return false;});
-
-	/* TEST */
-	if (false) {/* bascules ... */
-	    $('#basculesuper7').trigger('click');
-	    window.setTimeout(function() {$('#basculeformation_17').trigger('click');}, 1000);
-	    window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);	
-            //	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);	
-	} 
+    /* les événements du clavier */
+    $('#vuecourante').live('keydown', function(e) { 
+	var keyCode = e.keyCode || e.which; 
+	if (keyCode == 9) { /* [tab] key */
+	    e.preventDefault();
+	    var cell = $(e.target).closest('td');
+	    if (existsjQuery(cell)) {
+		
+		var newtarget; 
+		if (e.shiftKey) {/* en arrière */
+		    newtarget = cell.prevAll('td.mutable:visible,td.edit:visible').first();
+		} else {
+		    newtarget = cell.nextAll('td.mutable:visible,td.edit:visible').first();
+		}
+		if (existsjQuery(newtarget)) {
+		    newtarget.dblclick();
+		    newtarget.find('input, textarea').focus();
+		}
+	    }
+	}
+	if (keyCode == 13) { /* [enter] key */
+	    e.preventDefault();
+	    var cell = $(e.target).closest('td');
+	    if (existsjQuery(cell)) {		
+		var button = cell.siblings('td.action').find('button.okl');
+		button.click();
+	    }
+	}
+	if (keyCode == 27) { /* [esc] key */
+	    e.preventDefault();
+	    var cell = $(e.target).closest('td');
+	    if (existsjQuery(cell)) {		
+		var button = cell.siblings('td.action').find('button.reloadl');
+		button.click();
+	    }
+	}
+    });
+			   
+    /* TEST */
+    if (false) {/* bascules ... */
+	$('#basculesuper7').trigger('click');
+	window.setTimeout(function() {$('#basculeformation_17').trigger('click');}, 1000);
+	window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);	
+	//	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);	
+    } 
 });
