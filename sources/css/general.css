@@ -1125,7 +1125,7 @@ margin-left: -3px;
 
 .button-enlever_tag > .icon, .button-ajouter_tag > .icon, .button-envoyer_tag > .icon,
 .button-enlever_collection > .icon, .button-ajouter_collection > .icon, .button-envoyer_collection > .icon {
-background-image: url("custom-theme/images/ui-icons_222222_256x240.png");
+background-image: url("selected-theme/images/ui-icons_222222_256x240.png");
 background-repeat: no-repeat;
 height: 16px;
 width: 16px;
@@ -1134,7 +1134,7 @@ display: block;
 
 .button-enlever_tag:hover > .icon, .button-ajouter_tag:hover > .icon,
 .button-enlever_collection:hover > .icon, .button-ajouter_collection:hover > .icon {
-background-image: url("custom-theme/images/ui-icons_ef8c08_256x240.png");
+background-image: url("selected-theme/images/ui-icons_ef8c08_256x240.png");
 }
 
 .button-enlever_tag::-moz-focus-inner, .button-ajouter_tag::-moz-focus-inner,
@@ -1149,7 +1149,7 @@ background-position: -32px -193px;
 
 .button-envoyer_tag > .icon, .button-envoyer_collection > .icon {
     background-position: -64px -145px;
-    background-image: url("custom-theme/images/ui-icons_ef8c08_256x240.png");
+    background-image: url("selected-theme/images/ui-icons_ef8c08_256x240.png");
 }
 
 .button-ajouter_tag > .icon, .button-ajouter_collection > .icon {

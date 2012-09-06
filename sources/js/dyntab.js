@@ -1720,7 +1720,7 @@ function addHandle(td, type) {
     if (!existsjQuery(td)) return;
     removeHandle(td);
     td.prepend('<div class="handle '+type+'"/>');
-    td.children('div.handle').draggable({
+    td.children('div.handle').draggable({ /* td.closest('tr').draggable ... */
 		helper:  dragLine
 	});
 }
@@ -1729,7 +1729,7 @@ function removeHandle(td) {
 }
 
 function dragLine(e) {
-    var tr = $(e.target).closest('tr');;
+    var tr = $(e.target).closest('tr');
     var handle = tr.find('div.handle');
     var id = tr.attr('id');
     var type = parseIdString(id).type;

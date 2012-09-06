@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS pain_collection (
   descriptif text COLLATE utf8_swedish_ci,
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_collection),
-  KEY id_collection_prev (id_collection_prev)
+  KEY id_collection_prev (id_collection_prev),
   KEY nom_collection (nom_collection)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
