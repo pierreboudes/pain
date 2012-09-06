@@ -9,6 +9,8 @@ span.highlight {background-color: yellow;}
 div.infobox {border-color: #6495ed;} /* cornflowerblue */
 th, td {border-color: #6495ed;}      /* cornflowerblue */
 th {background-color:#EFF6FF;}
+#vuecollections th {background-color: lightgreen;}
+#vuetags th {background-color: lightgray;}
 tr.formation td {background-color:#DFE6FF;}
 /*
 table.cours, table.super, table.interventions,  table.service, table.stat,table.annuaire

@@ -36,7 +36,10 @@ $(document).ready(function(){
 
        $('#basculetags').bind('click', basculerTags);
 
-       $("#vueadmin").append('<table class="vuecollections" id="vuecollections"><tbody> <td class=laction><div class="basculeOff" id="basculecollections"></div></td><th>Liste des collections</th></tbody></table>');
+    var an ="";
+    var annee = getAnnee();
+    if (annee > 0) an = ""+annee+"-"+(++annee);
+       $("#vueadmin").append('<table class="vuecollections" id="vuecollections"><tbody> <td class=laction><div class="basculeOff" id="basculecollections"></div></td><th>Liste des collections de l\'année '+an+'</th></tbody></table>');
 
        $('#basculecollections').bind('click', basculerCollections);
 
