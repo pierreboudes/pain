@@ -36,9 +36,11 @@ function maj_form_annuaire() {
     var cf = $('#choix_formations');
     var cc = $('#choix_collections');
     var cs = $('#choix_semestres');
+    var ce = $('#choix_categories');
     cf.html('<img src="css/img/ajax-loader.gif" />');
     cc.html('<img src="css/img/ajax-loader.gif" />');
     cs.html('<img src="css/img/ajax-loader.gif" />');
+    ce.html('<img src="css/img/ajax-loader.gif" />');
     /* charger les formations */
     getjson("json_pub_get.php",{type: "formation", id_parent: sformations}, function (o) {
 	var div = jQuery('<ul></ul>');
@@ -94,12 +96,32 @@ function maj_form_annuaire() {
 	    var nom = "semestre "+v["semestre"];
 	    var id = v["semestre"];
 	    if(myinarray(id, cks)) ck = ' checked="checked"';
-	    div.append('<li><input type="checkbox" name="semestres[]" value='+id+ck+' /><label for="formations">'+nom+'</label></li>');
+	    div.append('<li><input type="checkbox" name="semestres[]" value='+id+ck+' /><label for="semestres">'+nom+'</label></li>');
 	}
 	div.find('input').change(function() {$('#cbtoussemestres').removeAttr('checked');});
 	cs.html('');	
 	cs.append(div);
 	$('#cbtoussemestres').removeAttr('disabled');
+    });
+    /* charger les categories */
+    getjson("json_pub_get.php",{type: "categorie", id_parent: sformations}, function (o) {
+	var div = jQuery('<ul></ul>');
+	var n = o.length;
+	if (n == 0) div.html("<em>Pas de catégories d'intervenants dans ce cycle.</em>");
+	var i;
+	var cks = $('#formannuairevalues').find('.categories').text().split(',');
+	for (i = 0; i < n; i++) {
+	    var ck = "";
+	    var v = o[i];
+	    var nom = v["nom_court"];
+	    var id = v["id_categorie"];
+	    if(myinarray(id, cks)) ck = ' checked="checked"';
+	    div.append('<li><input type="checkbox" name="categories[]" value='+id+ck+' /><label for="categories">'+nom+'</label></li>');
+	}
+	div.find('input').change(function() {$('#cbtoutescategories').removeAttr('checked');});
+	ce.html('');	
+	ce.append(div);
+	$('#cbtoutescategories').removeAttr('disabled');
     });
 }
 $(document).ready(function(){
@@ -118,6 +140,9 @@ $(document).ready(function(){
     };
     if (existsjQuery($('#formannuairevalues').find('.semestres')) && !existsjQuery($('#formannuairevalues').find('.toussemestres'))) {
 	$('#cbtoussemestres').removeAttr('checked');
+    };
+    if (existsjQuery($('#formannuairevalues').find('.categories')) && !existsjQuery($('#formannuairevalues').find('.toutescategories'))) {
+	$('#cbtoutescategories').removeAttr('checked');
     };
     cycle.change(maj_form_annuaire);
 });

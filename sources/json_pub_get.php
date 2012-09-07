@@ -76,6 +76,23 @@ function json_get_php($annee, $readtype) {
         } else {
 	    errmsg("le type semestre nécessite un id_parent");
 	}
+  } else if ($readtype == "categorie") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "categorie";
+	    $id_par =  getnumeric("id_parent");
+	    $requete = "SELECT distinct id_categorie, nom_court
+                        FROM pain_categorie, pain_formation, pain_cours, pain_tranche, pain_service";
+	    $requete .= " WHERE pain_formation.id_sformation = $id_par
+                          AND pain_cours.id_formation = pain_formation.id_formation
+                          AND pain_tranche.id_cours = pain_cours.id_cours
+                          AND pain_service.id_enseignant = pain_tranche.id_enseignant 
+                          AND pain_service.annee_universitaire = $annee
+                          AND pain_service.categorie = pain_categorie.id_categorie 
+                          AND pain_categorie.descriptif <> \"\"";	    
+	    $requete .= " ORDER BY id_categorie ASC";
+        } else {
+	    errmsg("le type semestre nécessite un id_parent");
+	}
     } else {
 	errmsg("erreur de script (type inconnu)");
     }

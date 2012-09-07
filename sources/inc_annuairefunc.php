@@ -86,8 +86,9 @@ function ig_responsable_du_cours($cours) {
 affiche la liste des intervenants du cours sous forme de lignes de tableau et retourne
 la liste csv des ids de ces intervenants.
 */
-function ig_intervenants_du_cours($cours) {
+function ig_intervenants_du_cours($cours, $categories = NULL) {
     global $link;
+    global $annee;
     $id_cours = $cours["id_cours"];
     $q = "SELECT 
                  GROUP_CONCAT(DISTINCT pain_tranche.groupe
@@ -105,9 +106,14 @@ function ig_intervenants_du_cours($cours) {
                  pain_enseignant.bureau AS bureau
           FROM pain_tranche, pain_enseignant
           WHERE pain_tranche.id_cours = $id_cours 
-          AND pain_enseignant.id_enseignant = pain_tranche.id_enseignant
-          GROUP BY pain_enseignant.id_enseignant
-          ORDER BY groupe ASC, nom ASC";
+          AND pain_enseignant.id_enseignant = pain_tranche.id_enseignant ";
+    if ($categories != NULL) {
+	$q .= " AND pain_enseignant.id_enseignant IN (SELECT distinct id_enseignant from pain_service 
+                               WHERE annee_universitaire = $annee
+                               AND categorie IN ($categories)) ";
+    }
+
+    $q .= " GROUP BY pain_enseignant.id_enseignant ORDER BY groupe ASC, nom ASC";
     ($r = $link->query($q)) 
         or die("Échec de la requête $q<br>".$link->error);
     $ids = Array();
@@ -212,6 +218,7 @@ function annuaire_php_form() {
     $categories = getlistnumeric("categories");
     $listemails = getlistnumeric("listemails");
     $toutesformations = getlistnumeric("toutesformations");
+    $toutescategories = getlistnumeric("toutescategories");
     $toutescollections = getlistnumeric("toutescollections");
     $toussemestres = getlistnumeric("toussemestres");
     echo '<div id="formannuairevalues" class="hiddenvalue">';
@@ -222,6 +229,7 @@ function annuaire_php_form() {
     if (NULL != $categories) echo "<span class=\"categories\">$categories</span>";
     if (NULL != $listemails) echo "<span class=\"listemails\">$listemails</span>";
     if (NULL != $toutesformations) echo "<span class=\"toutesformations\">$toutesformations</span>";
+    if (NULL != $toutescategories) echo "<span class=\"toutescategories\">$toutescategories</span>";
     if (NULL != $toutescollections) echo "<span class=\"toutescollections\">$toutescollections</span>";
     if (NULL != $toussemestres) echo "<span class=\"toussemestres\">$toussemestres</span>";
     echo '</div>';
@@ -255,6 +263,11 @@ EOD;
     <input type="checkbox" id="cbtoussemestres" name="toussemestres" checked="checked" disabled="disabled" value="1" />
     <label for="cbtoussemestes">aucun filtre (tous les cours)</label>
     <div id="choix_semestres"></div>
+     <br />
+    <label>Catégories d&rsquo;intervenants</label>
+    <input type="checkbox" id="cbtoutescategories" name="toutescategories" checked="checked" disabled="disabled" value="1" />
+    <label for="cbtoutescategories">aucun filtre</label>
+    <div id="choix_categories"></div>
      <br />
     </fieldset>
     <fieldset>
@@ -300,7 +313,9 @@ function annuaire_php() {
     if (NULL == getlistnumeric("toutescollections")) {
 	$collections = getlistnumeric("collections");
     } else $collections = NULL;
-    $categories = getlistnumeric("categories"); /* pour plus tard */
+    if (NULL == getlistnumeric("toutescategories")) {
+	$categories = getlistnumeric("categories");
+    } else $categories = NULL;
     $listemails = getlistnumeric("listemails");
     $lmails = true;
     if ($listemails != NULL && $listemails == 0) {
@@ -344,7 +359,7 @@ function annuaire_php() {
     while ($cours = $r->fetch_array()) {
 	ig_entete_du_cours($cours);
 	$ids = ig_responsable_du_cours($cours);
-	$idsinterv = ig_intervenants_du_cours($cours);
+	$idsinterv = ig_intervenants_du_cours($cours, $categories);
 	if ($idsinterv != "") $ids = $ids.",".$idsinterv;
 	if ($lmails) ig_emails($ids, $categories);
 	ig_pied_du_cours($cours);

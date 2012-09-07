@@ -2,7 +2,6 @@
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
-
 CREATE TABLE IF NOT EXISTS pain_annee (
   annee_universitaire YEAR(4) NOT NULL,
   PRIMARY KEY (annee_universitaire)
@@ -50,6 +49,7 @@ CREATE TABLE IF NOT EXISTS pain_cours (
   alt double unsigned DEFAULT NULL,
   descriptif text COLLATE utf8_swedish_ci,
   code_geisha varchar(16) COLLATE utf8_swedish_ci DEFAULT NULL,
+  id_section int(3) unsigned NOT NULL DEFAULT '0',
   debut date NOT NULL DEFAULT '1970-01-01',
   fin date NOT NULL DEFAULT '1970-01-01',
   mcc text COLLATE utf8_swedish_ci,
@@ -234,3 +234,9 @@ CREATE TABLE IF NOT EXISTS pain_collectionscours (
   KEY id_cours (id_cours),
   KEY id_collection (id_collection)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS `sectionscnu` (
+  `id_section` int(3) unsigned NOT NULL DEFAULT '0',
+  `intitule_section` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id_section`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
