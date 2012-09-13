@@ -48,11 +48,13 @@ function enseignants_php() {
     include("menu.php");
     include("box_enseignants.html");
 
+    echo "<div id='vuecourante'>";
     /* affichage des catégories */
     $r = lister_categories();
     while ($cat = $r->fetch_assoc()) {
 	ig_tablecategorie($cat["id"], $cat["nom_long"]);
     }
+    echo "</div>";
 
     include("skel_enseignants.html");
     piedpage();
