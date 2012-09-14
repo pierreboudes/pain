@@ -68,7 +68,7 @@ function json_modify_php($annee, $readtype, $id) {
 	    ),
 	"cours"=> array(
 	    "semestre", "nom_cours", "credits", "id_enseignant",
-	    "cm", "td", "tp", "alt", "descriptif", "code_geisha",
+	    "cm", "td", "tp", "alt", "descriptif", "code_geisha", "id_section",
 	    "debut", "fin", "inscrits", "presents", "tirage", "mcc"
 	    ),
 	"tranche"=> array(

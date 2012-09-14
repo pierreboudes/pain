@@ -828,6 +828,49 @@ function categorie () {
 }
 categorie.prototype = new cell();
 
+
+/* constructeur du composite section (cnu) */
+function section () {
+    this.name = "section";
+    this.mutable = true;
+    this.edit = function (c) {
+	/* sauvegarder l'id actuel */
+	var catid = c.find('.hiddenvalue').text(); 
+	// TODO refaire avec value au lien de span hidden
+	c.remove('.hiddenvalue');
+	var catname = $.trim(c.find('a').text());
+	/* installer la zone d'input */
+	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
+	/* charger une seule fois la liste des categories */	
+	/* mettre en place l'autocomplete */
+	var cat = c.find("input");
+	getjson("json_sections.php",{term: ""}, function (data) {
+		cat.autocomplete({ minLength: 0,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				return false;
+			    }
+			    $(this).focus();
+			    cat.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			} 
+		    })});
+	c.addClass("edit");
+	c.find('input').focus();
+    };
+    this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["id_section"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["id_section"]+'<span class="hiddenvalue">'+o["id_section"]+'</span>');
+    }
+}
+section.prototype = new cell();
+
 function service_reel () 
 {
     this.name = "service_reel";
@@ -1053,6 +1096,8 @@ function ligne() {
 
 /*    this.categorie = new sunumcell();
       this.categorie.name = "categorie"; */
+    /* composite : section */
+    this.section = new section();
     /* responsabilite */
     this.responsabilite = new cell();
     this.responsabilite.name = "responsabilite";
