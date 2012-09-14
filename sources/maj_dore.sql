@@ -137,3 +137,8 @@ INSERT INTO `sectionscnu` (`id_section`, `intitule_section`) VALUES
 (74, 'Sciences et techniques des activités physiques et sportives'),
 (76, 'Théologie catholique'),
 (77, 'Théologie protestante');
+
+-- fin rev 670
+-- à adapter selon section CNU majoritaire :
+-- ALTER TABLE  `pain_cours` CHANGE  `id_section`  `id_section` INT( 3 ) UNSIGNED NOT NULL DEFAULT  '71';
+-- UPDATE pain_cours SET id_section = 71 WHERE id_section = 0;
