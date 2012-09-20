@@ -679,13 +679,14 @@ SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant, pain_service
 WHERE pain_enseignant.id_enseignant IN (".$ids_enseignants.")
+AND pain_sformation.annee_universitaire = $an
+AND pain_service.annee_universitaire = pain_sformation.annee_universitaire
 AND pain_service.id_enseignant = pain_enseignant.id_enseignant
 AND pain_tranche.id_enseignant = pain_enseignant.id_enseignant
 AND pain_cours.id_enseignant <> 1
 AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
-AND pain_sformation.annee_universitaire = $an
 GROUP BY id_cours, pain_enseignant.id_enseignant
 ORDER BY pain_enseignant.nom ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
 
