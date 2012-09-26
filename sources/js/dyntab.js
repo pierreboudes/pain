@@ -838,9 +838,8 @@ function section () {
 	var catid = c.find('.hiddenvalue').text(); 
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
-	var catname = $.trim(c.find('a').text());
 	/* installer la zone d'input */
-	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
+	c.html('<input type="text" value="'+catid+'"/><span class="hiddenvalue">'+catid+'</span>');
 	/* charger une seule fois la liste des sections TODO */	
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
@@ -882,9 +881,8 @@ function code_geisha () {
 	var catid = c.find('.hiddenvalue').text(); 
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
-	var catname = $.trim(c.find('a').text());
 	/* installer la zone d'input */
-	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
+	c.html('<input type="text" value="'+catid+'"/><span class="hiddenvalue">'+catid+'</span>');
 	/* charger une seule fois la liste des codes TODO */	
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
@@ -892,8 +890,8 @@ function code_geisha () {
 	cat.autocomplete({ minLength: 3,
 			   source: function( request, response ) {
 			       $.ajax({
-				   url: "http://servens-galilee.univ-paris13.fr/commun/minoterie/json_codesue.php",
-				   dataType: "jsonp",
+				   url: "/commun/minoterie/json_codesue.php", 
+				   dataType: "json",
 				   data: {
 				       term: request.term
 				   },
@@ -1215,7 +1213,6 @@ function ligne() {
     this.descriptif.name = "descriptif";
     /* code_geisha */
     this.code_geisha = new code_geisha();
-//    this.code_geisha.name = "code_geisha";    
     /* action */
     this.action = new notcell();
     this.action.setval = function(c,o) {
