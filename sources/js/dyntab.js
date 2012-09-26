@@ -841,7 +841,7 @@ function section () {
 	var catname = $.trim(c.find('a').text());
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
-	/* charger une seule fois la liste des categories */	
+	/* charger une seule fois la liste des sections TODO */	
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 	getjson("json_sections.php",{term: ""}, function (data) {
@@ -870,6 +870,61 @@ function section () {
     }
 }
 section.prototype = new cell();
+
+
+
+/* constructeur du composite codeue (geisha) */
+function code_geisha () {
+    this.name = "code_geisha";
+    this.mutable = true;
+    this.edit = function (c) {
+	/* sauvegarder l'id actuel */
+	var catid = c.find('.hiddenvalue').text(); 
+	// TODO refaire avec value au lien de span hidden
+	c.remove('.hiddenvalue');
+	var catname = $.trim(c.find('a').text());
+	/* installer la zone d'input */
+	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
+	/* charger une seule fois la liste des codes TODO */	
+	/* mettre en place l'autocomplete */
+	var cat = c.find("input");
+//	getjson("json_codesue.php",{term: ""}, function (data) { */
+	cat.autocomplete({ minLength: 3,
+			   source: function( request, response ) {
+			       $.ajax({
+				   url: "http://servens-galilee.univ-paris13.fr/commun/minoterie/json_codesue.php",
+				   dataType: "jsonp",
+				   data: {
+				       term: request.term
+				   },
+				   success: function( data ) {
+				       response(data);
+				   }
+			       });
+			   },
+			   select: function(e, ui) {
+			       if (!ui.item) {
+				   c.find('.hiddenvalue').html($(this).val());
+				   return false;
+			       }
+			       $(this).focus();
+			       cat.val(ui.item.label);
+			       c.find('.hiddenvalue').html(ui.item.id);
+			   } 
+			 });
+	c.addClass("edit");
+	c.find('input').focus();
+    };
+    this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["code_geisha"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["code_geisha"]+'<span class="hiddenvalue">'+o["code_geisha"]+'</span>');
+    }
+}
+code_geisha.prototype = new cell();
+
 
 function service_reel () 
 {
@@ -1159,8 +1214,8 @@ function ligne() {
     this.descriptif = new richcell();
     this.descriptif.name = "descriptif";
     /* code_geisha */
-    this.code_geisha = new cell();
-    this.code_geisha.name = "code_geisha";    
+    this.code_geisha = new code_geisha();
+//    this.code_geisha.name = "code_geisha";    
     /* action */
     this.action = new notcell();
     this.action.setval = function(c,o) {
@@ -2340,7 +2395,7 @@ function appendItem(type, prev, o, list) {
     for (i = 0; i < n; i++) {
 	var name = list.eq(i).attr("class");
 	var cell = jQuery('<td class="'+name+'"></td>');
-	if (L[name] == null) alert('undefined in line: '+name);
+	if (L[name] == null) alert('traitement non défini pour la cellule : '+name+'. Rechargez la page.');
 	L[name].setval(cell, o);
 	L[name].showmutable(cell);
 	if (hasTouch) {
