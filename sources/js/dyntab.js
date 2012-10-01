@@ -844,19 +844,19 @@ function section () {
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 	getjson("json_sections.php",{term: ""}, function (data) {
-		cat.autocomplete({ minLength: 0,
-			    source: data,
-			    select: function(e, ui) {
-			    if (!ui.item) {
-				// remove invalid value, as it didn't match anything
-				$(this).val("");
-				return false;
-			    }
-			    $(this).focus();
-			    cat.val(ui.item.label);
-			    c.find('.hiddenvalue').html(ui.item.id);
-			} 
-		    })});
+	    cat.autocomplete({ minLength: 0,
+			       source: data,
+			       select: function(e, ui) {
+				   if (!ui.item) {
+				       // remove invalid value, as it didn't match anything
+				       $(this).val("");
+				       return false;
+				   }
+				   $(this).focus();
+				   cat.val(ui.item.label);
+				   c.find('.hiddenvalue').html(ui.item.id);
+			       } 
+			     })});
 	c.addClass("edit");
 	c.find('input').focus();
     };
@@ -886,7 +886,7 @@ function code_geisha () {
 	/* charger une seule fois la liste des codes TODO */	
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
-//	getjson("json_codesue.php",{term: ""}, function (data) { */
+//	c.append("<div id='JustLogLikeThat' style='position: fixed; top: 10px; left 50px;'>Logs</div>");
 	cat.autocomplete({ minLength: 3,
 			   source: function( request, response ) {
 			       $.ajax({
@@ -908,7 +908,15 @@ function code_geisha () {
 			       $(this).focus();
 			       cat.val(ui.item.label);
 			       c.find('.hiddenvalue').html(ui.item.id);
-			   } 
+			   },
+			   change: function (e, ui) {
+//			       $('#JustLogLikeThat').html('inputval: '+$(this).val());
+			       if (!ui.item) {
+				   c.find('.hiddenvalue').html($(this).val());
+			       }
+//			       if (ui.item) {$('#JustLogLikeThat').append('<br/>current item id: '+ui.item.id
+//									  +'<br/>current item label: '+ui.item.label);}
+			   }
 			 });
 	c.addClass("edit");
 	c.find('input').focus();
