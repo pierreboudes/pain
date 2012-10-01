@@ -998,7 +998,7 @@ function historique_de_formation($id, $offset, $timestamp = NULL) {
     if ($timestamp != NULL) {
 	$q .= " AND timestamp <= \"$timestamp\" ";
     }
-    $q .= "ORDER BY timestamp DESC LIMIT ".($offset + 1).", 20";
+    $q .= "ORDER BY timestamp DESC LIMIT ".($offset).", 20";
     $r = $link->query($q) 
 	or die("historique_de_formation($id), $q ".$link->error);
     return $r;
