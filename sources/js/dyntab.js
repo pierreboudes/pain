@@ -1145,8 +1145,8 @@ function ligne() {
     this.telephone = new cell();
     this.telephone.name = "telephone";
     /* bureau */
-    this.email = new cell();
-    this.email.name = "email";
+    this.bureau = new cell();
+    this.bureau.name = "bureau";
     /* service statutaire */
     this.service = new sunumcell();
     this.service.name = "service";
@@ -1154,9 +1154,6 @@ function ligne() {
     this.service_reel = new service_reel();
     /* composite : categorie */
     this.categorie = new categorie();
-
-/*    this.categorie = new sunumcell();
-      this.categorie.name = "categorie"; */
     /* composite : section */
     this.section = new section();
     /* responsabilite */
