@@ -64,13 +64,28 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 		    height:160,
 		    modal: true,
 		    buttons: {
+	//		    'Copier': dropCopier,
+			    'Déplacer': dropDeplacer,
 			'Annuler': function() {
 			$(this).dialog('close');
-			},
-			    'Copier': dropCopier,
-			    'Déplacer': dropDeplacer
+			}
 		}
 	    });
+
+	$("#dialog-drop-tranche").dialog({
+	    autoOpen: false,
+		    resizable: false,
+		    height:160,
+		    modal: true,
+		    buttons: {
+	//		    'Copier': dropCopier,
+			    'Déplacer': dropDeplacer,
+			'Annuler': function() {
+			$(this).dialog('close');
+			}
+		}
+	    });
+	
 	
 	$("#panier").dialog({
 	    autoOpen: false,

@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS pain_cours (
   alt double unsigned DEFAULT NULL,
   descriptif text COLLATE utf8_swedish_ci,
   code_geisha varchar(16) COLLATE utf8_swedish_ci DEFAULT NULL,
-  id_section int(3) unsigned NOT NULL DEFAULT '0',
+  id_section int(3) unsigned NOT NULL DEFAULT '25',
   debut date NOT NULL DEFAULT '1970-01-01',
   fin date NOT NULL DEFAULT '1970-01-01',
   mcc text COLLATE utf8_swedish_ci,

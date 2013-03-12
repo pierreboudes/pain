@@ -16,7 +16,7 @@ and (fonction = "Prof" or fonction = "MdC" or fonction = "PRAG" or fonction = "P
 update LesProfs set categorie = 3 where departement = "x" 
 and (fonction = "ATER" or fonction = "ATER 1/2" or fonction = "moniteur");
 
-update LesProfs, LesFonctions set service = volume - `décharge` where categorie < 5 and statut = fonction; 
+update LesProfs, LesFonctions set service = volume where categorie < 5 and statut = fonction; 
 update LesProfs set service = 1 where categorie = 5; 
 
 insert into pain_enseignant 
@@ -46,7 +46,7 @@ select
 num,
 3,
 NomCycle,
-2011,
+2012,
 ordreC
 from LesCycles where 1;
 
@@ -88,7 +88,7 @@ and periode = "1er semestre";
 
 update pain_cours, LesCTD set
 semestre = 2 where codeUV = id_cours 
-and periode = "2ème semestre"; 
+and periode = "2Ã¨me semestre"; 
 
 update pain_cours, geishaUV set
 code_geisha = geisha where uv = id_cours; 
@@ -101,7 +101,7 @@ categorie,
 service_annuel)
 select
 id_enseignant,
-2011,
+2012,
 categorie,
 service
 from pain_enseignant where 1;
@@ -128,9 +128,9 @@ NULL,
 NULL,
 NULL,
 equiv_TD
-from lesServices, lesCTD, lesProfs
-where lesServices.codeCTD = lesCTD.codeCTD
-and lesServices.numProf = lesProfs.numProf
+from LesServices, lesCTD, lesProfs
+where LesServices.codeCTD = lesCTD.codeCTD
+and LesServices.numProf = lesProfs.numProf
 and abtype = "C";
 
 insert into pain_tranche
@@ -154,9 +154,9 @@ equiv_TD / 2.5,
 NULL,
 NULL,
 equiv_TD
-from lesServices, lesCTD, lesProfs
-where lesServices.codeCTD = lesCTD.codeCTD
-and lesServices.numProf = lesProfs.numProf
+from LesServices, lesCTD, lesProfs
+where LesServices.codeCTD = lesCTD.codeCTD
+and LesServices.numProf = lesProfs.numProf
 and abtype = "CTD";
 
 insert into pain_tranche
@@ -180,9 +180,9 @@ equiv_TD,
 NULL,
 NULL,
 equiv_TD
-from lesServices, lesCTD, lesProfs
-where lesServices.codeCTD = lesCTD.codeCTD
-and lesServices.numProf = lesProfs.numProf
+from LesServices, lesCTD, lesProfs
+where LesServices.codeCTD = lesCTD.codeCTD
+and LesServices.numProf = lesProfs.numProf
 and abtype = "TD";
 
 insert into pain_tranche
@@ -206,9 +206,9 @@ NULL,
 equiv_TD,
 NULL,
 equiv_TD
-from lesServices, lesCTD, lesProfs
-where lesServices.codeCTD = lesCTD.codeCTD
-and lesServices.numProf = lesProfs.numProf
+from LesServices, lesCTD, lesProfs
+where LesServices.codeCTD = lesCTD.codeCTD
+and LesServices.numProf = lesProfs.numProf
 and abtype = "TP";
 
 insert into pain_tranche
@@ -232,9 +232,9 @@ NULL,
 NULL,
 equiv_TD,
 equiv_TD
-from lesServices, lesCTD, lesProfs
-where lesServices.codeCTD = lesCTD.codeCTD
-and lesServices.numProf = lesProfs.numProf
+from LesServices, lesCTD, lesProfs
+where LesServices.codeCTD = lesCTD.codeCTD
+and LesServices.numProf = lesProfs.numProf
 and abtype <> "C"
 and abtype <> "CTD"
 and abtype <> "TD"
@@ -261,9 +261,9 @@ UPDATE pain_cours, (SELECT MAX( pain_tranche.cm ), id_enseignant, id_cours
 SET pain_cours.id_enseignant = t1.id_enseignant WHERE pain_cours.id_cours = t1.id_cours
 
 
---- Les collections pour récupérer les formations (sauf les périodes)
+--- Les collections pour rÃ©cupÃ©rer les formations (sauf les pÃ©riodes)
 INSERT INTO pain_collection (id_collection, id_sformation, annee_universitaire, nom_collection)
-SELECT LesFormations.num, LesCycles.num, "2011", nomf FROM LesFormations, LesCycles 
+SELECT LesFormations.num, LesCycles.num, "2012", nomf FROM LesFormations, LesCycles 
 WHERE  LesFormations.cycle = LesCycles.cycle
 
 

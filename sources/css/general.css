@@ -439,9 +439,9 @@ td.tranches, td.services {
 
 /******* toutes les bascules *******/
 
+
 div.basculeOff, div.basculeOn {
     float:left; 
-    cursor: pointer;
     width: 20px;
     height: 20px;
     background-repeat: no-repeat;
@@ -472,8 +472,16 @@ div.basculeOn:hover {
     background-image: url(img/triangleTDp.png);
 }
 
+
 td.laction > div.basculeOff, td.laction > div.basculeOn {
     margin-left: -30px;
+}
+
+div.bascule-highlight {
+    background-color: yellow;
+/*    border-top: 2px yellow solid;
+    -moz-border-radius: 5px;
+    border-radius: 5px; */
 }
 
 .micropalette {

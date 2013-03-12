@@ -58,6 +58,14 @@ function peutediter($type, $id, $id_parent) {
     return false;
 }
 
+/* changer le parent d'un element */
+function peutdeplacer($type, $id, $id_nouveau_parent) {
+     return peuttoutfaire() 
+            || (peutediter($type, $id, NULL)                     /* peut modifier l'element */
+                && peutediter($type, NULL, $id_nouveau_parent)); /* et modifier son parent */
+}
+
+
 function peutchoisir() {
     global $user;
     global $link;

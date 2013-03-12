@@ -48,7 +48,7 @@ function stats_php() {
 //echo "<h2>Graphiques par formation</h2>";
 //include("inc_statsformations.php");
     if (peutvoirstatsservices()) {
-	/* mise a jour des services potientiels */
+	/* mise a jour des services potentiels */
 	update_servicespotentiels();
 	include("inc_statsservices.php");
     }

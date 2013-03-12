@@ -1850,6 +1850,13 @@ function dropLine(e,ui) {
     var dragoid = parseIdString(tr.attr('id'));
     var drop = $(e.target).closest('tr');
     var dropoid = parseIdString(drop.attr('id'));
+    if (dragoid["type"] == "drag-tranche") {/* cours */
+	var dragname = "intervention";
+	var dropname = drop.children('td.nom_cours').text();
+	$("#dialog-drop-tranche").children(".hiddenvalue").html("<span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
+	$("#dialog-drop-tranche").dialog("option","title",dragname+" -> "+dropname);
+	$("#dialog-drop-tranche").dialog('open');
+    };
     if (dragoid["type"] == "drag-cours") {/* cours */
 	var dragname = tr.children('td.nom_cours').text();   
 	var dropname = drop.children('td.intitule').text();
@@ -2420,15 +2427,20 @@ function appendItem(type, prev, o, list) {
 	}
     }
     if (type == "cours") {
+	var idc = o["id_cours"];
 	var nbbasc = o["nb_tranche"];
 	var classzero = "";
 	if (0 == nbbasc) classzero = " basculeZero";
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff'+classzero+'" id="basculecours_'+o["id_cours"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
-	    .bind('click',{id: o["id_cours"]},basculerCours);
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculecours_'+idc+'"><div class="nbbasc">'+nbbasc+'</div></div>')
+	    .bind('click',{id: idc},basculerCours);
 	addHandle(line.children('td.laction'), "cours");
+/*      Glisser deposer de tranches pour plus tard
+	$('#basculecours_'+idc).droppable({accept:'div.handle.tranche', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
+*/
 	var colspan = largeurligne($("#skelcours"));
-	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"]+'" class="imgcours"></div></td></tr>');
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"]
+		    +'" class="imgcours"></div></td></tr>');
     }
     if (type == "annee") {
 	var idannee = o["id"];
@@ -2440,7 +2452,7 @@ function appendItem(type, prev, o, list) {
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeannee'+idannee+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculeannee'+idannee).bind('click',{id: idannee},basculerAnnee);
 	addHandle(line.children('td.laction'), "annee");
-	$('#basculeannee'+idannee).droppable({accept:'div.handle', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
+	$('#basculeannee'+idannee).droppable({accept:'div.handle', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
     }
     if (type == "sformation") {
 	var idsf = o["id_sformation"];
@@ -2452,7 +2464,7 @@ function appendItem(type, prev, o, list) {
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculesformation_'+idsf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculesformation_'+idsf).bind('click',{id: idsf},basculerSuperFormation);
 	addHandle(line.children('td.laction'), "sformation");
-	$('#basculesformation_'+idsf).droppable({accept:'div.handle.formation', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
+	$('#basculesformation_'+idsf).droppable({accept:'div.handle.formation', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
     }
     if (type == "formation") {
 	var idf = o["id_formation"];
@@ -2468,7 +2480,7 @@ function appendItem(type, prev, o, list) {
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeformation_'+idf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
 	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
-	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: '.ui-state-highlight',tolerance:'touch'});
+	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
 	/* */
 	var colspan = largeurligne($("#skelformation"));
 	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
@@ -2480,6 +2492,9 @@ function appendItem(type, prev, o, list) {
 	} else {
 	    removeChoisir(line.children('td.laction'));
 	}
+/*      Glisser deposer de tranches pour plus tard
+	addHandle(line.children('td.laction'), "tranche");
+*/
     }
     if (type == "enseignant") {
 	var nbbasc = o["nb_service"];
@@ -2659,32 +2674,93 @@ function selectLine(e) {
     return false;
 }
 
+/* indice de dépliage */
+function findLastIndBasc(c) {
+    var nbbasc = c.closest('table').closest('tr').prev('tr').children('td.laction').find('div.nbbasc'); 
+    return nbbasc;
+}
+
+/* trouve un indice de bascule approprié (qui peut simplement être fournit par le premier argument),
+ * lui ajoute le nombre number puis retourne la nouvelle valeur */
+function addToIndBasc(any_jq, number) {
+    if (!existsjQuery(any_jq)) return -1;
+    var nbbasc;
+    if (any_jq.hasClass('nbbasc')) { /* on a reçu le div qui contient l'indice */
+	nbbasc = any_jq;
+    } else { /* on doit chercher l'indice l'étage au dessus */
+	nbbasc = findLastIndBasc(any_jq);
+    }
+    if (!existsjQuery(nbbasc)) return -1;
+
+    var indice = parseFloat(nbbasc.text());
+    var new_indice = indice + number;
+    /* nouvel indice */
+    nbbasc.text(new_indice);
+    /* les zéro ont leur propre style (basculeZero) */
+    if ( (0 != new_indice) && (0 == indice)) { 
+	nbbasc.parent(".basculeZero").removeClass("basculeZero");
+    }
+    else if ((0 == new_indice) && (0 != indice)) {
+	nbbasc.parent(".basculeOn, .basculeOff").addClass("basculeZero");	
+    }
+    return new_indice;
+}
+
+
 /* deplacer ou copier un cours */
 function dropCopier() {
-    var source = $(this).children(".hiddenvalue span:first").text();
-    var but = $(this).children(".hiddenvalue span:last").text();
+    var source = $(this).children(".hiddenvalue").children("span:first").text();
+    var but = $(this).children(".hiddenvalue").children("span:last").text();
     alert("Copier "+source+" dans "+but+": fonction non disponible");
     $(this).dialog("close");
 }
 
 function dropDeplacer() {
-    var source = $(this).children(".hiddenvalue span:first").text();
-    var but = $(this).children(".hiddenvalue span:last").text();
-    var cours = $('#'+idString({type: "cours", id: source}));
+    var type = "cours"; /* ATTENTION pour le moment seulement les cours */
+    var source = $(this).children(".hiddenvalue").children("span:first").text();
+    var but = $(this).children(".hiddenvalue").children("span:last").text();
+    var cours = $('#'+idString({type: type, id: source}));
     var imgcours = cours.prev();
-/*    alert(idString({type: "cours", id: source})); */
-    cours.children(".basculeOn").trigger('click');
-    alert("Deplacer "+source+" dans "+but+": fonction non disponible");
-    if ($("#basculeformation_"+but).hasClass("basculeOn")) {
-	$("#legendecours"+but).after(cours);
-	$("#legendecours"+but).after(imgcours);
-	alert("moved");
-    }
-    else {
-	cours.remove();
-	imgcours.remove();
-	alert("removed");
-    }
+
+    /* fermer la vue dépliée du cours */
+    $("#basculecours_"+source+".basculeOn").trigger('click');
+
+    /* montrer qu'il se passe un truc */
+    $("#dialog-attendre-deplacer").dialog("open");
+
+    /* envoyer l'ordre de déplacement */
+    getjson("json_move.php", 
+	    {"type": type, "id": source, "id_but": but},
+	    function () {
+		/* 1) mettre à jour l'ancien indice de dépliage */
+		addToIndBasc(cours, -1);
+
+		/* 2) Le cours se déplace dans la vue (perdu de vue si le nouveau parent est plié) */
+		if ($("#basculeformation_"+but).hasClass("basculeOn")) {
+		    /* on déplace la vue du cours à son nouvel emplacement */
+		    $("#legendecours"+but).after(cours);
+		    $("#legendecours"+but).after(imgcours);
+		    cours.effect('highlight',{},800,function () {});
+		    /* 3) mettre à jour le nouvel indice de dépliage */
+		    addToIndBasc(cours, 1);
+		}
+		else {
+		    /* on efface la vue du cours de son emplacement actuel */
+		    cours.remove();
+		    imgcours.remove();
+		    /* 3) mettre à jour le nouvel indice de dépliage */
+		    addToIndBasc($("#formation_"+but+" > td.laction div.nbbasc"), 1);
+		}
+
+
+		
+		/* fin du truckispasse */
+                $("#dialog-attendre-deplacer").dialog("close");
+
+	    });  
+    
+
+    /* fermer le dialogue */
     $(this).dialog("close");
 }
 
