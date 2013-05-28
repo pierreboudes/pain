@@ -408,8 +408,15 @@ td.service_annuel, td.service_reel  {
 }
 
 /* dimensions pour les tranches */
-.remarque, .declarer {
+.remarque {
     width: 140px;
+}
+td.declarer {
+    background-color: #FFFFEE;
+}
+
+.declarer {
+    width: 100px;
 }
 
 .type_conversion {
