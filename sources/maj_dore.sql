@@ -142,3 +142,8 @@ INSERT INTO `sectionscnu` (`id_section`, `intitule_section`) VALUES
 -- à adapter selon section CNU majoritaire :
 -- ALTER TABLE  `pain_cours` CHANGE  `id_section`  `id_section` INT( 3 ) UNSIGNED NOT NULL DEFAULT  '71';
 -- UPDATE pain_cours SET id_section = 71 WHERE id_section = 0;
+
+-- rev 742
+-- pain_tranche.declarer nouveau
+ALTER TABLE  `pain_tranche` ADD  `declarer` text COLLATE utf8_swedish_ci NOT NULL DEFAULT '' AFTER `descriptif`;
+-- Fin rev 742

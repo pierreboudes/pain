@@ -1,5 +1,5 @@
 /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
  *
@@ -24,10 +24,11 @@
 $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.section, th.credits, th.mcc, th.debut, th.fin, th.tirage, th.inscrits, th.presents, th.totaux_loader, th.collections, th.tags').fadeOut(0); // th.alt, th.inscrits, th.presents,
+	$('#skeltranche').children('th.declarer').fadeOut(0);
 	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
 	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
-	
+
 	/* histogrammes */
 	$('tr.entete > td.laction').each( function() {
 		addHistoGlobal($(this));
@@ -38,7 +39,7 @@ $(document).ready(function(){
 	    connectWith: '.annee',
 		    handle: 'td.intitule',
 		    revert: true
-		    }).disableSelection(); 
+		    }).disableSelection();
 BUG: meme avec handle, très mauvaise interaction avec les textarea
 */
 	/* on peut déplacer des cours ?? */
@@ -46,7 +47,7 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 /* aide */
 	$('#basculeAide').button({text: true});
 	$('#basculeAide').bind('click',basculerAide);
-	
+
 
        $("#vuecourante").append('<table class="super" id="tableannees"><tbody></tbody></table>');
        appendList({type: "annee", cetteannee: "1"}, /* ajouter quoi ? */
@@ -85,8 +86,8 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 			}
 		}
 	    });
-	
-	
+
+
 	$("#panier").dialog({
 	    autoOpen: false,
 		    title: "Choix de cours",
@@ -111,5 +112,5 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 				}
 		    });
 	$('#bouton-panier').bind('click', togglePanier);
-    
+
     });

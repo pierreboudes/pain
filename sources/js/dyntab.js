@@ -1,5 +1,5 @@
 /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
  *
@@ -27,8 +27,8 @@ var clickeditmode = false;
 
 $(document).ready(function(){
 	var agent = navigator.userAgent.toLowerCase();
-	if(agent.indexOf('iphone') >= 0 
-	   || agent.indexOf('ipad') >= 0 
+	if(agent.indexOf('iphone') >= 0
+	   || agent.indexOf('ipad') >= 0
 	   || agent.indexOf('android') >= 0){
 	    hasTouch = true;
 	}
@@ -85,7 +85,7 @@ bd : ligne_bd, tableau associatif (objet js) colonne => val.
 html : ligne de tableau contenant des cellules (td)
 js : objet cellule de nom la classe du td, qui fait le lien entre la bd et le tableau.
 Nom de cellule (td, js) et nom de colonne coincident sauf quelques cas particuliers.
-setval(cellule_jquery, ligne_bd) : insere la valeur bd dans le html 
+setval(cellule_jquery, ligne_bd) : insere la valeur bd dans le html
 edit(cellule_jquery) passe la cellule html en mode edition par l'utilisateur
 getval(cellule_jquery, ligne_bd) insere la valeur html dans la ligne bd
 
@@ -140,7 +140,7 @@ function checkcell() {
 
     /* mode edition direct */
     this.edit = function (c) {
-	if (this.mutable) {	    
+	if (this.mutable) {
 	    if (!c.hasClass('edit')) {
 		c.addClass('edit');
 	    }
@@ -149,7 +149,7 @@ function checkcell() {
 		yesno.toggleClass('yes');
 		yesno.toggleClass('no');
 		if (yesno.hasClass('yes')) {
-		    yesno.text('oui');		    
+		    yesno.text('oui');
 		}
 		else {
 		    yesno.text('non');
@@ -183,7 +183,7 @@ function checkcell() {
 	    yesno.addClass('no');
 	    yesno.text('non');
 	}
-    }    
+    }
     /* rajoute mutable */
     this.showmutable = function (c) {
 	if(!c.hasClass("mutable")) {
@@ -224,14 +224,14 @@ function numcell() {
     this.getval = function (c, o) {
 	var s;
 	if (c.hasClass("edit")) {
-	    s = c.find('input').val();	    
+	    s = c.find('input').val();
 	} else {
 	    s = c.text();
 	}
 	if ((this.canbenull) && ("" == s)) {
 	    o[this.name] = null;
 	} else if  ("" == s) {
-	    o[this.name] = "default";	    
+	    o[this.name] = "default";
 	} else {
 	    o[this.name] = s.replace(" ","").replace(",",".");
 	}
@@ -358,13 +358,13 @@ function enseignant () {
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
-	var ensid = c.find('.hiddenvalue').text(); 
+	var ensid = c.find('.hiddenvalue').text();
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
 	var ensname = $.trim(c.find('a').text());
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+ensname+'"/><span class="hiddenvalue">'+ensid+'</span>');
-	/* charger une seule fois la liste des enseignants */	
+	/* charger une seule fois la liste des enseignants */
 	/* mettre en place l'autocomplete */
 	var ens = c.find("input");
 	var param = {term: ""};
@@ -400,7 +400,7 @@ function enseignant () {
 			    $(this).focus();
 			    ens.val(ui.item.label);
 			    c.find('.hiddenvalue').html(ui.item.id);
-			} 
+			}
 		    })});
 	c.addClass("edit");
 	c.find('input').focus();
@@ -423,12 +423,12 @@ function microsformation () {
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
-	var ensid = c.find('.hiddenvalue').text(); 
+	var ensid = c.find('.hiddenvalue').text();
 	c.remove('.hiddenvalue');
 	var ensname = $.trim(c.find('span.nomsformation').text());
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+ensname+'"/><span class="hiddenvalue">'+ensid+'</span>');
-	/* charger une seule fois la liste des sformations */	
+	/* charger une seule fois la liste des sformations */
 	/* mettre en place l'autocomplete */
 	var ens = c.find("input");
 	getjson("json_get.php",{type: "microsformation", id_parent: getAnnee()}, function (data) {
@@ -444,7 +444,7 @@ function microsformation () {
 			    $(this).focus();
 			    ens.val(ui.item.label);
 			    c.find('.hiddenvalue').html(ui.item.id);
-			} 
+			}
 		    })});
 	c.addClass("edit");
 	c.find('input').focus();
@@ -454,7 +454,7 @@ function microsformation () {
 	o["id_sformation"] = sformid;
     }
     this.setval = function (c,o) {
-	var nom = o["nom_sformation"];	
+	var nom = o["nom_sformation"];
 	if (nom == null) nom = "nom du cycle ?";
 	c.html('<span class="nomsformation">'+nom+'</span><span class="hiddenvalue">'+o["id_sformation"]+'</span>');
     }
@@ -494,7 +494,7 @@ function total_complexe(o, nom, prefixe) {
 	+"</span>"
 	+"</span>";
     return s;
-}  
+}
 
 function load_totaux(c,o) {
     c.removeClass('inactive');
@@ -539,7 +539,7 @@ function totaux() {
 	    load_totaux(c, o);
 	} else {
 	    c.addClass('inactive');
-	    c.html('voir');	
+	    c.html('voir');
 	}
 	c.click(function () {
 	    c.unbind('click');
@@ -556,7 +556,7 @@ totaux.prototype = new immutcell();
 
 function totaux_loader() {
     this.autoload = false;
-    this.name = "totaux_loader";  
+    this.name = "totaux_loader";
 };
 totaux_loader.prototype = new totaux();
 
@@ -576,7 +576,7 @@ function load_tags(c,o) {
 		    c.append(s);
 		    $('#tagcours_'+o[i].id_tag+'_'+id_cours).bind('click', {id_tag: o[i].id_tag, id_cours: id_cours}, function (e) {
 			    getjson("json_rm.php",
-				    {id:e.data.id_tag, id_parent: e.data.id_cours, type: "tagcours"}, 
+				    {id:e.data.id_tag, id_parent: e.data.id_cours, type: "tagcours"},
 				    function () {
 					/* si succès: on retire de la vue */
 					$('#tagcours_'+e.data.id_tag+'_'+e.data.id_cours).parent().remove();
@@ -588,7 +588,7 @@ function load_tags(c,o) {
 		$('#ajoutertagcours_'+id_cours).bind('click',{id_cours: id_cours}, ajouter_tagcours);
 	    });
 }
-	    
+
 function ajouter_tagcours(e) {
     var id_cours = e.data.id_cours;
     var c = $('#ajoutertagcours_'+id_cours).parent();
@@ -599,9 +599,9 @@ function ajouter_tagcours(e) {
     $('#envoyertagcours_'+id_cours).bind('click', {id_cours: id_cours}, envoyer_tagcours);
     /* mettre en place l'autocomplete */
     var inp = c.find("input");
-    getjson("json_get.php",{id_parent: id_cours, type: 'unusedtags'}, 
+    getjson("json_get.php",{id_parent: id_cours, type: 'unusedtags'},
 	    function (data) {
-		inp.autocomplete({ 
+		inp.autocomplete({
 		    minLength: 2,
 			    source: data,
 			    select: function(e, ui) {
@@ -624,9 +624,9 @@ function envoyer_tagcours(e) {
     var id_cours = e.data.id_cours;
     var id_tag = $('#envoyertagcours_'+id_cours).prev('.hiddenvalue').text();
     if (id_tag.length == 0) return false;
-    getjson("json_new.php", {id_cours: id_cours, id_tag: id_tag, type: 'tagscours'}, 
+    getjson("json_new.php", {id_cours: id_cours, id_tag: id_tag, type: 'tagscours'},
 	    function () {
-		var c = $('#cours_'+id_cours+' > td.tags');		
+		var c = $('#cours_'+id_cours+' > td.tags');
 		load_tags(c, {id: id_cours});
 	});
     return false;
@@ -654,7 +654,7 @@ function tags() {
 	load_tags(c, oid);
     };
     this.autoload = false;
-    this.name = "tags";  
+    this.name = "tags";
 };
 tags.prototype = new immutcell();
 
@@ -676,7 +676,7 @@ function load_collections(c,o) {
 		    c.append(s);
 		    $('#collectioncours_'+o[i].id_collection+'_'+id_cours).bind('click', {id_collection: o[i].id_collection, id_cours: id_cours}, function (e) {
 			    getjson("json_rm.php",
-				    {id:e.data.id_collection, id_parent: e.data.id_cours, type: "collectioncours"}, 
+				    {id:e.data.id_collection, id_parent: e.data.id_cours, type: "collectioncours"},
 				    function () {
 					/* si succès: on retire de la vue */
 					$('#collectioncours_'+e.data.id_collection+'_'+e.data.id_cours).parent().remove();
@@ -688,7 +688,7 @@ function load_collections(c,o) {
 		$('#ajoutercollectioncours_'+id_cours).bind('click',{id_cours: id_cours}, ajouter_collectioncours);
 	    });
 }
-	    
+
 function ajouter_collectioncours(e) {
     var id_cours = e.data.id_cours;
     var c = $('#ajoutercollectioncours_'+id_cours).parent();
@@ -699,9 +699,9 @@ function ajouter_collectioncours(e) {
     $('#envoyercollectioncours_'+id_cours).bind('click', {id_cours: id_cours}, envoyer_collectioncours);
     /* mettre en place l'autocomplete */
     var inp = c.find("input");
-    getjson("json_get.php",{id_parent: id_cours, type: 'unusedcollections', annee_universitaire: getAnnee()}, 
+    getjson("json_get.php",{id_parent: id_cours, type: 'unusedcollections', annee_universitaire: getAnnee()},
 	    function (data) {
-		inp.autocomplete({ 
+		inp.autocomplete({
 		    minLength: 2,
 			    source: data,
 			    select: function(e, ui) {
@@ -724,9 +724,9 @@ function envoyer_collectioncours(e) {
     var id_cours = e.data.id_cours;
     var id_collection = $('#envoyercollectioncours_'+id_cours).prev('.hiddenvalue').text();
     if (id_collection.length == 0) return false;
-    getjson("json_new.php", {id_cours: id_cours, id_collection: id_collection, type: 'collectionscours'}, 
+    getjson("json_new.php", {id_cours: id_cours, id_collection: id_collection, type: 'collectionscours'},
 	    function () {
-		var c = $('#cours_'+id_cours+' > td.collections');		
+		var c = $('#cours_'+id_cours+' > td.collections');
 		load_collections(c, {id: id_cours});
 	});
     return false;
@@ -736,7 +736,7 @@ function envoyer_collectioncours(e) {
 function collections() {
     this.setval = function (c, o) {
 	c.addClass('inactive');
-	c.html('voir');	   
+	c.html('voir');
 	c.click(function () {
 	    c.unbind('click');
 	    load_collections(c, o);
@@ -752,7 +752,7 @@ function collections() {
 	load_collections(c, oid);
     };
     this.autoload = false;
-    this.name = "collections";  
+    this.name = "collections";
 };
 collections.prototype = new immutcell();
 
@@ -791,13 +791,13 @@ function categorie () {
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
-	var catid = c.find('.hiddenvalue').text(); 
+	var catid = c.find('.hiddenvalue').text();
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
 	var catname = $.trim(c.find('a').text());
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+catname+'"/><span class="hiddenvalue">'+catid+'</span>');
-	/* charger une seule fois la liste des categories */	
+	/* charger une seule fois la liste des categories */
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 	getjson("json_categories.php",{term: ""}, function (data) {
@@ -812,7 +812,7 @@ function categorie () {
 			    $(this).focus();
 			    cat.val(ui.item.label);
 			    c.find('.hiddenvalue').html(ui.item.id);
-			} 
+			}
 		    })});
 	c.addClass("edit");
 	c.find('input').focus();
@@ -835,12 +835,12 @@ function section () {
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
-	var catid = c.find('.hiddenvalue').text(); 
+	var catid = c.find('.hiddenvalue').text();
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+catid+'"/><span class="hiddenvalue">'+catid+'</span>');
-	/* charger une seule fois la liste des sections TODO */	
+	/* charger une seule fois la liste des sections TODO */
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 	getjson("json_sections.php",{term: ""}, function (data) {
@@ -855,7 +855,7 @@ function section () {
 				   $(this).focus();
 				   cat.val(ui.item.label);
 				   c.find('.hiddenvalue').html(ui.item.id);
-			       } 
+			       }
 			     })});
 	c.addClass("edit");
 	c.find('input').focus();
@@ -878,19 +878,19 @@ function code_geisha () {
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
-	var catid = c.find('.hiddenvalue').text(); 
+	var catid = c.find('.hiddenvalue').text();
 	// TODO refaire avec value au lien de span hidden
 	c.remove('.hiddenvalue');
 	/* installer la zone d'input */
 	c.html('<input type="text" value="'+catid+'"/><span class="hiddenvalue">'+catid+'</span>');
-	/* charger une seule fois la liste des codes TODO */	
+	/* charger une seule fois la liste des codes TODO */
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 //	c.append("<div id='JustLogLikeThat' style='position: fixed; top: 10px; left 50px;'>Logs</div>");
 	cat.autocomplete({ minLength: 3,
 			   source: function( request, response ) {
 			       $.ajax({
-				   url: "/commun/minoterie/json_codesue.php", 
+				   url: "/commun/minoterie/json_codesue.php",
 				   dataType: "json",
 				   data: {
 				       term: request.term
@@ -932,7 +932,7 @@ function code_geisha () {
 code_geisha.prototype = new cell();
 
 
-function service_reel () 
+function service_reel ()
 {
     this.name = "service_reel";
     this.setval = function (c,o) {
@@ -950,7 +950,7 @@ service_reel.prototype = new immutcell();
 /* numero d'ordre : via des boutons */
 /* pour empiler des boutons voir: git://gist.github.com/760885.git */
 function numero() {
-    this.setval= function (c, o) {	
+    this.setval= function (c, o) {
 	c.html('<div class="groupeboutons"><button class="moveupward"></button><button class="movedownward"></button></div><div class="hiddenvalue">'+o["numero"]+'</div>');
 	var up = c.find('button.moveupward').button({
             icons: {
@@ -976,7 +976,7 @@ function numero() {
     };
     this.mutable = false;
     this.name = "numero";
-    this.edit = function () {};  
+    this.edit = function () {};
 }
 numero.prototype = new immutcell();
 
@@ -1037,13 +1037,13 @@ function moveup(e) {
     /* envoie des modifications au serveur (en parallèle) */
     getjson("json_modify.php",trid, replaceLine);
     getjson("json_modify.php",previd, replaceLine);
-    
-    
-/*    getjson("json_exchange.php", 
+
+
+/*    getjson("json_exchange.php",
 	    {"type": id["type"],
-		    "idprev": previd["id"], 
+		    "idprev": previd["id"],
 		    "idnext": nextid["id"]
-		    }, 
+		    },
 	    function () {
 		tr.after(trprev);
 		}); */
@@ -1071,7 +1071,7 @@ function movedown(e) {
 	traux = tr.prev();
 	if ((!trnext.hasClass(trid["type"]) )
 	    || (!trnextaux.hasClass("img"+trid["type"]))
-	    || (!traux.hasClass("img"+trid["type"])) 
+	    || (!traux.hasClass("img"+trid["type"]))
 	    ) return false; /* quelque chose se passe mal: abandon */
     }
 
@@ -1105,13 +1105,13 @@ function movedown(e) {
     /* envoie des modifications au serveur (en parallèle) */
     getjson("json_modify.php",trid, replaceLine);
     getjson("json_modify.php",nextid, replaceLine);
-    
-    
-/*    getjson("json_exchange.php", 
+
+
+/*    getjson("json_exchange.php",
 	    {"type": id["type"],
-		    "idnext": nextid["id"], 
+		    "idnext": nextid["id"],
 		    "idnext": nextid["id"]
-		    }, 
+		    },
 	    function () {
 		tr.after(trnext);
 		}); */
@@ -1121,14 +1121,14 @@ function movedown(e) {
 
 /* objet ligne de tableau */
 function ligne() {
-    /* pain_enseignant 
+    /* pain_enseignant
      */
-    
+
     /* composite : enseignant */
     this.enseignant = new enseignant();
     /* login */
     this.login = new cell();
-    this.login.name = "login";    
+    this.login.name = "login";
     /* nom */
     this.nom = new cell();
     this.nom.name = "nom";
@@ -1229,29 +1229,32 @@ function ligne() {
     this.laction.setval = function(c,o) {
 	if (0 == c.find('div.palette').length) c.append('<div class="palette"/>');
     }
-    this.laction.name = "laction";   
+    this.laction.name = "laction";
     /* tags */
     this.tags = new tags();
     /* colllections */
-    this.collections = new collections(); 
+    this.collections = new collections();
 
     /* pain_tranche
      */
     /* nature */
     this.nature = new nature();
-    
+
     /* id_cours */
-    this.id_cours = new cell();    
+    this.id_cours = new cell();
     this.id_cours.name = "id_cours";
     /* groupe */
     this.groupe = new numcell();
     this.groupe.name = "groupe";
     /* type_conversion */
-    this.type_conversion = new cell();    
+    this.type_conversion = new cell();
     this.type_conversion.name = "type_conversion";
     /* remarque */
-    this.remarque = new cell();    
+    this.remarque = new cell();
     this.remarque.name = "remarque";
+    /* declarer */
+    this.declarer = new cell();
+    this.declarer.name = "declarer";
     /* htd */
     this.htd = new sunumcell();
     this.htd.name = "htd";
@@ -1260,7 +1263,7 @@ function ligne() {
     this.choix = new cell();
     this.choix.name = "choix";
 
-    /* pain_enseignant, pain_service 
+    /* pain_enseignant, pain_service
      */
     this.annee_universitaire = new annee_universitaire();
     this.service_annuel = new sunumcell();
@@ -1282,7 +1285,7 @@ function ligne() {
     this.parfum = new cell();
     this.parfum.name = "parfum";
 
-    /* potentiel (tranches + choix) 
+    /* potentiel (tranches + choix)
      */
     this.choix_htd = new immutcell();
     this.choix_htd.name = "choix_htd";
@@ -1369,7 +1372,7 @@ function parseIdString(s) {
     var tid = new Object();
     var tab = s.split('_',2);
     tid['type'] = tab[0];
-    tid['id'] = tab[1];	
+    tid['id'] = tab[1];
     return tid;
 }
 
@@ -1412,7 +1415,7 @@ function getjsondb(url,data,callback) {
 	     error: function () {alert('erreur ajax !');},
 	     success: function(data) {
 		var o;
-		alert("RECEIVED: " + data); 
+		alert("RECEIVED: " + data);
 		o = jQuery.parseJSON(data);
 		if (o.error != null) {
 		    // if (confirm()) ...
@@ -1430,7 +1433,7 @@ function largeurligne(dansligne) {
     var ligne = dansligne.parentsUntil('tbody');
     if (existsjQuery(ligne)) {
 	return ligne.children('td, th').length;
-    }    
+    }
     return dansligne.children('td, th').length;
 }
 
@@ -1501,7 +1504,7 @@ function basculerAide() {
 				icons: {
 			    primary: "ui-icon-triangle-1-s"
 				    }
-			});		    
+			});
 		    $('#aide').fadeIn('slow');
 		});
 	} else {
@@ -1525,7 +1528,7 @@ function basculerAnnee(e) {
    bascule.toggleClass('basculeOn');
    /* effacement (off) ou affichage (on) de la descendance */
    if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
-       $('#trtablesupers'+id).remove(); 
+       $('#trtablesupers'+id).remove();
    } else {
    /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
        var colspan = largeurligne(bascule);
@@ -1555,7 +1558,7 @@ function basculerSuperFormation(e) {
    bascule.toggleClass('basculeOn');
    /* effacement (off) ou affichage (on) de la descendance */
    if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
-       $('#trtableformations'+id).remove(); 
+       $('#trtableformations'+id).remove();
    } else {
    /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
        var colspan = largeurligne(bascule);
@@ -1657,7 +1660,7 @@ function basculerCategorie(e) {
 	    .append('<tr id="trtableens_'+id+'"><td class="nopadding" colspan="3"><table id="tableens_'+id+'" class="enseignants"><tbody></tbody></table>');
 	appendList({type: "enseignant", id_parent: id},
 		   $('#tableens_'+id+'> tbody'),
-		   function () {		       
+		   function () {
 		       var legende = $('#legendeenseignant'+id);
 		       addMenuFields(legende);
 		       addAdd(legende.find('th.action'));
@@ -1743,12 +1746,12 @@ function addMult(td) {
     multl.button({
 	text: false,
 		icons: {
-	    primary: "ui-icon-copy" 
+	    primary: "ui-icon-copy"
 		    }
 	});
     multl.bind("click",oid,duplicateLine);
     removeMult(td);
-    td.find('div.palette').append(multl);    
+    td.find('div.palette').append(multl);
 }
 function removeMult(td) {
     td.find('button.multl').remove();
@@ -1858,21 +1861,21 @@ function dropLine(e,ui) {
 	$("#dialog-drop-tranche").dialog('open');
     };
     if (dragoid["type"] == "drag-cours") {/* cours */
-	var dragname = tr.children('td.nom_cours').text();   
+	var dragname = tr.children('td.nom_cours').text();
 	var dropname = drop.children('td.intitule').text();
 	$("#dialog-drop-cours").children(".hiddenvalue").html("<span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
 	$("#dialog-drop-cours").dialog("option","title",dragname+" -> "+dropname);
 	$("#dialog-drop-cours").dialog('open');
     };
     if ("drag-sformation" == dragoid["type"]) {
-	var dragname = tr.children('td.nom').text();   
+	var dragname = tr.children('td.nom').text();
 	var dropname = drop.children('td.annee').text();
 	$("#dialog-drop").dialog("option","title","Copie en profondeur "+dragname+" -> "+dropname);
 	$("#dialog-drop").children(".hiddenvalue").html("<span>sformation</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
 	$("#dialog-drop").dialog('open');
     }
     if ("drag-annee" == dragoid["type"]) {
-	var dragname = tr.children('td.annee').text();   
+	var dragname = tr.children('td.annee').text();
 	var dropname = drop.children('td.annee').text();
 	$("#dialog-drop").dialog("option","title","Copie en profondeur "+dragname+" -> "+dropname);
 	$("#dialog-drop").children(".hiddenvalue").html("<span>annee</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
@@ -1909,7 +1912,7 @@ function addOk(jqcell) {
 	/* il y avait deja au moins une cellule en cours d'edition dans la ligne */
 	ligne.find('div.ok').remove();
     } else {
-	/* c'est la premiere cellule en cours d'edition dans la ligne. 
+	/* c'est la premiere cellule en cours d'edition dans la ligne.
 	   En cas de confirmation on peut envoyer toute la ligne */
 	ligne.addClass('edit');
 	jqcell.append('<div class="ok"/>');
@@ -2015,7 +2018,7 @@ function htdTotaux(annee) {// OK pour le moment
 		data = trim(data);
 		$('#imgentete_'+annee).html(data);
 		var totaux = $('#imgentete img').attr('title');
-		$('#entete_'+annee+' td span.totaux').text(totaux);		
+		$('#entete_'+annee+' td span.totaux').text(totaux);
 	    } else {
 		$('#imgentete_'+annee).html('');
 	    }
@@ -2047,15 +2050,15 @@ function logsFormation(e) {
     if (bascule.hasClass('logOn')) {
 	var titre = 'Logs '+$('#formation_'+id+'> td.intitule').text();
 	// charger une première page de log
-	jQuery.post("act_historique.php", 
-		    {id_formation: id}, 
+	jQuery.post("act_historique.php",
+		    {id_formation: id},
 		    function (data) {
 			if (!contientERREUR(data)) {
 			    $('#formation_'+id+' > td.intitule').append('<div class="logsformation" id="logF'+id
                                                                        +'">'+data+'</div>');
-			    $('#logF'+id).dialog({autopen: true, 
-					draggable: true, 
-					resizable: true, 
+			    $('#logF'+id).dialog({autopen: true,
+					draggable: true,
+					resizable: true,
 					width: 700,
 					height: 300,
 					close: function (event,ui) {logsFormation(e);},
@@ -2076,16 +2079,16 @@ function logsFormation(e) {
 					if (button.prev().prev().hasClass('hiddenvalue')) {// plus rien à charger dans les logs
 					    button.button('disable');
 					} else {// charger une autre "page" de logs
-					    jQuery.post("act_historique.php", 
-							{id_formation: id, offset: offset},					     
+					    jQuery.post("act_historique.php",
+							{id_formation: id, offset: offset},
 							function (data) {
 							    if (!contientERREUR(data)) {
 								$("#morelogF"+id).before(data);
 							    }
 							});
 					}
-				    });				
-			    } 
+				    });
+			    }
 			    else {
 				$('#logF'+id).prepend("logs vide");
 			    }
@@ -2121,12 +2124,12 @@ function openMenuFields(e) {
     var menu = jQuery('<ul class="menu"></ul>');
     var offset = button.offset();
     var h = (button.outerHeight) ? button.outerHeight() : button.height();
-    menu.css({position: 'absolute', 
-		'top': offset.top + h - 1, 
+    menu.css({position: 'absolute',
+		'top': offset.top + h - 1,
 		'left': offset.left,
 		'z-index': 2000
 		}).click(function(e) { e.stopPropagation(); }).show(200, function() {
-			$(document).one('click', {button: button, menu: menu, th: th}, 
+			$(document).one('click', {button: button, menu: menu, th: th},
 					closeMenuFields);
 		    });
     var n = list.length;
@@ -2139,8 +2142,8 @@ function openMenuFields(e) {
 	var blob = jQuery('<li>'+titre+'</li>');
 	if (!visible) blob.addClass('inv');
 	blob.one('click',
-		 {type: type, visible: visible, 
-			 css: classname, 
+		 {type: type, visible: visible,
+			 css: classname,
 			 button: button, menu: menu, th: th},
 		 toggleColumn);
 	menu.append(blob);
@@ -2191,12 +2194,12 @@ function openServiceAdd(e) {
     var menu = jQuery('<ul class="menu"></ul>');
     var offset = button.offset();
     var h = (button.outerHeight) ? button.outerHeight() : button.height();
-    menu.css({position: 'absolute', 
-		'top': offset.top + h - 1, 
+    menu.css({position: 'absolute',
+		'top': offset.top + h - 1,
 		'left': offset.left,
 		'z-index': 2000
 		}).click(function(e) { e.stopPropagation(); }).show(200, function() {
-			$(document).one('click', {button: button, menu: menu, th: th}, 
+			$(document).one('click', {button: button, menu: menu, th: th},
 					closeServiceAdd);
 		    });
     var n = list.length;
@@ -2214,7 +2217,7 @@ function openServiceAdd(e) {
 		     {type: type,
 			     annee: valeur,
 			     button: button,
-			     menu: menu, 
+			     menu: menu,
 			     th: th,
 			     tr: tr},
 		     nouveauService);
@@ -2238,7 +2241,7 @@ function closeServiceAdd(e) {
     return false;
 }
 
-function   nouveauService(e) {  
+function   nouveauService(e) {
     closeServiceAdd(e);
     newLine(e);
 }
@@ -2248,7 +2251,7 @@ function   nouveauService(e) {
 
 function getAnnee(c) {
     if ((arguments.length > 0) && existsjQuery(c)) {/* trouver l'annee dans la branche du dom */
-	var ids = c.closest('table.tablesupers').attr('id'); 
+	var ids = c.closest('table.tablesupers').attr('id');
 	/* TODO remplacer tr.annee par quelque chose comme id^=annee_ */
 	var oid = parseIdString(ids);
 	return oid.id;
@@ -2284,7 +2287,7 @@ function showResponsabilite() { // utilisee dans service.php
     var type ='responsabilite';
     body.html('');
     body.append('<div class="responsabilite-conteneur"><table id="table'+type+'" class="'+type+'"><tbody></tbody></table></div>');
-    appendList({type: type, id_parent: id, annee_universitaire: getAnnee()}, 
+    appendList({type: type, id_parent: id, annee_universitaire: getAnnee()},
 	       $('#table'+type+' > tbody'));
 }
 
@@ -2294,8 +2297,8 @@ function reloadChoix(panier,id, annee, type) {
     }
     panier.html('');
     panier.append('<div class="panier-conteneur"><table id="table'+type+'" class="'+type+'"><tbody></tbody></table></div>');
-    appendList({type: type, id_parent: id, annee_universitaire: annee}, 
-	       $('#table'+type+' > tbody'), 
+    appendList({type: type, id_parent: id, annee_universitaire: annee},
+	       $('#table'+type+' > tbody'),
 	       function (o) {
 		   var legende = $('#legende'+type+id);
 		   addMenuFields(legende);
@@ -2314,7 +2317,7 @@ function reloadChoix(panier,id, annee, type) {
 		   recalculatePanier(type);
 		   if (type == "potentiel") {
 		       $('#tablepotentiel > tbody > tr > td').removeClass("mutable");
-		       $('#tablepotentiel > tbody > tr > td.action').hide();		       
+		       $('#tablepotentiel > tbody > tr > td.action').hide();
 		   }
 	       });
 }
@@ -2388,7 +2391,7 @@ function appendList(data, body, do_it_last) {
 		appendItem(data.type,legende,o[i],list);
 	    }
 	    if (do_it_last != undefined) {// comment tester si fonction ?
-		do_it_last(o); 
+		do_it_last(o);
 	    }
 	loading.remove();
 	});
@@ -2483,12 +2486,12 @@ function appendItem(type, prev, o, list) {
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
 	/* */
 	var colspan = largeurligne($("#skelformation"));
-	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');	
+	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');
     }
     if (type == "tranche") {
-	addMult(line.children('td.action')); 
+	addMult(line.children('td.action'));
 	if ( (o["id_enseignant"] == 3) || config_choisir_tout_cours) {
-	    addChoisir(line.children('td.laction'));  
+	    addChoisir(line.children('td.laction'));
 	} else {
 	    removeChoisir(line.children('td.laction'));
 	}
@@ -2504,7 +2507,7 @@ function appendItem(type, prev, o, list) {
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeenseignant_'+o["id_enseignant"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
 	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
     }
-    addRm(line.find('td.action')); 
+    addRm(line.find('td.action'));
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
@@ -2541,12 +2544,12 @@ function newLine(e) {
     getjson("json_new.php", data, function (tabo) {
 	    appendItem(type,tr,tabo[i],list);
 	});
-       
+
 }
 
 /* supprimer une ligne du serveur et de la vue */
 function removeLine(o) {
-    var oid = o.data;   
+    var oid = o.data;
     var tr = $("#"+idString(oid));
 
     tr.find('div.basculeOn').trigger('click');
@@ -2559,7 +2562,7 @@ function removeLine(o) {
 			tr.fadeOut('slow');
 			if (oid.type == "choix") {
 			    tr.remove();
-			    oid.type = "longchoix";	
+			    oid.type = "longchoix";
 			    tr = $("#"+idString(oid));
 			}
 			if ((oid.type == "longchoix")) {
@@ -2627,7 +2630,7 @@ function replaceLine(tabo) {
     removeReload(ligne.children('td.action'));
     addRm(ligne.children('td.action'));
     if (o["type"] == "tranche") {
-	addMult(ligne.children('td.action')); 
+	addMult(ligne.children('td.action'));
 	if (o["id_enseignant"] == 3) {
 	    addChoisir(ligne.children('td.laction'));
 	} else {
@@ -2643,7 +2646,7 @@ function duplicateLine(e) {
     var sid = idString(oid);
     var original = $('#'+sid);
     /* faut-il demander une confirmation ? */
-    getjson("json_duplicate.php",oid,function (tabo) {	    
+    getjson("json_duplicate.php",oid,function (tabo) {
 	    var o = tabo[0];
 	    var legende = $("#skel"+o["type"]);
 	    var list = legende.children('th');
@@ -2655,7 +2658,7 @@ function duplicateLine(e) {
 function selectLine(e) {
     var oid = e.data;
     var source = $('#'+idString(oid));
-    source.effect('highlight',{},800,function () {});	   
+    source.effect('highlight',{},800,function () {});
     getjson("json_get.php",oid,function (tabo) {
 	    var o = tabo[0];
 	    o.type = "choix";
@@ -2676,7 +2679,7 @@ function selectLine(e) {
 
 /* indice de dépliage */
 function findLastIndBasc(c) {
-    var nbbasc = c.closest('table').closest('tr').prev('tr').children('td.laction').find('div.nbbasc'); 
+    var nbbasc = c.closest('table').closest('tr').prev('tr').children('td.laction').find('div.nbbasc');
     return nbbasc;
 }
 
@@ -2697,11 +2700,11 @@ function addToIndBasc(any_jq, number) {
     /* nouvel indice */
     nbbasc.text(new_indice);
     /* les zéro ont leur propre style (basculeZero) */
-    if ( (0 != new_indice) && (0 == indice)) { 
+    if ( (0 != new_indice) && (0 == indice)) {
 	nbbasc.parent(".basculeZero").removeClass("basculeZero");
     }
     else if ((0 == new_indice) && (0 != indice)) {
-	nbbasc.parent(".basculeOn, .basculeOff").addClass("basculeZero");	
+	nbbasc.parent(".basculeOn, .basculeOff").addClass("basculeZero");
     }
     return new_indice;
 }
@@ -2729,7 +2732,7 @@ function dropDeplacer() {
     $("#dialog-attendre-deplacer").dialog("open");
 
     /* envoyer l'ordre de déplacement */
-    getjson("json_move.php", 
+    getjson("json_move.php",
 	    {"type": type, "id": source, "id_but": but},
 	    function () {
 		/* 1) mettre à jour l'ancien indice de dépliage */
@@ -2753,12 +2756,12 @@ function dropDeplacer() {
 		}
 
 
-		
+
 		/* fin du truckispasse */
                 $("#dialog-attendre-deplacer").dialog("close");
 
-	    });  
-    
+	    });
+
 
     /* fermer le dialogue */
     $(this).dialog("close");
@@ -2796,14 +2799,14 @@ function copierSuper(profondeur) {
 	basculerAnnee(but);
     }
     $("#dialog-attendre").dialog("open");
-    getjson("json_copy.php", 
+    getjson("json_copy.php",
 	    {"type": type, "id": source, "id_cible": but, "profondeur": profondeur},
-	    function () {	    
+	    function () {
 		    $("#dialog-attendre").dialog("close");
 		if ( "annee" == type || "sformation" == type){
 		   	basculerAnnee(but);
 		}
-	    });  
+	    });
 }
 
 
@@ -2820,7 +2823,7 @@ function refreshLine(o) {
 
 /* ne fonctionne pas
 function responsable_add(td,resp) {
-    var oid = parseIdString(td.parent('tr').attr('id'));	    
+    var oid = parseIdString(td.parent('tr').attr('id'));
     resp[oid["type"]] = td.html();
     resp.s = resp.s + oid["type"] + ": " + td.text() + "\n";
     if (oid["type"] == "tranche") {
@@ -2848,7 +2851,7 @@ function responsables(jq) {
 
 function keypresscell (event) {
     var target = $(event.target).closest('td');
-    
+
 }
 
 
@@ -2857,21 +2860,21 @@ function keypresscell (event) {
 
 
 $(document).ready(function () {
-    $.datepicker.setDefaults($.datepicker.regional['fr']); 
+    $.datepicker.setDefaults($.datepicker.regional['fr']);
     L = new ligne(); // <-- var globale
-    
+
     /* infobox: liens externes */
     $("div.infobox a").click(function(){window.open(this.href);return false;});
 
     /* les événements du clavier */
-    $('#vuecourante, #vueadmin').live('keydown', function(e) { 
-	var keyCode = e.keyCode || e.which; 
+    $('#vuecourante, #vueadmin').live('keydown', function(e) {
+	var keyCode = e.keyCode || e.which;
 	if (keyCode == 9) { /* [tab] key */
 	    e.preventDefault();
 	    var cell = $(e.target).closest('td');
 	    if (existsjQuery(cell)) {
-		
-		var newtarget; 
+
+		var newtarget;
 		if (e.shiftKey) {/* en arrière */
 		    newtarget = cell.prevAll('td.mutable:visible,td.edit:visible').first();
 		} else {
@@ -2886,7 +2889,7 @@ $(document).ready(function () {
 	if (keyCode == 13) { /* [enter] key */
 	    e.preventDefault();
 	    var cell = $(e.target).closest('td');
-	    if (existsjQuery(cell)) {		
+	    if (existsjQuery(cell)) {
 		var button = cell.siblings('td.action').find('button.okl');
 		button.click();
 	    }
@@ -2894,18 +2897,18 @@ $(document).ready(function () {
 	if (keyCode == 27) { /* [esc] key */
 	    e.preventDefault();
 	    var cell = $(e.target).closest('td');
-	    if (existsjQuery(cell)) {		
+	    if (existsjQuery(cell)) {
 		var button = cell.siblings('td.action').find('button.reloadl');
 		button.click();
 	    }
 	}
     });
-			   
+
     /* TEST */
     if (false) {/* bascules ... */
 	$('#basculesuper7').trigger('click');
 	window.setTimeout(function() {$('#basculeformation_17').trigger('click');}, 1000);
-	window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);	
-	//	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);	
-    } 
+	window.setTimeout(function() {$('#basculecours_156').trigger('click');}, 2000);
+	//	window.setTimeout(function() {responsables($('#tranche_375'));}, 3000);
+    }
 });

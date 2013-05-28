@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS pain_tranche (
   remarque text COLLATE utf8_swedish_ci,
   htd double unsigned DEFAULT NULL,
   descriptif text COLLATE utf8_swedish_ci,
+  declarer text COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
   modification timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_tranche),
   KEY id_cours (id_cours),
