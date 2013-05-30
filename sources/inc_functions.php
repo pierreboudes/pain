@@ -677,7 +677,7 @@ SUM(pain_tranche.td) AS td,
 SUM(pain_tranche.tp) AS tp,
 SUM(pain_tranche.alt) AS alt,
 SUM(pain_tranche.htd) AS htd,
-GROUP_CONCAT(pain_tranche.declarer ORDER BY pain_tranche.id_tranche SEPARATOR '; ') as declarer
+GROUP_CONCAT(pain_tranche.declarer ORDER BY pain_tranche.id_tranche SEPARATOR '<br \\>') as declarer
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant, pain_service
 WHERE pain_enseignant.id_enseignant IN (".$ids_enseignants.")
 AND pain_sformation.annee_universitaire = $an
