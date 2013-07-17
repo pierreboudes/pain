@@ -1,4 +1,6 @@
 <?php
 
-	echo $_GET['term'];
+$arr=array('ASR','GL','AP');
+
+print json_encode($arr);
 ?>
