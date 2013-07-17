@@ -1,0 +1,10 @@
+#!/bin/bash
+
+newline='
+'
+
+for i in $1; do 
+lastline=$(tail -n 1 $i; echo x)
+lastline=${lastline%x}
+[ "${lastline#"${lastline%?}"}" != "$newline" ] && echo "pas de rc dans $i"
+done

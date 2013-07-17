@@ -1,0 +1,105 @@
+Index: js/dyntab.js
+===================================================================
+--- js/dyntab.js	(révision 734)
++++ js/dyntab.js	(copie de travail)
+@@ -1385,7 +1388,10 @@
+ 		url: url,
+ 		data:  data,
+ 		datatype: 'json',
+-		error: function () {alert('erreur ajax ! [url: '+url+'] [data: '+data+']');},
++		error: function () {
++			//alert('erreur ajax ! [url: '+url+'] [data: '+data+'], essayez de recharger la page');
++			location.reload(true);
++		},
+ 		success: function(data) {
+ 		var o;
+ 		try {
+@@ -1396,7 +1402,8 @@
+ 			return;
+ 		    }
+ 		} catch (e) {
+-		    alert("Erreur: "+e+" vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
++		    //alert("Erreur: "+e+" vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
++		    location.reload(true);
+ 		    return;
+ 		}
+ 		callback(o);
+@@ -1780,6 +1787,7 @@
+     if (!existsjQuery(td)) return;
+     var tr = td.closest('tr');
+     var type = tr.attr('class');
++    if (type != 'choix' ) {
+     var addl = jQuery('<button class="addl">Ajouter '+type+'</button>');
+     addl.button({
+ 	text: false,
+@@ -1789,6 +1797,7 @@
+ 	});
+     addl.bind("click",{tr: tr},newLine);
+     td.find('div.palette').append(addl);
++    }
+ }
+ function removeAdd(td) {
+     td.find('button.addl').remove();
+@@ -1801,7 +1810,8 @@
+     var type = tr.attr('class');
+     var oid = parseIdString(tr.attr('id'));
+     var rml = jQuery('<button class="rml">Effacer la ligne</button>');
+-    var removel = jQuery('<div class="removel"/>');
++    //var removel = jQuery('<div class="removel"/>');
++    var removel = td.find('div.palette');
+     rml.button({
+ 	text: false,
+ 		icons: {
+@@ -1810,8 +1820,20 @@
+ 	});
+     rml.bind("click",oid,removeLine);
+     removeRm(td);
++    if (type=='choix') {
++      var enreg = jQuery('<button class="okl">Enregistrer choix</button>');
++      enreg.button({
++      	text: false,
++      		icons: {
++			primary: "ui-icon-check"
++		}
++      });
++      enreg.bind("click",{id_choix: oid[1], tr: tr}, conversionChoixService);
++      td.append(removel.append(enreg));
++    }
+     td.append(removel.append(rml));
+ }
++
+ function removeRm(td) {
+     td.find('div.removel').remove();
+ }
+@@ -1878,7 +1900,6 @@
+ 	$("#dialog-drop").children(".hiddenvalue").html("<span>annee</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
+ 	$("#dialog-drop").dialog('open');
+     }
+-
+ }
+ 
+ /* reload de ligne */
+@@ -2516,6 +2537,23 @@
+     return oid.id;
+ }
+ 
++/* basculer un choix (souhait) vers une tranche */
++function conversionChoixService(e) {
++	var tr = e.data.tr;
++	var donnees = new Object();
++	var id_choix = parseIdString(tr.attr("id"));
++        var tid_cours = tr.closest('table').attr('id');
++        var tid = parseIdString(tid_cours);
++
++	donnees.id_choix=id_choix["id"];
++	donnees.id_cours=tid["id"];
++
++	getjson("json_validChoix.php",donnees, function () {
++		$("#basculecours_"+donnees.id_cours).trigger('click');
++		$("#basculecours_"+donnees.id_cours).trigger('click');
++	});
++}
++
+ /* ajouter une nouvelle ligne sur le serveur et dans la vue */
+ function newLine(e) {
+     var tr;
