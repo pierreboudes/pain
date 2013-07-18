@@ -7,6 +7,7 @@ require_once '../Classes/PHPExcel/IOFactory.php';
 function init_excel($NOM, $GRADE, $STATUTAIRE, $ANNEE) {
 	global $objPHPExcel;
 
+	$NOM=htmlspecialchars_decode($NOM,ENT_QUOTES);
 	/* début remplissage fichier excel avec comme template declaration-services.xls */
 	$objReader = PHPExcel_IOFactory::createReader('Excel5');
 	//$objReader->setLoadAllSheets();
@@ -62,7 +63,7 @@ function ajouteCoursExcel($sem, $row, $maxrow, $codeEtape, $codeMatiere, $nomMat
 
 	$objPHPExcel->getSheet($sem-1)->setCellValue('A'.$row, $codeEtape);
 	$objPHPExcel->getSheet($sem-1)->setCellValue('B'.$row, $codeMatiere);
-	$objPHPExcel->getSheet($sem-1)->setCellValue('C'.$row, $nomMatiere);
+	$objPHPExcel->getSheet($sem-1)->setCellValue('C'.$row, htmlspecialchars_decode($nomMatiere,ENT_QUOTES));
 	$objPHPExcel->getSheet($sem-1)->setCellValue('D'.$row, $type);
 	$objPHPExcel->getSheet($sem-1)->setCellValue('G'.$row, $eqTD);
 	return($maxrow);
@@ -76,7 +77,7 @@ function ajouteRespExcel($row, $maxrow, $matiere, $formation, $eqTD) {
 		$maxrow++;
 	}
 
-	$objPHPExcel->getSheet(3)->setCellValue('A'.$row, $formation.':'.$matiere);
+	$objPHPExcel->getSheet(3)->setCellValue('A'.$row, $formation.':'.htmlspecialchars_decode($matiere,ENT_QUOTES));
 	$objPHPExcel->getSheet(3)->setCellValue('G'.$row, $eqTD);
 	return($maxrow);
 }

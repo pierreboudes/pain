@@ -67,6 +67,9 @@ if ($user['su']) { // admin
 
 echo '<br/>Génération en cours...<br/>';flush();
 
+$NOMsimple=str_replace("'","",$NOM);
+$NOMsimple=str_replace("&#039;","",$NOM); // apostrophe codee html
+$NOMsimple=str_replace(" ","",$NOMsimple);
 init_excel($NOM,$GRADE,$STATUTAIRE,$ANNEE);
 
 
@@ -74,6 +77,8 @@ $requete="SELECT nom_cours,
 	ifnull(pain_tranche.ctd,0) as ctd,
 	ifnull(pain_tranche.cm,0) as cm,
 	ifnull(pain_tranche.td,0) as td,
+	ifnull(pain_tranche.tp,0) as tp,
+	ifnull(pain_tranche.alt,0) as alt,
 	semestre,
 	parfum,
 	pain_cours.code_geisha as geisha,
@@ -113,7 +118,7 @@ while ($cours = $listeCours->fetch_assoc()) {
 	echo '<p>'.$cours['semestre'].' '.$cours['nom_cours'].'</p>';
 
 	if ($cours['code_etape'] != '')  { // sinon matiere spéciale: resp ou stages ou...
-		$duree=$cours['cm']*1.5+$cours['td']+$cours['tp']+1.125*$cours['ctd'];
+		$duree=$cours['cm']*1.5+$cours['td']+$cours['tp']+$cours['alt']+1.125*$cours['ctd'];
 		if ($cours['ctd']!=0)
 			$type='Cours-TD';
 		else if ($cours['cm']==0 )
@@ -165,9 +170,9 @@ $objWriter->save('php://output');
 
 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 //$objWriter->setPreCalculateFormulas(FALSE);
-$objWriter->save("declarations/declaration-$NOM.xls");
+$objWriter->save("declarations/declaration-$NOMsimple.xls");
 
-echo '<p>Fichier Excel généré: <a href="declarations/declaration-'.$NOM.'.xls">declaration-'.$NOM.'.xls</a></p>';
+echo '<p>Fichier Excel généré: <a href="declarations/declaration-'.$NOMsimple.'.xls">declaration-'.$NOMsimple.'.xls</a></p>';
 
 exit;
 ?>
