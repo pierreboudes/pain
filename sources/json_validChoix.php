@@ -68,7 +68,7 @@ if (! peuttoutfaire() ) {
 			$cibleChoix['alt']="NULL";
 		}
 		if ($cibleChoix['ctd'] !=0)
-			$req = $req . " AND alt=".$cibleChoix['ctd'];
+			$req = $req . " AND ctd=".$cibleChoix['ctd'];
 		else {
 			$req = $req . " AND isnull(ctd)";
 			$cibleChoix['ctd']="NULL";
@@ -79,7 +79,7 @@ if (! peuttoutfaire() ) {
 		$res=$link->query($req) or die("Échec de la requête ".$req);
 		
 		$cible=$res->fetch_assoc();
-		if ($cible==NULL)  errmsg("Pas de tranche libre correspondante, désolé");
+		if ($cible==NULL)  errmsg("Pas de tranche libre correspondante, désolé ");
 		else {
 			// on ajoute une ligne dans la table pain_tranche puis on supprime
 			// celle qui a correspondu précédemment car mysql ne semble pas

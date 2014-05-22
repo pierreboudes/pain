@@ -23,7 +23,7 @@ require_once('authentication.php');
 $user = authentication();
 $annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("affichage des services (temporaire)","pain_service.js");
+entete("Récapitulatif","pain_service.js");
 include("menu.php");
 require_once("inc_functions.php");
 require_once("inc_statsfunc.php");
@@ -44,13 +44,15 @@ function service_php($id) {
     }
     
 /* le formulaire */
-    echo '<center><div class="infobox" style="width:200px;">';
+    echo '<center><div class="infobox" style="width:30%;">';
     echo '<form method="post" id="choixenseignant" class="formcours" name="enseignant" action="#">';
     echo '<select name="id_enseignant" style="display:inline; width:150px;">';
     ig_formselectenseignants($id_enseignant);
     echo '</select>';
-    echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
+    //echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
     echo '</form>'."\n";
+
+echo '<p><a href=declaration.php> Création du fichier Excel de déclaration du service prévisionnel</a>';
     echo '</div></center>';
     
     if ($id_enseignant != "") {
@@ -107,6 +109,7 @@ echo "<h2>Responsabilités</h2>";
 echo '<div id="responsabilite"></div>';
 
 include("skel_index.html");
+
 piedpage();
 ?>
 

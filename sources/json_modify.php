@@ -64,29 +64,29 @@ function json_modify_php($annee, $readtype, $id) {
 	    "id_enseignant", "nom", "numero"
 	    ),
 	"formation" => array(
-	    "id_enseignant", "nom", "annee_etude", "parfum", "numero"
+	    "id_enseignant", "nom", "code_geisha", "annee_etude", "parfum", "numero"
 	    ),
 	"cours"=> array(
 	    "semestre", "nom_cours", "credits", "id_enseignant",
-	    "cm", "td", "tp", "alt", "descriptif", "code_geisha", "id_section",
+	    "cm", "td", "tp", "alt", "ctd", "descriptif", "code_geisha", "id_section",
 	    "debut", "fin", "inscrits", "presents", "tirage", "mcc"
 	    ),
 	"tranche"=> array(
 	    "id_enseignant", "groupe", "cm", "td", "tp",
-	    "alt", "type_conversion", "remarque", "htd", "descriptif", "declarer"
+	    "alt", "ctd", "type_conversion", "remarque", "htd", "descriptif", "declarer"
 	    ),
 	"choix" => array(
-	    "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	    "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "ctd"
 	    ),
 	"longchoix" => array(
-	    "choix", "htd", "cm", "td", "tp", "alt"
+	    "choix", "htd", "cm", "td", "tp", "alt", "ctd"
 	    ),
 	"enseignant" => array(
 	    "prenom", "nom", "email", "telephone", "bureau",
 	    "debut", "fin", "responsabilite"
 	    ),
 	"tag" => array(
-	    "nom_tag", "descriptif"
+	    "nom_tag", "descriptif", "code"
 	    ),
 	"collection" => array(
 	    "nom_collection", "id_sformation", "descriptif"
@@ -158,7 +158,9 @@ function json_modify_php($annee, $readtype, $id) {
 	if ($tp < 0) errmsg("TP doit être positif.");
 	$alt = isset($set["alt"])?$set["alt"]:$old["alt"];
 	if ($alt < 0) errmsg("alt doit être positif.");
-	$set["htd"] = 1.5 * $cm + $td + $tp + $alt;
+	$ctd = isset($set["ctd"])?$set["ctd"]:$old["ctd"];
+	if ($ctd < 0) errmsg("ctd doit être positif.");
+	$set["htd"] = 1.5 * $cm + $td + $tp + $alt + 1.125 * $ctd;
 	if ($set["htd"] < 0) {
 	    errmsg("le total des heures ne peut pas être négatif");
 	}

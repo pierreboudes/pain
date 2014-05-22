@@ -66,3 +66,4 @@ if (isset($_POST["timestamp"])) {
 
 act_historique_php($id, $offset, $timestamp);
 ?>
+

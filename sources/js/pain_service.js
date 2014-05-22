@@ -23,14 +23,23 @@
 
 
 $(document).ready(function(){
-      	/* masqer certaines colonnes et les squelettes de lignes */
+      	/* masquer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.code_geisha, th.mcc, th.fin, th.tirage').fadeOut(0); // th.alt  th.inscrits, th.presents,
-	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
-	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
+	$('#skelchoix').children('th.ctd, th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
+	$('#skellongchoix').children('th.nature, th.choix').fadeOut(0);
+	//$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
+
+ 	$( "select" ).change(function () {
+                $( "select option:selected" ).each(function() {
+                	$( "form" ).submit();
+                      });
+	});
 	
 	/* choix */
 	showChoix(); // <-- temporaire (faire actionneur)
 	showPotentiel();
 	showResponsabilite();
+	/* Changer le titre de la page */
+	document.title = $('#choixenseignant option:selected').text() +' Pain';
 });

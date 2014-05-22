@@ -21,7 +21,7 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
-var config_choisir_tout_cours = false; /* faire un vrai systeme de configuration ! */
+var config_choisir_tout_cours = true; /* faire un vrai systeme de configuration ! */
 var hasTouch = false;
 var clickeditmode = false;
 
@@ -33,6 +33,7 @@ $(document).ready(function(){
 	    hasTouch = true;
 	}
 
+	tagsAsStyles();
 
 	(function () {/* espace de nom privé */
 	    var timerid;
@@ -71,7 +72,7 @@ $(document).ready(function(){
 		$('#bouton-clickedit').bind('click', clickedit);
 	    };
 	})();
-    });
+    }); // fin document ready
 
 
 
@@ -122,7 +123,11 @@ function cell() {
     /* fixer la valeur de la cellule (fais un retour mode normal) n'ajoute pas 'mutable' */
     this.setval = function (c, o) {
 	c.removeClass("edit");
-	c.html(o[this.name]);
+	if (o[this.name] == '0.00') {
+	  c.html('');
+	} else {
+	  c.html(o[this.name]);
+	}
     }
     /* rajoute mutable */
     this.showmutable = function (c) {
@@ -417,6 +422,12 @@ function enseignant () {
 }
 enseignant.prototype = new cell();
 
+function code() {
+  this.name = "code";
+  this.mutable = superuser();
+}
+code.prototype = new cell();
+
 /* constructeur du composite sformation */
 function microsformation () {
     this.name = "microsformation";
@@ -468,7 +479,7 @@ function intitule() {
     this.setval = function (c,o) {
 	var s;
 	s = o["nom"];
-	if (o["annee_etude"] != null) s = s+' '+o["annee_etude"];
+	if (o["annee_etude"] != null && o["annee_etude"] != 0) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);
     }
@@ -487,6 +498,8 @@ function total_complexe(o, nom, prefixe) {
 	+'&nbsp;CM +&nbsp;'
 	+htdpostes(o[prefixe+"td"])
 	+'&nbsp;TD +&nbsp;'
+	+htdpostes(1.125*o[prefixe+"ctd"])
+	+'¹nbsp;CTD +&nbsp;'
 	+htdpostes(o[prefixe+"tp"])
 	+'&nbsp;TP +&nbsp;'
 	+htdpostes(o[prefixe+"alt"])
@@ -504,7 +517,8 @@ function load_totaux(c,o) {
 	    function (o) {
 		var s = "";
 		s += total_complexe(o, "total", "");
-		s += ' postes ';
+		//s += ' postes ';
+		s += ' heures ';
 		s += '=&nbsp;';
 		s += htdpostes(o["servi"])+'&nbsp;servis +&nbsp;';
 		s += total_complexe(o, "mutualise", "mutualise");
@@ -574,6 +588,7 @@ function load_tags(c,o) {
 		    var s;
 		    s = '<span class="tag">'+o[i].nom_tag+' <button id="tagcours_'+o[i].id_tag+'_'+id_cours+'" class="button-enlever_tag" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
 		    c.append(s);
+		    //$('#cours_'+id_cours).addClass(o[i].nom_tag);
 		    $('#tagcours_'+o[i].id_tag+'_'+id_cours).bind('click', {id_tag: o[i].id_tag, id_cours: id_cours}, function (e) {
 			    getjson("json_rm.php",
 				    {id:e.data.id_tag, id_parent: e.data.id_cours, type: "tagcours"},
@@ -637,8 +652,9 @@ function envoyer_tagcours(e) {
 /* construction du composite interactif tags */
 function tags() {
     this.setval = function (c, o) {
-	c.addClass('inactive');
-	c.html('voir');
+	//c.addClass('inactive');
+	//c.html('voir');
+	load_tags(c,o);
 	c.click(function () {
 	    c.unbind('click');
 	    load_tags(c, o);
@@ -762,11 +778,12 @@ collections.prototype = new immutcell();
 function nature() {
     this.setval = function (c,o) {
 	var s;
-	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">alt</td></tr><tr><td class="ntd">TD</td><td class="ntp">TP</td></tr></table>');
+	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">ctrl</td></tr><tr><td class="ntd">TD</td><td class="nctd">CTD</td><td class="ntp">TP</td></tr></table>');
 	c.find("table.nature td").addClass("inact");
 	if (o["cm"] > 0) c.find("td.ncm").removeClass("inact");
 	if (o["alt"] > 0) c.find("td.nalt").removeClass("inact");
 	if (o["td"] > 0) c.find("td.ntd").removeClass("inact");
+	if (o["ctd"] > 0) c.find("td.nctd").removeClass("inact");
 	if (o["tp"] > 0) c.find("td.ntp").removeClass("inact");
     }
     this.name = "nature";
@@ -887,10 +904,13 @@ function code_geisha () {
 	/* mettre en place l'autocomplete */
 	var cat = c.find("input");
 //	c.append("<div id='JustLogLikeThat' style='position: fixed; top: 10px; left 50px;'>Logs</div>");
-	cat.autocomplete({ minLength: 3,
-			   source: function( request, response ) {
+	cat.autocomplete({ minLength: 0,
+			   autoFocus: true,
+			   source: [ "ACD", "ANG", "APL", "ASR", "EGOD", "EXP", "MATH", "SGBD", "WIM", "PRP/Réf" ],
+			   //source: "json_codesue.php",
+/*function( request, response ) {
 			       $.ajax({
-				   url: "/commun/minoterie/json_codesue.php",
+				   url: "json_codesue.php",
 				   dataType: "json",
 				   data: {
 				       term: request.term
@@ -899,7 +919,7 @@ function code_geisha () {
 				       response(data);
 				   }
 			       });
-			   },
+			   },*/
 			   select: function(e, ui) {
 			       if (!ui.item) {
 				   c.find('.hiddenvalue').html($(this).val());
@@ -922,7 +942,7 @@ function code_geisha () {
 	c.find('input').focus();
     };
     this.getval = function (c,o) {
-	var catid = c.find('.hiddenvalue').text();
+	var catid=$(".ui-autocomplete-input").val()
 	o["code_geisha"] = catid;
     }
     this.setval = function (c,o) {
@@ -1143,7 +1163,7 @@ function ligne() {
     this.email.name = "email";
     /* telephone */
     this.telephone = new cell();
-    this.telephone.name = "telephone";
+    this.telephone.name = "tel";
     /* bureau */
     this.bureau = new cell();
     this.bureau.name = "bureau";
@@ -1189,6 +1209,9 @@ function ligne() {
     /* td */
     this.td = new numcell();
     this.td.name = "td";
+    /* ctd */
+    this.ctd = new numcell();
+    this.ctd.name= "ctd";
     /* tp */
     this.tp = new numcell();
     this.tp.name = "tp";
@@ -1308,6 +1331,10 @@ function ligne() {
     /* nb_cours */
     this.nb_tous_cours = new immutcell();
     this.nb_tous_cours.name = "nb_tous_cours";
+    /* code tags */
+    this.code = new code();
+    this.code.name = "code";
+
     /* collections
      */
     /* nom_collection */
@@ -1354,7 +1381,8 @@ $.expr[':'].textEquals = function (a, i, m) {
 };
 
 function htdpostes(htd) {
-    return Math.round(parseFloat(htd)*100/192)/100;
+    //return Math.round(parseFloat(htd)*100/192)/100;
+    return Math.round(htd,2);
 }
 
 function edit(event) {
@@ -1388,7 +1416,10 @@ function getjson(url,data,callback) {
 		url: url,
 		data:  data,
 		datatype: 'json',
-		error: function () {alert('erreur ajax ! [url: '+url+'] [data: '+data+']');},
+		error: function () {
+			//alert('erreur ajax ! [url: '+url+'] [data: '+data+'], essayez de recharger la page');
+			location.reload(true);
+		},
 		success: function(data) {
 		var o;
 		try {
@@ -1399,7 +1430,8 @@ function getjson(url,data,callback) {
 			return;
 		    }
 		} catch (e) {
-		    alert("Erreur: "+e+" vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
+		    //alert("Erreur: "+e+" vous avez peut être été déconnecté du CAS, rechargez la page.\n"+data);
+		    location.reload(true);
 		    return;
 		}
 		callback(o);
@@ -1783,6 +1815,7 @@ function addAdd(td) {
     if (!existsjQuery(td)) return;
     var tr = td.closest('tr');
     var type = tr.attr('class');
+    if (type != 'choix' ) {
     var addl = jQuery('<button class="addl">Ajouter '+type+'</button>');
     addl.button({
 	text: false,
@@ -1792,6 +1825,7 @@ function addAdd(td) {
 	});
     addl.bind("click",{tr: tr},newLine);
     td.find('div.palette').append(addl);
+    }
 }
 function removeAdd(td) {
     td.find('button.addl').remove();
@@ -1804,7 +1838,8 @@ function addRm(td) {
     var type = tr.attr('class');
     var oid = parseIdString(tr.attr('id'));
     var rml = jQuery('<button class="rml">Effacer la ligne</button>');
-    var removel = jQuery('<div class="removel"/>');
+    //var removel = jQuery('<div class="removel"/>');
+    var removel = td.find('div.palette');
     rml.button({
 	text: false,
 		icons: {
@@ -1813,8 +1848,20 @@ function addRm(td) {
 	});
     rml.bind("click",oid,removeLine);
     removeRm(td);
+    if (type=='choix'&& superuser()) {
+      var enreg = jQuery('<button class="okl">Enregistrer choix</button>');
+      enreg.button({
+      	text: false,
+      		icons: {
+			primary: "ui-icon-check"
+		}
+      });
+      enreg.bind("click",{id_choix: oid[1], tr: tr}, conversionChoixService);
+      td.append(removel.append(enreg));
+    }
     td.append(removel.append(rml));
 }
+
 function removeRm(td) {
     td.find('div.removel').remove();
 }
@@ -1881,7 +1928,6 @@ function dropLine(e,ui) {
 	$("#dialog-drop").children(".hiddenvalue").html("<span>annee</span><span>"+dragoid["id"]+"</span><span>"+dropoid["id"]+"</span>");
 	$("#dialog-drop").dialog('open');
     }
-
 }
 
 /* reload de ligne */
@@ -1900,6 +1946,7 @@ function addReload(td) {
     td.find('div.palette').append(reloadl);
 }
 function removeReload(td) {
+    td.find('button.rml').remove(); //ajout FB
     td.find('button.reloadl').remove();
 }
 
@@ -2059,7 +2106,7 @@ function logsFormation(e) {
 			    $('#logF'+id).dialog({autopen: true,
 					draggable: true,
 					resizable: true,
-					width: 700,
+					width: 750,
 					height: 300,
 					close: function (event,ui) {logsFormation(e);},
 					title: titre
@@ -2075,7 +2122,7 @@ function logsFormation(e) {
 						}
 				    });
 				button.bind('click', function () {
-					var offset = button.prev('.hiddenvalue').text();
+					var offset = button.prev('.hiddenvalue').text().trim();
 					if (button.prev().prev().hasClass('hiddenvalue')) {// plus rien à charger dans les logs
 					    button.button('disable');
 					} else {// charger une autre "page" de logs
@@ -2306,14 +2353,22 @@ function reloadChoix(panier,id, annee, type) {
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('total');
 		   $('#table'+type+' > tbody').append(line);
+		   
+		   line = legende.clone().attr('id','s0sum'+type);
+		   line.children('th').html('');
+		   line.children('th.nom_cours').addClass('label').html('semestre NC/PRP/Réf.');
+		   $('#table'+type+' > tbody').append(line);
+		
 		   line = legende.clone().attr('id','s1sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
 		   $('#table'+type+' > tbody').append(line);
+
 		   line = legende.clone().attr('id','s2sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
 		   $('#table'+type+' > tbody').append(line);
+
 		   recalculatePanier(type);
 		   if (type == "potentiel") {
 		       $('#tablepotentiel > tbody > tr > td').removeClass("mutable");
@@ -2328,48 +2383,45 @@ function recalculatePanier(type) {
     }
     /* totaux */
     var body = $('#table'+type+' > tbody');
-    var htd = 0; var cm = 0; var td = 0; var tp = 0; var alt = 0;
-    var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0; var alt1 = 0;
-    var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0; var alt2 = 0;
+    // var htd = 0 ; var cm = 0; var td = 0; var ctd = 0 ; var tp = 0; var alt = 0;
+    var typea = ['htd','cm','td','ctd','tp','alt'];
+    var lesHeures = [];
+
+    $.each(typea, function(j,t){
+       lesHeures[t + 'total'] = 0;
+       for (var i = 0; i<3 ; i = i+1 ) {
+	   lesHeures[t + i] = 0;
+	}
+    });
+
+	/* lecture des valeurs dans le tableau visualisé */
     body.children("tr[id^='"+type+"_']").each(function(i) {
 	    var line = $(this);
-	    htd += parseFloat(line.children('td.htd').text());
-	    cm += parseFloat(line.children('td.cm').text());
-	    td += parseFloat(line.children('td.td').text());
-	    tp += parseFloat(line.children('td.tp').text());
-	    alt += parseFloat(line.children('td.alt').text());
-	    if (line.children('td.semestre').text() == '1') {
-		htd1 += parseFloat(line.children('td.htd').text());
-		cm1 += parseFloat(line.children('td.cm').text());
-		td1 += parseFloat(line.children('td.td').text());
-		tp1 += parseFloat(line.children('td.tp').text());
-		alt1 += parseFloat(line.children('td.alt').text());
-	    }
-	    if (line.children('td.semestre').text() == '2') {
-		htd2 += parseFloat(line.children('td.htd').text());
-		cm2 += parseFloat(line.children('td.cm').text());
-		td2 += parseFloat(line.children('td.td').text());
-		tp2 += parseFloat(line.children('td.tp').text());
-		alt2 += parseFloat(line.children('td.alt').text());
-	    }
+
+	$.each(typea, function(j,t){
+		if($.isNumeric(line.children('td.'+t).text()))
+	    	lesHeures[t +'total'] += parseFloat(line.children('td.'+t).text());
+	        for (var i = 0; i<3 ; i = i+1 ) {
+		   if (line.children('td.semestre').text() == ('' +i)
+			&& $.isNumeric(line.children('td.'+t).text())) {
+			   lesHeures[t + i] +=  parseFloat(line.children('td.'+t).text());
+			}
+		}
+	    });
 	});
-    $('#sum'+type+' > th.htd').html(htd);
-    $('#sum'+type+' > th.cm').html(cm);
-    $('#sum'+type+' > th.td').html(td);
-    $('#sum'+type+' > th.tp').html(tp);
-    $('#sum'+type+' > th.alt').html(alt);
 
-    $('#s1sum'+type+' > th.htd').html(htd1);
-    $('#s1sum'+type+' > th.cm').html(cm1);
-    $('#s1sum'+type+' > th.td').html(td1);
-    $('#s1sum'+type+' > th.tp').html(tp1);
-    $('#s1sum'+type+' > th.alt').html(alt1);
+	/* affichage des totaux */
+	$.each(typea, function(j,t){
+	  if (lesHeures[t+'total'].toFixed(2)!='0.00')
+	  $('#sum'+type+' > th.'+t).html(lesHeures[t+'total'].toFixed(2));
+	  $('#sum'+type+' > th.'+t).toggleClass(t+' total_'+t);
 
-    $('#s2sum'+type+' > th.htd').html(htd2);
-    $('#s2sum'+type+' > th.cm').html(cm2);
-    $('#s2sum'+type+' > th.td').html(td2);
-    $('#s2sum'+type+' > th.tp').html(tp2);
-    $('#s2sum'+type+' > th.alt').html(alt2);
+	  for (var i = 0; i<3 ; i = i+1 ) {
+	     if (lesHeures[t+i].toFixed(2)!='0.00')
+	     $('#s'+i+'sum'+type+' > th.'+t).html(lesHeures[t+i].toFixed(2));
+	     $('#s'+i+'sum'+type+' > th.'+t).toggleClass(t +' total_' +t);
+          }
+        });
 }
 
 /* BLOC ----- PANIER -------------*/
@@ -2402,7 +2454,11 @@ function appendItem(type, prev, o, list) {
     var n = list.length;
     var i = 0;
     var id = idString({id: o["id_"+type], type: type});
-    var line = jQuery('<tr id="'+id+'" class="'+type+'"></tr>');
+    var line;
+	if (type=='tag' || type=='cours')
+	   line = jQuery('<tr id="'+id+'" class="'+type+' '+o["nom_tag"]+'"></tr>');
+        else
+           line = jQuery('<tr id="'+id+'" class="'+type+'"></tr>');
     prev.after(line);
     for (i = 0; i < n; i++) {
 	var name = list.eq(i).attr("class");
@@ -2442,8 +2498,7 @@ function appendItem(type, prev, o, list) {
 	$('#basculecours_'+idc).droppable({accept:'div.handle.tranche', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
 */
 	var colspan = largeurligne($("#skelcours"));
-	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"]
-		    +'" class="imgcours"></div></td></tr>');
+	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"] +'" class="imgcours"></div></td></tr>');
     }
     if (type == "annee") {
 	var idannee = o["id"];
@@ -2517,6 +2572,23 @@ function findIdParent(tr,type) {/* ne fonctionnera pas avec le type formation */
     var sid = table.attr("id");
     var oid = parseIdString(sid);
     return oid.id;
+}
+
+/* basculer un choix (souhait) vers une tranche */
+function conversionChoixService(e) {
+	var tr = e.data.tr;
+	var donnees = new Object();
+	var id_choix = parseIdString(tr.attr("id"));
+        var tid_cours = tr.closest('table').attr('id');
+        var tid = parseIdString(tid_cours);
+
+	donnees.id_choix=id_choix["id"];
+	donnees.id_cours=tid["id"];
+
+	getjson("json_validChoix.php",donnees, function () {
+		$("#basculecours_"+donnees.id_cours).trigger('click');
+		$("#basculecours_"+donnees.id_cours).trigger('click');
+	});
 }
 
 /* ajouter une nouvelle ligne sur le serveur et dans la vue */
@@ -2636,7 +2708,11 @@ function replaceLine(tabo) {
 	} else {
 	    removeChoisir(ligne.children('td.laction'));
 	}
-    }
+    } else if (o["type"] == "tag") {
+	tagsAsStyles(); // recharge les styles 
+	 basculerTags();
+	 basculerTags();
+	}	
 }
 
 
@@ -2714,7 +2790,15 @@ function addToIndBasc(any_jq, number) {
 function dropCopier() {
     var source = $(this).children(".hiddenvalue").children("span:first").text();
     var but = $(this).children(".hiddenvalue").children("span:last").text();
-    alert("Copier "+source+" dans "+but+": fonction non disponible");
+    var cours = $('#'+idString({type: "cours", id: source}));
+    alert("Copier "+source+" ("+cours+") dans "+but+": fonction non encore implémentée");
+    /*$("#basculecours_"+source+".basculeOn").trigger('click');
+    $("#dialog-attendre").dialog("open");
+    getjson("json_copy.php",
+		    {"type": "cours", "id":source, "id_cible":but, "profondeur":"1"},
+		    function (){
+		    });
+    $("#dialog-attendre").dialog("close");*/
     $(this).dialog("close");
 }
 
@@ -2854,7 +2938,16 @@ function keypresscell (event) {
 
 }
 
-
+function tagsAsStyles() {
+   getjson("json_get.php", {id_parent: 0, type: "tag"}, function (tag) {
+	var l=tag.length;
+	for (var i=0; i<l ;i++) {
+	   var t=tag[i];
+	   if (t.code!=null)
+	     $("<style type='text/css'>tr."+t.nom_tag+"{"+ t.code+"}</style>").appendTo("head");
+	}
+	});
+}
 
 /* ----- DEMARRAGE DU DOCUMENT ---------*/
 

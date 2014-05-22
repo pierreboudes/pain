@@ -34,7 +34,7 @@ function json_duplicate_php($type, $id) {
     $champs = array(
 	"tranche"=> array(
 	    "id_cours","id_enseignant", "groupe", "cm", "td", "tp",
-	    "alt", "type_conversion", "remarque", "htd", "descriptif"
+	    "alt", "ctd", "type_conversion", "remarque", "htd", "descriptif"
 	    )
 	);
 

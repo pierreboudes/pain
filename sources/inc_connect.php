@@ -113,6 +113,10 @@ function dump($filename, $echoes = false) {
     /* fichier de sortie gzippé */
     $fp = gzopen($filename, 'w');
 
+    if (! $fp) {
+	errmsg("erreur avec la creation de fichier $filename");
+	return(false);
+    }
     /* liste des tables de la base */
     $query = 'SHOW TABLES ';
     if (!($tables = $link->query($query))) {

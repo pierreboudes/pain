@@ -25,7 +25,7 @@ $annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once('utils.php');
 
-entete("gestion des enseignements et des services", "pain_admin.js");
+entete("Admin", "pain_admin.js");
 include("menu.php");
 
 /**

@@ -36,6 +36,7 @@ if (isset($_GET['id_enseignant'])) {
 	    }
 }
 
+/*
 $ANNEE = getnumeric("annee");
 if (NULL == $ANNEE &&
 	        isset($_COOKIE["painAnnee"]) && $_COOKIE["painAnnee"]>2000 && $_COOKIE["painAnnee"]<2500) {
@@ -43,7 +44,8 @@ if (NULL == $ANNEE &&
 			        $ANNEE=$_COOKIE["painAnnee"];
 		} else {
 			        $ANNEE = date('Y', strtotime('-5 month'));
-		}
+		}*/
+$ANNEE=default_year();
 
 /*L'entete */
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,7 +67,7 @@ if ($user['su']) { // admin
     echo '</div></center>';
 }
 
-echo '<br/>Génération en cours...<br/>';flush();
+echo '<p>Génération en cours...</p>';flush();ob_flush();
 
 $NOMsimple=str_replace("'","",$NOM);
 $NOMsimple=str_replace("&#039;","",$NOM); // apostrophe codee html
@@ -114,11 +116,14 @@ $maxrow['FC2']=$baserow['FC2']+5;
 $baserow['resp']=15;
 $maxrow['resp']=23;
 
+echo '<table><thead><tr><th>FC/FI</th><th>Sem.</th><th>Cours</th><th>type</th><th>Volume H.eq.TD</th></tr></thead>';
+echo '<tbody>';
 while ($cours = $listeCours->fetch_assoc()) {
-	echo '<p>'.$cours['semestre'].' '.$cours['nom_cours'].'</p>';
+	echo '<tr>';
 
 	if ($cours['code_etape'] != '')  { // sinon matiere spéciale: resp ou stages ou...
 		$duree=$cours['cm']*1.5+$cours['td']+$cours['tp']+$cours['alt']+1.125*$cours['ctd'];
+		//echo $duree. 'H eq.TD</p>';
 		if ($cours['ctd']!=0)
 			$type='Cours-TD';
 		else if ($cours['cm']==0 )
@@ -131,6 +136,11 @@ while ($cours = $listeCours->fetch_assoc()) {
 			$parfum='Initiale';
 		else
 			$parfum='FC';
+
+	echo '<td>'.$parfum.'</td>';
+	echo '<td>'.$cours['semestre'].'</td><td>'.$cours['nom_cours'].'</td>';
+	echo '<td>'.$type.'</td>';
+	echo '<td>'.$duree.'</td></tr>';
 
 		if ($cours['semestre']==0) {/* de façon arbitraire 1/2 sur S1 et 1/2 sur S2 */
 			//affecteCoursExcel($sem, $row, $codeEtape, $codeMatiere, $nomMatiere, $type, $eqTD) 
@@ -153,8 +163,16 @@ while ($cours = $listeCours->fetch_assoc()) {
 		$maxrow['resp']=
 			ajouteRespExcel($baserow['resp']++, $maxrow['resp'],
 				$cours['nom_cours'], $cours['nom_formation'], $cours['td']);
+		echo '<td>resp.</td>';
+		echo '<td>'.$cours['semestre'].'</td><td>'.$cours['nom_cours'].'</td>';
+		echo '<td></td>';
+		echo '<td>'.$cours['td'].'</td></tr>';
 	}
+	flush();
+	ob_flush();
 } // while cours
+
+echo '</tbody></table>';
 
 finaliseExcel($maxrow);
 

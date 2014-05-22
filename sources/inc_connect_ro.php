@@ -2,7 +2,7 @@
 /* connexion à la BD */
 
 $USER='pain_ro';
-$PASS='painro17249';
+$PASS='CHANGEME';
 
 $link = new mysqli('localhost', $USER, $PASS, 'pain_db');
 if ($link->connect_errno) {

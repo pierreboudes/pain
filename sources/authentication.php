@@ -21,9 +21,11 @@
  */
 require_once('CAS.php');
 // error_reporting(E_ALL & ~E_NOTICE);
-phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
+//phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
+phpCAS::client(CAS_VERSION_2_0,'portail.cevif.univ-paris13.fr',443,'/cas/',true);
 // phpCAS::setDebug();
-phpCAS::setNoCasServerValidation();
+//phpCAS::setNoCasServerValidation();
+phpCAS::setCasServerCACert("/etc/pki/CA/chaine.pem");
 
 require_once('inc_connect.php');
 
@@ -33,18 +35,19 @@ function set_year($annee) {
 
 date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
 
-/**  a partir du 1er mai : l'annee universitaire suivante, s'il n'y existe pas de sformation l'annee la plus recente
+/**  a partir du 21 mars : l'annee universitaire suivante, s'il n'y existe pas de sformation l'annee la plus recente
  */
 function default_year() {
     global $link;
-    if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
+    if (isset($_COOKIE["painAnnee"]) && $_COOKIE["painAnnee"]>2000 && $_COOKIE["painAnnee"]<2500) {// && is_numeric($_COOKIE["painAnnee"])
 	return $_COOKIE["painAnnee"];
     }
-    $an = date('Y', strtotime('-4 month'));
-    $q = "SELECT coalesce($an - min($an - annee_universitaire), $an) as annee FROM pain_sformation";
-    $r = $link->query($q);
-    $res = $r->fetch_array();
-    return $res["annee"];    
+    $an = date('Y', strtotime('-3 month 1 week'));
+    //$q = "SELECT coalesce($an - min($an - annee_universitaire), $an) as annee FROM pain_sformation";
+    //$r = $link->query($q);
+    //$res = $r->fetch_array();
+    //return $res["annee"];    
+    return $an;
 }
 
 function get_and_set_annee_menu() {
@@ -74,7 +77,7 @@ function annee_courante() {
 function pain_getuser() {
     global $link;
     $login = phpCAS::getUser();
-    $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
+    $query = "SELECT id_enseignant, prenom, nom, login, su, stats, service, statut
                  FROM pain_enseignant 
                  WHERE login LIKE '$login' LIMIT 1";
     $result = $link->query($query);

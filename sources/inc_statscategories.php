@@ -3,6 +3,7 @@
  *
  * Copyright 2009-2012 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
+ * 2014 Version IUT Franck BUTELLE
  *
  * This file is part of Pain.
  *
@@ -77,7 +78,7 @@ AND annee_universitaire = $annee") + $autre);
 echo '<th>'.$stat.'HTD</th><th>'.enpostes($stat).' postes</th>'; 
 echo '</tr>';
 
-echo '<tr><th>autres enseignants de Galilée</th>';
+echo '<tr><th>autres enseignants de l\'IUT</th>';
 $stat = stats("COUNT(*)","pain_service WHERE categorie = 4 AND service_reel > 0 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 //echo '<td></td>';
@@ -86,7 +87,7 @@ echo '<td>'.$stat.'HTD</td><td>'.enpostes($stat).' postes</td>';
 echo '</tr>';
 
 
-echo '<tr><th>enseignants de Paris 13 hors Galilée</th>';
+echo '<tr><th>enseignants de Paris 13 hors IUT</th>';
 $stat = stats("COUNT(*)","pain_service WHERE categorie = 6 AND service_reel > 0 AND annee_universitaire = $annee");
 echo '<td>'.$stat.'</td>';
 //echo '<td></td>';

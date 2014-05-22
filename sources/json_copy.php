@@ -38,14 +38,15 @@ if ($type == "annee") {
     if (!($r = $link->query($q))) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
-//     if (!($ligne = $r->fetch_array())) {
-// 	errmsg("cible non existante !");
-//     }
+     if (!($ligne = $r->fetch_array())) {
+ 	errmsg("cible non existante !");
+     }
     if ($ligne["tot"] > 0) {
 	errmsg("l'annee ciblée ne doit pas contenir de formations");
     }
 } else if ($type == "sformation") {
     $annee_cible = $id_cible;
+} else if ($type == "cours") {
 } else {
     errmsg("type non géré");
 }
@@ -113,7 +114,7 @@ if ($profondeur > 0) {
     }
 
     /* insertion de la ou des nouvelles formation */
-    $q = 'INSERT INTO pain_formation (id_formation_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant) SELECT pain_formation.id_formation as id_formation_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE '.$cond;
+    $q = 'INSERT INTO pain_formation (id_formation_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant, code_geisha) SELECT pain_formation.id_formation as id_formation_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant, pain_formation.code_geisha FROM pain_formation, pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
@@ -149,6 +150,9 @@ if ($profondeur > 0) {
  * par le nb de sformations ! */
               ." AND pain_cours.id_formation = 
                      pain_formation.id_formation_prev ";
+    } else if ($type == "cours") {
+	    $cond = "pain_formation.id_formation = ".$id_new.
+		    "AND ...a finir";
     }
 
     /* mise à jour des services des responsables de cours */
@@ -159,11 +163,11 @@ if ($profondeur > 0) {
     }
 
     /* insertion des nouveaux cours */
-    $q = 'INSERT INTO pain_cours (id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif,
+    $q = 'INSERT INTO pain_cours (id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, ctd, descriptif,
 code_geisha) SELECT pain_cours.id_cours as id_cours_prev,
 pain_formation.id_formation, pain_cours.semestre,
 pain_cours.nom_cours, pain_cours.credits, pain_cours.id_enseignant,
-pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt,
+pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt, pain_cours.ctd,
 pain_cours.descriptif, pain_cours.code_geisha FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
 
@@ -213,8 +217,8 @@ if (1 == $profondeur) {
 
 
     /* insertion de nouvelles tranches anonymes */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT 
-pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, ctd, type_conversion, remarque, htd) SELECT 
+pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.ctd, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
@@ -253,8 +257,9 @@ if ($profondeur == 2) {
     }
 
     /* insertion de nouvelles tranches */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT 
-pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, ctd, type_conversion, remarque, htd) SELECT 
+	    pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.ctd,
+	    pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 

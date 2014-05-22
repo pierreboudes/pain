@@ -39,14 +39,15 @@ function ig_formselectannee($annee)
 }
 ?>
 <ul id="menu">
-      <li><a href="./">accueil</a></li>
-      <li><a href="service.php">service</a></li>
+      <li><a href="./">vœux</a></li>
+      <li><a href="service.php">récapitulatif</a></li>
       <li><a href="stats.php">stats</a></li>
+      <li><a href="statsCSV.php">statsCSV</a></li>
       <li><a href="enseignants.php">enseignants</a></li>
       <li><a href="annuaire.php">annuaire</a></li>
 <?php
     if (1 == $user["su"]) {
-	echo '<li><a href="admin.php">admin</a></li>';
+	echo '<li><a href="admin.php" style="color:red;">admin</a></li>';
     }
 ?>
       <li><a href="logout.php">logout</a></li>

@@ -140,7 +140,11 @@ function ig_intervenants_du_cours($cours, $categories = NULL) {
 	}
 	echo '<tr><td class="enseignant">'.$role.'</td>';
 	echo '<td class="enseignant">'.$e["prenom"].' '.$e["nom"].'</td>';
-	echo '<td class="email">'.$e["email"].'</td>';
+	if ($e["email"]=="" && $e['prenom']!='libre') {
+		echo '<td class="email">'.$e['prenom'].'.'.$e['nom'].'@iutv.univ-paris13.fr ?';
+	} else {
+		echo '<td class="email">'.$e["email"].'</td>';
+	}
 	echo '<td class="tel">'.$e["tel"].'</td>';
 	echo '<td class="bureau">'.$e["bureau"].'</td></tr>';
 	$ids[] = $e["id_enseignant"];
@@ -156,7 +160,7 @@ function ig_emails($ids, $categories) {
     
     if ($ids != "") {/* il y a des ids dont on veut les emails */
 	/* nota: lorsqu'on filtrera par categories il faudra faire la jointure avec pain_service */
-	$q = "SELECT distinct email
+	$q = "SELECT distinct email, prenom, nom
               FROM pain_enseignant WHERE id_enseignant IN ($ids) ORDER BY email ASC"; 
         /* rem: GROUP_CONCAT(DISTINCT email ORDER BY email ASC SEPARATOR ', ') limité à 1024 */
 	($r = $link->query($q)) 
@@ -164,12 +168,17 @@ function ig_emails($ids, $categories) {
 	while ($e = $r->fetch_array()) {
 	    if ($e["email"] != "") {/* tester ici si email valide (regexp) */
 		$a[] = $e["email"];
+	    } else if ($e["prenom"] != "libre") {
+		$a[] = $e["prenom"].'.'.$e["nom"]."@iutv.univ-paris13.fr";
 	    }
 	}
     }
     $rows = count($a)/3 + 1;    
-    echo '<tr><td colspan="5" style="width: 800px"><textarea dir="ltr" rows="'.$rows.'" cols="40">'.join(', ', $a)
-        .'</textarea></td></tr>';
+    //echo '<tr><td colspan="5" style="text-align: center;"><a href="mailto:?bcc='.join(', ', $a)
+    echo '<tr><td colspan="5" style="text-align: center;"><a href="mailto:'.join(', ', $a)
+	    .'">Mail collectif à ces enseignants</a></td></tr>';
+    /*echo '<tr><td colspan="5" style="width: 800px"><textarea dir="ltr" rows="'.$rows.'" cols="40">'.join(', ', $a).
+	     '</textarea></td></tr>';*/
 }
 
 function ig_pied_du_cours($cours) {
@@ -246,7 +255,7 @@ EOD;
 
     echo <<<EOD
     </select><br />
-    <label>Années</label>
+    <label>Formations</label>
     <input type="checkbox" id="cbtoutesformations" name="toutesformations" checked="checked" disabled="disabled" value="1" />
     <label for="cbtoutesformations">toutes</label>
     <div id="choix_formations"></div>

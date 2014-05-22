@@ -41,15 +41,15 @@ $champs = array(
 	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_geisha"
+	"cm", "td", "tp", "alt", "ctd", "descriptif", "code_geisha"
 	/* modification */
 	),
     "tranche"=> array(
 	"id_enseignant", "groupe", "cm", "td", "tp",
-	"alt", "type_conversion", "remarque", "htd", "descriptif"
+	"alt", "ctd", "type_conversion", "remarque", "htd", "descriptif"
 	),
     "choix" => array(
-	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "ctd"
 	),
     "enseignant" => array(
 	"prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie"

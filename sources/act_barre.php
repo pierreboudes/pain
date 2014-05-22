@@ -85,8 +85,9 @@ $fondcolor = imagecolorallocate($im, 255, 255, 255);
 /* ne tourne pas au lipn imageantialias($im, true); */
 imagefilledrectangle($im, 0, 0, $largeur, $hauteur, $fondcolor);
 $white = imagecolorallocate($im,255,255,255);
-$servicolor = imagecolorallocate($im, 58, 105, 35); /* vert */
-$librecolor = imagecolorallocate($im, 175, 29, 30); /* rouge */
+$servicolor = imagecolorallocate($im, 0x00, 0x0F, 0xFF); /* bleu service */
+//$librecolor = imagecolorallocate($im, 175, 29, 30); /* rouge */
+$librecolor = imagecolorallocate($im, 255, 0, 0); /* rouge */
 $annulecolor = imagecolorallocate($im, 255, 144, 0); /* orange */
 $mutualisecolor = imagecolorallocate($im, 100, 149, 237); /* bleu cadre */
 $x1 = 0;

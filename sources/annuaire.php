@@ -27,19 +27,21 @@ $annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
 require_once("inc_annuairefunc.php");
 
-entete("Annuaire des formations","pain_annuaire.js");
+entete("Annuaire","pain_annuaire.js");
+
 if ($user != NULL) {
     include("menu.php");
-} else {
+/*} else {
     echo '<ul id="menu" style="text-align:right;"><li><a href="logout.php">logout</a></li></ul>';
     echo '<h1>Annuaire public de Pain</h1>';
-}
+}*/
 
 /* identifiant de formation en provenance du formulaire */
 list($id_formation, $semestre) = annuaire_php_form();
 
 /* affichage des tableaux des cours */
 annuaire_php();
+}
 
 piedpage();
 ?>

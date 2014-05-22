@@ -357,12 +357,13 @@ function supprimer_choix($id) {
     global $link;
     if (peutsupprimerchoix($id)) {
 	$choix = selectionner_choix($id);
+	$cours = selectionner_cours($choix['id_cours']);
 	$qchoix = "DELETE FROM pain_choix WHERE `id_choix` = $id
                  LIMIT 1";
 	
 	if ($link->query($qchoix)) {
 	    historique_par_suppression(3, $choix);
-	    pain_log("$qchoix -- supprimer_choix($id)");
+	    pain_log("$qchoix -- supprimer_choix($id, ens=".$choix['id_enseignant']." du cours ". $cours['nom_cours'].")");
 	    echo '{"ok": "ok"}';
 	} else {
 	    errmsg("échec de la requête sur la table choix.");
@@ -404,24 +405,27 @@ function historique_par_suppression($type, $old) {
     $id_cours = 0;
     $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
     $s .= '<div class="diff">';
+    $s .= "suppression";
     if (1 == $type) {
 	$id_cours = $id = $old["id_cours"];
 	$id_formation = $old["id_formation"];
+	$s .= ' cours';
     } else if (2 == $type) {
 	$id = $old["id_tranche"];
 	$id_cours = $old["id_cours"];
 	$id_formation = formation_du_cours($old["id_cours"]);
+	$s .= ' tranche';
     } else if (3 == $type) {
 	$id = $old["id_choix"];
 	$id_cours = $old["id_cours"];
 	$id_formation = formation_du_cours($old["id_cours"]);
+	$s .= ' choix de '.$old['id_enseignant'];
     } else if (4 == $type) {
 	$id = $old["id_enseignant"];
-	$s .= $old["prenom"]." ".$old["nom"]." : ";
+	$s .=' enseignant '.$old["prenom"]." ".$old["nom"]." : ";
     } else {
 	$s .= "BUG ";
     }
-    $s .= "suppression";
     $s .= '</div>';
     $q = "INSERT INTO pain_hist (type, id, id_formation, id_cours, message) 
           VALUES ('".$type."', '".$id."', '".$id_formation."', '".$id_cours."',

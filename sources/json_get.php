@@ -130,10 +130,16 @@ function json_get_php($annee, $readtype) {
                            pain_cours.id_cours,
                            pain_cours.semestre,
                            pain_formation.nom,
-                           pain_formation.annee_etude,
+			   pain_formation.annee_etude,
                            pain_formation.parfum,
                            pain_sformation.annee_universitaire,
-                           \"long$type\" AS type
+                           \"long$type\" AS type,
+			   FORMAT(pain_choix.cm,2) as cm,
+			   FORMAT(pain_choix.td,2) as td,
+			   FORMAT(pain_choix.htd,2) as htd,
+			   FORMAT(pain_choix.tp,2) as tp,
+			   FORMAT(pain_choix.alt,2) as alt,
+			   FORMAT(pain_choix.ctd,2) as ctd
                      FROM  pain_choix, pain_cours, pain_formation, pain_sformation ";
 	if (isset($_GET['id_parent'])) {
 	    $id_par = $_GET['id_parent'];
@@ -199,11 +205,12 @@ function json_get_php($annee, $readtype) {
 	$id_par =  getnumeric("id_parent");
 	$requete = "select *,
 id_cours as id_potentiel,
-greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
-greatest(ifnull(tranche_td,0),ifnull(choix_td,0)) as td,
-greatest(ifnull(tranche_tp,0),ifnull(choix_tp,0)) as tp,
-greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)) as alt,
-greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)) as htd 
+FORMAT(greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)),2) as cm,
+FORMAT(greatest(ifnull(tranche_td,0),ifnull(choix_td,0)),2) as td,
+FORMAT(greatest(ifnull(tranche_tp,0),ifnull(choix_tp,0)),2) as tp,
+FORMAT(greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)),2) as alt,
+FORMAT(greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)),2) as htd,
+FORMAT(greatest(ifnull(tranche_ctd,0),ifnull(choix_ctd,0)),2) as ctd
 from
 ((
 select
@@ -239,22 +246,24 @@ and pain_formation.id_sformation = pain_sformation.id_sformation
 and annee_universitaire = ".$annee.")) as t0
 left join
 (select id_cours, 
-sum(cm) as choix_cm,
-sum(td) as choix_td,
-sum(tp) as choix_tp,
-sum(alt) as choix_alt,
-sum(htd) as choix_htd
+FORMAT(sum(cm),2) as choix_cm,
+FORMAT(sum(td),2) as choix_td,
+FORMAT(sum(tp),2) as choix_tp,
+FORMAT(sum(alt),2) as choix_alt,
+FORMAT(sum(htd),2) as choix_htd,
+FORMAT(sum(ctd),2) as choix_ctd
 from pain_choix
 where
 id_enseignant = ".$id_par." 
 group by id_cours) as t1 using(id_cours)
 left join
 (select id_cours,
-sum(cm) as tranche_cm,
-sum(td) as tranche_td,
-sum(tp) as tranche_tp,
-sum(alt) as tranche_alt,
-sum(htd) as tranche_htd
+FORMAT(sum(cm),2) as tranche_cm,
+FORMAT(sum(td),2) as tranche_td,
+FORMAT(sum(tp),2) as tranche_tp,
+FORMAT(sum(alt),2) as tranche_alt,
+FORMAT(sum(htd),2) as tranche_htd,
+FORMAT(sum(ctd),2) as tranche_ctd
 from pain_tranche
 where
 id_enseignant = ".$id_par." 
@@ -267,7 +276,7 @@ nom_cours ASC";
     } else if ($readtype == "responsabilite" and isset($_GET['id_parent'])) {
 	$id_par =  getnumeric("id_parent");
 	$requete = "(select 
-concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', annee_etude) as resp_nom,
+concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', IF (annee_etude=0,'',annee_etude)) as resp_nom,
 concat('c', id_cours) as id_responsabilite,
 1 as resp_type_num
 from pain_cours, pain_formation, pain_sformation
@@ -300,7 +309,7 @@ and pain_sformation.annee_universitaire = ".$annee."
 	$type = "tag";
 	$requete = "SELECT pain_tag.*,                    
                     \"$type\" AS type,
-                    id_$type AS id,
+		    id_$type AS id,
                     (SELECT COUNT(*) FROM pain_tagscours WHERE pain_tagscours.id_tag = pain_tag.id_tag)
                     AS nb_tous_cours,
                     (SELECT COUNT(pain_tagscours.id_cours) 
@@ -419,6 +428,10 @@ and pain_sformation.annee_universitaire = ".$annee."
                       pain_$type.*,
                        \"$type\" AS type, 
                       pain_$type.id_$type AS id,";
+	/* Dirty Patch by FB  */
+		if ($type=='cours')
+			$requete .= 'pain_tag.nom_tag AS nom_tag,'; 
+
 	   if (isset($counttype)) {
 	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
 	   }
@@ -428,16 +441,28 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   if (isset($counttype)) {
 	       $requete .= " LEFT JOIN pain_$counttype ON pain_$counttype.id_$type = pain_$type.id_$type";
 	   }
+	/* Dirty Patch by FB  */
+		if ($type=='cours') {
+			$requete .= " LEFT JOIN pain_tagscours ON pain_cours.id_cours = pain_tagscours.id_cours";
+			$requete .= " LEFT JOIN pain_tag ON pain_tagscours.id_tag =pain_tag.id_tag";
+
+	        }
 	   $requete .= ", pain_enseignant 
              WHERE pain_$type.$par = $id_par
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant ";
+
+
+
 	   if (isset($counttype)) {
 	       $requete .= "GROUP BY id_$type ";
 	   }
              $requete .= $order;
        }
+	/*if ($type == 'cours')
+	pain_log($requete);*/
+
        $resultat = $link->query($requete) 
-	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);
+	       or pain_log("Échec de la requête sur la table $type".$requete."\n".$link->error);
        $arr = array();
        while ($element = $resultat->fetch_object()) {
 	   $arr[] = $element;
@@ -478,8 +503,6 @@ and pain_sformation.annee_universitaire = ".$annee."
    }
 }
 
-
-
 if (isset($_GET["annee_universitaire"])) {
     $annee = getnumeric("annee_universitaire");
 }
@@ -505,5 +528,4 @@ if (isset($_GET["type"])) {
 } else {
     errmsg("erreur de script (type non renseigné)");
 }
-
 ?>

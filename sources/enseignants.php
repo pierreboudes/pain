@@ -44,7 +44,7 @@ function enseignants_php() {
     global $annee;
     global $link;
 
-    entete("les enseignants","pain_enseignants.js");
+    entete("Enseignants","pain_enseignants.js");
     include("menu.php");
     include("box_enseignants.html");
 

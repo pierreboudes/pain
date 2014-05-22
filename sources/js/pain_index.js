@@ -21,12 +21,19 @@
 
 "use strict"; /* From now on, lets pretend we are strict */
 
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 $(document).ready(function(){
-	/* masqer certaines colonnes et les squelettes de lignes */
+	/* masquer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.section, th.credits, th.mcc, th.debut, th.fin, th.tirage, th.inscrits, th.presents, th.totaux_loader, th.collections, th.tags').fadeOut(0); // th.alt, th.inscrits, th.presents,
 	$('#skeltranche').children('th.declarer').fadeOut(0);
-	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
-	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
+	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.ctd, th.choix').fadeOut(0);
+	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.ctd, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
 
 	/* histogrammes */
@@ -53,10 +60,10 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
        appendList({type: "annee", cetteannee: "1"}, /* ajouter quoi ? */
 		  $('#tableannees > tbody'),   /* ou ? */
 		  function(){ /* fonction de post-traitement */
+			$('#tableannees div.basculeOff').click()
 		      return false;
 		  });
-
-
+	/*var id=getParameterByName('id_sformation');*/
 
 /* dialogues */
 	$("#dialog-drop-cours").dialog({
@@ -65,7 +72,7 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 		    height:160,
 		    modal: true,
 		    buttons: {
-	//		    'Copier': dropCopier,
+			    'Copier': dropCopier,
 			    'Déplacer': dropDeplacer,
 			'Annuler': function() {
 			$(this).dialog('close');
@@ -92,8 +99,8 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 	    autoOpen: false,
 		    title: "Choix de cours",
 		    resizable: true,
-/*		    height:400,
-		    width: 875, */
+/*		    height:400,*/
+		    width: 550, 
 		    modal: false
 /*		    buttons: {
 		    'Copier': dropCopier,
@@ -112,5 +119,4 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 				}
 		    });
 	$('#bouton-panier').bind('click', togglePanier);
-
     });

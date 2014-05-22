@@ -29,10 +29,10 @@ function entete() {
     $titre = func_get_arg(0);
     echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="fr">
 
 <head>
-<title>Pain -- $titre</title>
+<title>$titre Pain</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='stylesheet' media='all' href='css/general.css' type='text/css' />
 <link type="text/css" href="css/selected-theme/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
@@ -88,7 +88,7 @@ function ig_versionsvn() {
 
 function piedpage() {
 //    ig_versionsvn(); trop lent.
-    ig_statsmysql();
+//    ig_statsmysql();
     echo <<<EOD
 </body>
 </html>

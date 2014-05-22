@@ -161,20 +161,23 @@ function formation_du_cours($id)
 
 
 function ig_legendeenseignant() {
+	global $annee;
     echo '<tr>';
     echo '<th class="prenom">Prénom</th>';
     echo '<th class="nom">Nom</th>';
     echo '<th class="statut">statut</th>';
     echo '<th class="email">email</th>';
-    echo '<th class="tel">tel</th>';
+    echo '<th class="telephone">tel</th>';
     echo '<th class="bureau">bureau</th>';
-    echo '<th class="service">service plein statutaire</th>';
-    echo '<th></th>';
+    echo '<th class="service_annuel">service '.$annee.'-'.($annee+1).'</th>';
     echo '</tr>';
     echo "\n";
 }
 
 function ig_enseignant($t) {
+	global $link;
+        global $annee;
+    if ($annee == NULL) $annee = annee_courante();
     $id = $t["id_enseignant"];
     echo '<tr class="enseignant">';
     echo '<td class="prenom">';
@@ -186,7 +189,13 @@ function ig_enseignant($t) {
     echo '<td class="email">'.$t["email"].'</td>';
     echo '<td class="tel">'.$t["telephone"].'</td>';
     echo '<td class="bureau">'.$t["bureau"].'</td>';
-    echo '<td class="service">'.$t["service"].'</td>';
+    $q= "SELECT service_annuel FROM pain_service
+        WHERE id_enseignant=$id
+        AND annee_universitaire=$annee";
+    $r = $link->query($q) or die("erreur d'acces a la table: $q erreur: ".$link->error);
+    $a = $r-> fetch_row();
+
+    echo '<td class="service_annuel">'.$a[0].'</td>';
     echo '<td class="action" id="enseignant'.$t["id_enseignant"].'"></td>';
     echo '</tr>';
     echo "\n";
@@ -207,7 +216,7 @@ function stats_sform($idsf) {
                AND pain_service.categorie = 1))
           AND pain_service.annee_universitaire = pain_sformation.annee_universitaire
           GROUP BY pain_service.categorie";
-    $r = $link->query($q) or die("erreur d'acces aux tables: $q erreur: ".mysqlerror());
+    $r = $link->query($q) or die("erreur d'acces aux tables: $q erreur: ".$link->error);
     $tab = array();
 
     while ($a = $r->fetch_assoc()) {
@@ -220,12 +229,12 @@ function stats_sform($idsf) {
 function htd_cat2array($rperm) {
     global $link;
     $perm = 0; $nperm = 0; $libre = 0; $mutualise = 0; $autre = 0; $ext = 0; $servi = 0;
-    $librecm=0; $libretd=0; $libretp=0; $librealt=0;
-    $permcm=0; $permtd=0; $permtp=0; $permalt=0;
-    $npermcm=0; $npermtd=0; $npermtp=0; $npermalt=0;
-    $mutualisecm=0; $mutualisetd=0; $mutualisetp=0; $mutualisealt=0;
-    $autrecm=0; $autretd=0; $autretp=0; $autrealt=0;
-    $extcm=0; $exttd=0; $exttp=0; $extalt=0;
+    $librecm=0; $libretd=0; $libretp=0; $librealt=0; $librectd=0;
+    $permcm=0;  $permtd=0;  $permtp=0;  $permalt=0;  $permctd=0;
+    $npermcm=0; $npermtd=0; $npermtp=0; $npermalt=0; $npermctd=0;
+    $mutualisecm=0; $mutualisetd=0; $mutualisetp=0; $mutualisealt=0; $mutualisectd=0;
+    $autrecm=0; $autretd=0; $autretp=0; $autrealt=0; $autrectd=0;
+    $extcm=0; $exttd=0; $exttp=0; $extalt=0; $extctd=0;
     while ($cat =$rperm->fetch_assoc()) {
 	switch ($cat["categorie"]) {
 	case 1: /* 'annule': decompte specifique */ break;
@@ -235,6 +244,7 @@ function htd_cat2array($rperm) {
 	    $permtd += $cat["SUM(pain_tranche.td)"];
 	    $permtp += $cat["SUM(pain_tranche.tp)"];
 	    $permalt += $cat["SUM(pain_tranche.alt)"];
+	    $permctd += $cat["SUM(pain_tranche.ctd)"];
 	    break;
 	case 3: /* non permanents */
 	    $nperm += $cat["SUM(htd)"];
@@ -242,6 +252,7 @@ function htd_cat2array($rperm) {
 	    $npermtd += $cat["SUM(pain_tranche.td)"];
 	    $npermtp += $cat["SUM(pain_tranche.tp)"];
 	    $npermalt += $cat["SUM(pain_tranche.alt)"];
+	    $npermctd += $cat["SUM(pain_tranche.ctd)"];
 	    break;
 	case 22: /* enseignant 'mutualise' */
 	    $mutualise += $cat["SUM(htd)"];
@@ -249,6 +260,7 @@ function htd_cat2array($rperm) {
 	    $mutualisetd += $cat["SUM(pain_tranche.td)"];
 	    $mutualisetp += $cat["SUM(pain_tranche.tp)"];
 	    $mutualisealt += $cat["SUM(pain_tranche.alt)"];
+	    $mutualisectd += $cat["SUM(pain_tranche.ctd)"];
 	    break;
 	case 23: /* enseignant 'libre' */
 	    $libre += $cat["SUM(htd)"];
@@ -256,6 +268,7 @@ function htd_cat2array($rperm) {
 	    $libretd += $cat["SUM(pain_tranche.td)"];
 	    $libretp += $cat["SUM(pain_tranche.tp)"];
 	    $librealt += $cat["SUM(pain_tranche.alt)"];
+	    $librectd += $cat["SUM(pain_tranche.ctd)"];
 	    break;
 	case 29: /* enseignant 'autre' (exterieur) */
 	    $autre += $cat["SUM(htd)"];
@@ -263,6 +276,7 @@ function htd_cat2array($rperm) {
 	    $autretd += $cat["SUM(pain_tranche.td)"];
 	    $autretp += $cat["SUM(pain_tranche.tp)"];
 	    $autrealt += $cat["SUM(pain_tranche.alt)"];
+	    $autrectd += $cat["SUM(pain_tranche.ctd)"];
 	    break;
 	default: /* tout le reste = exterieurs */
 	    $ext += $cat["SUM(htd)"];
@@ -270,6 +284,7 @@ function htd_cat2array($rperm) {
 	    $exttd += $cat["SUM(pain_tranche.td)"];
 	    $exttp += $cat["SUM(pain_tranche.tp)"];
 	    $extalt += $cat["SUM(pain_tranche.alt)"];
+	    $extctd += $cat["SUM(pain_tranche.ctd)"];
 	}
     }
     $servi = $ext + $autre + $perm + $nperm;
@@ -279,31 +294,37 @@ function htd_cat2array($rperm) {
 		 "libretd"=>$libretd,
 		 "libretp"=>$libretp,
 		 "librealt"=>$librealt,
+		 "librectd"=>$librectd,
 		 "mutualise"=>$mutualise,
 		 "mutualisecm"=>$mutualisecm,
 		 "mutualisetd"=>$mutualisetd,
 		 "mutualisetp"=>$mutualisetp,
 		 "mutualisealt"=>$mutualisealt,
+		 "mutualisectd"=>$mutualisectd,
 		 "permanents" => $perm,
 		 "permcm"=>$permcm,
 		 "permtd"=>$permtd,
 		 "permtp"=>$permtp,
 		 "permalt"=>$permalt,
+		 "permctd"=>$permctd,
 		 "nonpermanents" => $nperm,
 		 "npermcm"=>$npermcm,
 		 "npermtd"=>$npermtd,
 		 "npermtp"=>$npermtp,
 		 "npermalt"=>$npermalt,
+		 "npermctd"=>$npermctd,
 		 "exterieurs" =>$ext,
 		 "extcm"=>$extcm,
 		 "exttd"=>$exttd,
 		 "exttp"=>$exttp,
 		 "extalt"=>$extalt,
+		 "extctd"=>$extctd,
 		 "autre" => $autre,
 		 "autrecm"=>$autrecm,
 		 "autretd"=>$autretd,
 		 "autretp"=>$autretp,
 		 "autrealt"=>$autrealt,
+		 "autrealt"=>$autrectd,
 		 "total"=>$servi+$libre+$mutualise // ajouter $annule apres retour
 	);
 }
@@ -314,7 +335,7 @@ function htdtotaux($annee = NULL) {
     if ($annee == NULL) $annee = annee_courante();
 
     /* heures etudiants */
-    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + +coalesce(ctd,0)+coalesce(alt,0)) * presents) as etu
              FROM pain_sformation, pain_formation, pain_cours
              WHERE  pain_formation.id_formation = pain_cours.id_formation
              AND pain_sformation.id_sformation = pain_formation.id_sformation
@@ -339,7 +360,7 @@ function htdtotaux($annee = NULL) {
     }
 
     /* tous CM, TD, TP, alt */
-    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
+    $qcomp ='SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt, SUM(pain_tranche.ctd) AS ctd FROM pain_sformation, pain_formation, pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND annee_universitaire = '.$annee;
     $rcomp = $link->query($qcomp)
 	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
@@ -360,7 +381,12 @@ function htdtotaux($annee = NULL) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
+    $ctd = $comp["ctd"];
+    if ($ctd == "") {
+	$ctd = 0;
+    }
+    $qperm ='SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt), SUM(pain_tranche.ctd)
+	    FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee.' AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie';
 
     $rperm = $link->query($qperm)
 	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
@@ -373,6 +399,7 @@ function htdtotaux($annee = NULL) {
     $a["td"] = $td;
     $a["tp"] = $tp;
     $a["alt"] = $alt;
+    $a["ctd"] = $ctd;
     $a["etu"] = $etu;
 
     return $a;
@@ -381,7 +408,7 @@ function htdtotaux($annee = NULL) {
 function htdsuper($id) {
     global $link;
     /* heures etudiants */
-    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0) +coalesce(ctd,0)) * presents) as etu
              FROM pain_formation, pain_cours
              WHERE pain_formation.id_sformation  = $id
              AND pain_cours.id_formation = pain_formation.id_formation";
@@ -404,7 +431,8 @@ function htdsuper($id) {
 	$annule = 0;
     }
 
-    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_formation, pain_cours, pain_tranche WHERE pain_formation.id_sformation = $id AND pain_formation.id_formation = pain_cours.id_formation AND pain_tranche.id_cours = pain_cours.id_cours";
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, 
+	    SUM(pain_tranche.alt) AS alt, SUM(pain_tranche.ctd) AS ctd FROM pain_formation, pain_cours, pain_tranche WHERE pain_formation.id_sformation = $id AND pain_formation.id_formation = pain_cours.id_formation AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = $link->query($qcomp)
 	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
@@ -425,7 +453,12 @@ function htdsuper($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $ctd = $comp["ctd"];
+    if ($ctd == "") {
+	$ctd = 0;
+    }
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd), SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt), SUM(pain_tranche.ctd)
+	    FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_formation.id_sformation = $id AND pain_sformation.id_sformation = $id AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm)
 	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
@@ -438,6 +471,7 @@ function htdsuper($id) {
     $a["td"] = $td;
     $a["tp"] = $tp;
     $a["alt"] = $alt;
+    $a["ctd"] = $ctd;
     $a["etu"] = $etu;
 
     return $a;
@@ -446,7 +480,7 @@ function htdsuper($id) {
 function htdformation($id) {
     global $link;
     /* heures etudiants */
-    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0) +coalesce(ctd,0)) * presents) as etu
              FROM pain_cours WHERE id_formation = $id";
     $retu = $link->query($qetu)
 	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
@@ -467,7 +501,8 @@ function htdformation($id) {
 	$annule = 0;
     }
 
-    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt SUM(pain_tranche.ctd) AS ctd 
+	    FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = $link->query($qcomp)
 	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
@@ -488,7 +523,12 @@ function htdformation($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $ctd = $comp["ctd"];
+    if ($ctd == "") {
+	$ctd = 0;
+    }
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt), SUM(pain_tranche.ctd)
+	    FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = $id AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm)
 	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
@@ -500,7 +540,8 @@ function htdformation($id) {
     $a["cm"] = $cm;
     $a["td"] = $td;
     $a["tp"] = $tp;
-    $a["alt"] = $alt;
+    $a["alt"] = $alt; 
+    $a["ctd"] = $ctd; 
     $a["etu"] = $etu;
 
     return $a;
@@ -510,7 +551,7 @@ function htdformation($id) {
 function htdcours($id) {
     global $link;
     /* heures etudiants */
-    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)) * presents) as etu
+    $qetu = "SELECT SUM((coalesce(cm, 0) + coalesce(td, 0) + coalesce(tp, 0) + coalesce(alt,0)+coalesce(ctd,0)) * presents) as etu
              FROM pain_cours WHERE id_cours = $id";
     $retu = $link->query($qetu)
 	or die("erreur d'acces a la table tranche : $qetu erreur:".$link->error);
@@ -530,7 +571,7 @@ function htdcours($id) {
 	$annule = 0;
     }
 
-    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt FROM pain_tranche WHERE pain_tranche.id_cours = $id";
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt, SUM(pain_tranche.ctd) AS ctd FROM pain_tranche WHERE pain_tranche.id_cours = $id";
     $rcomp = $link->query($qcomp)
 	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);
 
@@ -551,7 +592,13 @@ function htdcours($id) {
     if ($alt == "") {
 	$alt = 0;
     }
-    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt) FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
+    $ctd = $comp["ctd"];
+    if ($ctd == "") {
+	$ctd = 0;
+    }
+
+    $qperm ="SELECT pain_service.categorie AS categorie, SUM(htd),  SUM(pain_tranche.cm), SUM(pain_tranche.td), SUM(pain_tranche.tp), SUM(pain_tranche.alt), SUM(pain_tranche.ctd)
+	    FROM pain_sformation, pain_formation, pain_cours, pain_tranche, pain_service WHERE pain_cours.id_cours = $id AND pain_tranche.id_cours = pain_cours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_tranche.id_enseignant = pain_service.id_enseignant AND pain_service.annee_universitaire = pain_sformation.annee_universitaire AND pain_cours.id_enseignant <> 1 GROUP BY pain_service.categorie";
 
     $rperm = $link->query($qperm)
 	or die("erreur d'acces aux tables : $qperm erreur:".$link->error);
@@ -564,6 +611,7 @@ function htdcours($id) {
     $a["td"] = $td;
     $a["tp"] = $tp;
     $a["alt"] = $alt;
+    $a["ctd"] = $ctd;
     $a["etu"] = $etu;
 
     return $a;
@@ -672,11 +720,12 @@ pain_cours.code_geisha,
 pain_cours.id_section,
 pain_cours.id_section as section,
 pain_cours.id_cours AS id_cours,
-SUM(pain_tranche.cm) AS cm,
-SUM(pain_tranche.td) AS td,
-SUM(pain_tranche.tp) AS tp,
-SUM(pain_tranche.alt) AS alt,
-SUM(pain_tranche.htd) AS htd,
+FORMAT(SUM(pain_tranche.cm),2) AS cm,
+FORMAT(SUM(pain_tranche.td),2) AS td,
+FORMAT(SUM(pain_tranche.tp),2) AS tp,
+FORMAT(SUM(pain_tranche.alt),2) AS alt,
+FORMAT(SUM(pain_tranche.ctd),2) AS ctd,
+FORMAT(SUM(pain_tranche.htd),2) AS htd,
 GROUP_CONCAT(pain_tranche.declarer ORDER BY pain_tranche.id_tranche SEPARATOR '<br \\>') as declarer
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation, pain_enseignant, pain_service
 WHERE pain_enseignant.id_enseignant IN (".$ids_enseignants.")
@@ -715,11 +764,12 @@ pain_cours.nom_cours,
 pain_cours.code_geisha,
 pain_cours.id_cours AS id_cours,
 pain_tranche.groupe,
-pain_tranche.cm,
-pain_tranche.td,
-pain_tranche.tp,
-pain_tranche.alt,
-pain_tranche.htd,
+FORMAT(pain_tranche.cm,2) as cm,
+FORMAT(pain_tranche.td,2) as td,
+FORMAT(pain_tranche.tp,2) as tp,
+FORMAT(pain_tranche.alt,2) as alt,
+FORMAT(pain_tranche.ctd,2) as ctd,
+FORMAT(pain_tranche.htd,2) as htd,
 pain_tranche.remarque
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation
 WHERE ".(($id_enseignant == 1)?
@@ -729,7 +779,7 @@ AND pain_tranche.id_cours = pain_cours.id_cours
 AND pain_cours.id_formation = pain_formation.id_formation
 AND pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_sformation.annee_universitaire = $an
-ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours.id_cours";
+ORDER by pain_cours.semestre ASC, pain_formation.nom ASC, pain_cours.nom_cours ASC, pain_tranche.tp DESC";
     ($result = $link->query($query)) or die("Échec de la requête ".$query."\n".$link->error);
 
     return $result;
@@ -737,15 +787,16 @@ ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours
 
 function ig_legendeintervention() {
     echo '<th class="formation">formation</th>';
-    echo '<th class="code_geisha">code UE</th>';
-    echo '<th class="nom_cours">intitulé</th>';
-    echo '<th class="semestre">Période</th>';
-    echo '<th class="CM">CM</th>';
-    echo '<th class="TD">TD</th>';
-    echo '<th class="TP">TP</th>';
-    echo '<th class="alt">alt.</th>';
-    echo '<th class="HTD">htd</th>';
-    echo '<th class="remarque">Remarque</th>';
+    //echo '<th class="code_geisha">code UE</th>';
+    echo '<th class="nom_cours">Cours</th>';
+    echo '<th class="semestre">Sem.</th>';
+    echo '<th class="ctd">CTD</th>';
+    echo '<th class="cm">CM</th>';
+    echo '<th class="td">TD</th>';
+    echo '<th class="tp">TP</th>';
+    echo '<th class="alt">Ctrl</th>';
+    echo '<th class="htd">htd</th>';
+    echo '<th class="remarque">Remarques</th>';
     echo '<th class="groupe">Groupe</th>';
 }
 
@@ -753,23 +804,29 @@ function ig_intervention($i) {
     $id = $i["id_tranche"];
     echo '<td class="formation">';
     debug_show_id($id);
-    echo $i["nom"]." ".$i["annee_etude"]." ";
+	if ($i["annee_etude"] == 0)
+		echo $i["nom"]." ";
+	else
+    		echo $i["nom"]." ".$i["annee_etude"]." ";
+	
     echo $i["parfum"];
     echo '</td>';
-    echo '<td class="code_geisha">';
-    echo $i["code_geisha"];
-    echo '</td>';
+    //echo '<td class="code_geisha">';
+    //echo $i["code_geisha"];
+    //echo '</td>';
     echo '<td class="nom_cours">';
+    #echo '<a href="ouvre.php?'.$i["id_cours"].'">'.$i["nom_cours"].'</a>';
     echo $i["nom_cours"];
     echo '</td>';
     echo '<td class="semestre">';
-    echo 'S'.$i["semestre"];
+    echo $i["semestre"];
     echo '</td>';
-    echo '<td class="CM">'.$i["cm"].'</td>';
-    echo '<td class="TD">'.$i["td"].'</td>';
-    echo '<td class="TP">'.$i["tp"].'</td>';
+    echo '<td class="ctd">'.$i["ctd"].'</td>';
+    echo '<td class="cm">'.$i["cm"].'</td>';
+    echo '<td class="td">'.$i["td"].'</td>';
+    echo '<td class="tp">'.$i["tp"].'</td>';
     echo '<td class="alt">'.$i["alt"].'</td>';
-    echo '<td class="HTD">'.$i["htd"].'</td>';
+    echo '<td class="htd">'.$i["htd"].'</td>';
     echo '<td class="remarque">'.$i["remarque"].'</td>';
     echo '<td class="groupe">'.$i["groupe"].'</td>';
 }
@@ -779,11 +836,12 @@ function totauxinterventions($id_enseignant) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
     $query = "SELECT
-SUM(pain_tranche.cm) AS cm,
-SUM(pain_tranche.td) AS td,
-SUM(pain_tranche.tp) AS tp,
-SUM(pain_tranche.alt) AS alt,
-SUM(pain_tranche.htd) AS htd
+FORMAT(SUM(pain_tranche.cm),2) AS cm,
+FORMAT(SUM(pain_tranche.td),2) AS td,
+FORMAT(SUM(pain_tranche.tp),2) AS tp,
+FORMAT(SUM(pain_tranche.alt),2) AS alt,
+FORMAT(SUM(pain_tranche.ctd),2) AS ctd,
+FORMAT(SUM(pain_tranche.htd),2) AS htd
 FROM pain_tranche, pain_cours, pain_formation, pain_sformation
 WHERE ".(($id_enseignant == 1)?
 	 "(pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)"
@@ -800,14 +858,15 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 }
 
 function ig_totauxinterventions($totaux) {
-    echo '<th style="text-align:right;" colspan="4">';
+    echo '<th style="text-align:right;" colspan="3">';
     echo 'totaux';
-    echo '</th>';
-    echo '<td class="CM">'.$totaux["cm"].'</td>';
-    echo '<td class="TD">'.$totaux["td"].'</td>';
-    echo '<td class="TP">'.$totaux["tp"].'</td>';
-    echo '<td class="alt">'.$totaux["alt"].'</td>';
-    echo '<td class="HTD">'.$totaux["htd"].'</td>';
+    //echo '</th>';
+    echo '<th class="total_ctd">'.$totaux["ctd"].'</td>';
+    echo '<th class="total_cm">'.$totaux["cm"].'</td>';
+    echo '<th class="total_td">'.$totaux["td"].'</td>';
+    echo '<th class="total_tp">'.$totaux["tp"].'</td>';
+    echo '<th class="total_alt">'.$totaux["alt"].'</td>';
+    echo '<th class="total_htd">'.$totaux["htd"].'</td>';
     echo '<th colspan="2"></th>';
 }
 
@@ -1033,6 +1092,7 @@ function ig_historique($h) {
     echo '</div>';
     echo '<div class="message">';
     echo $h["message"];
+	if ($h["type"]>1) echo ', dans cours '. $h["id_cours"];
     echo '</div>';
 }
 ?>
