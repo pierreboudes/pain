@@ -22,7 +22,7 @@
 "use strict"; /* From now on, lets pretend we are strict */
 
 $(document).ready(function(){
-	/* masqer certaines colonnes et les squelettes de lignes */
+	/* masquer certaines colonnes et les squelettes de lignes */
 	$('#skelenseignant').children('th.su, th.stats, th.fin, th.categorie').fadeOut(0);
 	$('#skel').fadeOut(0);
 	$('tr.categorie > td.laction > div.basculeOff').bind('click',basculerCategorie);

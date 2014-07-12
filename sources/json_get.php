@@ -123,6 +123,8 @@ function json_get_php($annee, $readtype) {
                       ORDER BY nom, prenom ASC";
     } else if ($readtype == "longchoix") {
 	$type = "choix";
+
+//select pain_choix.*, if((select count(*) from pain_tranche as pt where pt.id_cours= pain_choix.id_cours)<(select count(*) from pain_choix as pc where pc.id_cours= pain_choix.id_cours),'0','1') as pb from pain_choix where id_enseignant=137;
 	$requete = "SELECT pain_choix.*,
                            pain_choix.id_choix AS id_longchoix,
                            pain_choix.id_choix AS id,

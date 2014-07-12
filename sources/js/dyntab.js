@@ -472,6 +472,17 @@ function microsformation () {
 }
 microsformation.prototype = new cell();
 
+/* constructeur de l'icone de validité  sur longchoix */
+function valide() {
+	this.name = "valide";
+	this.setval = function (c,o) {
+		if (o["valide"]== "0")
+  			c.text("nok");
+		else
+			c.text("ok");
+         }
+}
+valide.prototype = new immutcell();
 
 /* constructeur du composite intitule de formation */
 function intitule() {
@@ -1293,6 +1304,8 @@ function ligne() {
     this.service_annuel.name = "service_annuel";
     /* pain_sformation, pain_formation
      */
+    this.valide = new valide();
+
     /* intitule */
     this.intitule = new intitule();
     /* stats / totaux */
@@ -1417,8 +1430,8 @@ function getjson(url,data,callback) {
 		data:  data,
 		datatype: 'json',
 		error: function () {
-			//alert('erreur ajax ! [url: '+url+'] [data: '+data+'], essayez de recharger la page');
-			location.reload(true);
+			alert('erreur ajax ! [url: '+url+'] [data: '+data+'], essayez de recharger la page');
+			//location.reload(true);
 		},
 		success: function(data) {
 		var o;
@@ -1807,6 +1820,25 @@ function addChoisir(td) {
 }
 function removeChoisir(td) {
     td.find('button.choixl').remove();
+}
+
+function addTrancheVersSouhait(td) {
+    if (!existsjQuery(td)) return;
+    var tr = td.parent('tr');
+    var oid = parseIdString(tr.attr('id'));
+    var choixt = jQuery('<button class="choixt">Retourne en souhait</button>');
+    choixt.button({
+	text: false,
+		icons: {
+		primary: "ui-icon-arrow-1-w"
+		}
+     });
+     choixt.bind("click",oid,transfertSouhait);
+     removeTrancheVersSouhait(td);
+     td.find('div.palette').append(choixt);
+}
+function removeTrancheVersSouhait(td) {
+     td.find('button.choixt').remove();
 }
 
 
@@ -2530,10 +2562,15 @@ function appendItem(type, prev, o, list) {
 	var classzero = "";
 	if (0 == nbbasc) classzero = " basculeZero";
 	/* histogrammes et logs */
-	line.children('td.laction')
+	if (superuser()) {
+	  line.children('td.laction')
 	    .prepend('<div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'+idf+'"></div><div class="logOff" id="logsFormation'+idf+'"></div></div>');
+	$('#logsFormation'+idf).bind('click',{id: idf},logsFormation);}
+	else {
+	  line.children('td.laction')
+            .prepend('<div class="micropalette"><div class="histoOff" id="histoDesCoursFormation'+idf+'"></div></div>');
+	}
 	$('#histoDesCoursFormation'+idf).bind('click',{id: idf},histoDesCours);
-	$('#logsFormation'+idf).bind('click',{id: idf},logsFormation);
 	/* bascule de formation */
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeformation_'+idf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
@@ -2550,6 +2587,10 @@ function appendItem(type, prev, o, list) {
 	} else {
 	    removeChoisir(line.children('td.laction'));
 	}
+	if (o["id_enseignant"] >9 && superuser())
+		addTrancheVersSouhait(line.children('td.laction'));
+        else
+		removeTrancheVersSouhait(line.children('td.laction'));
 /*      Glisser deposer de tranches pour plus tard
 	addHandle(line.children('td.laction'), "tranche");
 */
@@ -2584,6 +2625,7 @@ function conversionChoixService(e) {
 
 	donnees.id_choix=id_choix["id"];
 	donnees.id_cours=tid["id"];
+	//alert("cours="+donnees.id_cours+" id_choix="+donnees.id_choix);
 
 	getjson("json_validChoix.php",donnees, function () {
 		$("#basculecours_"+donnees.id_cours).trigger('click');
@@ -2676,7 +2718,7 @@ function sendModifiedLine() {
     getjson("json_modify.php",donnees, replaceLine);
 }
 
-/* rafraichir la vue sur une ligne avec les donnees fournie par le serveur */
+/* rafraichir la vue sur une ligne avec les donnees fournies par le serveur */
 function replaceLine(tabo) {
     var o = tabo[0];
     var id = idString(o);
@@ -2708,6 +2750,10 @@ function replaceLine(tabo) {
 	} else {
 	    removeChoisir(ligne.children('td.laction'));
 	}
+	if (o["id_enseignant"] >9 && superuser())
+           addTrancheVersSouhait(ligne.children('td.laction'));
+        else
+	    removeTrancheVersSouhait(ligne.children('td.laction'));
     } else if (o["type"] == "tag") {
 	tagsAsStyles(); // recharge les styles 
 	 basculerTags();
@@ -2746,11 +2792,34 @@ function selectLine(e) {
 		    var o = tabo[0];
 		    var legende = $("#legendechoix"+o["id_cours"]);
 		    var list = legende.children('th');
+		    //appendItem(o["type"],legende.siblings().addBack().filter('tr:last'),o,list);
 		    appendItem(o["type"],legende.siblings().andSelf().filter('tr:last'),o,list);
 		    $('#bouton-panier').trigger('click');
 		});
 	});
     return false;
+}
+
+function transfertSouhait(e) {
+   var oid =e.data;
+   var source = $('#'+idString(oid));
+   source.effect('highlight',{},800,function () {});
+   getjson("json_get.php",oid,function (tabo) {
+	var o = tabo[0];
+        o.type = "choix";
+	o.id_parent = o.id_cours;
+	getjson("json_new.php",o,function (tabo) {
+             var o = tabo[0];
+             var legende = $("#legendechoix"+o["id_cours"]);
+             var list = legende.children('th');
+             //appendItem(o["type"],legende.siblings().addBack().filter('tr:last'),o,list);
+             appendItem(o["type"],legende.siblings().andSelf().filter('tr:last'),o,list);
+	});
+	o.type = "tranche";
+	o.id_enseignant="3"; // libre
+	getjson("json_modify",o, replaceLine);
+   });
+   return false;
 }
 
 /* indice de dépliage */
@@ -2960,7 +3029,8 @@ $(document).ready(function () {
     $("div.infobox a").click(function(){window.open(this.href);return false;});
 
     /* les événements du clavier */
-    $('#vuecourante, #vueadmin').live('keydown', function(e) {
+	$(document).on('keydown',function(e){
+    //$('#vuecourante, #vueadmin').live('keydown', function(e) {
 	var keyCode = e.keyCode || e.which;
 	if (keyCode == 9) { /* [tab] key */
 	    e.preventDefault();

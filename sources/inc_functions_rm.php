@@ -405,7 +405,7 @@ function historique_par_suppression($type, $old) {
     $id_cours = 0;
     $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
     $s .= '<div class="diff">';
-    $s .= "suppression";
+    $s .= "Suppression";
     if (1 == $type) {
 	$id_cours = $id = $old["id_cours"];
 	$id_formation = $old["id_formation"];

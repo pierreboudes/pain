@@ -58,7 +58,7 @@ echo '<form method="post" id="choixannee" class="formcours" name="annee" action=
 echo '<select name="annee_menu" style="display:inline; width:100px;">';
 ig_formselectannee($annee);
 echo '</select>';
-echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';
+/* echo '<input type="submit" value="OK" style="display:inline;width:40px;"/>';*/
 echo '</form>'."\n";
 ?>
 </li>

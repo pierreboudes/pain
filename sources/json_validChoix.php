@@ -29,6 +29,7 @@ $annee = annee_courante();
 
 if (! peuttoutfaire() ) {
 	errmsg("désolé vous n'avez pas les droits nécessaires");
+	echo '{"nok":"1"}';
 } else {
 	
 	if (isset($_GET["id_choix"]) && isset($_GET["id_cours"])) {
@@ -95,14 +96,21 @@ if (! peuttoutfaire() ) {
 				$cibleChoix['ctd'].",".
 				$cibleChoix['htd'].",".
 				$cible['groupe'].",NOW())";
-			$res2=$link->query($req2) or die ("Echec requête ".$req2);
 			// suppression de la liste des souhaits
+			// et de la tranche libre corresp.
+			$res2=$link->query($req2) or die ("Echec requête ".$req2);
 			$req2="delete from pain_choix where id_choix=$id_choix";
 			$res2=$link->query($req2) or die ("Echec requête ".$req2);
-			// et de la tranche libre corresp.
 			$req2="delete from pain_tranche where id_tranche=".$cible['id_tranche'];
 			$res2=$link->query($req2) or die ("Echec requête ".$req2);
-		 	print json_encode("ok");
+
+			$cibleChoix['id_tranche']=$cible['id_tranche'];
+			historique_par_cmp(2,$cible,$cibleChoix);
+
+			// Bug qq part la dedans
+			//historique_par_suppression(3,$cibleChoix);
+			// ou encore supprimer_choix($cibleChoix['id_choix']);
+			echo '{"ok":"ok"}';
 		}
     }
 }

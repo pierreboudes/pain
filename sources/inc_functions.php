@@ -97,7 +97,7 @@ function lister_categories()
 function selectionner_cours($id)
 {
     global $link;
-    $qcours = "SELECT * FROM pain_cours WHERE `id_cours` = $id";
+    $qcours = "SELECT * FROM pain_cours WHERE id_cours = $id";
     $cours = NULL;
     if ($rcours = $link->query($qcours)) {
 	$cours = $rcours->fetch_assoc();
@@ -169,7 +169,8 @@ function ig_legendeenseignant() {
     echo '<th class="email">email</th>';
     echo '<th class="telephone">tel</th>';
     echo '<th class="bureau">bureau</th>';
-    echo '<th class="service_annuel">service '.$annee.'-'.($annee+1).'</th>';
+    echo '<th class="service_annuel">service à effectuer au dept en '.$annee.'-'.($annee+1).'</th>';
+    echo '<th class="service_annuel">service statutaire</th>';
     echo '</tr>';
     echo "\n";
 }
@@ -189,13 +190,15 @@ function ig_enseignant($t) {
     echo '<td class="email">'.$t["email"].'</td>';
     echo '<td class="tel">'.$t["telephone"].'</td>';
     echo '<td class="bureau">'.$t["bureau"].'</td>';
-    $q= "SELECT service_annuel FROM pain_service
-        WHERE id_enseignant=$id
-        AND annee_universitaire=$annee";
+    $q= "SELECT pain_service.service_annuel,pain_enseignant.service FROM pain_service,pain_enseignant
+        WHERE pain_service.id_enseignant=$id
+	AND pain_enseignant.id_enseignant=$id
+        AND pain_service.annee_universitaire=$annee";
     $r = $link->query($q) or die("erreur d'acces a la table: $q erreur: ".$link->error);
     $a = $r-> fetch_row();
 
     echo '<td class="service_annuel">'.$a[0].'</td>';
+    echo '<td class="service_annuel">'.$a[1].'</td>';
     echo '<td class="action" id="enseignant'.$t["id_enseignant"].'"></td>';
     echo '</tr>';
     echo "\n";
@@ -1021,26 +1024,29 @@ function historique_par_ajout($type, $new) {
      $timestamp = $new["modification"];
     */
     $s = '<div class="nom">'.$user["prenom"].' '.$user["nom"].'</div>';
-    $s .= '<div class="diff">';
+    $s .= '<div class="diff">Ajout ';
     if (1 == $type) {
 	$id_cours = $id = $new["id_cours"];
 	$id_formation = $new["id_formation"];
+	$s .= 'cours';
     } else if (2 == $type) {
 	$id = $new["id_tranche"];
 	$id_cours = $new["id_cours"];
 	$id_formation = formation_du_cours($new["id_cours"]);
+	$s .= 'tranche';
     } else if (3 == $type) {
 	$id = $new["id_choix"];
 	$id_cours = $new["id_cours"];
 	$id_formation = formation_du_cours($new["id_cours"]);
+	$s .= 'choix';
     } else if (4 == $type) {
 	$id = $new["id_enseignant"];
 	$id_cours = $new["categorie"]; // TODO revoir la structure BD
 	$id_formation = $new["categorie"];
+	$s .= 'enseignant';
     } else {
 	$s .= ' BUG ';
     }
-    $s .= "création";
     $s .= '</div>';
     $q = "INSERT INTO pain_hist
           (type, id, id_formation, id_cours, message, timestamp)
@@ -1058,7 +1064,8 @@ function historique_de_formation($id, $offset, $timestamp = NULL) {
     if ($timestamp != NULL) {
 	$q .= " AND timestamp <= \"$timestamp\" ";
     }
-    $q .= "ORDER BY timestamp DESC LIMIT ".($offset).", 20";
+    //$q .= "ORDER BY timestamp DESC LIMIT ".($offset).", 20";
+    $q .= "ORDER BY id_hist DESC LIMIT ".($offset).", 20";
     $r = $link->query($q)
 	or die("historique_de_formation($id), $q ".$link->error);
     return $r;
@@ -1085,14 +1092,26 @@ function ig_historique($h) {
     default:
 	echo 'BUG';
     }
-    echo '<span class="id">'.$h["id"].'</span>';
+    $cours=selectionner_cours($h['id_cours']);
+    if ($h[type]==1){
+	if (strlen($cours['nom_cours'])>8) 
+		echo '<span class="id">'.substr($cours['nom_cours'],0,6).'...</span>';
+	else
+		echo '<span class="id">'.$cours['nom_cours'].'</span>';
+    } else
+		echo '<span class="id">'.$h["id"].'</span>';
     echo '</div>';
     echo '<div class="timestamp">';
     echo $h["timestamp"];
     echo '</div>';
     echo '<div class="message">';
     echo $h["message"];
-	if ($h["type"]>1) echo ', dans cours '. $h["id_cours"];
+	if ($h["type"]>1) {
+		if (strlen($cours['nom_cours'])>8) 
+			echo ', dans cours ', substr($cours['nom_cours'],0,6).'...';
+		else
+			echo ', dans cours '. $cours['nom_cours'];
+	}
     echo '</div>';
 }
 ?>

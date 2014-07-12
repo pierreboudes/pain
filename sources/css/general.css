@@ -243,10 +243,7 @@ table.categorie, table.enseignants {
 
 table.tranches, table.services {
     border-style: solid;
-    border-top-width: 0px;
-    border-bottom-width: 2px;
-    border-left-width: 1px;
-    border-right-width: 0px;
+    border-width: 0px;
     border-collapse:collapse;
     margin-left: 30%;
     margin-right: 2px;
@@ -316,7 +313,7 @@ table.super {
 
 
 table.enseignants {
-    width:85%;
+    width:90%;
 }
 
 table.cours {
@@ -419,7 +416,8 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
     max-width:42px;
 }
 .debut, .fin {
-    width: 30px;
+    width: 75px;
+    min-width:75px;
 }
 
 .semestre {
@@ -435,9 +433,9 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
 }
 
 .laction {
-    width: 0px;
     padding-left: 0px;
     padding-right: 0px;
+    width: 0px;
 }
 
 .modification {
@@ -450,7 +448,7 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
 }
 
 .service_annuel  {
-    width: 80px;
+    min-width: 80px;
 }
 
 .service_reel  {
@@ -556,7 +554,7 @@ div.basculeOn:hover {
 
 
 td.laction > div.basculeOff, td.laction > div.basculeOn {
-    margin-left: -40px;
+    margin-left: -35px;
 }
 
 div.bascule-highlight {
@@ -855,7 +853,7 @@ div.lstatens1, div.rstatens1 {
 .historique div.nav {
     float: left;
     clear: both;
-    width: 50px;
+    width: 80px;
     text-align: right;
     margin-right: 2px;
     border-width: 0px;
@@ -987,13 +985,13 @@ td.action, th.action {
 }
 
 th.action > div.palette, td.action > div.palette {
-    float: right;
+    float: left;
     height: 24px;
     padding: 0px;
     margin: 0px;
     width: 110px;
-    text-align: right;
-    margin-right: -64px;
+    text-align: left;
+   /* margin-right: -64px;*/
 }
 
 tr.longchoix > th.action > div.palette {
@@ -1006,18 +1004,20 @@ tr.potentiel > th.action > div.palette {
     margin-right: -39px;
 }
 
-th.laction > div.palette, td.laction > div.palette {
+th.laction > div.palette, td.laction > div.palette , tr.longchoix > th.laction, tr.longchoix > td.laction{
     float: left;
     height: 24px;
     padding: 0px;
     margin: 0px;
-    margin-left: -32px;
+    width: 0px;
+/*    margin-left: -32px;*/
 }
 
 tr.choix > th.action > div.palette, tr.choix > td.action > div.palette {
     float: left;
     height: 24px;
-    margin-left: -110px;
+    margin-left: -92px;
+    text-align: right;
 }
 
 td.action > div.removel {
@@ -1040,9 +1040,16 @@ td.laction > div.handle {
     height: 20px;
 }
 
+tr.tranche > .laction > div.palette {
+	width: 54px;
+	text-align:right;
+}
+
 
 th.action, td.action, th.laction, td.laction {
     font-size: 12px;
+    background-color: white;
+    border-width: 0px;
 }
 
 td.nature {

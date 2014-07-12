@@ -36,6 +36,14 @@ $(document).ready(function(){
 	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.ctd, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
 
+	$( "select" ).change(function () {
+                $(this).children("option:selected" ).each(function() {
+                    location.assign("index.php?"
+                        + "&annee_menu=" + $("#choixannee select option:selected").val());
+                });
+        });
+
+
 	/* histogrammes */
 	$('tr.entete > td.laction').each( function() {
 		addHistoGlobal($(this));

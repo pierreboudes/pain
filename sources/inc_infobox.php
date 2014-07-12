@@ -24,7 +24,7 @@ authrequired();
 ?>
 <div class="infobox" id="infobox">
 <p>Bonjour <?php echo $user["prenom"]." ".$user["nom"]; 
-if ($user['su']) { echo '<p style="color:red;font-weight:bold;">Attention vous etes administrateur.'; } ?>
+if ($user['su']) { echo '<p style="color:red;font-weight:bold;">Attention vous êtes administrateur.'; } ?>
 </p>
 <p>En cas de problème d'affichage : recharger la page.</p>
 

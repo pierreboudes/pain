@@ -31,9 +31,11 @@ $(document).ready(function(){
 	$('#skel').fadeOut(0);
 
  	$( "select" ).change(function () {
-                $( "select option:selected" ).each(function() {
-                	$( "form" ).submit();
-                      });
+                $(this).children("option:selected" ).each(function() {
+                    location.assign("service.php?id_enseignant=" 
+			+ $("#choixenseignant select option:selected").val()
+                    	+ "&annee_menu=" + $("#choixannee select option:selected").val());
+                });
 	});
 	
 	/* choix */
@@ -41,5 +43,5 @@ $(document).ready(function(){
 	showPotentiel();
 	showResponsabilite();
 	/* Changer le titre de la page */
-	document.title = $('#choixenseignant option:selected').text() +' Pain';
+	document.title = $('#choixenseignant option:selected').text() + $("#choixannee select option:selected").text() +' Pain';
 });
