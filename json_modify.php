@@ -64,11 +64,11 @@ function json_modify_php($annee, $readtype, $id) {
 	    "id_enseignant", "nom", "numero"
 	    ),
 	"formation" => array(
-	    "id_enseignant", "nom", "annee_etude", "parfum", "numero"
+	    "id_enseignant", "nom", "annee_etude", "parfum", "numero", "code_etape_formation"
 	    ),
 	"cours"=> array(
 	    "semestre", "nom_cours", "credits", "id_enseignant",
-	    "cm", "td", "tp", "alt", "descriptif", "code_geisha", "id_section",
+	    "cm", "td", "tp", "alt", "descriptif", "code_ue", "code_etape_cours", "id_section",
 	    "debut", "fin", "inscrits", "presents", "tirage", "mcc"
 	    ),
 	"tranche"=> array(

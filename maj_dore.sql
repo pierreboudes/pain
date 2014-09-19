@@ -147,3 +147,10 @@ INSERT INTO `sectionscnu` (`id_section`, `intitule_section`) VALUES
 -- pain_tranche.declarer nouveau
 ALTER TABLE  `pain_tranche` ADD  `declarer` text COLLATE utf8_swedish_ci NOT NULL DEFAULT '' AFTER `descriptif`;
 -- Fin rev 742
+
+
+--- commit d6f54f09382063df0df75db3610256b0da1c305d
+ALTER TABLE  `pain_cours` CHANGE  `code_geisha`  `code_ue` VARCHAR( 16 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NULL DEFAULT NULL ;
+ALTER TABLE  `pain_cours` ADD  `code_etape_cours` VARCHAR( 16 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NULL DEFAULT NULL  after `code_ue`;
+ALTER TABLE  `pain_formation` ADD  `code_etape_formation` VARCHAR( 16 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NULL DEFAULT NULL  after `id_formation`;
+--- fin commit d6f54f09382063df0df75db3610256b0da1c305d

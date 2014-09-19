@@ -1,5 +1,5 @@
 <?php /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009-2012 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
+require_once('authentication.php');
 $user = authentication();
 require_once("inc_connect.php");
 require_once("utils.php");
@@ -34,7 +34,7 @@ if ($type == "annee") {
     $annee_cible = $id_cible;
 
     /* verifions toutefois que l'annee est bien vide */
-    $q = "SELECT COUNT(*) AS tot FROM pain_sformation WHERE annee_universitaire = ".$id_cible; 
+    $q = "SELECT COUNT(*) AS tot FROM pain_sformation WHERE annee_universitaire = ".$id_cible;
     if (!($r = $link->query($q))) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
     }
@@ -52,10 +52,10 @@ if ($type == "annee") {
 
 $qmajservices = 'REPLACE INTO pain_service
                  (id_enseignant, annee_universitaire, categorie, service_annuel)
-                 SELECT 
+                 SELECT
                  pain_enseignant.id_enseignant,
                  "'.$annee_cible.'",
-                 pain_enseignant.categorie,  
+                 pain_enseignant.categorie,
                  pain_enseignant.service
                  FROM pain_enseignant
                  WHERE  (pain_enseignant.id_enseignant NOT IN (SELECT pain_service.id_enseignant FROM pain_service WHERE pain_service.annee_universitaire = "'.$annee_cible.'")) AND pain_enseignant.id_enseignant IN ';
@@ -88,16 +88,16 @@ if ($profondeur > 0) {
     if ($type == "sformation") {
 	$id_new = $link->insert_id;
     }
-    $profondeur -= 1;    
+    $profondeur -= 1;
 }
 
 /* formations */
 if ($profondeur > 0) {
 
     if ($type == "annee") {
-	$cond = "annee_universitaire =  ".$annee_cible."  AND 
+	$cond = "annee_universitaire =  ".$annee_cible."  AND
                  pain_formation.id_sformation  = id_sformation_prev ";
-	$cocond = "pain_sformation.annee_universitaire =  ".$annee_cible."  AND 
+	$cocond = "pain_sformation.annee_universitaire =  ".$annee_cible."  AND
                   pain_collection.id_sformation = id_sformation_prev";
     } else if ($type == "sformation") {
 	$cond = "pain_sformation.id_sformation = ".$id_new."
@@ -113,7 +113,7 @@ if ($profondeur > 0) {
     }
 
     /* insertion de la ou des nouvelles formation */
-    $q = 'INSERT INTO pain_formation (id_formation_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant) SELECT pain_formation.id_formation as id_formation_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE '.$cond;
+    $q = 'INSERT INTO pain_formation (id_formation_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant, code_etape_formation) SELECT pain_formation.id_formation as id_formation_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant, pain_formation.code_etape_formation FROM pain_formation, pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
@@ -130,7 +130,7 @@ if ($profondeur > 0) {
 	    errmsg("erreur avec la requete :\n".$q."\n".$link->error);
 	}
     }
-    $profondeur -= 1;    
+    $profondeur -= 1;
 }
 
 /* cours */
@@ -138,16 +138,16 @@ if ($profondeur > 0) {
 
     if ($type == "annee") {
 	$cond = "annee_universitaire = ".$annee_cible."
-                 AND pain_formation.id_sformation = 
-                     pain_sformation.id_sformation 
-                 AND pain_cours.id_formation = 
+                 AND pain_formation.id_sformation =
+                     pain_sformation.id_sformation
+                 AND pain_cours.id_formation =
                      pain_formation.id_formation_prev ";
     } else if ($type == "sformation") {
 	$cond = "pain_formation.id_sformation = ".$id_new."
                  AND pain_sformation.id_sformation =  ".$id_new
 /*la derniere clause juste pour eviter que le resultat soit multipliee
  * par le nb de sformations ! */
-              ." AND pain_cours.id_formation = 
+              ." AND pain_cours.id_formation =
                      pain_formation.id_formation_prev ";
     }
 
@@ -160,30 +160,30 @@ if ($profondeur > 0) {
 
     /* insertion des nouveaux cours */
     $q = 'INSERT INTO pain_cours (id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif,
-code_geisha) SELECT pain_cours.id_cours as id_cours_prev,
+code_ue, code_etape_cours) SELECT pain_cours.id_cours as id_cours_prev,
 pain_formation.id_formation, pain_cours.semestre,
 pain_cours.nom_cours, pain_cours.credits, pain_cours.id_enseignant,
 pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt,
-pain_cours.descriptif, pain_cours.code_geisha FROM pain_cours,
+pain_cours.descriptif, pain_cours.code_ue, pain_cours.code_etape_cours FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
-    }    
+    }
     /* insertion des associations tagscours */
     $q = 'INSERT IGNORE INTO pain_tagscours (id_tag, id_cours) SELECT pain_tagscours.id_tag, pain_cours.id_cours FROM pain_tagscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_tagscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.")";
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
-    }    
+    }
 
 /* insertion des associations collectionscours */
     $q = 'INSERT IGNORE INTO pain_collectionscours (id_collection, id_cours) SELECT pain_collection.id_collection, pain_cours.id_cours FROM pain_collection, pain_collectionscours, pain_cours, pain_formation, pain_sformation WHERE pain_cours.modification > (NOW() - INTERVAL 90 SECOND) AND pain_cours.id_cours_prev = pain_collectionscours.id_cours AND pain_formation.id_formation = pain_cours.id_formation AND pain_sformation.id_sformation = pain_formation.id_sformation AND pain_sformation.annee_universitaire = '.$annee_cible.' AND pain_cours.id_cours_prev IN (SELECT pain_cours.id_cours FROM pain_cours, pain_formation, pain_sformation WHERE '.$cond.') AND pain_collection.id_collection_prev = pain_collectionscours.id_collection AND pain_collection.annee_universitaire = '.$annee_cible;
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
-    }    
-    $profondeur -= 1;    
+    }
+    $profondeur -= 1;
 }
 
 
@@ -192,20 +192,20 @@ if (1 == $profondeur) {
 
  if ($type == "annee") {
 	$cond = "annee_universitaire = ".$annee_cible."
-                 AND pain_formation.id_sformation = 
-                     pain_sformation.id_sformation 
-                 AND pain_cours.id_formation = 
-                     pain_formation.id_formation 
-                 AND pain_tranche.id_cours = 
+                 AND pain_formation.id_sformation =
+                     pain_sformation.id_sformation
+                 AND pain_cours.id_formation =
+                     pain_formation.id_formation
+                 AND pain_tranche.id_cours =
                      pain_cours.id_cours_prev ";
     } else if ($type == "sformation") {
 	$cond = "pain_formation.id_sformation = ".$id_new."
                  AND pain_sformation.id_sformation =  ".$id_new
 /*la derniere clause juste pour eviter que le resultat soit multipliee
  * par le nb de sformations ! */
-              ." AND pain_cours.id_formation = 
-                     pain_formation.id_formation 
-                 AND pain_tranche.id_cours = 
+              ." AND pain_cours.id_formation =
+                     pain_formation.id_formation
+                 AND pain_tranche.id_cours =
                      pain_cours.id_cours_prev ";
     }
 
@@ -213,14 +213,14 @@ if (1 == $profondeur) {
 
 
     /* insertion de nouvelles tranches anonymes */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT 
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT
 pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
-    }    
+    }
 }
 
 /* tranches avec noms des intervenants */
@@ -228,20 +228,20 @@ if ($profondeur == 2) {
 
  if ($type == "annee") {
 	$cond = "annee_universitaire = ".$annee_cible."
-                 AND pain_formation.id_sformation = 
-                     pain_sformation.id_sformation 
-                 AND pain_cours.id_formation = 
-                     pain_formation.id_formation 
-                 AND pain_tranche.id_cours = 
+                 AND pain_formation.id_sformation =
+                     pain_sformation.id_sformation
+                 AND pain_cours.id_formation =
+                     pain_formation.id_formation
+                 AND pain_tranche.id_cours =
                      pain_cours.id_cours_prev ";
     } else if ($type == "sformation") {
 	$cond = "pain_formation.id_sformation = ".$id_new."
                  AND pain_sformation.id_sformation =  ".$id_new
 /*la derniere clause juste pour eviter que le resultat soit multipliee
  * par le nb de sformations ! */
-              ." AND pain_cours.id_formation = 
-                     pain_formation.id_formation 
-                 AND pain_tranche.id_cours = 
+              ." AND pain_cours.id_formation =
+                     pain_formation.id_formation
+                 AND pain_tranche.id_cours =
                      pain_cours.id_cours_prev ";
     }
 
@@ -253,15 +253,15 @@ if ($profondeur == 2) {
     }
 
     /* insertion de nouvelles tranches */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT 
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT
 pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
     if (!$link->query($q)) {
 	errmsg("erreur avec la requete :\n".$q."\n".$link->error);
-    }    
-    $profondeur -= 1;    
+    }
+    $profondeur -= 1;
 }
 }
 
@@ -274,17 +274,17 @@ if (isset($_GET["type"])) {
 if (isset($_GET["id"])) {
     $id = getnumeric("id");
 } else {
-    errmsg('erreur du script (id source manquant).');    
+    errmsg('erreur du script (id source manquant).');
 }
 if (isset($_GET["id_cible"])) {
     $id_cible = getnumeric("id_cible");
 } else {
-    errmsg('erreur du script (id_cible manquant).');    
+    errmsg('erreur du script (id_cible manquant).');
 }
 if (isset($_GET["profondeur"])) {
     $profondeur = getnumeric("profondeur");
 } else {
-    errmsg('erreur du script (profondeur de copie manquante).');    
+    errmsg('erreur du script (profondeur de copie manquante).');
 }
 json_copy($type, $id, $id_cible, $profondeur);
 

@@ -872,9 +872,9 @@ section.prototype = new cell();
 
 
 
-/* constructeur du composite codeue (geisha) */
-function code_geisha () {
-    this.name = "code_geisha";
+/* constructeur du composite codeue (ex geisha) */
+function code_ue () {
+    this.name = "code_ue";
     this.mutable = true;
     this.edit = function (c) {
 	/* sauvegarder l'id actuel */
@@ -923,14 +923,97 @@ function code_geisha () {
     };
     this.getval = function (c,o) {
 	var catid = c.find('.hiddenvalue').text();
-	o["code_geisha"] = catid;
+	o["code_ue"] = catid;
     }
     this.setval = function (c,o) {
-	c.html(o["code_geisha"]+'<span class="hiddenvalue">'+o["code_geisha"]+'</span>');
+	c.html(o["code_ue"]+'<span class="hiddenvalue">'+o["code_ue"]+'</span>');
     }
 }
-code_geisha.prototype = new cell();
+code_ue.prototype = new cell();
 
+
+
+
+/* constructeur du composite code_etape (pour code_etape_cours et code_etape_formation) */
+function code_etape () {
+    this.name = "code_etape";
+    this.mutable = true;
+    this.edit = function (c) {
+	/* sauvegarder l'id actuel */
+	var catid = c.find('.hiddenvalue').text();
+	// TODO refaire avec value au lien de span hidden
+	c.remove('.hiddenvalue');
+	/* installer la zone d'input */
+	c.html('<input type="text" value="'+catid+'"/><span class="hiddenvalue">'+catid+'</span>');
+	/* charger une seule fois la liste des codes TODO */
+	/* mettre en place l'autocomplete */
+	var cat = c.find("input");
+	cat.autocomplete({ minLength: 3,
+			   source: function( request, response ) {
+			       $.ajax({
+				   url: "/commun/minoterie/json_codesetape.php",
+				   dataType: "json",
+				   data: {
+				       term: request.term
+				   },
+				   success: function( data ) {
+				       response(data);
+				   }
+			       });
+			   },
+			   select: function(e, ui) {
+			       if (!ui.item) {
+				   c.find('.hiddenvalue').html($(this).val());
+				   return false;
+			       }
+			       $(this).focus();
+			       cat.val(ui.item.label);
+			       c.find('.hiddenvalue').html(ui.item.id);
+			   },
+			   change: function (e, ui) {
+			       if (!ui.item) {
+				   c.find('.hiddenvalue').html($(this).val());
+			       }
+			   }
+			 });
+	c.addClass("edit");
+	c.find('input').focus();
+    };
+    this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["code_etape"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["code_etape"]+'<span class="hiddenvalue">'+o["code_etape"]+'</span>');
+    }
+}
+
+code_etape.prototype = new cell();
+
+function code_etape_formation() {
+  this.name = "code_etape_formation";
+  this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["code_etape_formation"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["code_etape_formation"]+'<span class="hiddenvalue">'+o["code_etape_formation"]+'</span>');
+    }
+}
+code_etape_formation.prototype = new code_etape();
+
+
+function code_etape_cours() {
+  this.name = "code_etape_cours";
+  this.getval = function (c,o) {
+	var catid = c.find('.hiddenvalue').text();
+	o["code_etape_cours"] = catid;
+    }
+    this.setval = function (c,o) {
+	c.html(o["code_etape_cours"]+'<span class="hiddenvalue">'+o["code_etape_cours"]+'</span>');
+    }
+}
+code_etape_cours.prototype = new code_etape();
 
 function service_reel ()
 {
@@ -1216,8 +1299,12 @@ function ligne() {
     /* descriptif */
     this.descriptif = new richcell();
     this.descriptif.name = "descriptif";
-    /* code_geisha */
-    this.code_geisha = new code_geisha();
+    /* code_ue */
+    this.code_ue = new code_ue();
+    /* code_etape_formation */
+    this.code_etape_formation = new code_etape_formation();
+    /* code_etape_cours */
+    this.code_etape_cours = new code_etape_cours();
     /* action */
     this.action = new notcell();
     this.action.setval = function(c,o) {

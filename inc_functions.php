@@ -668,7 +668,9 @@ pain_formation.annee_etude AS annee_etude,
 pain_formation.parfum AS parfum,
 pain_cours.semestre,
 pain_cours.nom_cours,
-pain_cours.code_geisha,
+pain_cours.code_ue,
+pain_cours.code_etape_cours,
+pain_formation.code_etape_formation,
 pain_cours.id_section,
 pain_cours.id_section as section,
 pain_cours.id_cours AS id_cours,
@@ -712,7 +714,9 @@ pain_formation.annee_etude,
 pain_formation.parfum,
 pain_cours.semestre,
 pain_cours.nom_cours,
-pain_cours.code_geisha,
+pain_cours.code_ue,
+pain_cours.code_etape_cours,
+pain_formation.code_etape_formation,
 pain_cours.id_cours AS id_cours,
 pain_tranche.groupe,
 pain_tranche.cm,
@@ -736,8 +740,10 @@ ORDER by alt ASC, pain_cours.semestre ASC, pain_formation.numero ASC, pain_cours
 }
 
 function ig_legendeintervention() {
+    /* TODO : ce code devrait venir d'un squelette */
     echo '<th class="formation">formation</th>';
-    echo '<th class="code_geisha">code UE</th>';
+    echo '<th class="code_ue">code UE</th>';
+    echo '<th class="code_etape">code étape</th>';
     echo '<th class="nom_cours">intitulé</th>';
     echo '<th class="semestre">Période</th>';
     echo '<th class="CM">CM</th>';
@@ -750,14 +756,18 @@ function ig_legendeintervention() {
 }
 
 function ig_intervention($i) {
+    /* TODO : ce code devrait venir d'un javascript */
     $id = $i["id_tranche"];
     echo '<td class="formation">';
     debug_show_id($id);
     echo $i["nom"]." ".$i["annee_etude"]." ";
     echo $i["parfum"];
     echo '</td>';
-    echo '<td class="code_geisha">';
-    echo $i["code_geisha"];
+    echo '<td class="code_ue">';
+    echo $i["code_ue"];
+    echo '</td>';
+    echo '<td class="code_etape">';
+    echo ($i["code_etape_cours"]==NULL)?($i["code_etape_formation"]):($i["code_etape_cours"]);
     echo '</td>';
     echo '<td class="nom_cours">';
     echo $i["nom_cours"];

@@ -1,5 +1,5 @@
 <?php /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009-2012 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
@@ -19,14 +19,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
+require_once('authentication.php');
 $user = authentication();
 require_once("inc_connect.php");
 require_once("utils.php");
 require_once("inc_functions.php");
 
 
-/** réalise l'insertion d'un nouvel élément fourni par le contexte HTTP/GET 
+/** réalise l'insertion d'un nouvel élément fourni par le contexte HTTP/GET
     et renvoie son id.
  */
 function json_new_php($annee) {
@@ -37,11 +37,11 @@ $champs = array(
 	"id_enseignant", "nom", "numero"
 	),
     "formation" => array(
-	"id_enseignant", "nom", "annee_etude", "parfum", "numero"
+        "id_enseignant", "nom", "annee_etude", "parfum", "numero", "code_etape_formation"
 	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_geisha"
+	"cm", "td", "tp", "alt", "descriptif", "code_ue", "code_etape_cours"
 	/* modification */
 	),
     "tranche"=> array(
@@ -75,13 +75,13 @@ $champs = array(
 
 if (isset($_GET["type"])) {
     $readtype = getclean("type");
-    if ($readtype == "sformation") {	
+    if ($readtype == "sformation") {
 	$type = "sformation";
 	$par = "annee_universitaire";
-    } else if ($readtype == "formation") {	
+    } else if ($readtype == "formation") {
 	$type = "formation";
 	$par = "id_sformation";
-    } else if ($readtype == "cours") {	
+    } else if ($readtype == "cours") {
 	$type = "cours";
 	$par = "id_formation";
 	$ntype = 1;
@@ -138,10 +138,10 @@ if (isset($_GET["id_parent"])) {
 	    $set["categorie"] = $id_parent;
 	    $set["debut"] = date('Y-m-d');
 	} else {
-	    $set[$par] = $id_parent; 
+	    $set[$par] = $id_parent;
 	}
     }
-    
+
     if (!isset($_GET["nom_cours"])) {
 	$_GET["nom_cours"] = 'Nom du cours ?';
     }
@@ -165,17 +165,17 @@ if (isset($_GET["id_parent"])) {
     }
 
     /* Champs particuliers a controler */
-    if (($type != "enseignant") 
+    if (($type != "enseignant")
 	&& ($type != "tag")
 	&& ($type != "tagscours")
-	&& ($type != "collection") 
-	&& ($type != "collectionscours") 
+	&& ($type != "collection")
+	&& ($type != "collectionscours")
 	&& !isset($set["id_enseignant"])) {
 	$set["id_enseignant"] = $user["id_enseignant"];
     }
 
     if ( ("formation" == $type) || ("sformation" == $type)) {
-	$sq = "SELECT MAX(numero) + 1 as num 
+	$sq = "SELECT MAX(numero) + 1 as num
                FROM pain_$type WHERE $par = $id_parent";
 	if (!($sr = $link->query($sq))) {
 	    errmsg("erreur avec la requete :\n".$sq."\n".$link->error);
@@ -197,7 +197,7 @@ if (isset($_GET["id_parent"])) {
 
     if ($type == "service") {
 	if (isset($_GET["annee"])) {
-	    $an = $_GET["annee"];	    
+	    $an = $_GET["annee"];
 	} else {
 	    $an = annee_courante();
 	}
@@ -252,7 +252,7 @@ if (isset($_GET["id_parent"])) {
 	    "WHERE pain_enseignant.id_enseignant < 10";
 	if (!$link->query($query)) {
 	    errmsg("erreur avec la requete :\n".$query."\n".$link->error);
-	} 
+	}
     }
 
     return $id;
