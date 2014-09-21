@@ -471,6 +471,9 @@ function intitule() {
 	if (o["annee_etude"] != null) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);
+	if (o["code_etape_formation"] != null) {
+          c.append('<div class="sub"> Étape : '+o["code_etape_formation"]+'</div>');
+        }
     }
 }
 intitule.prototype = new immutcell();

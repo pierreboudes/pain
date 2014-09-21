@@ -371,7 +371,7 @@ td.nopadding {
    width: 80px;
 }
 
-.code_geisha {
+.code_ue, .code_etape_formation, .code_etape_cours, .code_etape {
     width:70px;
 }
 
@@ -425,7 +425,7 @@ td.declarer {
 
 /**** FIN DIMENSIONS ****/
 
-.semestre, .credits, .cm, .td, .tp, .alt, .code_geisha, .action, .groupe, .htd, .choix_htd, .tranche_htd {
+.semestre, .credits, .cm, .td, .tp, .alt, .code_ue, .code_etape_formation, .code_etape_cours, .code_etape, .action, .groupe, .htd, .choix_htd, .tranche_htd {
     text-align: center;
 }
 
@@ -1222,5 +1222,8 @@ width:400px;
     margin-bottom: 5px;
     list-style: none;
 }
-table.annuaire div.formation {
-};
+
+div.sub {
+   font-size: 0.81em;
+   color: grey;
+}
