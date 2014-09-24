@@ -1,5 +1,5 @@
 <?php /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009-2012 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('CAS.php');
+require_once('../../CAS.php');
 // error_reporting(E_ALL & ~E_NOTICE);
 phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
 // phpCAS::setDebug();
@@ -44,11 +44,11 @@ function default_year() {
     $q = "SELECT coalesce($an - min($an - annee_universitaire), $an) as annee FROM pain_sformation";
     $r = $link->query($q);
     $res = $r->fetch_array();
-    return $res["annee"];    
+    return $res["annee"];
 }
 
 function get_and_set_annee_menu() {
-    $annee = getnumeric("annee_menu"); /* annee fixee par le menu en POST */    
+    $annee = getnumeric("annee_menu"); /* annee fixee par le menu en POST */
     if (NULL != $annee) {
 	set_year($annee); /* change le cookie */
 	return $annee;
@@ -74,14 +74,14 @@ function annee_courante() {
 function pain_getuser() {
     global $link;
     $login = phpCAS::getUser();
-    $query = "SELECT id_enseignant, prenom, nom, login, su, stats 
-                 FROM pain_enseignant 
+    $query = "SELECT id_enseignant, prenom, nom, login, su, stats
+                 FROM pain_enseignant
                  WHERE login LIKE '$login' LIMIT 1";
     $result = $link->query($query);
     if ($user = $result->fetch_array()) {
 	if ( (1 == $user["su"]) && isset($_COOKIE['painFakeId']) ){
-	    $query = "SELECT id_enseignant 
-                          FROM pain_enseignant 
+	    $query = "SELECT id_enseignant
+                          FROM pain_enseignant
                           WHERE id_enseignant = ".$user["id"]." LIMIT 1";
 	    $result =$link->query($query);
 	    if ($result->fetch_array()) {
