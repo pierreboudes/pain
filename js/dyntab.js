@@ -2394,15 +2394,15 @@ function reloadChoix(panier,id, annee, type) {
 		   addMenuFields(legende);
 		   var line = legende.clone().attr('id','sum'+type);
 		   line.children('th').html('');
-		   line.children('th.nom_cours').addClass('label').html('total');
+		   line.children('th.nom_cours').addClass('etiquette').html('total');
 		   $('#table'+type+' > tbody').append(line);
 		   line = legende.clone().attr('id','s1sum'+type);
 		   line.children('th').html('');
-		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
+		   line.children('th.nom_cours').addClass('etiquette').html('semestre&nbsp;1');
 		   $('#table'+type+' > tbody').append(line);
 		   line = legende.clone().attr('id','s2sum'+type);
 		   line.children('th').html('');
-		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
+		   line.children('th.nom_cours').addClass('etiquette').html('semestre&nbsp;2');
 		   $('#table'+type+' > tbody').append(line);
 		   recalculatePanier(type);
 		   if (type == "potentiel") {

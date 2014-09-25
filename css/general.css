@@ -432,7 +432,7 @@ td.declarer {
 th.titre {
     text-align: left;
 }
-th.label {
+th.etiquette {
     text-align: right;
 }
 
@@ -1131,6 +1131,15 @@ padding: 0;
 border: 0;
 text-decoration: none !important;
 }
+
+.button-enlever_collection, .button-enlever_tag {
+    display: none;
+    margin-left: -10px;
+}
+.tag:hover > .button-enlever_tag, .collection:hover > .button-enlever_collection {
+    display: inline-block;
+}
+
 .button-ajouter_tag, .button-envoyer_tag,
 .button-ajouter_collection, .button-envoyer_collection, {
 margin-right: -4px;
