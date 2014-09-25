@@ -1,5 +1,5 @@
 <?php /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009-2012 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
@@ -23,9 +23,9 @@ require_once('inc_connect.php');
 function ig_formselectannee($annee)
 {
     global $link;
-    $qans = "SELECT DISTINCT `annee_universitaire` 
+    $qans = "SELECT DISTINCT `annee_universitaire`
              FROM pain_sformation WHERE 1 ORDER BY `annee_universitaire` ASC";
-    $rans = $link->query($qans) 
+    $rans = $link->query($qans)
 	  or die("Échec de la requête sur la table sformation");
     while ($an =$rans->fetch_array()) {
 	echo '<option ';
@@ -38,6 +38,9 @@ function ig_formselectannee($annee)
     }
 }
 ?>
+<div style="position: absolute;">
+<a href="/"><img src="../../img/windmill.png" alt="logo"/></a>
+</div>
 <ul id="menu">
       <li><a href="./">accueil</a></li>
       <li><a href="service.php">service</a></li>

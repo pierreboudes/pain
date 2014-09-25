@@ -36,10 +36,10 @@ function entete() {
 <title>Pain -- $titre</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='stylesheet' media='all' href='css/general.css' type='text/css' />
-<link type="text/css" href="css/selected-theme/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-<script type="text/javascript" src="js/jquery.ui.datepicker-fr.js"></script>
+<link type="text/css" href="/jquery-ui-1.11.1.custom/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery-migrate-1.2.1.js"></script> <!-- todo remove me -->
+<script type="text/javascript" src="/jquery-ui-1.11.1.custom/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/dyntab.js?$git_head"></script>
 <script type="text/javascript" src="js/pain.js?$git_head"></script>
 EOD;
@@ -76,21 +76,9 @@ EOD;
 EOD;
 }
 
-function ig_versionsvn() {
-    $xmlstr = `svn log -r BASE --xml`;
-    $xml = new SimpleXMLElement($xmlstr);
-    echo "<pre>";
-    echo "Dernière révision: ".$xml->logentry[0]['revision']."\n";
-    echo "Par: ".$xml->logentry[0]->author."\n";
-    $date = explode('T', $xml->logentry[0]->date);
-    echo "Date: ".($date[0])."\n";
-    echo "Message: ".$xml->logentry[0]->msg."\n";
-    echo "</pre>";
-}
 
 function piedpage() {
-//    ig_versionsvn(); trop lent.
-    ig_statsmysql();
+//    ig_statsmysql();
     echo <<<EOD
 </body>
 </html>

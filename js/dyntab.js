@@ -2957,7 +2957,7 @@ $(document).ready(function () {
     $("div.infobox a").click(function(){window.open(this.href);return false;});
 
     /* les événements du clavier */
-    $('#vuecourante, #vueadmin').live('keydown', function(e) {
+    $(document).on('keydown', '#vuecourante, #vueadmin', function(e) {
 	var keyCode = e.keyCode || e.which;
 	if (keyCode == 9) { /* [tab] key */
 	    e.preventDefault();
