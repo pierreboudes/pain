@@ -5,7 +5,7 @@ INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, n
 -- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2010"
 
 -- formation:
-INSERT INTO pain_formation 
+INSERT INTO pain_formation
 (id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
  SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2010";
 
@@ -39,7 +39,7 @@ INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, n
 -- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2002"
 
 -- formation:
-INSERT INTO pain_formation 
+INSERT INTO pain_formation
 (id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
  SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2002";
 
@@ -75,7 +75,7 @@ INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, n
 -- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2003"
 
 -- formation:
-INSERT INTO pain_formation 
+INSERT INTO pain_formation
 (id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
  SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2003";
 
@@ -113,14 +113,14 @@ CREATE TABLE `pain_service` (
   PRIMARY KEY (`id_enseignant`,`annee_universitaire`)
 );
 
--- mise Å√Å† jour de pain_service (pour 2010)
+-- mise a jour de pain_service (pour 2010)
 DELETE FROM pain_service WHERE annee_universitaire = 2010;
-REPLACE INTO pain_service 
+REPLACE INTO pain_service
   (id_enseignant, annee_universitaire, categorie, service_annuel, tmpnom)
-SELECT 
+SELECT
   pain_enseignant.id_enseignant,
   "2010",
-  pain_enseignant.categorie,  
+  pain_enseignant.categorie,
   pain_enseignant.service,
   CONCAT(nom," ",prenom)
 FROM pain_enseignant
@@ -140,7 +140,7 @@ ADD  `tirage` SMALLINT UNSIGNED NULL AFTER  `presents`
 SELECT  nom, annee_etude, nom_cours, (pain_cours.cm+pain_cours.td+pain_cours.tp+pain_cours.alt)*presents AS vetu,
 SUM(pain_tranche.htd) AS vens,
 vetu / vens
-FROM pain_formation, pain_cours, pain_tranche 
+FROM pain_formation, pain_cours, pain_tranche
 WHERE presents > 0
 AND pain_formation.id_formation = pain_cours.id_formation
 AND pain_tranche.id_cours = pain_cours.id_cours
@@ -154,7 +154,7 @@ INSERT INTO pain_sformation (id_prev, annee_universitaire, id_enseignant, nom, n
 -- REVERT : DELETE FROM `pain_sformation` WHERE annee_universitaire = "2010"
 
 -- formation:
-INSERT INTO pain_formation 
+INSERT INTO pain_formation
 (id_prev, id_sformation, numero, nom, annee_etude, parfum, id_enseignant)
  SELECT pain_formation.id_formation as id_prev, pain_sformation.id_sformation as id_sformation, pain_formation.numero, pain_formation.nom, pain_formation.annee_etude, pain_formation.parfum, pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.id_prev = pain_formation.id_sformation AND pain_sformation.annee_universitaire = "2006";
 
@@ -167,18 +167,18 @@ UPDATE pain_service SET tmpnom =(SELECT CONCAT(nom,' ', prenom) FROM pain_enseig
 
 ---Selection des responsables (supprimer manuellement les responsables hors departement)
 SELECT DISTINCT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE id_enseignant IN (
-SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010 
-UNION 
-SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation 
-UNION 
+SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2010
+UNION
+SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2010 AND pain_formation.id_sformation = pain_sformation.id_sformation
+UNION
 SELECT pain_tranche.id_enseignant FROM pain_tranche, pain_cours WHERE id_formation = 48 AND pain_tranche.id_cours = pain_cours.id_cours
  ORDER BY id_enseignant ASC)
 
----Selection des membres 
+---Selection des membres
 SELECT CONCAT(prenom, " ",nom," <",email,">") FROM pain_enseignant WHERE categorie = 2 OR categorie = 3
 
 
----Listes 
+---Listes
 CREATE TABLE `pain_listes` (
 `liste` VARCHAR( 60 ) NOT NULL ,
 `id_enseignant` MEDIUMINT NOT NULL ,
@@ -193,46 +193,46 @@ ALTER TABLE  `pain_listes` ADD INDEX (  `email` );
 
 --liste responsables (supprimer manuellement les responsables hors departement)
 DELETE FROM pain_listes WHERE liste = "responsables";
-INSERT INTO pain_listes SELECT "responsables", id_enseignant, email, CONCAT(prenom, " ",nom), NOW() 
+INSERT INTO pain_listes SELECT "responsables", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE email IS NOT NULL AND id_enseignant IN (
-SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2011 
+SELECT id_enseignant FROM pain_sformation WHERE annee_universitaire = 2011
 UNION
-SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2011 AND pain_formation.id_sformation = pain_sformation.id_sformation 
+SELECT pain_formation.id_enseignant FROM pain_formation, pain_sformation WHERE pain_sformation.annee_universitaire = 2011 AND pain_formation.id_sformation = pain_sformation.id_sformation
  ORDER BY id_enseignant ASC);
 SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "responsables";
 --Maj droits
 UPDATE pain_enseignant SET stats = 0 WHERE 1;
 UPDATE pain_enseignant, pain_listes SET stats = 1 WHERE pain_enseignant.id_enseignant = pain_listes.id_enseignant AND pain_listes.liste LIKE "responsables"
 
---liste membres 
+--liste membres
 INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
 
 --- maj de la liste membre :
---- 1) lister les membres a†desabonner
---- 2) lister les membres a† abonner
+--- 1) lister les membres a desabonner
+--- 2) lister les membres a abonner
 --- 3) lister les membres ayant change d'adresse
 --- 4) mettre a jour la table pain_listes
 
 --- 1) liste des membres a sortir de la liste :
-SELECT id_enseignant, tmpnom, email FROM `pain_listes` WHERE liste = "membres" 
-AND NOT EXISTS 
+SELECT id_enseignant, tmpnom, email FROM `pain_listes` WHERE liste = "membres"
+AND NOT EXISTS
 (SELECT pain_enseignant.id_enseignant FROM pain_enseignant WHERE (categorie = 3 OR categorie = 2) AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
 ----- mis en forme :
-SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres" 
-AND NOT EXISTS 
+SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres"
+AND NOT EXISTS
 (SELECT pain_enseignant.id_enseignant FROM pain_enseignant WHERE (categorie = 3 OR categorie = 2) AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
 
 --- 2) liste des membres a abonner
 SELECT id_enseignant, CONCAT(prenom," ", nom), email FROM `pain_enseignant` WHERE (categorie = 3 OR categorie = 2)
-AND NOT EXISTS 
+AND NOT EXISTS
 (SELECT pain_listes.id_enseignant FROM pain_listes WHERE liste = "membres" AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
 ----- mise en forme :
 SELECT CONCAT(prenom," ", nom, " <", email,">") FROM `pain_enseignant` WHERE (categorie = 3 OR categorie = 2)
-AND NOT EXISTS 
+AND NOT EXISTS
 (SELECT pain_listes.id_enseignant FROM pain_listes WHERE liste = "membres" AND pain_enseignant.id_enseignant = pain_listes.id_enseignant);
 --- 3) liste des membres dont l'adresse doit etre changee
-SELECT pain_listes.id_enseignant, tmpnom, pain_listes.email, pain_enseignant.email FROM pain_listes, pain_enseignant 
+SELECT pain_listes.id_enseignant, tmpnom, pain_listes.email, pain_enseignant.email FROM pain_listes, pain_enseignant
 WHERE liste = "membres"
 AND pain_listes.id_enseignant = pain_enseignant.id_enseignant
 AND pain_listes.email <> pain_enseignant.email;
@@ -241,7 +241,7 @@ DELETE FROM pain_listes WHERE liste = "membres";
 INSERT INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3)
 
-/* seulement ajouter les nouveaux et mettre Å‡ jour les mails (pas de sortie des anciens pour le moment) */
+/* seulement ajouter les nouveaux et mettre ‚âí jour les mails (pas de sortie des anciens pour le moment) */
 REPLACE INTO pain_listes SELECT "membres", id_enseignant, email, CONCAT(prenom, " ",nom), NOW()
 FROM pain_enseignant WHERE  email IS NOT NULL AND (categorie = 2 OR categorie = 3);
 SELECT CONCAT(tmpnom, " <",email,">") FROM `pain_listes` WHERE liste = "membres";
@@ -255,7 +255,7 @@ UPDATE pain_enseignant, pseudos SET login=CONCAT(pseudo_prenom,'.',pseudo_nom) W
 ------ stats liste des responsabilites
 
 
-(select 
+(select
 concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', annee_etude) as resp_nom,
 concat('c', id_cours) as id_responsabilite,
 1 as resp_type_num,
@@ -264,23 +264,166 @@ where pain_cours.id_enseignant = 10
 and pain_cours.id_formation = pain_formation.id_formation
 and pain_formation.id_sformation = pain_sformation.id_sformation
 and pain_sformation.annee_universitaire = 2009
-) 
+)
 union
-(select 
-concat('annÅÈe de formation: ', pain_formation.nom, ' ', annee_etude) as resp_nom,
+(select
+concat('annee de formation: ', pain_formation.nom, ' ', annee_etude) as resp_nom,
 concat('f', id_formation) as id_responsabilite,
 2 as resp_type_num
 from pain_formation, pain_sformation
 where pain_formation.id_enseignant = 10
 and pain_formation.id_sformation = pain_sformation.id_sformation
 and pain_sformation.annee_universitaire = 2009
-)  
+)
 union
-(select 
+(select
 concat('formation: ', pain_sformation.nom) as resp_nom,
 concat('s', id_sformation) as id_responsabilite,
 3 as resp_type_num
 from pain_sformation
 where pain_sformation.id_enseignant = 10
 and pain_sformation.annee_universitaire = 2009
-) 
+)
+
+
+
+--- Tous les cours avec de vrais intervenants mais sans code_ue
+--- valide, en 2014, en informatique.
+SELECT sf.nom, informatique.pain_formation.nom, informatique.pain_formation.annee_etude, informatique.pain_formation.parfum, informatique.pain_cours.nom_cours, informatique.pain_cours.descriptif
+FROM
+((((SELECT * FROM informatique.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (informatique.pain_formation) USING (id_sformation))
+JOIN (informatique.pain_cours) USING (id_formation))
+NATURAL JOIN (select id_cours from informatique.pain_tranche where id_enseignant > 9  group by id_cours) as tr)
+LEFT JOIN commun.codesue USING (code_ue)
+WHERE commun.codesue.intitule_cours IS NULL
+
+
+
+SELECT sf.nom, physique.pain_formation.nom, physique.pain_formation.annee_etude, physique.pain_formation.parfum, physique.pain_cours.nom_cours, physique.pain_cours.descriptif
+FROM
+((((SELECT * FROM physique.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (physique.pain_formation) USING (id_sformation))
+JOIN (physique.pain_cours) USING (id_formation))
+NATURAL JOIN (select id_cours from physique.pain_tranche where id_enseignant > 9  group by id_cours) as tr)
+LEFT JOIN commun.codesue USING (code_ue)
+WHERE commun.codesue.intitule_cours IS NULL
+
+
+SELECT sf.nom, mathematiques.pain_formation.nom, mathematiques.pain_formation.annee_etude, mathematiques.pain_formation.parfum, mathematiques.pain_cours.nom_cours, mathematiques.pain_cours.descriptif
+FROM
+((((SELECT * FROM mathematiques.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (mathematiques.pain_formation) USING (id_sformation))
+JOIN (mathematiques.pain_cours) USING (id_formation))
+NATURAL JOIN (select id_cours from mathematiques.pain_tranche where id_enseignant > 9  group by id_cours) as tr)
+LEFT JOIN commun.codesue USING (code_ue)
+WHERE commun.codesue.intitule_cours IS NULL
+
+
+
+https://servens-galilee.univ-paris13.fr/p-m-aaa/sql.php?db=commun&table=codesue&printview=1&sql_query=SELECT+sf.nom%2C+mathematiques.pain_formation.nom%2C+mathematiques.pain_formation.annee_etude%2C+mathematiques.pain_formation.parfum%2C+mathematiques.pain_cours.nom_cours%2C+mathematiques.pain_cours.descriptif%0D%0AFROM%0D%0A%28%28%28%28SELECT+%2A+FROM+mathematiques.pain_sformation+WHERE+annee_universitaire+%3D+2014%29+as+sf%0D%0AJOIN+%28mathematiques.pain_formation%29+USING+%28id_sformation%29%29%0D%0AJOIN+%28mathematiques.pain_cours%29+USING+%28id_formation%29%29%0D%0ANATURAL+JOIN+%28select+id_cours+from+mathematiques.pain_tranche+where+id_enseignant+%3E+9++group+by+id_cours%29+as+tr%29%0D%0ALEFT+JOIN+commun.codesue+USING+%28code_ue%29%0D%0AWHERE+commun.codesue.intitule_cours+IS+NULL%0D%0A&token=bfd1074f338c4cb8b2765c18f1880b03
+
+
+
+
+
+---- Grosse jointure pour ensuite calculer les totaux
+SELECT *
+FROM
+((
+SELECT sf.nom as nom_sformation,
+sf.id_sformation as id_sformation,
+mathematiques.pain_formation.code_etape_formation as code_etape_formation,
+mathematiques.pain_formation.nom as nom_formation,
+mathematiques.pain_formation.annee_etude as annee_etude,
+mathematiques.pain_formation.parfum as parfum,
+mathematiques.pain_formation.id_formation as id_formation,
+mathematiques.pain_cours.nom_cours as nom_cours,
+mathematiques.pain_cours.id_cours as id_cours,
+mathematiques.pain_cours.id_enseignant as id_enseignant_cours,
+mathematiques.pain_tranche.id_enseignant as id_enseignant,
+mathematiques.pain_tranche.htd as htd
+FROM
+((((SELECT * FROM mathematiques.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (mathematiques.pain_formation) USING (id_sformation))
+JOIN (mathematiques.pain_cours) USING (id_formation))
+JOIN (mathematiques.pain_tranche) USING (id_cours))
+WHERE 1
+) as c
+JOIN
+(SELECT id_enseignant, categorie as id_categorie
+FROM mathematiques.pain_service
+WHERE annee_universitaire = 2014
+) as s
+USING (id_enseignant))
+JOIN pain_categorie USING (id_categorie)
+WHERE 1
+
+
+
+--- Traiter en SQL le cas particulier de l'enseignant de cours annul√©
+SELECT *
+FROM
+((
+SELECT sf.nom as nom_sformation,
+sf.id_sformation as id_sformation,
+mathematiques.pain_formation.code_etape_formation as code_etape_formation,
+mathematiques.pain_formation.nom as nom_formation,
+mathematiques.pain_formation.annee_etude as annee_etude,
+mathematiques.pain_formation.parfum as parfum,
+mathematiques.pain_formation.id_formation as id_formation,
+mathematiques.pain_cours.nom_cours as nom_cours,
+mathematiques.pain_cours.id_cours as id_cours,
+mathematiques.pain_cours.id_enseignant as id_enseignant_cours,
+IF (mathematiques.pain_cours.id_enseignant = 1, 1, mathematiques.pain_tranche.id_enseignant) as id_enseignant,
+mathematiques.pain_tranche.htd as htd
+FROM
+((((SELECT * FROM mathematiques.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (mathematiques.pain_formation) USING (id_sformation))
+JOIN (mathematiques.pain_cours) USING (id_formation))
+JOIN (mathematiques.pain_tranche) USING (id_cours))
+WHERE 1
+) as c
+JOIN
+(SELECT id_enseignant, categorie as id_categorie
+FROM mathematiques.pain_service
+WHERE annee_universitaire = 2014
+) as s
+USING (id_enseignant))
+JOIN pain_categorie USING (id_categorie)
+WHERE 1
+
+
+
+--- Version locale
+SELECT *
+FROM
+((
+SELECT sf.nom as nom_sformation,
+sf.id_sformation as id_sformation,
+pain_formation.code_etape_formation as code_etape_formation,
+pain_formation.nom as nom_formation,
+pain_formation.annee_etude as annee_etude,
+pain_formation.parfum as parfum,
+pain_formation.id_formation as id_formation,
+pain_cours.nom_cours as nom_cours,
+pain_cours.id_cours as id_cours,
+pain_cours.id_enseignant as id_enseignant_cours,
+pain_tranche.id_enseignant as id_enseignant,
+IF (pain_cours.id_enseignant = 1, 1, pain_tranche.id_enseignant) as id_enseignant,
+pain_tranche.htd as htd
+FROM
+((((SELECT * FROM pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (pain_formation) USING (id_sformation))
+JOIN (pain_cours) USING (id_formation))
+JOIN (pain_tranche) USING (id_cours))
+WHERE 1
+) as c
+JOIN
+(SELECT id_enseignant, categorie as id_categorie
+FROM pain_service
+WHERE annee_universitaire = 2014
+) as s
+USING (id_enseignant))
+JOIN pain_categorie USING (id_categorie)
+WHERE 1
