@@ -1236,3 +1236,8 @@ div.sub {
    font-size: 0.81em;
    color: grey;
 }
+
+
+.yesno {
+    box-sizing: content-box;
+}
