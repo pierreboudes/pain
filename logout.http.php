@@ -1,6 +1,6 @@
 <?php
 
-if ($_server['USERNAME'] === "fakelogin') {
+if ($_server['USERNAME'] === "fakelogin") {
 echo 'Ciao !';
 } else {
 header('WWW-Authenticate: Basic realm="Azyme"');
