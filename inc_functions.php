@@ -858,15 +858,15 @@ function update_servicespotentiels($id_ens = NULL) {
     global $annee;
     if ($annee == NULL) $annee = annee_courante();
 /* ne pas loguer */
-    $qupdate = "update pain_service set
-service_potentiel = (select
+    $qupdate = "UPDATE pain_service set
+service_potentiel = (SELECT
 sum(greatest(ifnull(
-(select sum(htd)
+(SELECT sum(htd)
 from pain_tranche
 where pain_tranche.id_enseignant  = pain_service.id_enseignant
 and pain_tranche.id_cours = tid.id_cours)
 ,0),ifnull(
-(select sum(htd)
+(SELECT sum(htd)
 from pain_choix
 where pain_choix.id_enseignant = pain_service.id_enseignant
 and pain_choix.id_cours = tid.id_cours)

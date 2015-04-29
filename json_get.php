@@ -57,8 +57,8 @@ function json_get_php($annee, $readtype) {
                              count(id_sformation) as nb_sformation
                       FROM pain_annee NATURAL LEFT JOIN pain_sformation
                       WHERE annee_universitaire BETWEEN
-                            (select coalesce(min(t.annee_universitaire),$annee) from pain_sformation as t) - 1
-                            AND (select coalesce(max(t.annee_universitaire),$annee) from pain_sformation as t) + 2
+                            (SELECT coalesce(min(t.annee_universitaire),$annee) from pain_sformation as t) - 1
+                            AND (SELECT coalesce(max(t.annee_universitaire),$annee) from pain_sformation as t) + 2
                       GROUP BY annee_universitaire
                       ORDER BY annee_universitaire ASC ";
 	    $_GET["id_parent"] = 0; /* pour passer dans le if plus bas... */
@@ -197,7 +197,7 @@ function json_get_php($annee, $readtype) {
                     ORDER BY annee_universitaire ASC";
     } else if ($readtype == "potentiel" and isset($_GET['id_parent'])) {
 	$id_par =  getnumeric("id_parent");
-	$requete = "select *,
+	$requete = "SELECT *,
 id_cours as id_potentiel,
 greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
 greatest(ifnull(tranche_td,0),ifnull(choix_td,0)) as td,
@@ -206,7 +206,7 @@ greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)) as alt,
 greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)) as htd
 from
 ((
-select
+SELECT
 pain_sformation.numero,
 pain_cours.id_cours,
 pain_cours.nom_cours,
@@ -222,7 +222,7 @@ and pain_cours.id_formation = pain_formation.id_formation
 and pain_formation.id_sformation = pain_sformation.id_sformation
 and annee_universitaire = ".$annee.")
 union
-(select
+(SELECT
 pain_sformation.numero,
 pain_cours.id_cours,
 pain_cours.nom_cours,
@@ -238,7 +238,7 @@ and pain_cours.id_formation = pain_formation.id_formation
 and pain_formation.id_sformation = pain_sformation.id_sformation
 and annee_universitaire = ".$annee.")) as t0
 left join
-(select id_cours,
+(SELECT id_cours,
 sum(cm) as choix_cm,
 sum(td) as choix_td,
 sum(tp) as choix_tp,
@@ -249,7 +249,7 @@ where
 id_enseignant = ".$id_par."
 group by id_cours) as t1 using(id_cours)
 left join
-(select id_cours,
+(SELECT id_cours,
 sum(cm) as tranche_cm,
 sum(td) as tranche_td,
 sum(tp) as tranche_tp,
@@ -266,7 +266,7 @@ annee_etude ASC,
 nom_cours ASC";
     } else if ($readtype == "responsabilite" and isset($_GET['id_parent'])) {
 	$id_par =  getnumeric("id_parent");
-	$requete = "(select
+	$requete = "(SELECT
 concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', annee_etude) as resp_nom,
 concat('c', id_cours) as id_responsabilite,
 1 as resp_type_num
@@ -277,7 +277,7 @@ and pain_formation.id_sformation = pain_sformation.id_sformation
 and pain_sformation.annee_universitaire = ".$annee."
 )
 union
-(select
+(SELECT
 concat('année de formation: ', pain_formation.nom, ' ', annee_etude, ' ', pain_formation.parfum) as resp_nom,
 concat('f', id_formation) as id_responsabilite,
 2 as resp_type_num
@@ -287,7 +287,7 @@ and pain_formation.id_sformation = pain_sformation.id_sformation
 and pain_sformation.annee_universitaire = ".$annee."
 )
 union
-(select
+(SELECT
 concat('formation: ', pain_sformation.nom) as resp_nom,
 concat('s', id_sformation) as id_responsabilite,
 3 as resp_type_num
