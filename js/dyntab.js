@@ -1427,7 +1427,7 @@ function superuser() {
 }
 
 function addLinks (c) {
-    c.html(c.html().replace(/(https*:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"hiddenurl\">$1</span><span class=\"visibleurl\">$1</span><img src=\"css/img/out.gif\" class=\"urlicon\"></img></a>"));
+    c.html(c.html().replace(/(https?:\/\/\S+)/g,"<a class=\"url\" href=\"$1\" title=\"$1\"><span class=\"hiddenurl\">$1</span><span class=\"visibleurl\">$1</span><img src=\"css/img/out.gif\" class=\"urlicon\"></img></a>"));
     c.find('a').click(function(){window.open(this.href);return false;});
     c.find('span.visibleurl').each(function () {
 	    var s = $(this).text();
