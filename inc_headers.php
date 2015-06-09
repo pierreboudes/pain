@@ -84,6 +84,7 @@ EOD;
 function piedpage() {
 //    ig_statsmysql();
     echo <<<EOD
+<p></p>
 </body>
 </html>
 EOD;
