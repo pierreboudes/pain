@@ -89,6 +89,7 @@ function json_get_php($annee, $readtype) {
     } else if ($readtype == "cours") {
 	$type = "cours";
 	$counttype = "tranche";
+    $extracounttype = "choix";
 	$par = "id_formation";
 	$order = "ORDER BY semestre, nom_cours ASC";
     } else if ($readtype == "tranche") {
@@ -422,6 +423,10 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   if (isset($counttype)) {
 	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
 	   }
+       if (isset($extracounttype)) {
+           /* cas particulier du cours */
+           $requete .= "(SELECT count(id_choix) FROM pain_choix WHERE pain_choix.id_cours = pain_cours.id_cours) as nb_choix, ";
+       }
 	   $requete .= "pain_enseignant.prenom AS prenom_enseignant,
                       pain_enseignant.nom AS nom_enseignant
              FROM pain_$type";

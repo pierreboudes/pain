@@ -2521,11 +2521,16 @@ function appendItem(type, prev, o, list) {
     }
     if (type == "cours") {
 	var idc = o["id_cours"];
-	var nbbasc = o["nb_tranche"];
+        var nbbasc = o["nb_tranche"];
+        var nbchoix = o["nb_choix"];
 	var classzero = "";
-	if (0 == nbbasc) classzero = " basculeZero";
+        if (0 == nbbasc) classzero = " basculeZero";
+        var compte = '<div class="nbbasc">'+nbbasc+'</div>';
+        if (superuser()) {
+          compte = '<div class="nbbasc">'+nbchoix+'/'+nbbasc+'</div>';
+        }
 	line.children('td.laction')
-	    .prepend('<div class="basculeOff'+classzero+'" id="basculecours_'+idc+'"><div class="nbbasc">'+nbbasc+'</div></div>')
+	    .prepend('<div class="basculeOff'+classzero+'" id="basculecours_'+idc+'">'+compte+'</div>')
 	    .bind('click',{id: idc},basculerCours);
 	addHandle(line.children('td.laction'), "cours");
 /*      Glisser deposer de tranches pour plus tard
