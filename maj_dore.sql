@@ -154,3 +154,12 @@ ALTER TABLE  `pain_cours` CHANGE  `code_geisha`  `code_ue` VARCHAR( 16 ) CHARACT
 ALTER TABLE  `pain_cours` ADD  `code_etape_cours` VARCHAR( 16 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NULL DEFAULT NULL  after `code_ue`;
 ALTER TABLE  `pain_formation` ADD  `code_etape_formation` VARCHAR( 16 ) CHARACTER SET utf8 COLLATE utf8_swedish_ci NULL DEFAULT NULL  after `id_formation`;
 --- fin commit d6f54f09382063df0df75db3610256b0da1c305d
+
+--- commit 2f330ce7105c17d168a80d230db74a239dad7135
+CREATE TABLE IF NOT EXISTS `pain_config` (
+  `configuration` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `valeur` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `aide` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`configuration`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+--- fin commit
