@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -26,62 +26,6 @@ phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
 phpCAS::setNoCasServerValidation();
 
 require_once('inc_connect.php');
-
-function set_year($annee) {
-    setcookie("painAnnee", $annee, time()+3600);
-}
-
-date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
-
-/**  a partir du 1er juin : l'annee universitaire suivante, s'il n'y existe pas de sformation l'annee la plus recente
- */
-function default_year() {
-    global $link;
-    /* si l'utilisateur a une preference etablie on la sert */
-    if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
-        return $_COOKIE["painAnnee"];
-    }
-    /* sinon on tente notre chance avec l'annee courante */
-    $an = date('Y', strtotime('-5 month'));
-    $q = "SELECT annee_universitaire as annee FROM pain_sformation where annee_universitaire = $an";
-    $r = $link->query($q);
-    if ($res = $r->fetch_array()) {
-       return $res["annee"];
-    }
-    /* L'annee courante n'est pas disponible, on retourne l'annee la
-     * plus avancee */
-    $q = "SELECT max(annee_universitaire) as annee FROM pain_sformation";
-    $r = $link->query($q);
-    if ($res = $r->fetch_array()) {
-       return $res["annee"];
-    }
-    /* aucune annee configuree (ne doit pas arriver) */
-    return $an;
-}
-
-function get_and_set_annee_menu() {
-    $annee = getnumeric("annee_menu"); /* annee fixee par le menu en POST */
-    if (NULL != $annee) {
-	set_year($annee); /* change le cookie */
-	return $annee;
-    }
-    /* pas d'annee par le menu */
-    $annee = getnumeric("annee"); /* annee reçue une variable d'annee en get ou post */
-    if (NULL == $annee) {
-	$annee = default_year();
-    }
-    return $annee;
-}
-
-function annee_courante() {
-    $annee = getnumeric("annee");
-    if (NULL != $annee) {
-	/* On a reçu une année dans en post ou GET */
-	return $annee;
-    }
-    /* par défaut on sert l'année courante */
-    return default_year();
-}
 
 function pain_getuser() {
     global $link;
@@ -138,4 +82,6 @@ function authrequired() {
 function pain_logout() {
     phpCAS::logout();
 }
+
+require_once('inc_config.php')
 ?>
