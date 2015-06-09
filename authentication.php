@@ -37,14 +37,26 @@ date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
  */
 function default_year() {
     global $link;
+    /* si l'utilisateur a une preference etablie on la sert */
     if (isset($_COOKIE["painAnnee"])) {// && is_numeric($_COOKIE["painAnnee"])
-	return $_COOKIE["painAnnee"];
+        return $_COOKIE["painAnnee"];
     }
+    /* sinon on tente notre chance avec l'annee courante */
     $an = date('Y', strtotime('-5 month'));
-    $q = "SELECT coalesce($an - min($an - annee_universitaire), $an) as annee FROM pain_sformation";
+    $q = "SELECT annee_universitaire as annee FROM pain_sformation where annee_universitaire = $an";
     $r = $link->query($q);
-    $res = $r->fetch_array();
-    return $res["annee"];
+    if ($res = $r->fetch_array()) {
+       return $res["annee"];
+    }
+    /* L'annee courante n'est pas disponible, on retourne l'annee la
+     * plus avancee */
+    $q = "SELECT max(annee_universitaire) as annee FROM pain_sformation";
+    $r = $link->query($q);
+    if ($res = $r->fetch_array()) {
+       return $res["annee"];
+    }
+    /* aucune annee configuree (ne doit pas arriver) */
+    return $an;
 }
 
 function get_and_set_annee_menu() {
