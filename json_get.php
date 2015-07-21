@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -204,6 +204,8 @@ greatest(ifnull(tranche_cm,0),ifnull(choix_cm,0)) as cm,
 greatest(ifnull(tranche_td,0),ifnull(choix_td,0)) as td,
 greatest(ifnull(tranche_tp,0),ifnull(choix_tp,0)) as tp,
 greatest(ifnull(tranche_alt,0),ifnull(choix_alt,0)) as alt,
+greatest(ifnull(tranche_prp,0),ifnull(choix_prp,0)) as prp,
+greatest(ifnull(tranche_referentiel,0),ifnull(choix_referentiel,0)) as referentiel,
 greatest(ifnull(tranche_htd,0),ifnull(choix_htd,0)) as htd
 from
 ((
@@ -244,6 +246,8 @@ sum(cm) as choix_cm,
 sum(td) as choix_td,
 sum(tp) as choix_tp,
 sum(alt) as choix_alt,
+sum(prp) as choix_prp,
+sum(referentiel) as choix_referentiel,
 sum(htd) as choix_htd
 from pain_choix
 where
@@ -255,6 +259,8 @@ sum(cm) as tranche_cm,
 sum(td) as tranche_td,
 sum(tp) as tranche_tp,
 sum(alt) as tranche_alt,
+sum(prp) as tranche_prp,
+sum(referentiel) as tranche_referentiel,
 sum(htd) as tranche_htd
 from pain_tranche
 where

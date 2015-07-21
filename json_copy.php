@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -159,11 +159,11 @@ if ($profondeur > 0) {
     }
 
     /* insertion des nouveaux cours */
-    $q = 'INSERT INTO pain_cours (id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, descriptif,
+    $q = 'INSERT INTO pain_cours (id_cours_prev, id_formation, semestre, nom_cours, credits, id_enseignant, cm, td, tp, alt, prp, referentiel, descriptif,
 code_ue, code_etape_cours) SELECT pain_cours.id_cours as id_cours_prev,
 pain_formation.id_formation, pain_cours.semestre,
 pain_cours.nom_cours, pain_cours.credits, pain_cours.id_enseignant,
-pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt,
+pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt, , pain_cours.prp, pain_cours.referentiel,
 pain_cours.descriptif, pain_cours.code_ue, pain_cours.code_etape_cours FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
 
@@ -213,8 +213,8 @@ if (1 == $profondeur) {
 
 
     /* insertion de nouvelles tranches anonymes */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT
-pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd) SELECT
+pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
@@ -253,8 +253,8 @@ if ($profondeur == 2) {
     }
 
     /* insertion de nouvelles tranches */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, type_conversion, remarque, htd) SELECT
-pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd) SELECT
+pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 

@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -41,15 +41,15 @@ $champs = array(
 	),
     "cours"=> array(
 	"semestre", "nom_cours", "credits", "id_enseignant",
-	"cm", "td", "tp", "alt", "descriptif", "code_ue", "code_etape_cours"
+	"cm", "td", "tp", "alt", "prp", "referentiel", "descriptif", "code_ue", "code_etape_cours"
 	/* modification */
 	),
     "tranche"=> array(
 	"id_enseignant", "groupe", "cm", "td", "tp",
-	"alt", "type_conversion", "remarque", "htd", "descriptif"
+	"alt", "prp", "referentiel", "type_conversion", "remarque", "htd", "descriptif"
 	),
     "choix" => array(
-	"id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+        "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "prp", "referentiel"
 	),
     "enseignant" => array(
 	"prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie"

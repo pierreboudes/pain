@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -68,18 +68,20 @@ function json_modify_php($annee, $readtype, $id) {
 	    ),
 	"cours"=> array(
 	    "semestre", "nom_cours", "credits", "id_enseignant",
-	    "cm", "td", "tp", "alt", "descriptif", "code_ue", "code_etape_cours", "id_section",
+	    "cm", "td", "tp", "alt", "prp", "referentiel",
+        "descriptif", "code_ue", "code_etape_cours", "id_section",
 	    "debut", "fin", "inscrits", "presents", "tirage", "mcc"
 	    ),
 	"tranche"=> array(
-	    "id_enseignant", "groupe", "cm", "td", "tp",
-	    "alt", "type_conversion", "remarque", "htd", "descriptif", "declarer"
+	    "id_enseignant", "groupe",
+        "cm", "td", "tp", "alt", "prp", "referentiel",
+        "type_conversion", "remarque", "htd", "descriptif", "declarer"
 	    ),
 	"choix" => array(
-	    "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt"
+	    "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "prp", "referentiel"
 	    ),
 	"longchoix" => array(
-	    "choix", "htd", "cm", "td", "tp", "alt"
+	    "choix", "htd", "cm", "td", "tp", "alt",  "prp", "referentiel"
 	    ),
 	"enseignant" => array(
 	    "prenom", "nom", "email", "telephone", "bureau",
@@ -158,7 +160,11 @@ function json_modify_php($annee, $readtype, $id) {
 	if ($tp < 0) errmsg("TP doit être positif.");
 	$alt = isset($set["alt"])?$set["alt"]:$old["alt"];
 	if ($alt < 0) errmsg("alt doit être positif.");
-	$set["htd"] = 1.5 * $cm + $td + $tp + $alt;
+    $prp = isset($set["prp"])?$set["prp"]:$old["prp"];
+	if ($prp < 0) errmsg("prp doit être positif.");
+	$referentiel = isset($set["referentiel"])?$set["referentiel"]:$old["referentiel"];
+	if ($referentiel < 0) errmsg("referentiel doit être positif.");
+	$set["htd"] = 1.5 * $cm + $td + $tp + $alt + $prp + $referentiel;
 	if ($set["htd"] < 0) {
 	    errmsg("le total des heures ne peut pas être négatif");
 	}

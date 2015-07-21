@@ -1,7 +1,7 @@
 <?php /* -*- coding: utf-8 -*- */
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009-2012 Pierre Boudes,
+ * Copyright 2009-2015 Pierre Boudes,
  * département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
@@ -19,24 +19,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('authentication.php'); 
+require_once('authentication.php');
 // $user = no_auth(); /* pas d'authentification */
 $user = weak_auth(); /* accès sans autorisation */
 $annee = get_and_set_annee_menu();
 
-/** 
+/**
 un select de formulaire pour choisir les sformations de l'année
 */
 function ig_formselectsformation($id_sformation)
 {
     global $link;
     global $annee;
-    $q = "SELECT id_sformation, 
-                 nom 
-          FROM pain_sformation          
+    $q = "SELECT id_sformation,
+                 nom
+          FROM pain_sformation
           WHERE annee_universitaire = $annee
           ORDER BY numero ASC";
-    $r = $link->query($q) 
+    $r = $link->query($q)
 	or die("</select></form>Échec de la requête sur la table sformation: ".$link->error);
     if (NULL == $id_sformation) {
 	echo '<option disabled="disabled">Choisir un cycle</option>';
@@ -71,7 +71,7 @@ function ig_entete_du_cours($cours) {
 }
 
 /**
-affiche une ligne de tableau sur le responsable du cours et retourne son id 
+affiche une ligne de tableau sur le responsable du cours et retourne son id
 */
 function ig_responsable_du_cours($cours) {
     echo '<tr><td>responsable</td>';
@@ -90,7 +90,7 @@ function ig_intervenants_du_cours($cours, $categories = NULL) {
     global $link;
     global $annee;
     $id_cours = $cours["id_cours"];
-    $q = "SELECT 
+    $q = "SELECT
                  GROUP_CONCAT(DISTINCT pain_tranche.groupe
                               ORDER BY pain_tranche.groupe
                               SEPARATOR ', G') as groupes,
@@ -98,29 +98,31 @@ function ig_intervenants_du_cours($cours, $categories = NULL) {
                  SUM(td) AS td,
                  SUM(tp) AS tp,
                  SUM(alt) AS alt,
+                 SUM(prp) AS prp,
+                 SUM(referentiel) AS referentiel,
                  pain_enseignant.id_enseignant as id_enseignant,
-                 pain_enseignant.prenom AS prenom, 
+                 pain_enseignant.prenom AS prenom,
                  pain_enseignant.nom AS nom,
                  pain_enseignant.email AS email,
                  pain_enseignant.telephone AS tel,
                  pain_enseignant.bureau AS bureau
           FROM pain_tranche, pain_enseignant
-          WHERE pain_tranche.id_cours = $id_cours 
+          WHERE pain_tranche.id_cours = $id_cours
           AND pain_enseignant.id_enseignant = pain_tranche.id_enseignant ";
     if ($categories != NULL) {
-	$q .= " AND pain_enseignant.id_enseignant IN (SELECT distinct id_enseignant from pain_service 
+	$q .= " AND pain_enseignant.id_enseignant IN (SELECT distinct id_enseignant from pain_service
                                WHERE annee_universitaire = $annee
                                AND categorie IN ($categories)) ";
     }
 
     $q .= " GROUP BY pain_enseignant.id_enseignant ORDER BY groupe ASC, nom ASC";
-    ($r = $link->query($q)) 
+    ($r = $link->query($q))
         or die("Échec de la requête $q<br>".$link->error);
     $ids = Array();
     while ($e = $r->fetch_array()) {
 	if (strcmp($e["groupes"], "0") != 0) {
 	    $groupes = str_replace("0, G", "", $e["groupes"]);
-	    $groupes = "G".$groupes;	    
+	    $groupes = "G".$groupes;
 	} else {
 	    $groupes = NULL;
 	}
@@ -153,13 +155,13 @@ function ig_emails($ids, $categories) {
     global $annee; /* pour filtre categories */
 
     $a = Array(); /* liste des emails */
-    
+
     if ($ids != "") {/* il y a des ids dont on veut les emails */
 	/* nota: lorsqu'on filtrera par categories il faudra faire la jointure avec pain_service */
 	$q = "SELECT distinct email
-              FROM pain_enseignant WHERE id_enseignant IN ($ids) ORDER BY email ASC"; 
+              FROM pain_enseignant WHERE id_enseignant IN ($ids) ORDER BY email ASC";
         /* rem: GROUP_CONCAT(DISTINCT email ORDER BY email ASC SEPARATOR ', ') limité à 1024 */
-	($r = $link->query($q)) 
+	($r = $link->query($q))
 	    or die("Échec de la requête $q<br>".$link->error);
 	while ($e = $r->fetch_array()) {
 	    if ($e["email"] != "") {/* tester ici si email valide (regexp) */
@@ -167,7 +169,7 @@ function ig_emails($ids, $categories) {
 	    }
 	}
     }
-    $rows = count($a)/3 + 1;    
+    $rows = count($a)/3 + 1;
     echo '<tr><td colspan="5" style="width: 800px"><textarea dir="ltr" rows="'.$rows.'" cols="40">'.join(', ', $a)
         .'</textarea></td></tr>';
 }
@@ -190,13 +192,13 @@ function liste_emails($type, $annee = NULL) {
     }
 /* Pour plus tard: possibilite de selectionner une liste d'emails.
 /* SELECT GROUP_CONCAT(DISTINCT email ORDER BY email ASC SEPARATOR ', ') FROM pain_sformation, pain_formation, pain_enseignant WHERE pain_sformation.annee_universitaire = "2009" AND pain_formation.id_sformation = pain_sformation.id_sformation AND pain_enseignant.id_enseignant = pain_formation.id_enseignant */
-/* 
+/*
 SELECT GROUP_CONCAT( DISTINCT email
 ORDER BY pain_enseignant.nom, pain_enseignant.prenom ASC
 SEPARATOR  ', ' )
 FROM pain_sformation, pain_formation, pain_enseignant
 WHERE pain_sformation.annee_universitaire =  "2009"
-AND 
+AND
 ((pain_formation.id_sformation = pain_sformation.id_sformation
 AND pain_enseignant.id_enseignant = pain_formation.id_enseignant)
 OR
@@ -206,7 +208,7 @@ pain_enseignant.id_enseignant = pain_sformation.id_enseignant
 }
 
 
-/** 
+/**
 formulaire de sélection de formations et filtres.
 */
 function annuaire_php_form() {
@@ -324,7 +326,7 @@ function annuaire_php() {
     /* annuaire */
     echo "<h2>Les intervenants dans les cours sélectionnés</h2>";
     /* selection des cours à afficher */
-    $q = "SELECT id_cours, 
+    $q = "SELECT id_cours,
                  nom_cours,
                  credits,
                  semestre,
@@ -332,13 +334,13 @@ function annuaire_php() {
                  pain_formation.annee_etude as annee_etude,
                  pain_formation.parfum as parfum,
                  pain_cours.id_enseignant as id_enseignant,
-                 pain_enseignant.prenom AS prenom, 
+                 pain_enseignant.prenom AS prenom,
                  pain_enseignant.nom AS nom,
                  pain_enseignant.email AS email,
                  pain_enseignant.telephone AS tel,
                  pain_enseignant.bureau AS bureau
           FROM pain_cours, pain_enseignant, pain_formation
-          WHERE pain_cours.id_formation = pain_formation.id_formation 
+          WHERE pain_cours.id_formation = pain_formation.id_formation
           AND pain_formation.id_sformation IN ($sformations)
           AND pain_enseignant.id_enseignant = pain_cours.id_enseignant ";
     /* filtre par annee de formation */
@@ -349,11 +351,11 @@ function annuaire_php() {
     if ($semestres != NULL) $q .=" AND semestre IN ($semestres) ";
     /* filtre par collections */
     if ($collections != NULL) {
-	$q.=" AND id_cours IN (SELECT distinct id_cours from pain_collectionscours 
+	$q.=" AND id_cours IN (SELECT distinct id_cours from pain_collectionscours
                                WHERE id_collection IN ($collections)) ";
     }
     $q .=" ORDER BY pain_formation.numero ASC, semestre ASC, nom_cours ASC";
-    ($r = $link->query($q)) 
+    ($r = $link->query($q))
 	or die("Échec de la requête $q<br>".$link->error);
     $allids = Array();
     while ($cours = $r->fetch_array()) {
