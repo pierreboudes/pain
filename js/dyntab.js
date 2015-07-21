@@ -1,7 +1,7 @@
 /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2015 Pierre Boudes, département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -493,7 +493,11 @@ function total_complexe(o, nom, prefixe) {
 	+htdpostes(o[prefixe+"tp"])
 	+'&nbsp;TP +&nbsp;'
 	+htdpostes(o[prefixe+"alt"])
-	+'&nbsp;alt'
+        +'&nbsp;alt +&nbsp;'
+	+htdpostes(o[prefixe+"prp"])
+	+'&nbsp;PRP +&nbsp;'
+	+htdpostes(o[prefixe+"referentiel"])
+	+'&nbsp;réf. +&nbsp;'
 	+"</span>"
 	+"</span>";
     return s;
@@ -765,10 +769,12 @@ collections.prototype = new immutcell();
 function nature() {
     this.setval = function (c,o) {
 	var s;
-	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">alt</td></tr><tr><td class="ntd">TD</td><td class="ntp">TP</td></tr></table>');
+	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">alt</td><td class="nprp">PRP</td><td class="nreferentiel">réf</td></tr><tr><td class="ntd">TD</td><td class="ntp">TP</td></tr></table>');
 	c.find("table.nature td").addClass("inact");
 	if (o["cm"] > 0) c.find("td.ncm").removeClass("inact");
-	if (o["alt"] > 0) c.find("td.nalt").removeClass("inact");
+        if (o["alt"] > 0) c.find("td.nalt").removeClass("inact");
+        if (o["prp"] > 0) c.find("td.nprp").removeClass("inact");
+        if (o["referentiel"] > 0) c.find("td.nreferentiel").removeClass("inact");
 	if (o["td"] > 0) c.find("td.ntd").removeClass("inact");
 	if (o["tp"] > 0) c.find("td.ntp").removeClass("inact");
     }
@@ -1281,6 +1287,12 @@ function ligne() {
     /* alt */
     this.alt = new numcell();
     this.alt.name = "alt";
+    /* prp */
+    this.prp = new numcell();
+    this.prp.name = "prp";
+    /* referentiel */
+    this.referentiel = new numcell();
+    this.referentiel.name = "referentiel";
     /* debut */
     this.debut = new datecell();
     this.debut.name = "debut";
@@ -2418,22 +2430,29 @@ function recalculatePanier(type) {
     }
     /* totaux */
     var body = $('#table'+type+' > tbody');
-    var htd = 0; var cm = 0; var td = 0; var tp = 0; var alt = 0;
-    var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0; var alt1 = 0;
-    var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0; var alt2 = 0;
+    var htd = 0; var cm = 0; var td = 0; var tp = 0;
+    var alt = 0; var prp = 0; var referentiel = 0;
+    var htd1 = 0; var cm1 = 0; var td1 = 0; var tp1 = 0;
+    var alt1 = 0; var prp1 = 0; var referentiel1 = 0;
+    var htd2 = 0; var cm2 = 0; var td2 = 0; var tp2 = 0;
+    var alt2 = 0; var prp2 = 0; var referentiel2 = 0;
     body.children("tr[id^='"+type+"_']").each(function(i) {
 	    var line = $(this);
 	    htd += parseFloat(line.children('td.htd').text());
 	    cm += parseFloat(line.children('td.cm').text());
 	    td += parseFloat(line.children('td.td').text());
 	    tp += parseFloat(line.children('td.tp').text());
-	    alt += parseFloat(line.children('td.alt').text());
+            alt += parseFloat(line.children('td.alt').text());
+            prp += parseFloat(line.children('td.prp').text());
+	    referentiel += parseFloat(line.children('td.referentiel').text());
 	    if (line.children('td.semestre').text() == '1') {
 		htd1 += parseFloat(line.children('td.htd').text());
 		cm1 += parseFloat(line.children('td.cm').text());
 		td1 += parseFloat(line.children('td.td').text());
 		tp1 += parseFloat(line.children('td.tp').text());
 		alt1 += parseFloat(line.children('td.alt').text());
+		prp1 += parseFloat(line.children('td.prp').text());
+		referentiel1 += parseFloat(line.children('td.referentiel').text());
 	    }
 	    if (line.children('td.semestre').text() == '2') {
 		htd2 += parseFloat(line.children('td.htd').text());
@@ -2441,6 +2460,8 @@ function recalculatePanier(type) {
 		td2 += parseFloat(line.children('td.td').text());
 		tp2 += parseFloat(line.children('td.tp').text());
 		alt2 += parseFloat(line.children('td.alt').text());
+		prp2 += parseFloat(line.children('td.prp').text());
+		referentiel2 += parseFloat(line.children('td.referentiel').text());
 	    }
 	});
     $('#sum'+type+' > th.htd').html(htd);
@@ -2448,18 +2469,25 @@ function recalculatePanier(type) {
     $('#sum'+type+' > th.td').html(td);
     $('#sum'+type+' > th.tp').html(tp);
     $('#sum'+type+' > th.alt').html(alt);
+    $('#sum'+type+' > th.prp').html(prp);
+    $('#sum'+type+' > th.referentiel').html(referentiel);
 
     $('#s1sum'+type+' > th.htd').html(htd1);
     $('#s1sum'+type+' > th.cm').html(cm1);
     $('#s1sum'+type+' > th.td').html(td1);
     $('#s1sum'+type+' > th.tp').html(tp1);
     $('#s1sum'+type+' > th.alt').html(alt1);
+    $('#s1sum'+type+' > th.prp').html(prp1);
+    $('#s1sum'+type+' > th.referentiel').html(referentiel1);
 
     $('#s2sum'+type+' > th.htd').html(htd2);
     $('#s2sum'+type+' > th.cm').html(cm2);
     $('#s2sum'+type+' > th.td').html(td2);
     $('#s2sum'+type+' > th.tp').html(tp2);
     $('#s2sum'+type+' > th.alt').html(alt2);
+    $('#s2sum'+type+' > th.prp').html(prp2);
+    $('#s2sum'+type+' > th.referentiel').html(referentiel2);
+
 }
 
 /* BLOC ----- PANIER -------------*/

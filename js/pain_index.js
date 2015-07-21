@@ -1,7 +1,7 @@
 /* -*- coding: utf-8 -*-*/
 /* Pain - outil de gestion des services d'enseignement
  *
- * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
+ * Copyright 2009-2015 Pierre Boudes, département d'informatique de l'institut Galilée.
  *
  * This file is part of Pain.
  *
@@ -25,8 +25,8 @@ $(document).ready(function(){
 	/* masqer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.section, th.credits, th.mcc, th.debut, th.fin, th.tirage, th.inscrits, th.presents, th.totaux_loader, th.collections, th.tags').fadeOut(0); // th.alt, th.inscrits, th.presents,
 	$('#skeltranche').children('th.declarer').fadeOut(0);
-	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
-	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
+	$('#skelchoix').children('th.cm, th.td, th.tp, th.alt, th.prp, th.referentiel, th.choix').fadeOut(0);
+	$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.prp, th.referentiel, th.choix, th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
 
 	/* histogrammes */

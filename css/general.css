@@ -353,7 +353,7 @@ td.nopadding {
     min-width: 140px;
 }
 
-.cm, .td, .tp, .alt, .groupe, .htd, .inscrits, .presents, .tirage,
+.cm, .td, .tp, .alt, .prp, .referentiel, .groupe, .htd, .inscrits, .presents, .tirage,
 .choix_htd, .tranche_htd {
     min-width:30px;
     max-width:60px;
@@ -425,7 +425,7 @@ td.declarer {
 
 /**** FIN DIMENSIONS ****/
 
-.semestre, .credits, .cm, .td, .tp, .alt, .code_ue, .code_etape_formation, .code_etape_cours, .code_etape, .action, .groupe, .htd, .choix_htd, .tranche_htd {
+.semestre, .credits, .cm, .td, .tp, .alt, .prp, .referentiel, .code_ue, .code_etape_formation, .code_etape_cours, .code_etape, .action, .groupe, .htd, .choix_htd, .tranche_htd {
     text-align: center;
 }
 
@@ -744,7 +744,12 @@ div.lstatens1, div.rstatens1 {
 .statens .alt {
         opacity: .40;
 }
-
+.statens .prp {
+        opacity: .40;
+}
+.statens .referentiel {
+        opacity: .40;
+}
 .statens .ccm {
     border-right-width: 1px;
     border-right-style: solid;
