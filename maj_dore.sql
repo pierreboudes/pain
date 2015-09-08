@@ -163,3 +163,24 @@ CREATE TABLE IF NOT EXISTS `pain_config` (
   PRIMARY KEY (`configuration`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 --- fin commit
+
+---- Commit en cours
+ALTER TABLE `pain_choix` ADD
+  `referentiel` double unsigned NOT NULL DEFAULT '0'
+  AFTER `alt`;
+ALTER TABLE `pain_choix` ADD
+   `prp` double unsigned NOT NULL DEFAULT '0'
+  AFTER `alt`;
+ALTER TABLE `pain_cours` ADD
+  `referentiel` double unsigned DEFAULT NULL
+  AFTER `alt`;
+ALTER TABLE `pain_cours` ADD
+   `prp` double unsigned DEFAULT NULL
+  AFTER `alt`;
+ALTER TABLE `pain_tranche` ADD
+  `referentiel` double unsigned DEFAULT NULL
+  AFTER `alt`;
+ALTER TABLE `pain_tranche` ADD
+   `prp` double unsigned DEFAULT NULL
+  AFTER `alt`;
+---
