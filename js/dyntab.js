@@ -769,7 +769,7 @@ collections.prototype = new immutcell();
 function nature() {
     this.setval = function (c,o) {
 	var s;
-	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="nalt">alt</td><td class="nprp">PRP</td><td class="nreferentiel">réf</td></tr><tr><td class="ntd">TD</td><td class="ntp">TP</td></tr></table>');
+	c.html('<table class="nature"><tr><td class="ncm">CM</td><td class="ntd">TD</td><td class="ntp">TP</td></tr><tr><td class="nalt">alt</td><td class="nprp">PRP</td><td class="nreferentiel">réf</td></tr></table>');
 	c.find("table.nature td").addClass("inact");
 	if (o["cm"] > 0) c.find("td.ncm").removeClass("inact");
         if (o["alt"] > 0) c.find("td.nalt").removeClass("inact");
@@ -1648,46 +1648,62 @@ function basculerAnnee(e) {
 }
 
 function basculerSuperFormation(e) {
-    var id;
-    if ((e.data != undefined) && (e.data.id != undefined)) {
-	id = e.data.id;
-    } else {
-	id = e;
+  var id;
+  if ((e.data != undefined) && (e.data.id != undefined)) {
+    id = e.data.id;
+  } else {
+    id = e;
+  }
+  var bascule =  $('#basculesformation_'+id);
+  /* changement d'etat de la bascule (classes On Off)*/
+  bascule.toggleClass('basculeOff');
+  bascule.toggleClass('basculeOn');
+  /* en cas de meta-click (ctrl ou commande sur mac), on basculera
+     les bascules identiques */
+  basculerIdentiques(bascule, e);
+  /* effacement (off) ou affichage (on) de la descendance */
+  if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
+    $('#trtableformations'+id).remove();
+  } else {
+    /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
+    var colspan = largeurligne(bascule);
+    $('#sformation_'+id).after('<tr class="conteneur" id="trtableformations'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="tableformations" id="tableformations_'+id+'"><tbody></tbody></table></td></tr>');
+    appendList({type: "formation", id_parent: id}, /* ajouter quoi ? */
+	       $('#tableformations_'+id+' > tbody'),   /* ou ? */
+	       function(){ /* fonction de post-traitement */
+		 var legende = $('#legendeformation'+id);
+		 addMenuFields(legende);
+		 addAdd(legende.find('th.action'));
+		 $('#tableformations_'+id+' tr.formation').fadeIn("slow");
+		 /* si la barre image de stats de la super etait
+		  * visible, on rend visible aussi les barres de
+		  * stats des formations */
+		 if ($('#imgsformation_'+id+' img').is(':visible')) {
+		   $('#tableformations_'+id+' > tbody div.imgformation').show();
+		   $('#tableformations_'+id+' > tbody tr.formation').each(function (i) {
+		     var tag = this.id;
+		     if (tag != undefined) {
+		       var id = tag.replace('formation_','');
+		       htdFormation(id);
+		     }
+		   });
+		 }
+	       });
+  }
+  return false;
+}
+
+/* En cas de meta-click on fait une bascule identique sur les bascules */
+/* de la même section */
+function basculerIdentiques(bascule, e) {
+  if (e.metaKey) {
+    var onoff = ".basculeOff";
+    if (bascule.hasClass('basculeOff')) {
+      onoff = ".basculeOn";
     }
-    var bascule =  $('#basculesformation_'+id);
-   /* changement d'etat de la bascule (classes On Off)*/
-   bascule.toggleClass('basculeOff');
-   bascule.toggleClass('basculeOn');
-   /* effacement (off) ou affichage (on) de la descendance */
-   if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
-       $('#trtableformations'+id).remove();
-   } else {
-   /* creation d'un tr > td > table qui contiendra la descendance (les super-formations) */
-       var colspan = largeurligne(bascule);
-       $('#sformation_'+id).after('<tr class="conteneur" id="trtableformations'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="tableformations" id="tableformations_'+id+'"><tbody></tbody></table></td></tr>');
-       appendList({type: "formation", id_parent: id}, /* ajouter quoi ? */
-		  $('#tableformations_'+id+' > tbody'),   /* ou ? */
-		  function(){ /* fonction de post-traitement */
-		      var legende = $('#legendeformation'+id);
-		      addMenuFields(legende);
-		      addAdd(legende.find('th.action'));
-		      $('#tableformations_'+id+' tr.formation').fadeIn("slow");
-		      /* si la barre image de stats de la super etait
-		       * visible, on rend visible aussi les barres de
-		       * stats des formations */
-		      if ($('#imgsformation_'+id+' img').is(':visible')) {
-			  $('#tableformations_'+id+' > tbody div.imgformation').show();
-			  $('#tableformations_'+id+' > tbody tr.formation').each(function (i) {
-				  var tag = this.id;
-				  if (tag != undefined) {
-				      var id = tag.replace('formation_','');
-				      htdFormation(id);
-				  }
-			      });
-		      }
-		  });
-   }
-   return false;
+    e.preventDefault();
+    var bascules = bascule.closest("tbody").children("tr").children("td.laction").find(onoff).trigger("click");
+  }
 }
 
 function basculerFormation(e) {
@@ -1696,6 +1712,7 @@ function basculerFormation(e) {
     var bascule =  $('#basculeformation_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
+    basculerIdentiques(bascule, e); /* meta-click */
     if (bascule.hasClass('basculeOff')) {
 	$('#tablecours_'+id+' tr.cours div.basculeOn').trigger("click");
 	$('#tablecours_'+id+' tr.cours').remove();
@@ -1706,7 +1723,7 @@ function basculerFormation(e) {
 	    histo.toggleClass('histoOn');
 	}
 	$('#trtablecours'+id).remove();
-    } else {
+  } else {
        var colspan = largeurligne(bascule);
 	$('#formation_'+id).after('<tr class="conteneur" id="trtablecours'+id+'"><td class="conteneur" colspan="'+colspan+'"><table class="cours" id="tablecours_'+id+'"><tbody></tbody></table></td></tr>');
 	appendList({type: "cours", id_parent: id},$('#tablecours_'+id+' > tbody'), function(){
@@ -1725,8 +1742,9 @@ function basculerCours(e) {
     var bascule =  $('#basculecours_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
+    basculerIdentiques(bascule, e); /* meta-click */
     if (bascule.hasClass('basculeOn')) {
-       var colspan = largeurligne(bascule);
+        var colspan = largeurligne(bascule);
 	$('#'+sid).after('<tr class="conteneur" id="trtabletranches'+id+'"><td class="conteneur" colspan="'+colspan+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
 	appendList({type: "tranche", id_parent: id},$('#tabletranches_'+id+' tbody'), function () {
 	var legende = $('#legendetranche'+id);
@@ -1735,9 +1753,9 @@ function basculerCours(e) {
 	    });
         basculerChoix(e);
     } else {
-	$('#trtabletranches'+id).remove();
+      $('#trtabletranches'+id).remove();
     }
-    return false;
+  return false;
 }
 
 function basculerChoix(e) {
@@ -1757,6 +1775,7 @@ function basculerCategorie(e) {
     var bascule =  $('#basculeCat_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
+    basculerIdentiques(bascule, e); /* meta-click */
     if (bascule.hasClass('basculeOn')) {
 	$('#'+idString({id: id, type: "tablecat"}))
 	    .append('<tr id="trtableens_'+id+'"><td class="nopadding" colspan="3"><table id="tableens_'+id+'" class="enseignants"><tbody></tbody></table>');
@@ -1782,7 +1801,7 @@ function basculerEnseignant(e) {
     var bascule = $('#basculeenseignant_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
-
+    basculerIdentiques(bascule, e);
     if (bascule.hasClass('basculeOn')) {
 	var colspan = largeurligne(bascule);
 	$('#'+sid).after('<tr id="trtableservices'+id+'" class="trservices"><td class="services" colspan="'+colspan+'"><table id="tableservices_'+id+'" class="services"><tbody></tbody></table></td></tr>');
@@ -1805,7 +1824,6 @@ function basculerTags() {
     var bascule = $('#basculetags');
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
-
     if (bascule.hasClass('basculeOn')) {
 	$("#vuetags > tbody").append('<tr id="trlestags"><td colspan=2><table class="lestags" id="lestags"><tbody></tbody></table></td></tr>');
 	var id = 'all';
@@ -1822,7 +1840,6 @@ function basculerCollections() {
     var bascule = $('#basculecollections');
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
-
     if (bascule.hasClass('basculeOn')) {
 	$("#vuecollections > tbody").append('<tr id="trlescollections"><td colspan=2><table class="lescollections" id="lescollections"><tbody></tbody></table></td></tr>');
 	var id = 'all';
@@ -2605,7 +2622,7 @@ function appendItem(type, prev, o, list) {
 	/* bascule de formation */
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeformation_'+idf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
-	$('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
+        $('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
 	/* */
 	var colspan = largeurligne($("#skelformation"));
