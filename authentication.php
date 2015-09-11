@@ -19,17 +19,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('../../CAS.php');
-// error_reporting(E_ALL & ~E_NOTICE);
-phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
-// phpCAS::setDebug();
-phpCAS::setNoCasServerValidation();
+require_once('../../multipleCAS.php');
+
 
 require_once('inc_connect.php');
 
 function pain_getuser() {
     global $link;
-    $login = phpCAS::getUser();
+    $login = login();
     $query = "SELECT id_enseignant, prenom, nom, login, su, stats
                  FROM pain_enseignant
                  WHERE login LIKE '$login' LIMIT 1";
@@ -54,7 +51,7 @@ function authentication() {
     phpCAS::forceAuthentication();
     $user = pain_getuser();
     if (NULL == $user) {
-	$login = phpCAS::getUser();
+	$login = login();
 	die("D&eacute;sol&eacute; votre login ($login) n'est pas enregistr&eacute; dans la base du d&eacute;partement.Si vous &ecirc;tes membre du d&eacute;partement, vous pouvez envoyer un message votre &agrave; chef de d&eacute;partement avec votre login : $login. Pour sortir c'est par ici : <a href='logout.php'>logout</a>.");
     }
     return $user;
