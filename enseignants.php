@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once("inc_connect.php");
 require_once('authentication.php'); 
 $user = authentication();
 $annee = get_and_set_annee_menu();
