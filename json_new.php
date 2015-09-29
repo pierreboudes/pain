@@ -52,10 +52,10 @@ $champs = array(
         "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "prp", "referentiel"
 	),
     "enseignant" => array(
-	"prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie"
+        "prenom", "nom", "statut", "email", "telephone", "bureau", "service", "categorie", "id_section"
 	),
    "service" => array(),
-    "tag" => array(
+   "tag" => array(
 	"nom_tag", "descriptif"
 	),
    "tagscours" => array(
@@ -202,10 +202,11 @@ if (isset($_GET["id_parent"])) {
 	    $an = annee_courante();
 	}
 	$query = "INSERT INTO pain_service ".
-	         "(id_enseignant, annee_universitaire, categorie, ".
+	         "(id_enseignant, annee_universitaire, categorie, id_section, ".
                  "service_annuel, service_reel) ".
 	         "SELECT $id_parent, $an, ".
                  "  pain_enseignant.categorie, ".
+                 "  pain_enseignant.id_section, ".
                  "  pain_enseignant.service, ".
                  "  0 ".
                  "FROM pain_enseignant ".
@@ -242,10 +243,11 @@ if (isset($_GET["id_parent"])) {
 	 * formation (ainsi une nouvelle année aura ces enseignants
 	 * dès la première sformation) */
 	$query = "REPLACE INTO pain_service ".
-	    "(id_enseignant, annee_universitaire, categorie, ".
+	    "(id_enseignant, annee_universitaire, categorie, id_section ".
 	    "service_annuel, service_reel) ".
 	    "SELECT pain_enseignant.id_enseignant, $id_parent, ".
 	    "  pain_enseignant.categorie, ".
+        "  pain_enseignant.id_section, ".
 	    "  pain_enseignant.service, ".
 	    "  0 ".
 	    "FROM pain_enseignant ".

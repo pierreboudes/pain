@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `pain_config` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 --- fin commit
 
----- Commit en cours
+---- commit 3eb022307f5db9e53b1307e644b02d5140955dc7
 ALTER TABLE `pain_choix` ADD
   `referentiel` double unsigned NOT NULL DEFAULT '0'
   AFTER `alt`;
@@ -183,4 +183,14 @@ ALTER TABLE `pain_tranche` ADD
 ALTER TABLE `pain_tranche` ADD
    `prp` double unsigned DEFAULT NULL
   AFTER `alt`;
----
+--- fin commit
+
+
+--- commit
+ALTER TABLE `pain_enseignant` ADD
+        `id_section` int(3) unsigned NOT NULL DEFAULT '0'
+  AFTER `categorie`;
+ALTER TABLE `pain_service` ADD
+        `id_section` int(3) unsigned NOT NULL DEFAULT '0'
+  AFTER `categorie`;
+--- fin commit

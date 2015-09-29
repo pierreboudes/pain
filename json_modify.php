@@ -85,7 +85,7 @@ function json_modify_php($annee, $readtype, $id) {
 	    ),
 	"enseignant" => array(
 	    "prenom", "nom", "email", "telephone", "bureau",
-	    "debut", "fin", "responsabilite"
+	    "debut", "fin", "responsabilite", "id_section"
 	    ),
 	"tag" => array(
 	    "nom_tag", "descriptif"
@@ -94,6 +94,7 @@ function json_modify_php($annee, $readtype, $id) {
 	    "nom_collection", "id_sformation", "descriptif"
 	    ),
 	"service" => array(
+        "id_section"
 	    )
 	);
 
