@@ -3003,6 +3003,20 @@ $(document).ready(function () {
     $.datepicker.setDefaults($.datepicker.regional['fr']);
     L = new ligne(); // <-- var globale
 
+
+  /* formulaires chargent automatiquement */
+  $('#choixannee_select').change(
+
+    function(){
+      $('#choixannee').submit();
+    /* or:
+       $('#formElementId').trigger('submit');
+       or:
+       $(this).closest('form').trigger('submit');
+    */
+  });
+
+
     /* infobox: liens externes */
     $("div.infobox a").click(function(){window.open(this.href);return false;});
 

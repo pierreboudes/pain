@@ -1,5 +1,5 @@
 /* -*- coding: utf-8 -*-*/
-/* Pain - outil de gestion des services d'enseignement        
+/* Pain - outil de gestion des services d'enseignement
  *
  * Copyright 2009 Pierre Boudes, département d'informatique de l'institut Galilée.
  *
@@ -40,8 +40,8 @@ function toutBasculer() {
     jQuery.fx.off = false;
 }
 
-function trim(str) 
-{ 
+function trim(str)
+{
     return str.replace(/^\s+/g,'').replace(/\s+$/g,'');
 }
 
@@ -84,7 +84,7 @@ function coursDeLaTranche(id_tranche) {
 }
 
 function formationDuCours(id_cours) {
-    var s;    
+    var s;
     var id_formation;
     s = $('#cours'+id_cours).parent().prevAll('tr.formation').attr('id');
     /* s = 'formation' + id */
@@ -147,7 +147,7 @@ function histoDesCours(e) {
     return false;
 }
 
-/* 
+/*
 a tester pour l'animation des tableaux
 
 voir : http://old.nabble.com/Animating-table-rows-td20491521s27240.html
