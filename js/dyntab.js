@@ -410,8 +410,20 @@ function enseignant () {
 //	var ensid = c.find('input').autocomplete( "widget" ).item.id;
 	o["id_enseignant"] = ensid;
     }
-    this.setval = function (c,o) {
-	c.html('<a class="enseignant" href="service.php?id_enseignant='+o["id_enseignant"]+'">'+o["prenom_enseignant"]+" "+o["nom_enseignant"]+'</a><span class="hiddenvalue">'+o["id_enseignant"]+'</span>');
+  this.setval = function (c,o) {
+    var s = "";
+    if (o["valide"] != null) {
+      if (o["valide"] == 0) {
+        s += "<span class='glyphicon glyphicon-warning-sign invalide_glyph'></span><span class='valide_conteneur'><span class='valide_texte'>"+o["commentaire_valide"]+".</span></span> ";
+      }
+    }
+    if (o["valide_desc"] != null) {
+      if (o["valide_desc"] == 0) {
+        s += "<span class='glyphicon glyphicon-warning-sign invalide_glyph'></span><span class='valide_conteneur'><span class='valide_texte'>descendants: "+o["commentaire_valide_desc"]+".</span></span> ";
+      }
+    }
+    s += '<a class="enseignant" href="service.php?id_enseignant='+o["id_enseignant"]+'">'+o["prenom_enseignant"]+" "+o["nom_enseignant"]+'</a><span class="hiddenvalue">'+o["id_enseignant"]+'</span>';
+    c.html(s);
 	c.find("a.enseignant").click(function(){window.open(this.href);return false;});
     }
 }
@@ -466,8 +478,8 @@ microsformation.prototype = new cell();
 function intitule() {
     this.name = "intitule";
     this.setval = function (c,o) {
-	var s;
-	s = o["nom"];
+        var s = "";
+	s += o["nom"];
 	if (o["annee_etude"] != null) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);

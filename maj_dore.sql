@@ -194,3 +194,26 @@ ALTER TABLE `pain_service` ADD
         `id_section` int(3) unsigned NOT NULL DEFAULT '0'
   AFTER `categorie`;
 --- fin commit
+
+
+--- commit
+CREATE TABLE `pain_validation_cours` (
+  `id_cours` int(10) unsigned NOT NULL,
+  `id_formation` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_cours (id_cours),
+  KEY id_formation (id_formation)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+CREATE TABLE `pain_validation_tranche` (
+  `id_tranche` int(10) unsigned NOT NULL,
+  `id_cours` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_tranche (id_tranche),
+  KEY id_cours (id_cours)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+--- fin commit

@@ -1063,11 +1063,11 @@ div.caption {
     padding: 2px;
     padding-bottom: 0px;
 }
-.tot_detail_conteneur {
+.valide_conteneur, .tot_detail_conteneur {
     position: relative;
     top: -3px;
 }
-.tot_detail {
+.valide_texte, .tot_detail {
     color: #DDD;
     background-color:#333;
     font-size: 0.8em;
@@ -1079,17 +1079,21 @@ div.caption {
     padding-right: 2px;
     display: none;
 }
-
-.tot_complexe:hover {
+.valide_texte {
+    max-width: 40em;
+}
+.invalide_glyph {
+    color: #D9534F; /* color: danger (bootstrap) */
+}
+.invalide_glyph:hover, .tot_complexe:hover {
     border: thin #333 solid;
 }
-.tot_complexe:hover + .tot_detail_conteneur > .tot_detail, .tot_detail:hover {
+.invalide_glyph:hover + .valide_conteneur > .valide_texte, .valide_texte:hover, .tot_complexe:hover + .tot_detail_conteneur > .tot_detail, .tot_detail:hover {
     display: inline;
 }
 .forceinline {
     display: inline;
 }
-
 td.inactive {
 /*    background-color: #EFF6FF; */
     background-image: url("img/hachure2.png");

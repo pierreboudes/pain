@@ -225,9 +225,16 @@ if (isset($_GET["type"])) {
 
 if (isset($_GET["id"])) {
     $id = getnumeric("id");
-
+    error_log('salut ---------------------');
     json_modify_php($annee, $readtype, $id);
 
+    if (($readtype == 'tranche') && (isset($_GET["declarer"]) || isset($_GET["id_enseignant"]))) {
+        validation_tranches();
+    }
+    if (($readtype == 'cours') && isset($_GET["code_ue"])) {
+        validation_cours();
+        validation_tranches();
+    }
     /* affichage de la nouvelle entree en json */
     unset($_GET["id_parent"]);
     include("json_get.php");

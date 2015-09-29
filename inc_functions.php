@@ -1124,4 +1124,63 @@ function ig_historique($h) {
     echo $h["message"];
     echo '</div>';
 }
+
+
+
+function validation_cours() {
+    global $link;
+    $q ='   TRUNCATE table pain_validation_cours';
+       $r = $link->query($q)
+      or die("validation_cours(), $q ".$link->error);
+    $q = 'INSERT INTO pain_validation_cours (id_cours, id_formation, valide, commentaire_validation, modification)
+SELECT id_cours, id_formation, 1, \'valide\', NOW()
+FROM
+(((SELECT id_sformation FROM pain_sformation WHERE annee_universitaire = 2015) as sf
+JOIN (pain_formation) USING (id_sformation))
+JOIN (pain_cours) USING (id_formation));';
+   $r = $link->query($q)
+      or die("validation_cours(), $q ".$link->error);
+   /* on commence par valider les codes UE */
+   $q = 'UPDATE pain_validation_cours SET valide = 0, commentaire_validation = \' code ue inconnu\' WHERE
+id_cours in
+(
+        select id_cours FROM
+        (pain_cours LEFT JOIN commun.codesue USING (code_ue))
+        WHERE commun.codesue.intitule_cours IS NULL
+);';
+    $r = $link->query($q)
+       or die("validation_cours(), $q ".$link->error);
+}
+
+
+function validation_tranches() {
+    global $link;
+    $q = 'TRUNCATE TABLE pain_validation_tranche';
+    $r = $link->query($q)
+       or die("validation_tranches(), $q ".$link->error);
+    $q = 'INSERT INTO pain_validation_tranche (id_tranche, id_cours, valide, commentaire_validation, modification)
+SELECT id_tranche, id_cours, 1, \'valide\', NOW()
+FROM  ((pain_validation_cours)
+JOIN (pain_tranche) USING (id_cours))';
+       $r = $link->query($q)
+       or die("validation_tranches(), $q ".$link->error);
+    /* on commence par chercher les stages sans noms de stagiaires */
+    $q = 'UPDATE pain_validation_tranche, pain_tranche
+SET valide = 0, commentaire_validation = \' nom du stagiaire manquant (colonne masquée "Déclarer")\'
+WHERE
+pain_validation_tranche.id_tranche = pain_tranche.id_tranche
+AND
+pain_tranche.id_enseignant > 9
+AND
+CHAR_LENGTH(pain_tranche.declarer) < 3
+AND
+pain_tranche.id_cours in
+(
+        select id_cours FROM
+        (pain_cours LEFT JOIN commun.codesue USING (code_ue))
+        WHERE commun.codesue.intitule_cours LIKE \'%stage\'
+);';
+    $r = $link->query($q)
+       or die("validation_tranches(), $q ".$link->error);
+}
 ?>

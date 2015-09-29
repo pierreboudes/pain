@@ -249,3 +249,23 @@ CREATE TABLE IF NOT EXISTS `sectionscnu` (
   `intitule_section` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id_section`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `pain_validation_cours` (
+  `id_cours` int(10) unsigned NOT NULL,
+  `id_formation` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_cours (id_cours),
+  KEY id_formation (id_formation)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+CREATE TABLE `pain_validation_tranche` (
+  `id_tranche` int(10) unsigned NOT NULL,
+  `id_cours` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_tranche (id_tranche),
+  KEY id_cours (id_cours)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;

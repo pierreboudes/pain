@@ -84,16 +84,20 @@ function json_get_php($annee, $readtype) {
     } else if ($readtype == "formation") {
 	$type = "formation";
 	$counttype = "cours";
+    $validdesctype = "cours";
 	$par = "id_sformation";
 	$order = "ORDER BY numero ASC";
     } else if ($readtype == "cours") {
 	$type = "cours";
+    $validtype = "cours";
+    $validdesctype = "tranche";
 	$counttype = "tranche";
     $extracounttype = "choix";
 	$par = "id_formation";
 	$order = "ORDER BY semestre, nom_cours ASC";
     } else if ($readtype == "tranche") {
 	$type = "tranche";
+    $validtype = "tranche";
 	$par  = "id_cours";
 	$order = "ORDER by groupe ASC";
     } else if ($readtype == "choix") {
@@ -426,8 +430,14 @@ and pain_sformation.annee_universitaire = ".$annee."
                       pain_$type.*,
                        \"$type\" AS type,
                       pain_$type.id_$type AS id,";
-	   if (isset($counttype)) {
-	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
+       if (isset($counttype)) {
+           $requete .= "(SELECT count(id_$counttype) FROM pain_$counttype WHERE pain_$counttype.id_$type =  pain_$type.id_$type) as nb_$counttype, ";
+       }
+       if (isset($validtype)) {
+	       $requete .= "BIT_AND(pain_validation_$validtype.valide) as valide, GROUP_CONCAT(pain_validation_$validtype.commentaire_validation) as commentaire_valide, ";
+	   }
+       if (isset($validdesctype)) {
+	       $requete .= "BIT_AND(valdesc.valide) as valide_desc, GROUP_CONCAT(valdesc.commentaire_validation) as commentaire_valide_desc, ";
 	   }
        if (isset($extracounttype)) {
            /* cas particulier du cours */
@@ -436,16 +446,19 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   $requete .= "pain_enseignant.prenom AS prenom_enseignant,
                       pain_enseignant.nom AS nom_enseignant
              FROM pain_$type";
-	   if (isset($counttype)) {
-	       $requete .= " LEFT JOIN pain_$counttype ON pain_$counttype.id_$type = pain_$type.id_$type";
+       if (isset($validtype)) {
+	       $requete .= " LEFT JOIN pain_validation_$validtype ON pain_validation_$validtype.id_$type = pain_$type.id_$type";
 	   }
+       if (isset($validdesctype)) {
+	       $requete .= " LEFT JOIN (SELECT * FROM pain_validation_$validdesctype WHERE pain_validation_$validdesctype.valide = 0) as valdesc ON valdesc.id_$type = pain_$type.id_$type";
+ 	   }
 	   $requete .= ", pain_enseignant
              WHERE pain_$type.$par = $id_par
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant ";
-	   if (isset($counttype)) {
+	   if (isset($validtype) || isset($validdesctype)) {
 	       $requete .= "GROUP BY id_$type ";
 	   }
-             $requete .= $order;
+       $requete .= $order;
        }
        $resultat = $link->query($requete)
 	   or die("Échec de la requête sur la table $type".$requete."\n".$link->error);

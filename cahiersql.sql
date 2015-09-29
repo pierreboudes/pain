@@ -427,3 +427,86 @@ WHERE annee_universitaire = 2014
 USING (id_enseignant))
 JOIN pain_categorie USING (id_categorie)
 WHERE 1
+
+-----
+SELECT sf.nom, informatique.pain_formation.nom, informatique.pain_formation.annee_etude, informatique.pain_formation.parfum, informatique.pain_cours.nom_cours, informatique.pain_cours.descriptif
+FROM
+((((SELECT * FROM informatique.pain_sformation WHERE annee_universitaire = 2014) as sf
+JOIN (informatique.pain_formation) USING (id_sformation))
+JOIN (informatique.pain_cours) USING (id_formation))
+NATURAL JOIN (select id_cours from informatique.pain_tranche where id_enseignant > 9  group by id_cours) as tr)
+LEFT JOIN commun.codesue USING (code_ue)
+WHERE commun.codesue.intitule_cours IS NULL
+
+
+
+
+
+--- Validation
+
+
+DROP TABLE IF EXISTS pain_validation_cours;
+DROP TABLE IF EXISTS pain_validation_tranche;
+
+CREATE TABLE `pain_validation_cours` (
+  `id_cours` int(10) unsigned NOT NULL,
+  `id_formation` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_cours (id_cours),
+  KEY id_formation (id_formation)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+
+CREATE TABLE `pain_validation_tranche` (
+  `id_tranche` int(10) unsigned NOT NULL,
+  `id_cours` int(10) unsigned NOT NULL,
+  `valide` tinyint(1) NOT NULL,
+  `commentaire_validation` varchar(256) NOT NULL,
+  `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY id_tranche (id_tranche),
+  KEY id_cours (id_cours)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+
+
+TRUNCATE table pain_validation_cours;
+
+INSERT INTO pain_validation_cours (id_cours, id_formation, valide, commentaire_validation, modification)
+SELECT id_cours, id_formation, 1, 'valide', NOW()
+FROM
+(((SELECT id_sformation FROM pain_sformation WHERE annee_universitaire = 2015) as sf
+JOIN (pain_formation) USING (id_sformation))
+JOIN (pain_cours) USING (id_formation));
+
+UPDATE pain_validation_cours SET valide = 0, commentaire_validation = ' code ue inconnu' WHERE
+id_cours in
+(
+        select id_cours FROM
+        (pain_cours LEFT JOIN commun.codesue USING (code_ue))
+        WHERE commun.codesue.intitule_cours IS NULL
+);
+
+TRUNCATE TABLE pain_validation_tranche;
+
+INSERT INTO pain_validation_tranche (id_tranche, id_cours, valide, commentaire_validation, modification)
+SELECT id_tranche, id_cours, 1, 'valide', NOW()
+FROM  ((pain_validation_cours)
+JOIN (pain_tranche) USING (id_cours));
+
+UPDATE pain_validation_tranche, pain_tranche
+SET valide = 0, commentaire_validation = (concat(commentaire_validation, ' stage sans nom du stagiaire'))
+WHERE
+pain_validation_tranche.id_tranche = pain_tranche.id_tranche
+AND
+pain_tranche.id_enseignant > 9
+AND
+pain_tranche.declarer LIKE ""
+AND
+pain_tranche.id_cours in
+(
+        select id_cours FROM
+        (pain_cours LEFT JOIN commun.codesue USING (code_ue))
+        WHERE commun.codesue.intitule_cours LIKE '%stage'
+);
