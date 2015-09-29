@@ -497,7 +497,7 @@ function total_complexe(o, nom, prefixe) {
 	+htdpostes(o[prefixe+"prp"])
 	+'&nbsp;PRP +&nbsp;'
 	+htdpostes(o[prefixe+"referentiel"])
-	+'&nbsp;réf. +&nbsp;'
+	+'&nbsp;réf.'
 	+"</span>"
 	+"</span>";
     return s;
