@@ -163,7 +163,7 @@ if ($profondeur > 0) {
 code_ue, code_etape_cours) SELECT pain_cours.id_cours as id_cours_prev,
 pain_formation.id_formation, pain_cours.semestre,
 pain_cours.nom_cours, pain_cours.credits, pain_cours.id_enseignant,
-pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt, , pain_cours.prp, pain_cours.referentiel,
+pain_cours.cm, pain_cours.td, pain_cours.tp, pain_cours.alt, pain_cours.prp, pain_cours.referentiel,
 pain_cours.descriptif, pain_cours.code_ue, pain_cours.code_etape_cours FROM pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
 
