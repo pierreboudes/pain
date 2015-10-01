@@ -309,7 +309,7 @@ table.cours {
 }
 
 .enseignant {
-    min-width: 100px; /* 200 */
+    min-width: 80px; /* 200 */
 }
 
 .email {
@@ -410,14 +410,14 @@ td.service_annuel, td.service_reel  {
 
 /* dimensions pour les tranches */
 .remarque {
-    width: 140px;
+    width: 90px;
 }
 td.declarer {
     background-color: #FFFFEE;
 }
 
 .declarer {
-    width: 100px;
+    width: 90px;
 }
 
 .type_conversion {
