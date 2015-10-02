@@ -456,7 +456,7 @@ CREATE TABLE `pain_validation_cours` (
   `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY id_cours (id_cours),
   KEY id_formation (id_formation)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 CREATE TABLE `pain_validation_tranche` (
@@ -467,7 +467,7 @@ CREATE TABLE `pain_validation_tranche` (
   `modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY id_tranche (id_tranche),
   KEY id_cours (id_cours)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 
