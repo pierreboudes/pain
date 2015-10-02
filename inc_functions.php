@@ -887,7 +887,7 @@ ORDER by pain_formation.numero ASC, pain_cours.semestre ASC";
 }
 
 function ig_totauxinterventions($totaux) {
-    echo '<th style="text-align:right;" colspan="4">';
+    echo '<th style="text-align:right;" colspan="5">';
     echo 'totaux';
     echo '</th>';
     echo '<td class="CM">'.$totaux["cm"].'</td>';
@@ -1147,7 +1147,8 @@ id_cours in
         select id_cours FROM
         (pain_cours LEFT JOIN commun.codesue USING (code_ue))
         WHERE commun.codesue.intitule_cours IS NULL
-);';
+)
+;';
     $r = $link->query($q)
        or die("validation_cours(), $q ".$link->error);
 }
