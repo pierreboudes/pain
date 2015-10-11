@@ -217,3 +217,7 @@ CREATE TABLE `pain_validation_tranche` (
   KEY id_cours (id_cours)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 --- fin commit
+
+-- commit
+ALTER TABLE `codesue` ADD `id_codeue` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
+--- fin commit
