@@ -1,3 +1,4 @@
+
 -- mauvais default a la creation des tables (fix)
 ALTER TABLE pain_categorie DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER TABLE pain_listes DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -186,7 +187,7 @@ ALTER TABLE `pain_tranche` ADD
 --- fin commit
 
 
---- commit
+--- commit 64ee2673082e60e3c73ec7ed60b596f1bb265776
 ALTER TABLE `pain_enseignant` ADD
         `id_section` int(3) unsigned NOT NULL DEFAULT '0'
   AFTER `categorie`;
@@ -196,7 +197,7 @@ ALTER TABLE `pain_service` ADD
 --- fin commit
 
 
---- commit
+--- commit 30cf90375cd381d6f58933e2d25e20ef6781020d
 CREATE TABLE `pain_validation_cours` (
   `id_cours` int(10) unsigned NOT NULL,
   `id_formation` int(10) unsigned NOT NULL,
@@ -218,6 +219,6 @@ CREATE TABLE `pain_validation_tranche` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 --- fin commit
 
--- commit
+-- commit 7620893f3212604dc2f94396fe3d8692bba73aab
 ALTER TABLE `codesue` ADD `id_codeue` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
 --- fin commit
