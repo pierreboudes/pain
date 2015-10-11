@@ -24,6 +24,7 @@
 var config_choisir_tout_cours = false; /* faire un vrai systeme de configuration ! */
 var hasTouch = false;
 var clickeditmode = false;
+var extendedcommand = false;
 
 $(document).ready(function(){
 	var agent = navigator.userAgent.toLowerCase();
@@ -32,10 +33,25 @@ $(document).ready(function(){
 	   || agent.indexOf('android') >= 0){
 	    hasTouch = true;
 	}
+  (function () {/* espace de nom privé */
+    var timerid;
+    var timerextend;
 
+    $(document).keypress(function (e) {
+      if (e.which == (97 + 23) ) { /* a = 97, ajouter 23 donne x */
+        window.clearTimeout(timerextend);
+        timerextend = window.setTimeout(function () {
+          extendedcommand = false;
+          console.log('extended command off')
+        }, 4000); /* 4s après */
+        extendedcommand = true;
+        console.log('extended command on !')
+        return false;
+      }
+      return true;
+    }
+                        );
 
-	(function () {/* espace de nom privé */
-	    var timerid;
 
 	    function clickedit () {
 		var bouton = $('#bouton-clickedit');
@@ -1670,8 +1686,7 @@ function basculerSuperFormation(e) {
   /* changement d'etat de la bascule (classes On Off)*/
   bascule.toggleClass('basculeOff');
   bascule.toggleClass('basculeOn');
-  /* en cas de meta-click (ctrl ou commande sur mac), on basculera
-     les bascules identiques */
+  /* basculer */
   basculerIdentiques(bascule, e);
   /* effacement (off) ou affichage (on) de la descendance */
   if (bascule.hasClass('basculeOff')) {/* effacement du tr contenant la descendance */
@@ -1708,10 +1723,14 @@ function basculerSuperFormation(e) {
 /* En cas de meta-click on fait une bascule identique sur les bascules */
 /* de la même section */
 function basculerIdentiques(bascule, e) {
-  if (e.metaKey) {
+  if (e.metaKey || extendedcommand) {
     var onoff = ".basculeOff";
     if (bascule.hasClass('basculeOff')) {
       onoff = ".basculeOn";
+    }
+    if (extendedcommand) {
+      extendedcommand = false;
+      console.log('extended command off');
     }
     e.preventDefault();
     var bascules = bascule.closest("tbody").children("tr").children("td.laction").find(onoff).trigger("click");
@@ -1754,7 +1773,7 @@ function basculerCours(e) {
     var bascule =  $('#basculecours_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
-    basculerIdentiques(bascule, e); /* meta-click */
+    basculerIdentiques(bascule, e);
     if (bascule.hasClass('basculeOn')) {
         var colspan = largeurligne(bascule);
 	$('#'+sid).after('<tr class="conteneur" id="trtabletranches'+id+'"><td class="conteneur" colspan="'+colspan+'"><table id="tabletranches_'+id+'" class="tranches"><tbody></tbody></table></td></tr>');
@@ -1787,7 +1806,7 @@ function basculerCategorie(e) {
     var bascule =  $('#basculeCat_'+id);
     bascule.toggleClass('basculeOff');
     bascule.toggleClass('basculeOn');
-    basculerIdentiques(bascule, e); /* meta-click */
+    basculerIdentiques(bascule, e);
     if (bascule.hasClass('basculeOn')) {
 	$('#'+idString({id: id, type: "tablecat"}))
 	    .append('<tr id="trtableens_'+id+'"><td class="nopadding" colspan="3"><table id="tableens_'+id+'" class="enseignants"><tbody></tbody></table>');
@@ -2617,7 +2636,7 @@ function appendItem(type, prev, o, list) {
 	/* bascule de sformation */
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculesformation_'+idsf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
-	$('#basculesformation_'+idsf).bind('click',{id: idsf},basculerSuperFormation);
+      $('#basculesformation_'+idsf).bind('click',{id: idsf},basculerSuperFormation);
 	addHandle(line.children('td.laction'), "sformation");
 	$('#basculesformation_'+idsf).droppable({accept:'div.handle.formation', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
     }
@@ -2634,7 +2653,7 @@ function appendItem(type, prev, o, list) {
 	/* bascule de formation */
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeformation_'+idf+'"><div class="nbbasc">'+nbbasc+'</div></div>');
-        $('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
+      $('#basculeformation_'+idf).bind('click',{id: idf},basculerFormation);
 	$('#basculeformation_'+idf).droppable({accept:'div.handle.cours', drop: dropLine, activeClass: 'bascule-highlight',tolerance:'touch'});
 	/* */
 	var colspan = largeurligne($("#skelformation"));
@@ -2657,7 +2676,7 @@ function appendItem(type, prev, o, list) {
 	if (0 == nbbasc) classzero = " basculeZero";
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeenseignant_'+o["id_enseignant"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
-	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
+	.bind('click',{id: o["id_enseignant"]},basculerEnseignant)
     }
     addRm(line.find('td.action'));
 }
