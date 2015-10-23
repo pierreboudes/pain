@@ -243,7 +243,7 @@ if (isset($_GET["id_parent"])) {
 	 * formation (ainsi une nouvelle année aura ces enseignants
 	 * dès la première sformation) */
 	$query = "REPLACE INTO pain_service ".
-	    "(id_enseignant, annee_universitaire, categorie, id_section ".
+	    "(id_enseignant, annee_universitaire, categorie, id_section, ".
 	    "service_annuel, service_reel) ".
 	    "SELECT pain_enseignant.id_enseignant, $id_parent, ".
 	    "  pain_enseignant.categorie, ".
