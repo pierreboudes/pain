@@ -104,8 +104,8 @@ function superDeLaFormation(id_formation) {
 
 function montrerFormation(id_formation) {
     var id_sformation = superDeLaFormation(id_formation);
-    var basculeS =  $('#basculesuper'+id_sformation);
-    var basculeF =  $('#basculeformation'+id_formation);
+    var basculeS =  $('#basculesuper_'+id_sformation);
+    var basculeF =  $('#basculeformation_'+id_formation);
     if (basculeS.hasClass('basculeOff')) {
 	basculerSuperFormation(id_sformation);
     }

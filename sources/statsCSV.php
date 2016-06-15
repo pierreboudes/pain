@@ -19,39 +19,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('inc_connect_ro.php');
+require_once('authentication.php');
+$user = authentication();
+$annee = get_and_set_annee_menu();
 require_once("inc_headers.php"); /* pour en-tete et pied de page */
-entete("statistiques CSV","pain.js");
+entete("statistiques CSV","pain_statsCSV.js");
 require_once('utils.php');
-$user="";
 include("menu.php");
+require_once('inc_droits.php');
 require_once('inc_functions.php');
-// require_once('inc_statsfunc.php');
+//require_once('inc_statsfunc.php');
+/**
+
 
 /**
 génére le code HTML de la page statsCSV
  */
-
-$ANNEE = getnumeric("annee");
-if (NULL == $ANNEE &&
-	isset($_COOKIE["painAnnee"]) && $_COOKIE["painAnnee"]>2000 && $_COOKIE["painAnnee"]<2500) {
-
-        $ANNEE=$_COOKIE["painAnnee"];
-} else {
-	$ANNEE = date('Y', strtotime('-5 month'));
-}
-
-
+$ANNEE=$annee;
 $ANNEENEXT=$ANNEE+1;
 
 //categorie=2 pour les permanents par défaut, espèrons que cela ne changera pas !
 // id_enseignant=1 : cours annulé.
 
 $req = "CREATE TEMPORARY TABLE tmp
-	SELECT pain_enseignant.nom,prenom, pain_enseignant.categorie,
+	SELECT pain_enseignant.JCid, 
+	pain_enseignant.nom,prenom, pain_enseignant.categorie,
 	  pain_sformation.nom as 'sform', 
 	  pain_formation.nom as 'form', 
-	  nom_cours,pain_tranche.cm,pain_tranche.td,semestre,pain_cours.code_geisha as code
+	  nom_cours,pain_tranche.cm,
+	  pain_tranche.alt,
+          pain_tranche.td,semestre,pain_cours.code_geisha as code
 	FROM pain_sformation,pain_formation, pain_enseignant, pain_cours, pain_tranche
 	WHERE pain_sformation.annee_universitaire = $ANNEE 
 	AND pain_sformation.nom != 'PRP/référentiel'
@@ -73,14 +70,15 @@ $liste = $link->query($reqListe)
 
 $fp = fopen("bkp/stats$ANNEE-$ANNEENEXT.csv",'w');
 
-fwrite($fp,"Nom;Prenom;Categorie;sForm.;Form.;Cours;CM;TD;Code\n");
+fwrite($fp,"JCid;Nom;Prenom;Categorie;sForm.;Form.;Cours;CM;CTD;TD;Code\n");
 while ($sPerm = $liste->fetch_assoc()) {
 	fwrite($fp, html_entity_decode(
-		$sPerm['nom'].';'.$sPerm['prenom'].';'.$sPerm['categorie']
+		$sPerm['JCid'].';'
+		.$sPerm['nom'].';'.$sPerm['prenom'].';'.$sPerm['categorie']
 		.';'.$sPerm['sform']
 		.';'.$sPerm['form']
-		.';'.$sPerm['nom_cours']
-		.';'.$sPerm['cm'].';'.$sPerm['td'],
+		.';'.str_replace(',', ':', $sPerm['nom_cours']) //pb , dans csv
+		.';'.$sPerm['cm'].';'.$sPerm['alt'].';'.$sPerm['td'],
 		ENT_QUOTES)."\n");
 }
 fclose($fp);
@@ -98,10 +96,14 @@ $listePerm = $link->query($reqListePerm)
 	            or die('Échec de la requête'.$reqListePerm."\n".$link->error);
 
 $fp = fopen("bkp/statsPerm$ANNEE-$ANNEENEXT.csv",'w');
-fwrite($fp,"Nom;Prenom;Cours;Form.;CM;TD;Code\n");
+fwrite($fp,"JCid;Nom;Prenom;Cours;Form.;CM;CTD;TD;Code\n");
 while ($sPerm = $listePerm->fetch_assoc()) {
 	fwrite($fp, html_entity_decode(
-		$sPerm['nom'].';'.$sPerm['prenom'].';'.$sPerm['nom_cours'].';'.$sPerm['form'].';'.$sPerm['cm'].';'.$sPerm['td'].';'.$sPerm['code'],
+		$sPerm['JCid'].';'
+		.$sPerm['nom'].';'.$sPerm['prenom'].';'
+		.$sPerm['nom_cours'].';'
+		.$sPerm['form'].';'
+		.$sPerm['cm'].';'.$sPerm['alt'].';'.$sPerm['td'].';'.$sPerm['code'],
 		ENT_QUOTES)."\n");
 }
 fclose($fp);
@@ -111,7 +113,9 @@ echo '<a href="bkp/statsPerm'.$ANNEE.'-'.$ANNEENEXT.'.csv">www-info.iutv.univ-pa
 echo '<p></p>';
 echo '<h3> Sommes par domaine</h3>';
 
-$reqListe="SELECT sum(pain_tranche.cm) as cm,sum(pain_tranche.td) as td,
+$reqListe="SELECT sum(pain_tranche.cm) as cm,
+		sum(pain_tranche.alt) as ctd,
+	sum(pain_tranche.td) as td,
 	ifnull(pain_cours.code_geisha,'Autre') as Domaine
 	FROM pain_sformation, pain_formation, pain_enseignant, pain_cours, pain_tranche
 	WHERE pain_sformation.annee_universitaire = $ANNEE 
@@ -134,10 +138,10 @@ $liste = $link->query($reqListe)
 	                    or die('Échec de la requête'.$reqListe."\n".$link->error);
 
 echo '<p align="center"><table><thead align="center"><tr>
-	<th>Total CM</th><th>Total TD</th><th>Domaine</th></tr></thead>';
+	<th>Total CM</th><th>Total CTD</th><th>Total TD</th><th>Domaine</th></tr></thead>';
 echo '<tbody>';
 while ($s = $liste->fetch_assoc()) {
-	echo '<tr><td>'.$s['cm'].'</td><td>'.$s['td'].'</td><td>'.$s['Domaine'].'</td></tr>';
+	echo '<tr><td>'.$s['cm'].'</td><td>'.$s['ctd'].'</td><td>'.$s['td'].'</td><td>'.$s['Domaine'].'</td></tr>';
 }
 echo '</tbody></table>';
 
@@ -146,10 +150,10 @@ $listePerm = $link->query($reqListePerm)
 	                    or die('Échec de la requête'.$reqListePerm."\n".$link->error);
 
 echo '<p align="center"><table><thead align="center"><tr>
-	<th>Total CM</th><th>Total TD</th><th>Domaine</th></tr></thead>';
+	<th>Total CM</th><th>Total CTD</th><th>Total TD</th><th>Domaine</th></tr></thead>';
 echo '<tbody>';
 while ($s = $listePerm->fetch_assoc()) {
-	echo '<tr><td>'.$s['cm'].'</td><td>'.$s['td'].'</td><td>'.$s['Domaine'].'</td></tr>';
+	echo '<tr><td>'.$s['cm'].'</td><td>'.$s['ctd'].'</td><td>'.$s['td'].'</td><td>'.$s['Domaine'].'</td></tr>';
 }
 echo '</tbody></table>';
 echo '</center>';

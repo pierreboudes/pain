@@ -126,6 +126,14 @@ function json_get_php($annee, $readtype) {
 
 //select pain_choix.*, if((select count(*) from pain_tranche as pt where pt.id_cours= pain_choix.id_cours)<(select count(*) from pain_choix as pc where pc.id_cours= pain_choix.id_cours),'0','1') as pb from pain_choix where id_enseignant=137;
 	$requete = "SELECT pain_choix.*,
+IF( (SELECT COUNT(*) FROM pain_tranche AS pt WHERE pt.id_cours= pain_choix.id_cours)
+    >=(SELECT COUNT(*) FROM pain_choix AS pc WHERE pc.id_cours= pain_choix.id_cours)
+ AND
+ (pain_choix.cm,pain_choix.td,pain_choix.tp,pain_choix.alt,pain_choix.ctd) IN
+   (select IFNULL(cm,0),IFNULL(td,0),IFNULL(tp,0),IFNULL(alt,0),IFNULL(ctd,0)
+     FROM pain_tranche WHERE id_cours=pain_choix.id_cours and id_enseignant=3)
+,'o','n')
+       AS valide,
                            pain_choix.id_choix AS id_longchoix,
                            pain_choix.id_choix AS id,
                            pain_cours.nom_cours, 
@@ -278,7 +286,7 @@ nom_cours ASC";
     } else if ($readtype == "responsabilite" and isset($_GET['id_parent'])) {
 	$id_par =  getnumeric("id_parent");
 	$requete = "(select 
-concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', IF (annee_etude=0,'',annee_etude)) as resp_nom,
+concat('cours: ', nom_cours, ', ', pain_formation.nom, ' ', pain_sformation.nom,' ',IF (annee_etude=0,'',annee_etude)) as resp_nom,
 concat('c', id_cours) as id_responsabilite,
 1 as resp_type_num
 from pain_cours, pain_formation, pain_sformation
@@ -460,8 +468,8 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   }
              $requete .= $order;
        }
-	/*if ($type == 'cours')
-	pain_log($requete);*/
+//if ($type == 'tranche')
+//	pain_log($requete);
 
        $resultat = $link->query($requete) 
 	       or pain_log("Échec de la requête sur la table $type".$requete."\n".$link->error);
@@ -476,6 +484,9 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   $requete = "SELECT \"$type\" AS type,
                        $id AS id,
                       pain_$type.*,";
+	/* Dirty Patch by FB  */
+	   if ($type=='cours')
+			$requete .= 'pain_tag.nom_tag AS nom_tag,'; 
 	   if (isset($counttype)) {
 	       $requete .= "COUNT(id_$counttype) as nb_$counttype, ";
 	   }
@@ -485,6 +496,12 @@ and pain_sformation.annee_universitaire = ".$annee."
 	   if (isset($counttype)) {
 	       $requete .= " LEFT JOIN pain_$counttype ON pain_$counttype.id_$type = pain_$type.id_$type";
 	   }
+	/* Dirty Patch by FB  */
+		if ($type=='cours') {
+			$requete .= " LEFT JOIN pain_tagscours ON pain_cours.id_cours = pain_tagscours.id_cours";
+			$requete .= " LEFT JOIN pain_tag ON pain_tagscours.id_tag =pain_tag.id_tag";
+		}
+
 	   $requete .= ", pain_enseignant 
              WHERE pain_$type.id_$type = $id
              AND pain_$type.id_enseignant = pain_enseignant.id_enseignant ";

@@ -33,7 +33,7 @@ function debug_show_id($s) {
 }
 
 require_once('authentication.php');
-authrequired();
+//authrequired();
 require_once("utils.php");
 require_once("inc_actions.php");
 require_once("inc_droits.php");
@@ -42,11 +42,15 @@ require_once("inc_droits.php");
 function ig_formselectenseignants($id_enseignant) /* obsolete, modifier inc_service */
 {
     global $link;
-/*    global $annee;
+    global $annee;
     if ($annee == NULL) $annee = annee_courante();
-*/
-    $qens = "SELECT `id_enseignant`, `prenom`, `nom`
-             FROM pain_enseignant WHERE 1 ORDER BY `nom`, `prenom` ASC";
+
+
+    $qens = "SELECT pain_enseignant.id_enseignant, prenom, pain_enseignant.nom "
+             ."FROM pain_service, pain_enseignant "
+	     ."WHERE pain_service.annee_universitaire=$annee "
+	     ."and pain_service.id_enseignant=pain_enseignant.id_enseignant "
+ 	     ."ORDER BY pain_enseignant.nom, prenom ASC";
     $rens = $link->query($qens)
 	  or die("Échec de la requête sur la table enseignant");
     while ($ens = $rens->fetch_array()) {
@@ -994,12 +998,16 @@ function historique_par_cmp($type, $before, $after) {
 		$modifie = true;
 		$s .= '<div class="champ">';
 		$s .= $key;
-		$s .= '</div>';
-		$s .= '<div class="before">';
-		$s .= $value;
-		$s .= '</div>';
-		$s .= '<div class="after">';
-		$s .= $after[$key];
+		$s .= '</div><div class="before">';
+		if (0 == strcmp($key, "id_enseignant")) {
+			$tab= selectionner_enseignant($value);
+			$s .= $tab['nom'] . '</div><div class="after">';
+			$tab2= selectionner_enseignant($after[$key]);
+			$s .= $tab2['nom'];
+		}else {
+			$s .= $value. '</div><div class="after">';
+			$s .= $after[$key];
+		}
 		$s .= '</div>';
 	    }
 	}
@@ -1108,9 +1116,9 @@ function ig_historique($h) {
     echo $h["message"];
 	if ($h["type"]>1) {
 		if (strlen($cours['nom_cours'])>8) 
-			echo ', dans cours ', substr($cours['nom_cours'],0,6).'...';
+			echo ', dans ', substr($cours['nom_cours'],0,6).'...';
 		else
-			echo ', dans cours '. $cours['nom_cours'];
+			echo ', dans '. $cours['nom_cours'];
 	}
     echo '</div>';
 }

@@ -137,7 +137,6 @@ function cell() {
     }
 }
 
-
 function checkcell() {
     this.name ="checkcell";
     this.mutable = true;
@@ -476,10 +475,14 @@ microsformation.prototype = new cell();
 function valide() {
 	this.name = "valide";
 	this.setval = function (c,o) {
-		if (o["valide"]== "0")
-  			c.text("nok");
-		else
-			c.text("ok");
+		if (o["valide"]=="n") {
+		    c.html('<a href="afficheChoix.php?id='+o["id_choix"]
+			+'"><span class="ui-icon ui-icon-alert"></span>');
+		   $("#longchoix_"+o["id_choix"]).addClass("invalide");
+		} else {
+		   /*$("#longchoix_"+o["id_choix"]).removeClass("invalide");
+		    c.html('<span class="ui-icon ui-icon-check"></span>');*/
+		}
          }
 }
 valide.prototype = new immutcell();
@@ -1160,6 +1163,10 @@ function ligne() {
     /* login */
     this.login = new cell();
     this.login.name = "login";
+    this.loginp13 = new cell();
+    this.loginp13.name = "loginp13";
+    this.JCid = new cell();
+    this.JCid.name = "JCid";
     /* nom */
     this.nom = new cell();
     this.nom.name = "nom";
@@ -2723,7 +2730,9 @@ function replaceLine(tabo) {
     var o = tabo[0];
     var id = idString(o);
     var ligne = $('#'+id);
-    ligne.attr('class', o.type);
+    //ligne.attr('class', o.type);
+    ligne.addClass(o.type);
+    ligne.removeClass("edit");
     ligne.children('td').not('td.action').not('td.laction').each(
 	function () {
 	    var td = $(this);

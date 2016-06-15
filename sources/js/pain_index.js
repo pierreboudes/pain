@@ -28,6 +28,17 @@ function getParameterByName(name) {
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function montrerCours(id_sformation,id_formation,id_cours) {
+    $(document).ajaxComplete(function(){   
+	var f=$('#basculeformation_'+id_formation); 
+	var c=$('#basculecours_'+id_cours);
+	if (f.length && f.hasClass('basculeOff')) {f.click();}
+	if (c.length && c.hasClass('basculeOff')) {c.click();}
+	}); 
+    var sf=$('#bascule_sformation'+id_sformation);
+    if (sf.length && sf.hasClass('basculeOff')) {sf.click();}
+}
+
 $(document).ready(function(){
 	/* masquer certaines colonnes et les squelettes de lignes */
 	$('#skelcours').children('th.section, th.credits, th.mcc, th.debut, th.fin, th.tirage, th.inscrits, th.presents, th.totaux_loader, th.collections, th.tags').fadeOut(0); // th.alt, th.inscrits, th.presents,
@@ -68,10 +79,10 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
        appendList({type: "annee", cetteannee: "1"}, /* ajouter quoi ? */
 		  $('#tableannees > tbody'),   /* ou ? */
 		  function(){ /* fonction de post-traitement */
-			$('#tableannees div.basculeOff').click()
+			$('#tableannees div.basculeOff').click();
+
 		      return false;
 		  });
-	/*var id=getParameterByName('id_sformation');*/
 
 /* dialogues */
 	$("#dialog-drop-cours").dialog({
@@ -128,3 +139,18 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 		    });
 	$('#bouton-panier').bind('click', togglePanier);
     });
+
+$(document).ajaxComplete(function(){   
+	var myid_sf=getParameterByName('sf');
+	var myid_f=getParameterByName('f');
+	var myid_c=getParameterByName('c');
+			if (myid_sf.length && myid_f.length && myid_c.length) {
+    			var sf=$('#basculesformation_'+myid_sf);
+			var f=$('#basculeformation_'+myid_f); 
+			var c=$('#basculecours_'+myid_c);
+    			if (sf.length && sf.hasClass('basculeOff')) {
+			sf.click();}
+			if (f.length && f.hasClass('basculeOff')) {f.click();}
+			if (c.length && c.hasClass('basculeOff')) {c.click();}
+			}
+}); 

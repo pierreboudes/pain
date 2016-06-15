@@ -36,6 +36,14 @@ function celluleTableau(tab, ligne, colonne) {
 $(document).ready(function(){
 	attachDrawGraphCat();
 	attachDrawGraphCatForm();
+
+ $( "select" ).change(function () {
+                $(this).children("option:selected" ).each(function() {
+                    location.assign("stats.php?"
+                        + "&annee_menu=" + $("#choixannee select option:selected").val());
+                });
+        });
+
     });
 
 function attachDrawGraphCat() {

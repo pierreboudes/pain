@@ -411,7 +411,7 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
 
 .cm, .td, .tp, .alt, .ctd, .htd, .inscrits, .presents, .tirage,
 .choix_htd, .tranche_htd {
-    width:3%;
+    width:4%;
     min-width:25px;
     max-width:42px;
 }
@@ -989,7 +989,7 @@ th.action > div.palette, td.action > div.palette {
     height: 24px;
     padding: 0px;
     margin: 0px;
-    width: 110px;
+    width: 55px;
     text-align: left;
    /* margin-right: -64px;*/
 }
@@ -1016,7 +1016,7 @@ th.laction > div.palette, td.laction > div.palette , tr.longchoix > th.laction, 
 tr.choix > th.action > div.palette, tr.choix > td.action > div.palette {
     float: left;
     height: 24px;
-    margin-left: -92px;
+    margin-left: -55px;
     text-align: right;
 }
 
@@ -1356,3 +1356,11 @@ table.tableinfobox {
         margin-left:auto;
         margin-right:auto;
 }   
+.valide {
+        width:1%;
+}
+
+.invalide {
+        color:red;
+}
+

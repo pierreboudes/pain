@@ -32,6 +32,7 @@ $annee = annee_courante();
 function json_modify_php($annee, $readtype, $id) {
     global $user;
     global $link;
+
     if ($readtype == "sformation") {
 	$type = "sformation";
 	$par = "annee";
@@ -82,7 +83,7 @@ function json_modify_php($annee, $readtype, $id) {
 	    "choix", "htd", "cm", "td", "tp", "alt", "ctd"
 	    ),
 	"enseignant" => array(
-	    "prenom", "nom", "email", "telephone", "bureau",
+	    "prenom", "nom", "email", "telephone", "bureau", 
 	    "debut", "fin", "responsabilite"
 	    ),
 	"tag" => array(
@@ -97,6 +98,8 @@ function json_modify_php($annee, $readtype, $id) {
 
     if (peuttoutfaire()) {
 	$champs["enseignant"][] = "login";
+	$champs["enseignant"][] = "loginp13";
+	$champs["enseignant"][] = "JCid";
 	$champs["enseignant"][] = "statut";
 	$champs["enseignant"][] ="service";
 	$champs["enseignant"][] = "categorie";
@@ -160,7 +163,7 @@ function json_modify_php($annee, $readtype, $id) {
 	if ($alt < 0) errmsg("alt doit être positif.");
 	$ctd = isset($set["ctd"])?$set["ctd"]:$old["ctd"];
 	if ($ctd < 0) errmsg("ctd doit être positif.");
-	$set["htd"] = 1.5 * $cm + $td + $tp + $alt + 1.125 * $ctd;
+	$set["htd"] = round(1.5 * $cm + $td + $tp + $alt + 1.125 * $ctd,3);
 	if ($set["htd"] < 0) {
 	    errmsg("le total des heures ne peut pas être négatif");
 	}
@@ -180,6 +183,23 @@ function json_modify_php($annee, $readtype, $id) {
     $strset = implode(", ", $setsql);
 
     if ($strset != "") { /* il y a de vraies modifs */
+	/* Si type=enseignant et cet ens n'avait pas de login
+	   alors il faudrait aussi inserer une ligne de plus par défaut 
+	   dans pain_service.*/
+	$creeService=FALSE;
+	if ($type == "enseignant") {
+		$query = "SELECT login, prenom, nom FROM pain_enseignant WHERE ".
+		"id_enseignant = $id";
+		$r=$link->query($query);
+		if (! $r ) {
+	    		errmsg("erreur avec la requete :\n".$query."\n".$link->error);
+		}
+		$rr=$r->fetch_assoc();
+		if ((trim($rr["login"])=="") && (trim($rr["prenom"])=="")){
+			$creeService=TRUE;
+		}
+	}
+
 	$query = "UPDATE pain_${type} ".
 	    "SET $strset, modification = NOW() ".
 	    "WHERE `id_$type`=".$id;
@@ -208,6 +228,16 @@ function json_modify_php($annee, $readtype, $id) {
 	if ($type == "choix") {
 	    $choixnew = selectionner_choix($id);
 	    historique_par_cmp(3, $old, $choixnew);
+	}
+	if ($creeService) {
+		$id_parent=getnumeric("id_parent");
+		$query="INSERT INTO pain_service ".
+			"(id_enseignant,annee_universitaire,categorie,service_annuel) ".
+			"VALUES ($id, $annee, $id_parent, ".getnumeric("service").")";
+		 if (!$link->query($query)) {
+            		errmsg("erreur avec la requete :\n".$query."\n".$link->error);
+        	}
+        	pain_log($query); // LOG DE LA REQUETE !
 	}
     }
 }

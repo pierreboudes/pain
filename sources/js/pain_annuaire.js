@@ -144,5 +144,6 @@ $(document).ready(function(){
     if (existsjQuery($('#formannuairevalues').find('.categories')) && !existsjQuery($('#formannuairevalues').find('.toutescategories'))) {
 	$('#cbtoutescategories').removeAttr('checked');
     };
+
     cycle.change(maj_form_annuaire);
 });

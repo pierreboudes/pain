@@ -254,7 +254,6 @@ if (isset($_GET["id_parent"])) {
 	    errmsg("erreur avec la requete :\n".$query."\n".$link->error);
 	} 
     }
-
     return $id;
 }
 }

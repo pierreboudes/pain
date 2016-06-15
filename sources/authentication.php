@@ -20,18 +20,28 @@
  * along with Pain.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once('CAS.php');
-// error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(E_ALL & ~E_NOTICE);
 //phpCAS::client(CAS_VERSION_2_0,'cas.univ-paris13.fr',443,'/cas/',true);
+phpCAS::setDebug('/var/log/phpCAS.log');
 phpCAS::client(CAS_VERSION_2_0,'portail.cevif.univ-paris13.fr',443,'/cas/',true);
-// phpCAS::setDebug();
-//phpCAS::setNoCasServerValidation();
-phpCAS::setCasServerCACert("/etc/pki/CA/chaine.pem");
+phpCAS::setNoCasServerValidation();
+//phpCAS::setCasServerCACert("/etc/pki/CA/chaine.pem");
+
+if (! isset($_COOKIE['painAuth'])) {
+	phpCAS::setPostAuthenticateCallback(setPainCookie,array("IUTV"));
+}
+//phpCAS:setServerLogoutURL('https://www-info.iutv.univ-paris13.fr/pain');
+
 
 require_once('inc_connect.php');
 
 function set_year($annee) {
     setcookie("painAnnee", $annee, time()+3600);
 }
+function setPainCookie($ticket,$val) {
+        setcookie("painAuth",$val, 0, "/");
+}
+
 
 date_default_timezone_set('Europe/Paris'); /* pour strtotime() */
 
@@ -127,6 +137,7 @@ function authrequired() {
 }
 
 function pain_logout() {
+    setcookie("painAuth","",0,"/");
     phpCAS::logout();
 }
 ?>
