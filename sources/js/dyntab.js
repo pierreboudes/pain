@@ -668,7 +668,7 @@ function tags() {
     this.setval = function (c, o) {
 	//c.addClass('inactive');
 	//c.html('voir');
-	load_tags(c,o);
+	//load_tags(c,o);
 	c.click(function () {
 	    c.unbind('click');
 	    load_tags(c, o);
@@ -1190,6 +1190,9 @@ function ligne() {
     this.service.name = "service";
     /* service reel */
     this.service_reel = new service_reel();
+    /* servive max */
+    this.service_max = new sunumcell();
+    this.service_max.name="service_max";
     /* composite : categorie */
     this.categorie = new categorie();
     /* composite : section */

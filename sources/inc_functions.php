@@ -171,10 +171,11 @@ function ig_legendeenseignant() {
     echo '<th class="nom">Nom</th>';
     echo '<th class="statut">statut</th>';
     echo '<th class="email">email</th>';
-    echo '<th class="telephone">tel</th>';
+    echo '<th class="telephone">tél</th>';
     echo '<th class="bureau">bureau</th>';
-    echo '<th class="service_annuel">service à effectuer au dept en '.$annee.'-'.($annee+1).'</th>';
-    echo '<th class="service_annuel">service statutaire</th>';
+    echo '<th class="service_annuel">Service à effectuer au dept en '.$annee.'-'.($annee+1).'</th>';
+    echo '<th class="service">service statutaire</th>';
+    echo '<th class="service_max">service max sans PRP</th>';
     echo '</tr>';
     echo "\n";
 }
@@ -194,7 +195,8 @@ function ig_enseignant($t) {
     echo '<td class="email">'.$t["email"].'</td>';
     echo '<td class="tel">'.$t["telephone"].'</td>';
     echo '<td class="bureau">'.$t["bureau"].'</td>';
-    $q= "SELECT pain_service.service_annuel,pain_enseignant.service FROM pain_service,pain_enseignant
+    $q= "SELECT pain_service.service_annuel,pain_enseignant.service,pain_service.service_max
+	 FROM pain_service,pain_enseignant
         WHERE pain_service.id_enseignant=$id
 	AND pain_enseignant.id_enseignant=$id
         AND pain_service.annee_universitaire=$annee";
@@ -202,7 +204,8 @@ function ig_enseignant($t) {
     $a = $r-> fetch_row();
 
     echo '<td class="service_annuel">'.$a[0].'</td>';
-    echo '<td class="service_annuel">'.$a[1].'</td>';
+    echo '<td class="service">'.$a[1].'</td>';
+    echo '<td class="service_max">'.$a[2].'</td>';
     echo '<td class="action" id="enseignant'.$t["id_enseignant"].'"></td>';
     echo '</tr>';
     echo "\n";

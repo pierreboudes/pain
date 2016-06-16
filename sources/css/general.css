@@ -246,7 +246,7 @@ table.tranches, table.services {
     border-width: 0px;
     border-collapse:collapse;
     margin-left: 30%;
-    margin-right: 2px;
+    margin-right: 50px;
     margin-top: -1px;
 }
 
@@ -342,8 +342,9 @@ table.tranches td.enseignant {
     width: 30%;
 }
 
-.telephone, .bureau, .statut {
-    width: 7%;
+.telephone, .bureau, .statut, .tel {
+    width: 6%;
+    text-align:center;
 }
 
 .intitule {
@@ -443,19 +444,20 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
 }
 
 .categorie {
-    width: 120px;
+    width: 15%;
     text-align: center;
 }
 
 .service_annuel  {
-    min-width: 80px;
+    min-width: 10%;
+    text-transform: none;
 }
 
-.service_reel  {
-    width: 100px;
+.service_reel, .service_max, .service  {
+    min-width: 10%;
 }
 
-td.service_annuel, td.service_reel  {
+td.service_annuel, td.service_reel, td.service_max, td.service  {
     text-align:right;
 }
 

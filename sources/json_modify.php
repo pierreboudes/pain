@@ -108,6 +108,7 @@ function json_modify_php($annee, $readtype, $id) {
 	$champs["service"][] = "annee_universitaire";
 	$champs["service"][] = "categorie";
 	$champs["service"][] = "service_annuel";
+	$champs["service"][] = "service_max";
     }
 
 
