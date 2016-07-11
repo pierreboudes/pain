@@ -243,7 +243,7 @@ union
 pain_sformation.numero,
 pain_cours.id_cours,
 pain_cours.nom_cours,
-pain_cours.semestre,
+IF(strcmp(substr(pain_cours.code_geisha,1,3),'PRP'),pain_cours.semestre,0),
 pain_formation.nom,
 pain_formation.annee_etude,
 pain_formation.parfum

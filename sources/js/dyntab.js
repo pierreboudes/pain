@@ -2393,16 +2393,12 @@ function reloadChoix(panier,id, annee, type) {
 	       function (o) {
 		   var legende = $('#legende'+type+id);
 		   addMenuFields(legende);
-		   var line = legende.clone().attr('id','sum'+type);
-		   line.children('th').html('');
-		   line.children('th.nom_cours').addClass('label').html('total');
-		   $('#table'+type+' > tbody').append(line);
-		   
+
 		   line = legende.clone().attr('id','s0sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre NC/PRP/Réf.');
 		   $('#table'+type+' > tbody').append(line);
-		
+
 		   line = legende.clone().attr('id','s1sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;1');
@@ -2411,6 +2407,11 @@ function reloadChoix(panier,id, annee, type) {
 		   line = legende.clone().attr('id','s2sum'+type);
 		   line.children('th').html('');
 		   line.children('th.nom_cours').addClass('label').html('semestre&nbsp;2');
+		   $('#table'+type+' > tbody').append(line);
+
+		   var line = legende.clone().attr('id','sum'+type);
+		   line.children('th').html('');
+		   line.children('th.nom_cours').addClass('label').html('totaux');
 		   $('#table'+type+' > tbody').append(line);
 
 		   recalculatePanier(type);

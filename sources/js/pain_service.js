@@ -28,6 +28,7 @@ $(document).ready(function(){
 	$('#skelchoix').children('th.ctd, th.cm, th.td, th.tp, th.alt, th.choix').fadeOut(0);
 	$('#skellongchoix').children('th.nature, th.choix').fadeOut(0);
 	//$('#skellongchoix').children('th.cm, th.td, th.tp, th.alt, th.choix, th.semestre').fadeOut(0);
+	$('#skelpotentiel').children('th.semestre').fadeOut(0);
 	$('#skel').fadeOut(0);
 
  	$( "select" ).change(function () {
