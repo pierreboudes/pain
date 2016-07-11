@@ -137,7 +137,7 @@ function authrequired() {
 }
 
 function pain_logout() {
-    setcookie("painAuth","",0,"/");
+    setcookie("painAuth","rien",1,"/");
     phpCAS::logout();
 }
 ?>

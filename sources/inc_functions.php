@@ -797,7 +797,7 @@ ORDER by pain_cours.semestre ASC, pain_formation.nom ASC, pain_cours.nom_cours A
 
 function ig_legendeintervention() {
     echo '<th class="formation">formation</th>';
-    //echo '<th class="code_geisha">code UE</th>';
+    echo '<th class="code_geisha">code</th>';
     echo '<th class="nom_cours">Cours</th>';
     echo '<th class="semestre">Sem.</th>';
     echo '<th class="ctd">CTD</th>';
@@ -814,16 +814,17 @@ function ig_intervention($i) {
     $id = $i["id_tranche"];
     echo '<td class="formation">';
     debug_show_id($id);
-	if ($i["annee_etude"] == 0)
+/*	if ($i["annee_etude"] == 0)
 		echo $i["nom"]." ";
 	else
-    		echo $i["nom"]." ".$i["annee_etude"]." ";
+    		echo $i["nom"]." ".$i["annee_etude"]." ";*/
+    echo $i["nom"]." ";
 	
     echo $i["parfum"];
     echo '</td>';
-    //echo '<td class="code_geisha">';
-    //echo $i["code_geisha"];
-    //echo '</td>';
+    echo '<td class="code_geisha">';
+    echo $i["code_geisha"];
+    echo '</td>';
     echo '<td class="nom_cours">';
     #echo '<a href="ouvre.php?'.$i["id_cours"].'">'.$i["nom_cours"].'</a>';
     echo $i["nom_cours"];

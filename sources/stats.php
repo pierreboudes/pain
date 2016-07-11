@@ -42,7 +42,7 @@ function stats_php() {
     echo "<h2>Services actuels des différentes catégories d'intervenants</h2>";
     echo '<div style="text-align: center; margin: 10px;"><span id="graphCat" style="width: 600px; height: 200px;"></span></div>';
     include("inc_statscategories.php");
-    echo "<h2>Services réels par catégorie d'enseignant et par formation (en postes)</h2>";
+    echo "<h2>Services prévus par catégorie d'enseignant et par formation (en postes)</h2>";
     echo '<div style="text-align: center; margin: 10px;"><span id="graphCatForm" style="width: 860px; height: 200px;"></span></div>';
     include("inc_statscategoriesformations.php");
 //echo "<h2>Graphiques par formation</h2>";

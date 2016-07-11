@@ -481,7 +481,9 @@ function valide() {
 		   $("#longchoix_"+o["id_choix"]).addClass("invalide");
 		} else {
 		   /*$("#longchoix_"+o["id_choix"]).removeClass("invalide");
-		    c.html('<span class="ui-icon ui-icon-check"></span>');*/
+			var cellule='#longchoix_'+o["id_choix"]+'>td.nom_cours';
+			var contenu=$(cellule).html();
+			$(cellule).html('<a href=afficheChoix.php?id=1574>'+contenu+'</a>'); */
 		}
          }
 }
@@ -493,7 +495,7 @@ function intitule() {
     this.setval = function (c,o) {
 	var s;
 	s = o["nom"];
-	if (o["annee_etude"] != null && o["annee_etude"] != 0) s = s+' '+o["annee_etude"];
+	// if (o["annee_etude"] != null && o["annee_etude"] != 0) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);
     }
@@ -2612,6 +2614,10 @@ function appendItem(type, prev, o, list) {
 	line.children('td.laction')
 	    .prepend('<div class="basculeOff'+classzero+'" id="basculeenseignant_'+o["id_enseignant"]+'"><div class="nbbasc">'+nbbasc+'</div></div>')
 	    .bind('click',{id: o["id_enseignant"]},basculerEnseignant);
+    }
+    if (type == "longchoix") {
+	var cel = line.children('td.nom_cours');
+	cel.html('<a href="afficheChoix.php?id='+o['id_choix']+'">'+cel.html()+'</a>');
     }
     addRm(line.find('td.action'));
 }

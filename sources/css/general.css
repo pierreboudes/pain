@@ -332,10 +332,10 @@ table.tranches {
 
 
 .enseignant {
-    width: 25%; 
+    width: 30%; 
 }
-table.tranches td.enseignant {
-    width: 35%;
+table.tranches td.enseignant, table.tranches th.enseignant {
+    width: 24%;
 }
 
 .email {
@@ -412,9 +412,9 @@ th.nb_cours,th.nb_tous_cours,th.descriptif, th.code {
 
 .cm, .td, .tp, .alt, .ctd, .htd, .inscrits, .presents, .tirage,
 .choix_htd, .tranche_htd {
-    width:4%;
-    min-width:25px;
-    max-width:42px;
+   // width:4%;
+    min-width:35px;
+  //  max-width:42px;
 }
 .debut, .fin {
     width: 75px;
