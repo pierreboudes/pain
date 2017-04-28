@@ -191,12 +191,12 @@ function ig_statsmysql() {
     echo '</pre></div>';
 }
 
-Class Error {
+Class Erreur {
     public $error = "Erreur";
 }
 
 function errmsg($s) {
-    $err = new Error;
+    $err = new Erreur;
     $err->error = "Erreur: ".$s;
     print json_encode($err);
     die();
