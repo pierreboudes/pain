@@ -83,12 +83,16 @@ if (isset($_GET["type"])) {
 	$par = "id_sformation";
     } else if ($readtype == "cours") {
 	$type = "cours";
-    $_GET["semestre"] = 0; /* semestre par défaut (voir pourquoi il
-                            * n'est pas dnas le sql */
+    if (!isset($_GET["semestre"])) {
+        $_GET["semestre"] = 0; /* semestre par défaut (voir pourquoi il
+                                * n'est pas dnas le sql */
+    }
 	$par = "id_formation";
 	$ntype = 1;
     } else if ($readtype == "tranche") {
 	$type = "tranche";
+    $_GET["declarer"] = ""; /* valeur par défaut (voir pourquoi elle
+                            * n'est pas dnas le sql) */
 	$par  = "id_cours";
 	$ntype = 2;
     } else if ($readtype == "choix") {
@@ -97,6 +101,14 @@ if (isset($_GET["type"])) {
 	$ntype = 3;
     } else if ($readtype == "enseignant") {
 	$type = "enseignant";
+    if (!isset($_GET["prenom"])) {
+        $_GET["prenom"] = "prénom ?"; /* valeur par défaut (voir pourquoi il
+                                       * n'est pas dnas le sql) */
+    }
+    if (!isset($_GET["nom"])) {
+        $_GET["nom"] = "nom ?"; /* valeur par défaut (voir pourquoi il
+                                 * n'est pas dnas le sql) */
+    }
 	// $par = "categorie";
 	// $ntype = 4; TODO revoir structure BD pour cet historique
     } else if ($readtype == "service") {
