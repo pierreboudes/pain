@@ -83,6 +83,8 @@ if (isset($_GET["type"])) {
 	$par = "id_sformation";
     } else if ($readtype == "cours") {
 	$type = "cours";
+    $_GET["semestre"] = 0; /* semestre par défaut (voir pourquoi il
+                            * n'est pas dnas le sql */
 	$par = "id_formation";
 	$ntype = 1;
     } else if ($readtype == "tranche") {
