@@ -46,7 +46,7 @@ $champs = array(
 	),
     "tranche"=> array(
 	"id_enseignant", "groupe", "cm", "td", "tp",
-	"alt", "prp", "referentiel", "type_conversion", "remarque", "htd", "descriptif"
+	"alt", "prp", "referentiel", "type_conversion", "remarque", "htd", "descriptif", "declarer"
 	),
     "choix" => array(
         "id_enseignant", "choix", "htd", "cm", "td", "tp", "alt", "prp", "referentiel"
@@ -84,15 +84,15 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "cours") {
 	$type = "cours";
     if (!isset($_GET["semestre"])) {
-        $_GET["semestre"] = 0; /* semestre par défaut (voir pourquoi il
-                                * n'est pas dnas le sql */
+        $_GET["semestre"] = 0; /* semestre par défaut */
     }
 	$par = "id_formation";
 	$ntype = 1;
     } else if ($readtype == "tranche") {
 	$type = "tranche";
-    $_GET["declarer"] = ""; /* valeur par défaut (voir pourquoi elle
-                            * n'est pas dnas le sql) */
+    if (!isset($_GET["declarer"])) {
+        $_GET["declarer"] = ""; /* valeur par défaut */
+    }
 	$par  = "id_cours";
 	$ntype = 2;
     } else if ($readtype == "choix") {
