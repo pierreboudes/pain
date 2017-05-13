@@ -56,7 +56,7 @@ $qmajservices = 'REPLACE INTO pain_service
                  pain_enseignant.id_enseignant,
                  "'.$annee_cible.'",
                  pain_enseignant.categorie,
-                 pain_enseignant.service
+                 COALESCE(pain_enseignant.service,0)
                  FROM pain_enseignant
                  WHERE  (pain_enseignant.id_enseignant NOT IN (SELECT pain_service.id_enseignant FROM pain_service WHERE pain_service.annee_universitaire = "'.$annee_cible.'")) AND pain_enseignant.id_enseignant IN ';
 
@@ -213,8 +213,8 @@ if (1 == $profondeur) {
 
 
     /* insertion de nouvelles tranches anonymes */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd) SELECT
-pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd, declarer) SELECT
+pain_cours.id_cours, 3, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd, "" FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
@@ -253,8 +253,8 @@ if ($profondeur == 2) {
     }
 
     /* insertion de nouvelles tranches */
-    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd) SELECT
-pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd FROM pain_tranche, pain_cours,
+    $q = 'INSERT INTO pain_tranche (id_cours, id_enseignant, groupe, cm, td, tp, alt, prp, referentiel, type_conversion, remarque, htd, declarer) SELECT
+pain_cours.id_cours, pain_tranche.id_enseignant, pain_tranche.groupe, pain_tranche.cm, pain_tranche.td, pain_tranche.tp, pain_tranche.alt, pain_tranche.prp, pain_tranche.referentiel, pain_tranche.type_conversion, pain_tranche.remarque, pain_tranche.htd, pain_tranche.declarer FROM pain_tranche, pain_cours,
 pain_formation, pain_sformation WHERE '.$cond;
     error_log($q);
 
