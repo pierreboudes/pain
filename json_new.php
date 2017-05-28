@@ -68,6 +68,7 @@ $champs = array(
        "id_collection", "id_cours"
        )
     );
+$numchamps = array( "htd", "cm", "td", "tp", "alt", "prp", "referentiel");
 
 //print_r($champs);
 //print_r($_GET);
@@ -172,9 +173,14 @@ if (isset($_GET["id_parent"])) {
 	if (isset($_GET[$field])) {
 	    $set[$field] = getclean($field);
 	}
-    };
-
-    if ((isset($set["nom cours"])) && ("" == trim($set["nom_cours"]))) {
+    }
+    /* on mets à zero et non à chaîne vide les champs de valeurs numériques non renseignés */
+    foreach ($numchamps as $field) {
+        if (isset($set[$field]) && !is_numeric($set[$field])) {
+	   $set[$field] = 0;
+	}
+    }
+    if (isset($set["nom cours"]) && ("" == trim($set["nom_cours"]))) {
 	errmsg("donner un nom au cours.");
     }
 
