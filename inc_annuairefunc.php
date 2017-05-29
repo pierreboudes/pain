@@ -92,7 +92,7 @@ function ig_intervenants_du_cours($cours, $categories = NULL) {
     $id_cours = $cours["id_cours"];
     $q = "SELECT
                  GROUP_CONCAT(DISTINCT pain_tranche.groupe
-                              ORDER BY pain_tranche.groupe
+                              ORDER BY pain_tranche.groupe ASC
                               SEPARATOR ', G') as groupes,
                  SUM(cm) AS cm,
                  SUM(td) AS td,
@@ -115,7 +115,7 @@ function ig_intervenants_du_cours($cours, $categories = NULL) {
                                AND categorie IN ($categories)) ";
     }
 
-    $q .= " GROUP BY pain_enseignant.id_enseignant ORDER BY groupe ASC, nom ASC";
+    $q .= " GROUP BY pain_enseignant.id_enseignant ORDER BY nom ASC";
     ($r = $link->query($q))
         or die("Échec de la requête $q<br>".$link->error);
     $ids = Array();
