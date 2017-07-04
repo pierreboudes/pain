@@ -501,7 +501,9 @@ function htdformation($id) {
 	$etu = 0;
     }
 
-/* TODO ATTENTION annuler une intervention dans un cours lui-même annulé doit faire que l'intervention est comptée deux fois dans le total des annulation, à vérifier ! */
+/* DONE +ATTENTION annuler une intervention dans un cours lui-même
+ * annulé doit faire que l'intervention est comptée deux fois dans le
+ * total des annulation, à vérifier+ pas de problème  */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = $link->query($qannule)
 	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error);
