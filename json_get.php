@@ -407,6 +407,45 @@ and pain_sformation.annee_universitaire = ".$annee."
         } else {
 	    errmsg("le type unusedcollections nécessite un id_parent");
 	}
+    } else if ($readtype == "etapesformation") {
+        if (isset($_GET['id_parent'])) {
+            $type = "etape";
+            $id_par =  getnumeric("id_parent"); /* id_formation */
+            $requete = "SELECT pain_etapesformations.*,
+                        \"$type\" AS type,
+                        pain_etapesformations.code_etape AS id,
+                        pain_etapes_annees.effectif as effectif,
+                        pain_etapes_annees.LIBELLE_LONG_ETAPE as libelle
+                        FROM pain_etapes_annees, pain_etapesformations";
+            $requete .= " WHERE  pain_etapesformations.id_formation = $id_par
+                      AND pain_etapesformations.code_etape = pain_etapes_annees.CODE_ETAPE
+                      AND ANNEE_INSCRIPTION =
+                          (SELECT annee_universitaire
+                          FROM pain_sformation, pain_formation
+                          WHERE id_formation = $id_par
+                          AND pain_formation.id_sformation = pain_sformation.id_sformation)";
+	    $requete .= " ORDER BY code_etape ASC";
+        } else {
+	    errmsg("le type etapesformation nécessite un id_parent de formation");
+	}
+    } else if ($readtype == "unusedetapesformation") {
+	if (isset($_GET['id_parent'])) {
+	    $type = "etape";
+	    $id_par =  getnumeric("id_parent");
+
+	    $requete = "SELECT CONCAT(pain_etapes_annees.CODE_ETAPE,\" \",pain_etapes_annees.LIBELLE_LONG_ETAPE) as label, pain_etapes_annees.CODE_ETAPE AS id
+                 FROM pain_etapes_annees";
+	    $requete .= " WHERE pain_etapes_annees.CODE_ETAPE NOT IN
+                          (SELECT code_etape FROM pain_etapesformations
+                          WHERE id_formation = $id_par)
+                 AND annee_inscription = (SELECT annee_universitaire
+                          FROM pain_sformation, pain_formation
+                          WHERE id_formation = $id_par
+                          AND pain_formation.id_sformation = pain_sformation.id_sformation)";
+	    $requete .= " ORDER BY id ASC";
+        } else {
+	    errmsg("le type unusedetapesformation nécessite un id_parent de formation");
+	}
     } else if ($readtype == "semestre") {
 	if (isset($_GET['id_parent'])) {
 	    $type = "semestre";

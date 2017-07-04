@@ -66,7 +66,13 @@ $champs = array(
 	),
    "collectionscours" => array(
        "id_collection", "id_cours"
-       )
+   ),
+   "etapesformations" => array(
+       "code_etape", "id_formation"
+   ),
+   "etapescours" => array(
+       "code_etape", "id_cours"
+   )
     );
 $numchamps = array( "htd", "cm", "td", "tp", "alt", "prp", "referentiel");
 
@@ -130,6 +136,12 @@ if (isset($_GET["type"])) {
     } else if ($readtype == "collectionscours") {
 	$type = "collectionscours";
 	$_GET["id_parent"] = getnumeric("id_cours");
+    } else if ($readtype == "etapescours") {
+	$type = "etapescours";
+	$_GET["id_parent"] = getnumeric("id_cours");
+    } else if ($readtype == "etapesformations") {
+	$type = "etapesformations";
+	$_GET["id_parent"] = getnumeric("id_formation");
     } else {
 	errmsg("type indéfini");
     }
@@ -152,7 +164,7 @@ if (isset($_GET["id_parent"])) {
 	else if ($type == "enseignant") {
 	    $set["categorie"] = $id_parent;
 	    $set["debut"] = date('Y-m-d');
-	} else {
+	} else if ($type != "etapesformations" && $type != "etapescours") {
 	    $set[$par] = $id_parent;
 	}
     }
@@ -190,8 +202,10 @@ if (isset($_GET["id_parent"])) {
 	&& ($type != "tagscours")
 	&& ($type != "collection")
 	&& ($type != "collectionscours")
+    && ($type != "etapescours")
+    && ($type != "etapesformations")
 	&& !isset($set["id_enseignant"])) {
-	$set["id_enseignant"] = $user["id_enseignant"];
+        $set["id_enseignant"] = $user["id_enseignant"];
     }
 
     if ( ("formation" == $type) || ("sformation" == $type)) {
@@ -211,7 +225,7 @@ if (isset($_GET["id_parent"])) {
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
-	$setsql[] = '`'.$field.'` = "'.$val.'"';
+        $setsql[] = '`'.$field.'` = "'.$val.'"';
     };
     $strset = implode(", ", $setsql);
 
@@ -241,7 +255,11 @@ if (isset($_GET["id_parent"])) {
     }
 
     if (($type == "tagscours") || ($type == "collectionscours")) {
-	return NULL;
+        return NULL;
+    }
+
+    if (($type == "etapescours") || ($type == "etapesformations")) {
+        return NULL;
     }
 
     $id = $link->insert_id;

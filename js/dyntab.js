@@ -792,6 +792,102 @@ function collections() {
 collections.prototype = new immutcell();
 
 
+/* etapes */
+function load_etapes(c,o) {
+    c.removeClass('inactive');
+    c.text('attente de données '+'etapes'+o["id"]);
+    var id_formation = o["id"];
+    getjson("json_get.php",
+	    {id_parent: id_formation, type: "etapesformation"},
+	    function (o) {
+		var n = o.length;
+		var i = 0;
+		c.html('');
+		for (i = n - 1; i >= 0; i--) {
+		    var s;
+		    s = '<span class="etape">'+o[i].code_etape+' <button id="etapecours_'+o[i].code_etape+'_'+id_formation+'" class="button-enlever_etape" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
+		    c.append(s);
+		    $('#etapecours_'+o[i].code_etape+'_'+id_formation).bind('click', {code_etape: o[i].code_etape, id_formation: id_formation}, function (e) {
+			    getjson("json_rm.php",
+				    {id:e.data.code_etape, id_parent: e.data.id_formation, type: "etapeformation"},
+				    function () {
+					/* si succès: on retire de la vue */
+					$('#etapeformation_'+e.data.code_etape+'_'+e.data.id_formation).parent().remove();
+				    });
+			    return false;
+			});
+		}
+		c.append('<span class="etape"><button id="ajouteretapeformation_'+id_formation+'"class="button-ajouter_etape" role="button" aria-disabled="false" title="ajouter"><span class="icon">&nbsp;</span></button></span>');
+		$('#ajouteretapeformation_'+id_formation).bind('click',{id_formation: id_formation}, ajouter_etapeformation);
+	    });
+}
+
+function ajouter_etapeformation(e) {
+    var id_formation = e.data.id_formation;
+    var c = $('#ajouteretapeformation_'+id_formation).parent();
+    if (existsjQuery(c.find('input.etapeinput'))) return false;
+    /* installer la zone d'input et le bouton d'envoi */
+    c.append('<input class="etapeinput" type="text" value=""/><span class="hiddenvalue"></span>');
+    c.append('<button id="envoyeretapeformation_'+id_formation+'"class="button-envoyer_etape" role="button" aria-disabled="false" title="envoyer"><span class="icon">&nbsp;</span></button>');
+    $('#envoyeretapeformation_'+id_formation).bind('click', {id_formation: id_formation}, envoyer_etapeformation);
+    /* mettre en place l'autocomplete */
+    var inp = c.find("input");
+    getjson("json_get.php",{id_parent: id_formation, type: 'unusedetapesformation', annee_universitaire: getAnnee()},
+	    function (data) {
+		inp.autocomplete({
+		    minLength: 2,
+			    source: data,
+			    select: function(e, ui) {
+			    if (!ui.item) {
+				// remove invalid value, as it didn't match anything
+				$(this).val("");
+				return false;
+			    }
+			    $(this).focus();
+			    inp.val(ui.item.label);
+			    c.find('.hiddenvalue').html(ui.item.id);
+			}
+		    })});
+    inp.focus();
+    $('#ajouteretapeformation_'+id_formation).remove();
+    return false;
+}
+
+function envoyer_etapeformation(e) {
+    var id_formation = e.data.id_formation;
+    var id_etape = $('#envoyeretapeformation_'+id_formation).prev('.hiddenvalue').text();
+    if (id_etape.length == 0) return false;
+    getjson("json_new.php", {id_formation: id_formation, code_etape: id_etape, type: 'etapesformations'},
+	    function () {
+		var c = $('#formation_'+id_formation+' > td.etapes');
+		load_etapes(c, {id: id_formation});
+	});
+    return false;
+}
+
+/* construction du composite interactif etapes */
+function etapes() {
+    this.setval = function (c, o) {
+	c.addClass('inactive');
+	c.html('voir');
+	c.click(function () {
+	    c.unbind('click');
+	    load_etapes(c, o);
+	    c.dblclick(function () {
+		load_etapes(c, o);
+		return false;
+	    });
+	    return false;
+	});
+    };
+    this.edit = function (c) {
+	var oid = parseIdString(c.parent('tr').attr('id'));
+	load_etapes(c, oid);
+    };
+    this.autoload = false;
+    this.name = "etapes";
+};
+etapes.prototype = new immutcell();
 
 /* constructeur du composite nature de l'intervention */
 function nature() {
@@ -1364,6 +1460,8 @@ function ligne() {
     this.tags = new tags();
     /* colllections */
     this.collections = new collections();
+    /* etapes */
+    this.etapes = new etapes();
 
     /* pain_tranche
      */
