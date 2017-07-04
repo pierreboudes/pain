@@ -501,9 +501,6 @@ function htdformation($id) {
 	$etu = 0;
     }
 
-/* DONE +ATTENTION annuler une intervention dans un cours lui-même
- * annulé doit faire que l'intervention est comptée deux fois dans le
- * total des annulation, à vérifier+ pas de problème  */
     $qannule = "SELECT SUM(htd) FROM pain_cours, pain_tranche WHERE pain_tranche.id_cours = pain_cours.id_cours AND id_formation = $id AND (pain_tranche.id_enseignant = 1 OR pain_cours.id_enseignant = 1)";
     $rannule = $link->query($qannule)
 	or die("erreur d'acces a la table tranche : $qannule erreur:".$link->error);
@@ -560,6 +557,13 @@ function htdformation($id) {
     $a["prp"] = $prp;
     $a["referentiel"] = $referentiel;
     $a["etu"] = $etu;
+
+    $qeff ="SELECT SUM(effectif) AS effectif FROM pain_etapes_annees, pain_etapesformations, pain_sformation, pain_formation WHERE pain_etapesformations.id_formation = $id AND pain_formation.id_formation = $id AND pain_formation.id_sformation = pain_sformation.id_sformation AND pain_etapes_annees.annee_inscription = pain_sformation.annee_universitaire AND pain_etapes_annees.code_etape = pain_etapesformations.code_etape";
+    $reff = $link->query($qeff)
+	or die("erreur d'acces aux tables : $eff erreur:".$link->error);
+    $eff = $reff->fetch_assoc();
+
+    $a["effectif"] = $eff["effectif"];
 
     return $a;
 }

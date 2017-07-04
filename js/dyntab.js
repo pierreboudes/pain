@@ -499,8 +499,8 @@ function intitule() {
 	if (o["annee_etude"] != null) s = s+' '+o["annee_etude"];
 	if (o["parfum"] != null) s = s+' '+o["parfum"];
 	c.text(s);
-	if (o["code_etape_formation"] != null) {
-          c.append('<div class="sub"> Étape : '+o["code_etape_formation"]+'</div>');
+	if (o["etapes"] != null) {
+          c.append('<div class="sub"> '+o["etapes"]+'</div>');
         }
     }
 }
@@ -559,8 +559,13 @@ function load_totaux(c,o) {
 		s += total_complexe(o, "exterieurs", "ext");
 		s += ' servis +&nbsp;';
 		s += total_complexe(o, "autre", "autre");
-		s += ' inconnus';
-		s += '<div style="float: right">['+Math.round(o["etu"])+'h étu.]</div>';
+	        s += ' inconnus';
+              if (o["etu"] > 0) {
+                s += '<div class="hetu">['+Math.round(o["etu"])+'h étu.]</div>';
+              }
+              if ((typeof o["effectif"] !== 'undefined') && (o["effectif"] > 0)) {
+                s += "<div class=\"effectif\"> [effectif : " + o["effectif"] + "]</div>";
+              }
 		c.html(s);
 		c.find(".tot_detail").bind('click', function (e) {$(this).toggleClass("forceinline");});
 	    });
@@ -805,9 +810,9 @@ function load_etapes(c,o) {
 		c.html('');
 		for (i = n - 1; i >= 0; i--) {
 		    var s;
-		    s = '<span class="etape">'+o[i].code_etape+' <button id="etapecours_'+o[i].code_etape+'_'+id_formation+'" class="button-enlever_etape" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
+		    s = '<span class="etape">'+o[i].code_etape+' <button id="etapeformation_'+o[i].code_etape+'_'+id_formation+'" class="button-enlever_etape" role="button" aria-disabled="false" title="enlever"><span class="icon">&nbsp;</span></button></span>';
 		    c.append(s);
-		    $('#etapecours_'+o[i].code_etape+'_'+id_formation).bind('click', {code_etape: o[i].code_etape, id_formation: id_formation}, function (e) {
+		    $('#etapeformation_'+o[i].code_etape+'_'+id_formation).bind('click', {code_etape: o[i].code_etape, id_formation: id_formation}, function (e) {
 			    getjson("json_rm.php",
 				    {id:e.data.code_etape, id_parent: e.data.id_formation, type: "etapeformation"},
 				    function () {

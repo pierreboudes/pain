@@ -472,6 +472,9 @@ and pain_sformation.annee_universitaire = ".$annee."
        if (isset($counttype)) {
            $requete .= "(SELECT count(id_$counttype) FROM pain_$counttype WHERE pain_$counttype.id_$type =  pain_$type.id_$type) as nb_$counttype, ";
        }
+       if ($type == "formation") {
+           $requete .= "(select group_concat(code_etape SEPARATOR \", \") from pain_etapesformations where pain_etapesformations.id_formation = pain_formation.id_formation) as etapes, ";
+       }
        if (isset($validtype)) {
 	       $requete .= "BIT_AND(pain_validation_$validtype.valide) as valide, GROUP_CONCAT(pain_validation_$validtype.commentaire_validation) as commentaire_valide, ";
 	   }

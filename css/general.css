@@ -1262,3 +1262,7 @@ div.sub {
 .yesno {
     box-sizing: content-box;
 }
+
+div.hetu, div.effectif {
+    float: right;
+}
