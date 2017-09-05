@@ -992,6 +992,25 @@ and tid.id_formation = pain_formation.id_formation
 	or die("erreur update_servicespotentiels : $qupdate: ".$link->error);
 }
 
+
+
+/** retourne la description (nom_court, nom_long, descriptif) d'une catégorie
+
+@param $id_categorie l'identifiant d'une la catégorie.
+ */
+function selectionner_categorie($id_categorie)
+{
+    global $link;
+    $qcategorie = "SELECT * FROM pain_categorie WHERE `id_categorie` = $id_categorie";
+    $categorie = NULL;
+    if ($rcategorie = $link->query($qcategorie)) {
+        $categorie = $rcategorie->fetch_assoc();
+    } else {
+        echo "Échec de la requête sur la table categorie. $qcategorie ".$link->error;
+    }
+    return $categorie;
+}
+
 /** retourne la liste des enseignants appartennants à une catégorie.
 
 @param $categorie l'identifiant d'une la catégorie.
