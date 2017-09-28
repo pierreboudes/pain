@@ -493,14 +493,10 @@ function htdsuper($id) {
     $a["referentiel"] = $referentiel;
     $a["etu"] = $etu;
 
-    $qeff ="SELECT SUM(effectif) AS effectif FROM pain_etapes_annees, pain_etapesformations, pain_sformation, pain_formation WHERE pain_etapesformations.id_formation = $id AND pain_formation.id_formation = $id AND pain_formation.id_sformation = pain_sformation.id_sformation AND pain_etapes_annees.annee_inscription = pain_sformation.annee_universitaire AND pain_etapes_annees.code_etape = pain_etapesformations.code_etape";
-    $reff = $link->query($qeff)
-	or die("erreur d'acces aux tables : $eff erreur:".$link->error);
-    $eff = $reff->fetch_assoc();
+    $qeff = "SELECT SUM(effectif) AS effectif FROM pain_etapes_annees WHERE
+annee_inscription IN (SELECT pain_sformation.annee_universitaire FROM pain_sformation WHERE pain_sformation.id_sformation = $id)
+AND  code_etape IN (SELECT DISTINCT pain_etapesformations.code_etape FROM pain_etapesformations, pain_sformation, pain_formation WHERE pain_formation.id_sformation = pain_sformation.id_sformation AND pain_etapesformations.id_formation = pain_formation.id_formation AND pain_sformation.id_sformation = $id)";
 
-    $a["effectif"] = $eff["effectif"];
-
-    $qeff ="SELECT SUM(effectif) AS effectif FROM pain_etapes_annees, pain_etapesformations, pain_sformation, pain_formation WHERE pain_formation.id_sformation = pain_sformation.id_sformation AND pain_etapesformations.id_formation = pain_formation.id_formation AND pain_sformation.id_sformation = $id AND pain_etapes_annees.annee_inscription = pain_sformation.annee_universitaire AND pain_etapes_annees.code_etape = pain_etapesformations.code_etape";
     $reff = $link->query($qeff)
 	or die("erreur d'acces aux tables : $eff erreur:".$link->error);
     $eff = $reff->fetch_assoc();
