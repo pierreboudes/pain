@@ -309,7 +309,7 @@ function peutproposerenseignant() {
                  WHERE id_enseignant = $id) +
           (SELECT COUNT(id_sformation) FROM pain_sformation
                  WHERE id_enseignant = $id)) AS resp";
-    $res = mysql_result($q) or ("ERREUR peutproposerenseignant()");
+    $res = $link->query($q) or die("ERREUR peutproposerenseignant()");
     $r = $res->fetch_array();
     return 0 < $r["resp"];
 }
