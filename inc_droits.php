@@ -300,18 +300,7 @@ function peutediterservicedeenseignant($id_enseignant) {
 function peutproposerenseignant() {
     global $link;
     global $user;
-    if ($user["su"]) return true;
-    $id = $user["id_enseignant"];
-    $q = "SELECT
-          ((SELECT COUNT(id_cours) FROM pain_cours
-                 WHERE id_enseignant = $id) +
-          (SELECT COUNT(id_formation) FROM pain_formation
-                 WHERE id_enseignant = $id) +
-          (SELECT COUNT(id_sformation) FROM pain_sformation
-                 WHERE id_enseignant = $id)) AS resp";
-    $res = $link->query($q) or die("ERREUR peutproposerenseignant()");
-    $r = $res->fetch_array();
-    return 0 < $r["resp"];
+    return ($user["su"] == 1);
 }
 
 function peutsupprimerenseignant($id_enseignant = 0) {
