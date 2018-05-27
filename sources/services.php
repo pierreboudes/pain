@@ -1,10 +1,13 @@
 <?php
 
 require_once('inc_connect_ro.php');
+require_once('authentication.php');
+$ANNEE = default_year();
+/*
 $ANNEE=date('Y', strtotime('-4 month'));
 if (isset($_GET['annee'])) {
                $ANNEE = $_GET['annee'];
-           }
+           }*/
 $ANNEENEXT=$ANNEE+1;
 
 /* L'entete */
@@ -30,16 +33,17 @@ while ($sformation = $listeSuperFormations->fetch_row()) {
 		or die ("Échec de la requête".$reqListeFormations."\n".$link->error);
 	
 	while ($formations = $listeFormations->fetch_row()) {
-		echo "<h2>$formations[0] - $formations[2] $formations[3] ($formations[1])</h2>";
+		echo "<h2>$formations[0] - Resp. $formations[2] $formations[3]</h2>";
 		$idf=$formations[1];
-		$reqListeCours="select nom_cours,id_cours from pain_cours where id_formation=$idf and nom_cours != '(Responsabilité semestre)' order by nom_cours";
+		$reqListeCours="Select nom_cours,pain_cours.id_cours,nom from pain_cours,pain_enseignant where pain_cours.id_enseignant=pain_enseignant.id_enseignant and id_formation=$idf and nom_cours != '(Responsabilité semestre)' order by nom_cours";
 		$listeCours = $link->query($reqListeCours);
 
 		echo '<table><thead>
 			<tr>
-			<th>Cours</th><th>CTD</th><th>CM</th><th>TD</th><th>TP</th><th>EqTD</th><th>Nom</th><th>GRP</th><th>Remarques</th>
+			<th>Cours</th><th>CTD</th><th>CM</th><th>TD</th><th>TP</th><th>CTRL</th><th>EqTD</th><th>Nom</th><th>GRP</th><th>Remarques</th>
 			</tr>
 			</thead><tbody>';
+		$compteCours=0;
 		while ($cours = $listeCours->fetch_row()) {
 			$reqChoix="select pain_enseignant.nom from pain_enseignant, pain_choix 
 				where pain_enseignant.id_enseignant=pain_choix.id_enseignant 
@@ -57,6 +61,7 @@ ifnull(pain_tranche.ctd,'') as CTD,
 ifnull(pain_tranche.cm,'')  as CM, 
 ifnull(pain_tranche.td,'') as TD, 
 ifnull(pain_tranche.tp,'') as TP,
+ifnull(pain_tranche.alt,'') as CTRL,
 pain_tranche.htd as EqTD,
 pain_enseignant.nom as Nom, 
 IF(pain_tranche.groupe=0,'',pain_tranche.groupe) as GRP, 
@@ -73,12 +78,16 @@ ORDER by pain_tranche.cm DESC, pain_tranche.groupe";
 		$first=1;
 		while ($coursT = $listeCoursT->fetch_row()) {
 			echo '<tr class="';
-			if ($coursT[5]=='')
+			if ($coursT[6]=='')
 				echo 'attention ' ;
 			if ($first==1) {
 				$first=0;
 				echo 'prem"><th rowspan="'
-					.($listeCoursT->num_rows+$existeCandidats).'">'.$cours[0].'</th>';
+					.($listeCoursT->num_rows+$existeCandidats)
+					.'">'.$cours[0]
+					.'<p class=resp>'
+					.($cours[2] == ''? 'Resp.?' : $cours[2])
+					.'</p></th>';
 			} else
 				echo '">';
 			
@@ -95,7 +104,11 @@ ORDER by pain_tranche.cm DESC, pain_tranche.groupe";
 			} //while candidat
 			echo '</td></tr>';
 		}
-
+		$compteCours++;
+		if ($compteCours %3 ==0) {
+			echo "<tr><th>Cours</th><th>CTD</th><th>CM</th><th>TD</th><th>TP</th><th>CTRL</th><th>EqTD</th><th>Nom</th><th>GRP</th><th>Remarques</th>
+                        </tr>";
+		}
 		}// while cours
 		echo '</tbody></table>';
 	}	// while formations

@@ -83,7 +83,8 @@ function graphCat() {
     valeurs.push(myparseFloat(celluleTableau(tab,5,5).text()));
     
     
-    var serie = $.gchart.series('', valeurs, ['gray','green','green', 'orange', 'purple']);
+    var serie = $.gchart.series('', valeurs
+/*, ['gray','green','green', 'orange', 'purple']*/);
     $("#graphCat").gchart({type: 'pie', //'barVert', 
 		dataLabels: noms,
 		series: [serie]

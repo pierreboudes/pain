@@ -33,8 +33,6 @@ $(document).ready(function(){
 	    hasTouch = true;
 	}
 
-	tagsAsStyles();
-
 	(function () {/* espace de nom privé */
 	    var timerid;
 
@@ -668,9 +666,9 @@ function envoyer_tagcours(e) {
 /* construction du composite interactif tags */
 function tags() {
     this.setval = function (c, o) {
-	//c.addClass('inactive');
-	//c.html('voir');
-	//load_tags(c,o);
+	c.addClass('inactive');
+	c.html('voir');
+	load_tags(c,o);
 	c.click(function () {
 	    c.unbind('click');
 	    load_tags(c, o);

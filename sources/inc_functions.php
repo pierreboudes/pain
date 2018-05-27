@@ -511,7 +511,7 @@ function htdformation($id) {
 	$annule = 0;
     }
 
-    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt SUM(pain_tranche.ctd) AS ctd 
+    $qcomp ="SELECT SUM(pain_tranche.cm) AS cm, SUM(pain_tranche.td) AS td, SUM(pain_tranche.tp) AS tp, SUM(pain_tranche.alt) AS alt, SUM(pain_tranche.ctd) AS ctd 
 	    FROM pain_cours, pain_tranche WHERE pain_cours.id_formation = $id AND pain_tranche.id_cours = pain_cours.id_cours";
     $rcomp = $link->query($qcomp)
 	or die("erreur d'acces aux tables : $qcomp erreur:".$link->error);

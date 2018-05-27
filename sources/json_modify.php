@@ -232,9 +232,12 @@ function json_modify_php($annee, $readtype, $id) {
 	}
 	if ($creeService) {
 		$id_parent=getnumeric("id_parent");
+		$service=getnumeric("service");
+		if (is_null(getnumeric("service"))) 
+			$service=192; // valeur par défaut.
 		$query="INSERT INTO pain_service ".
 			"(id_enseignant,annee_universitaire,categorie,service_annuel) ".
-			"VALUES ($id, $annee, $id_parent, ".getnumeric("service").")";
+			"VALUES ($id, $annee, $id_parent, $service)";
 		 if (!$link->query($query)) {
             		errmsg("erreur avec la requete :\n".$query."\n".$link->error);
         	}
