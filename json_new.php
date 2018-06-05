@@ -286,7 +286,7 @@ if (isset($_GET["id_parent"])) {
 	    "SELECT pain_enseignant.id_enseignant, $id_parent, ".
 	    "  pain_enseignant.categorie, ".
         "  pain_enseignant.id_section, ".
-	    "  pain_enseignant.service, ".
+	    "  COALESCE(pain_enseignant.service, 0), ".
 	    "  0 ".
 	    "FROM pain_enseignant ".
 	    "WHERE pain_enseignant.id_enseignant < 10";
