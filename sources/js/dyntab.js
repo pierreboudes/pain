@@ -399,9 +399,16 @@ function enseignant () {
 				$(this).val("");
 				return false;
 			    }
-			    $(this).focus();
-			    ens.val(ui.item.label);
-			    c.find('.hiddenvalue').html(ui.item.id);
+			    //$(this).focus();
+			    //ens.val(ui.item.label);
+			    //c.find('.hiddenvalue').html(ui.item.id);
+			    var typ=$(this).closest('tr')[0].className.split(' ')[0];
+			    var leparent=$(this).closest('tr').closest('tr')[0].className.split(' ')[0];
+			    var param2={type:typ,
+		id:$(this).closest('.'+typ)[0].id.substring(typ.length+1),
+		id_parent:$(this).closest('.'+leparent)[0].id.substring(leparent.length+1),
+		id_enseignant:ui.item.id};
+			    getjson("json_modify.php",param2,replaceLine);
 			}
 		    })});
 	c.addClass("edit");
@@ -1851,6 +1858,24 @@ function removeTrancheVersSouhait(td) {
      td.find('button.choixt').remove();
 }
 
+function addTrancheVersResp(td) {
+    if (!existsjQuery(td)) return;
+    var tr = td.parent('tr');
+    var oid = parseIdString(tr.attr('id'));
+    var choixr = jQuery('<button class="choixr">Valide cet ens. comme resp.</button>');
+    choixr.button({
+        text: false,
+                icons: {
+                primary: "ui-icon-arrow-1-n"
+		}
+	});
+    choixr.bind("click",oid,transfertResp);
+    td.find('div.palette').append(choixr);
+}
+function removeTrancheVersResp(td) {
+	td.find('button.choixr').remove();
+}
+
 
 /* ajout de ligne */
 function addAdd(td) {
@@ -2542,6 +2567,9 @@ function appendItem(type, prev, o, list) {
 */
 	var colspan = largeurligne($("#skelcours"));
 	line.before('<tr class="imgcours"><td class="imgcours" colspan="'+colspan+'"><div id="imgcours'+o["id_cours"] +'" class="imgcours"></div></td></tr>');
+	if (superuser()) {
+        	addRm(line.find('td.action'));
+	}
     }
     if (type == "annee") {
 	var idannee = o["id"];
@@ -2592,16 +2620,25 @@ function appendItem(type, prev, o, list) {
 	line.before('<tr class="imgformation"><td class="imgformation" colspan="'+colspan+'"><div id="imgformation'+idf +'" class="imgformation"></div></td></tr>');
     }
     if (type == "tranche") {
-	addMult(line.children('td.action'));
+	if (superuser()) {
+		addMult(line.children('td.action'));
+		addRm(line.children('td.action'));
+	}
 	if ( (o["id_enseignant"] == 3) || config_choisir_tout_cours) {
 	    addChoisir(line.children('td.laction'));
 	} else {
 	    removeChoisir(line.children('td.laction'));
 	}
-	if (o["id_enseignant"] >9 && superuser())
+	if (o["id_enseignant"] >9 && superuser() && 
+		line.children('.groupe').text()<2)
+		addTrancheVersResp(line.children('td.laction'));
+	else
+		removeTrancheVersResp(line.children('td.laction'));
+	if ( o["id_enseignant"] >9 && superuser()) {
 		addTrancheVersSouhait(line.children('td.laction'));
-        else
+        } else {
 		removeTrancheVersSouhait(line.children('td.laction'));
+	}
 /*      Glisser deposer de tranches pour plus tard
 	addHandle(line.children('td.laction'), "tranche");
 */
@@ -2618,7 +2655,6 @@ function appendItem(type, prev, o, list) {
 	var cel = line.children('td.nom_cours');
 	cel.html('<a href="afficheChoix.php?id='+o['id_choix']+'">'+cel.html()+'</a>');
     }
-    addRm(line.find('td.action'));
 }
 /* ------- FIN REMPLISSAGE DES TABLEAUX ---------*/
 
@@ -2759,25 +2795,33 @@ function replaceLine(tabo) {
 	});
     ligne.find('td.action button.okl').remove();
     removeReload(ligne.children('td.action'));
-    addRm(ligne.children('td.action'));
+    removeChoisir(ligne.children('td.laction'));
+    removeTrancheVersResp(ligne.children('td.laction'));
+    removeTrancheVersSouhait(ligne.children('td.laction'));
+    if (superuser()) {
+	   addRm(ligne.children('td.action'));
+    }
     if (o["type"] == "tranche") {
-	addMult(ligne.children('td.action'));
-	if (o["id_enseignant"] == 3) {
-	    addChoisir(ligne.children('td.laction'));
-	} else {
-	    removeChoisir(ligne.children('td.laction'));
+	if (superuser()) {
+	  addMult(ligne.children('td.action'));
 	}
-	if (o["id_enseignant"] >9 && superuser())
-           addTrancheVersSouhait(ligne.children('td.laction'));
-        else
-	    removeTrancheVersSouhait(ligne.children('td.laction'));
+	//alert('dans replaceLine type tranche:ens='+o["id_enseignant"]+';ligne='+id);
+	if (o["id_enseignant"] == 3 || superuser()) {
+	    addChoisir(ligne.children('td.laction'));
+	} 
+	if (o["id_enseignant"] >9 && superuser() && ligne.children('.groupe').text() <2)
+                addTrancheVersResp(ligne.children('td.laction'));
+        //if ( $('#user >.id').text() == o["id_enseignant"] || superuser()) {
+        if ( o["id_enseignant"] >9 &&  superuser()) {
+                addTrancheVersSouhait(ligne.children('td.laction'));
+        }
+
     } else if (o["type"] == "tag") {
 	tagsAsStyles(); // recharge les styles 
 	 basculerTags();
 	 basculerTags();
 	}	
 }
-
 
 /* Dupliquer une ligne */
 function duplicateLine(e) {
@@ -2836,6 +2880,24 @@ function transfertSouhait(e) {
 	o.id_enseignant="3"; // libre
 	getjson("json_modify",o, replaceLine);
    });
+   return false;
+}
+
+function transfertResp(e) {
+   var oid =e.data;
+   var donnees = new Object();
+   var source = $('#'+idString(oid));
+    source.effect('highlight',{},800,function () {});
+
+    var laform = source.parents('.cours')[0].id.substring(11);
+    var lecours=source.parents('.tranches')[0].id.substring(14);
+    var leprof = source.children('.enseignant').children('.hiddenvalue').html();
+    donnees.type = 'cours';
+    donnees.id_parent = laform;
+    donnees.id_enseignant = leprof;
+    donnees.id = lecours;
+	
+   getjson("json_modify.php",donnees, replaceLine);
    return false;
 }
 

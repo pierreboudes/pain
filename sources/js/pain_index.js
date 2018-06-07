@@ -130,7 +130,19 @@ BUG: meme avec handle, très mauvaise interaction avec les textarea
 		    }
 */
 	    });
+
+	if (superuser()) {
+	  $('#menu').after('<div class="bouton-SU"><span style="color:red;font-weight:bold">Rôle admin:</span><label class="switch"><input id="bouton-SU" type="checkbox"/><span class="slider round"></span></label></div>');
+	  $('#bouton-SU').prop("checked",true);
+	  $('#bouton-SU').change(function() {
+		$('#user > .su').text( 1- $('#user > .su').text());
+		if ($('#user > .su').text() == 1)
+			location.reload();
+	  });
+	}
+
 	$('#menu').after('<div class="bouton-panier"><button id="bouton-panier">Panier</button></div>');
+
 	$('#bouton-panier').button(
 		    {text: true,
 			    icons: {
@@ -152,5 +164,8 @@ $(document).ajaxComplete(function(){
 			sf.click();}
 			if (f.length && f.hasClass('basculeOff')) {f.click();}
 			if (c.length && c.hasClass('basculeOff')) {c.click();}
+			setTimeout(function(){
+			var monobj={foo:'bar'};
+			history.pushState(monobj,"retour normal","index.php")},2000);
 			}
 }); 
