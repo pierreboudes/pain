@@ -34,10 +34,12 @@ function entete() {
 <head>
 <title>$titre Pain</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link type="text/css" href="css/selected-theme/jquery-ui-1.12.1.min.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.12.1.min.js"></script>
 <link rel='stylesheet' media='all' href='css/general.css' type='text/css' />
+<link type="text/css" href="css/selected-theme/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.ui.datepicker-fr.js"></script>
+<script type="text/javascript" src="js/jquery-migrate-1.2.1.js"></script>
 <script type="text/javascript" src="js/dyntab.js"></script>
 <script type='text/javascript' src='js/pain.js'></script>
 EOD;
@@ -56,9 +58,16 @@ EOD;
 
 <link rel='stylesheet' media='projection, screen, tv' href='affichage.css' type='text/css' />
 <link rel="stylesheet" href="impression.css" type="text/css" media="print" />
+<!-- FIREBUG DU PAUVRE !
+<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+-->
+<script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.js"></script>
+<!--
+<link href="bubbletip/bubbletip/bubbletip.css" rel="stylesheet" type="text/css" />
+<script src="bubbletip/jQuery.bubbletip-1.0.1.js" type="text/javascript"></script>
+-->
 <script type="text/javascript" src="js/jquery.highlight-3.js"></script>
 */
-
     echo <<<EOD
 <meta name="description" content="Système de gestion des services du département d'informatique" />
 </head>
