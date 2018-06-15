@@ -209,19 +209,22 @@ if (isset($_GET["id_parent"])) {
     }
 
     if ( ("formation" == $type) || ("sformation" == $type)) {
-	$sq = "SELECT COALESCE(MAX(numero) + 1, 0) as num
+        $sq = "SELECT COALESCE(MAX(numero) + 1, 0) as num
                FROM pain_$type WHERE $par = $id_parent";
-	if (!($sr = $link->query($sq))) {
-	    errmsg("erreur avec la requete :\n".$sq."\n".$link->error);
-	}
+        if (!($sr = $link->query($sq))) {
+            errmsg("erreur avec la requete :\n".$sq."\n".$link->error);
+        }
         $sl = $sr->fetch_assoc();
-	$set["numero"] = $sl["num"];
+        $set["numero"] = $sl["num"];
     }
 
     if ($type == "collection")  {
-	$set["annee_universitaire"] = $annee;
+        $set["annee_universitaire"] = $annee;
     }
 
+    if ("formation" == $type) {
+        	$set["parfum"] = "";
+    }
     /* formation de la requete */
     $setsql = array();
     foreach ($set as $field => $val) {
