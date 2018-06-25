@@ -40,8 +40,8 @@ function entete() {
 <link type="text/css" href="/bootstrap-3.2.0-dist/css/bootstrap-theme.min.css" rel="stylesheet" />
 <link rel='stylesheet' media='all' href='css/general.css' type='text/css' />
 <link type="text/css" href="/jquery-ui-1.11.1.custom/jquery-ui.css" rel="stylesheet" />
-<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="/js/jquery-migrate-1.2.1.js"></script> <!-- todo remove me -->
+<script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery-migrate-3.0.0.min.js"></script> <!-- todo remove me -->
 <script type="text/javascript" src="/bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/jquery-ui-1.11.1.custom/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/dyntab.js?$git_head"></script>
