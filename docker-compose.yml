@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+
+  apache:
+    build: ./server
+    links:
+      - pain-mariadb
+    ports:
+      - 9380:80
+
+    volumes:
+      - ./:/var/www/html/demo/pain
+
+  pain-mariadb:
+    image: mariadb:10.3.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: unsecuredpassword
+      MYSQL_DATABASE: pain_demo
+      MYSQL_USER: pain_demo
+      MYSQL_PASSWORD: anotherinsecuredpassword
+
+    volumes:
+      - ./databases/:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
