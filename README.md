@@ -16,8 +16,8 @@ You can run a demo version of pain using docker, by performing the following ste
    cp server/iconnect.php iconnect.php
    ```
 3. build and run with docker-compose
-  ```sh
-  docker-compose build
-  docker-compose up
-  ```
-4. point your browser to localhost:9380/demo/pain enjoy or feel a little bit disappointed by charset problems, as I am, and by the lack of documentation. If you understand a bit of french you may find your may here https://mindsized.org/spip.php?rubrique55.
+   ```sh
+   docker-compose build
+   docker-compose up
+   ```
+4. point your browser to `localhost:9380/demo/pain/`. Enjoy… or feel a little bit disappointed by charset problems, as I am, and by the lack of documentation. If you understand a bit of french you may find your way here https://mindsized.org/spip.php?rubrique55.
